@@ -160,20 +160,25 @@ User adopted option (c) for `crosswalk_nsc_outcomes.do`: introduce an `upstream/
 | `caschls/do/share/outcomesumstats/nsc2019new/nsc2019sumstats.do` | `do/archive/` | Moved (caschls commit `cb275af`) |
 | `caschls/do/share/outcomesumstats/searchdate_sumstats.do` | `do/archive/` | Moved (caschls commit `cb275af`) |
 | `caschls/do/build/sample/responseyear.do` | KEEP (no action) | User: "testing code looking at the sample characteristics of the surveys, lets keep for completeness" |
-| `caschls/do/build/prepare/poolenrollment.do` | **PENDING** | Lineage trace: zero callers; its output `pooledavgenr.dta` has zero consumers anywhere. Recommended disposition: archive. Flagged for user override. |
+| `caschls/do/build/prepare/poolenrollment.do` | `do/archive/` | Moved (caschls commit `c493b8e`). User confirmed: project switched to using only enr1819 data at some point (via `poolgr11enr.do`), superseding the pooled-average approach. |
 
-### Open: poolenrollment.do final disposition
+### Final inventory verdict
 
-Verbatim trace evidence for the user's review:
+All flagged files are now resolved. Both predecessor repos have a known-complete production pipeline inventory:
 
-- `poolenrollment.do` reads `$projdir/dta/enrollment/schoollevel/enr1415` ... `enr1819` (5 yearly enrollment dtas).
-- It writes `$projdir/dta/enrollment/pooledavgenr.dta` (label: "Enrollment demographics pooled average over 1415 to 1819").
-- Searching the entire `caschls/do/` for `pooledavgenr` returns zero hits outside the script itself.
-- The production pipeline DOES use a different pooled enrollment dataset: `poolgr11enr.do` (which IS in master.do) reads only `enr1819` and produces a different output.
+- **cde_va_project_fork** (`changes_by_che` branch): `do_files/do_all.do` references every load-bearing script. Non-pipeline scripts are bucketed: `_archive/` (deprecated / Matt-original), `upstream/` (one file: nsc_outcomes data prep).
+- **caschls** (`main` branch): `do/master.do` references every load-bearing script. Non-pipeline scripts are bucketed: `archive/` (deprecated + matt_original/), `upstream/` (CCC/CSU crosswalks), `local/` (enrollmentconvert + siblingtest), `check/`, `debug/`.
 
-Conclusion: `poolenrollment.do` is orphaned upstream prep. User said "I thought it was used at some point" — consistent with the data: it likely was used pre-paper, then superseded by `poolgr11enr.do` for the 11th-grade-only analysis the paper actually uses.
+Net round-2 commits (in chronological order, all on 2026-04-25):
 
-Recommended action: archive to `do/archive/`. Awaiting confirmation.
+- fork `731610f` -- upstream: nsc_outcomes
+- caschls `e057a09` -- upstream: extract ccc/csu from archive
+- caschls `cb275af` -- archive: nsc2019sumstats + searchdate_sumstats
+- caschls `ea165d3` -- local: enrollmentconvert
+- va_consolidated `c8eab7e` -- audit doc round-2 dispositions
+- caschls `c493b8e` -- archive: poolenrollment
+
+The audit is closed. Next step: write the consolidation plan against this inventory.
 
 ## 4. Summary verdict
 
