@@ -1,27 +1,234 @@
-# Primary-Source Allowlist — Project-Specific Author Surnames
+# Primary-Source Allowlist - VA Project
 #
-# One lowercase surname per line. Blank lines and `#` comments ignored.
+# Auto-extracted on 2026-04-24 from the bibliography at
+# ~/github_repos/va_paper_clone/literature/bibtex/common_core_va.bib
+# (1389 lines, 100+ BibTeX entries).
 #
-# Purpose: the citation extractor in .claude/hooks/primary_source_lib.py
-# uses this file to filter Author-Year pattern matches down to papers we
-# actually cite — cuts false positives like "Table 2 (2024)" or coincidental
-# capitalized words near a year.
+# One lowercase ASCII surname per line. Diacritics stripped (Abdulkadiroğlu ->
+# abdulkadiroglu); BibTeX braces and `Jr.` suffixes removed. Spaces in
+# multi-word surnames replaced with hyphens.
 #
-# Behavior when file is empty or missing: the extractor accepts ALL
-# Author-Year matches (no filtering). This produces more false positives
-# but ensures new/unfamiliar citations are never silently skipped.
-#
-# Behavior when file is populated: only citations where the leading surname
-# appears in this list are extracted. Add surnames as you cite papers.
-#
-# Convention: lowercase, ASCII, no diacritics (match the surname as it
-# appears in a bibtex key — e.g., "koszegi" for Kőszegi, "munoz-rodriguez"
-# for Muñoz-Rodriguez).
-#
-# Example (uncomment and adapt for your project):
-# angrist
-# pischke
-# card
-# chetty
-# kahneman
-# thaler
+# Notes for maintenance:
+# - Two forms of Abdulkadiroğlu are listed because the bib has both
+#   `Abdulkadiro{\u{g}}lu` (canonical) and the pre-stripped variant the
+#   tooling produced. Keep both for matching robustness.
+# - Dutch/Spanish multi-word surnames (van der Klaauw, van Reenen, de la
+#   Torre) appear here as their head-noun fragment (klaauw, reenen, torre).
+#   The hook's AUTHOR_YEAR regex captures `Van` first when it sees `Van der
+#   Klaauw 2002` in rendered text, so these head-fragment entries do not
+#   actually catch those citations. Fix when the hook is patched upstream
+#   to handle nobiliary prepositions.
+# - Re-run extraction whenever the bib is updated:
+#     awk '/^\s*author\s*=/{...}'  -- script in
+#     quality_reports/reviews/2026-04-24_primary-source-hook-fix-memo.md.
+
+abdulkadiroglu
+abdulkadiroug
+allensworth
+altonji
+angrist
+bacher-hicks
+backes
+bayer
+bearak
+beuermann
+bitler
+blanchard
+bloom
+bogart
+burgess
+calonico
+campbell
+card
+carrell
+cattaneo
+cheng
+chetty
+chiang
+chin
+christian
+cohodes
+coleman
+cook
+corcoran
+cowan
+cromwell
+cullen
+cunha
+davis
+dee
+deke
+deming
+dobbie
+domina
+downes
+doyle
+dyer
+dynarski
+easton
+egalite
+ehlert
+everson
+fan
+farrell
+ferreira
+figlio
+friedman
+fryer
+gershenson
+gill
+gilraine
+goldhaber
+goldstein
+greaves
+guarino
+hahn
+hanushek
+harmon
+hart
+hastings
+hayes
+heckman
+hemelt
+hendren
+herrmann
+hilger
+hill
+hobson
+hoekstra
+holt
+hough
+hoxby
+hubbard
+hull
+hyman
+imbens
+imberman
+isenberg
+jackson
+jacob
+jencks
+jennings
+jin
+johnson
+kane
+kato
+kiguel
+kisida
+klaauw
+kline
+koedel
+kraft
+krueger
+kurlaender
+lee
+lefgren
+lemieux
+lemos
+levitt
+li
+lindsay
+linn
+lipscomb
+lochner
+lockwood
+loeb
+lopuch
+lovenheim
+lusher
+mansfield
+mantil
+marinell
+marron
+martorell
+master
+masterov
+maxfield
+mbekeani
+mcclellan
+mcmillan
+mcneil
+mcpartland
+meyer
+mood
+moore
+mountjoy
+murarka
+murnane
+narita
+navarro-sola
+naven
+neal
+neilson
+page
+papageorge
+papay
+pardo
+parsons
+pathak
+patton
+penner
+phillips
+podgursky
+pop-eleches
+pope
+porter
+purkey
+raudenbush
+reback
+reckase
+reenen
+rice
+rivkin
+rockoff
+rothstein
+rouse
+sadun
+saez
+sammons
+samms
+sartain
+schanzenbach
+schellenberg
+schochet
+schueler
+schwartz
+sims
+smith
+song
+staiger
+sun
+taylor
+theobald
+thompson
+tiebout
+titiunik
+todd
+torero
+torre
+tremblay
+turner
+urquiola
+valenzuela
+veiga
+vignoles
+walsh
+walters
+warner
+weimer
+weinfeld
+weinstein
+west
+whitmore
+willms
+wilson
+winicki
+winters
+wooldridge
+wyckoff
+yagan
+yee
+york
+zabel
+zhang
+zimmerman
