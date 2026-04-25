@@ -146,6 +146,35 @@ After Christina's answers in `Section 10A` of the context dump and a follow-up `
 - **cde_va_project_fork**: 1 production gap fixed (`prior_decile`). 1 deprecated file archived (`va_scatter_plot`). 1 comment clarified (`sib_lag`). 1 file pending user decision (`crosswalk_nsc_outcomes`).
 - **caschls**: 9 files archived (4 user-confirmed + 5 Matt-style). 5 ARCHIVE candidates pending user confirmation (`poolenrollment`, `enrollmentconvert`, `responseyear`, `nsc2019sumstats`, `searchdate_sumstats`).
 
+### Round 2 disposition (2026-04-25, after user feedback)
+
+User adopted option (c) for `crosswalk_nsc_outcomes.do`: introduce an `upstream/` directory for scripts that produce inputs to the project but aren't on the production pipeline. Also extended the same disposition to caschls's CCC/CSU crosswalks (originally archived as Matt-superseded; user clarified they're upstream).
+
+| File | Disposition | Action taken |
+|---|---|---|
+| `cde_va_project_fork/do_files/crosswalk_nsc_outcomes.do` | `do_files/upstream/` | Moved (fork commit `731610f`) |
+| `caschls/do/share/outcomesumstats/matt/crosswalk_ccc_outcomes.do` | `do/upstream/` | Moved out of archive/matt_original/ to upstream/ (caschls commit `e057a09`) |
+| `caschls/do/share/outcomesumstats/matt/crosswalk_csu_outcomes.do` | `do/upstream/` | Same commit |
+| `caschls/do/share/outcomesumstats/matt/crosswalk_nsc_outcomes.do` | stays in `do/archive/matt_original/` | Superseded by the FORK's working version (now in fork's `do_files/upstream/`); the caschls Matt-original NSC version is kept archived |
+| `caschls/do/build/sample/enrollmentconvert.do` | `do/local/` | Moved (caschls commit `ea165d3`). Header explicitly says "local do file"; converts raw CDE enr txt -> dta on a local machine. |
+| `caschls/do/share/outcomesumstats/nsc2019new/nsc2019sumstats.do` | `do/archive/` | Moved (caschls commit `cb275af`) |
+| `caschls/do/share/outcomesumstats/searchdate_sumstats.do` | `do/archive/` | Moved (caschls commit `cb275af`) |
+| `caschls/do/build/sample/responseyear.do` | KEEP (no action) | User: "testing code looking at the sample characteristics of the surveys, lets keep for completeness" |
+| `caschls/do/build/prepare/poolenrollment.do` | **PENDING** | Lineage trace: zero callers; its output `pooledavgenr.dta` has zero consumers anywhere. Recommended disposition: archive. Flagged for user override. |
+
+### Open: poolenrollment.do final disposition
+
+Verbatim trace evidence for the user's review:
+
+- `poolenrollment.do` reads `$projdir/dta/enrollment/schoollevel/enr1415` ... `enr1819` (5 yearly enrollment dtas).
+- It writes `$projdir/dta/enrollment/pooledavgenr.dta` (label: "Enrollment demographics pooled average over 1415 to 1819").
+- Searching the entire `caschls/do/` for `pooledavgenr` returns zero hits outside the script itself.
+- The production pipeline DOES use a different pooled enrollment dataset: `poolgr11enr.do` (which IS in master.do) reads only `enr1819` and produces a different output.
+
+Conclusion: `poolenrollment.do` is orphaned upstream prep. User said "I thought it was used at some point" — consistent with the data: it likely was used pre-paper, then superseded by `poolgr11enr.do` for the 11th-grade-only analysis the paper actually uses.
+
+Recommended action: archive to `do/archive/`. Awaiting confirmation.
+
 ## 4. Summary verdict
 
 `do_all.do` is **substantially complete** -- 56/66 referenced; the 8 unreferenced are mostly ad-hoc, with 2-3 worth a confirm-or-archive question to the user. 
