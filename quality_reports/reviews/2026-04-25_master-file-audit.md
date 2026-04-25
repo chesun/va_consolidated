@@ -112,6 +112,40 @@ This back-and-forth is the structural artifact of the two repos having grown tog
 
 ---
 
+## 3.5. Addendum — lineage trace results (added later 2026-04-25)
+
+After Christina's answers in `Section 10A` of the context dump and a follow-up `grep`-based lineage trace, the disposition of the formerly-uncertain files is:
+
+### cde_va_project_fork
+
+| File | Disposition | Rationale | Action taken |
+|---|---|---|---|
+| `prior_decile_original_sample.do` | KEEP, register in pipeline | Output `prior_decile_original_sample.dta` consumed by `reg_out_va_all.do` and `reg_out_va_dk_all.do` (both already in do_all.do). Christina-authored, change-log dated 2024. | Inserted into do_all.do before reg_out_va_all calls (commit `ab0395d`) |
+| `va_scatter_plot.do` | ARCHIVE | Christina confirmed deprecated, non-production. Superseded by `do_files/share/va_scatter.do`. | Moved to `_archive/`; stale commented invocation removed from do_all.do (commit `cce7c84`) |
+| `crosswalk_nsc_outcomes.do` | **PENDING USER DECISION** | Lineage trace: zero callers anywhere in fork or caschls. NSC linkage is upstream/manual, cleaned NSC dataset is static input. Options: (a) keep at root with a header comment marking it as upstream/manual, (b) move to `_archive/`, (c) move to a new `do_files/upstream/` or `do_files/data_prep/` dir to mark as outside-pipeline-but-preserved. | None yet |
+| `va_score_sib_lag.do` / `va_out_sib_lag.do` reactivation | KEEP active, reword comment | Christina confirmed intentional reactivation: kept as production code in case coauthors revisit; not reported in paper. | Comment in do_all.do reworded for clarity (commit `5d9956f`) |
+
+### caschls
+
+| File | Disposition | Rationale | Action taken |
+|---|---|---|---|
+| `clean_va.do` (build/buildanalysisdata/poolingdata/) | KEEP | **Audit false positive** — this file IS referenced in master.do at line 341, but with a quirky `build//buildanalysisdata` double-slash that broke the comparison grep. | None needed |
+| `poolenrollment.do` (build/prepare/) | ARCHIVE candidate | Zero callers anywhere in caschls. | None yet (awaiting confirmation) |
+| `enrollmentconvert.do` (build/sample/) | ARCHIVE candidate | Zero callers anywhere in caschls. | None yet |
+| `responseyear.do` (build/sample/) | ARCHIVE candidate | Zero callers anywhere in caschls. | None yet |
+| `nsc2019sumstats.do` (share/outcomesumstats/nsc2019new/) | ARCHIVE candidate | Zero callers anywhere in caschls. | None yet |
+| `searchdate_sumstats.do` (share/outcomesumstats/) | ARCHIVE candidate | Zero callers anywhere in caschls. | None yet |
+| `k12_nsc_match_sumstats.do` | ARCHIVE confirmed | User-marked deprecated. | Moved to `do/archive/` (caschls commit `f0c17d7`) |
+| `matchdiscrep.do` | ARCHIVE confirmed | User-marked deprecated. | Moved to `do/archive/` (caschls commit `f0c17d7`) |
+| `reg_out_va_sib_acs_dk_tab.do` | ARCHIVE confirmed | Empty scaffolding only. | Moved to `do/archive/` (caschls commit `f0c17d7`) |
+| `vamtest.do` | ARCHIVE confirmed | Ad-hoc test code. | Moved to `do/archive/` (caschls commit `f0c17d7`) |
+| Matt-style files (5) | ARCHIVE confirmed | User OK'd archival of `share/outcomesumstats/matt/*` (3 files) and `share/siblingxwalk/matt_*` + `sibling_example.do` (2 files). | Moved to `do/archive/matt_original/` (caschls commit `83767d6`) |
+
+### Net status after this round
+
+- **cde_va_project_fork**: 1 production gap fixed (`prior_decile`). 1 deprecated file archived (`va_scatter_plot`). 1 comment clarified (`sib_lag`). 1 file pending user decision (`crosswalk_nsc_outcomes`).
+- **caschls**: 9 files archived (4 user-confirmed + 5 Matt-style). 5 ARCHIVE candidates pending user confirmation (`poolenrollment`, `enrollmentconvert`, `responseyear`, `nsc2019sumstats`, `searchdate_sumstats`).
+
 ## 4. Summary verdict
 
 `do_all.do` is **substantially complete** -- 56/66 referenced; the 8 unreferenced are mostly ad-hoc, with 2-3 worth a confirm-or-archive question to the user. 
