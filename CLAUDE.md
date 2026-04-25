@@ -5,8 +5,8 @@
      Keep this file under ~150 lines — Claude loads it every session.
      Based on clo-author (Hugo Sant'Anna) + infrastructure from Pedro Sant'Anna. -->
 
-**Project:** [YOUR PROJECT NAME]
-**Institution:** [YOUR INSTITUTION]
+**Project:** Value Added Project
+**Institution:** California Education Lab, UC Davis
 **Branch:** main
 
 ---

@@ -4,9 +4,11 @@ Consolidated codebase for the **California Education Lab Value-Added project**.
 
 This repo merges three previously-separate codebases:
 
-1. Matt Naven's original VA estimation code (foundational, ~10 years old)
-2. Christina's CALSCHLS survey analysis codebase (uses Matt's VA estimates as input)
-3. Christina's sibling-FE VA estimation codebase (uses sibling links constructed in [2])
+1. (a) Matt Naven's original VA estimation code (foundational, ~10 years old). (b) Christina has created new versions and workflows for estimating VA by adapting Matt's original code, and the original code is now deprecated.
+   1. Repo: ~/github_repos/cde_va_project_fork
+2. Christina's CALSCHLS survey analysis codebase (uses VA estimates as input)
+   1. repo: ~/github_repos/caschls
+   2. This repo includes code that creates sibling links, which then feeds into the new version of VA estimation in [1](a)
 
 **Goals:**
 
