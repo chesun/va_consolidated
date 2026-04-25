@@ -70,3 +70,15 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:meta] Dogfooding principles must be enforced: plan-first, spec-then-plan, quality gates, session logs → we follow our own guide.
 
 [LEARN:meta] Template development work (building infrastructure, docs) doesn't create session logs in quality_reports/ → those are for user work (slides, analysis), not meta-work. Keeps template clean for users who fork.
+
+## VA Project Domain Facts
+
+[LEARN:domain] **v1 and v2 in this project refer to different prior test score controls for ELA and Math VA estimates — NOT to sibling vs. CFR or any other methodological distinction.** The exact grade/year choice of prior scores is in `create_prior_scores_v1.doh` and `create_prior_scores_v2.doh`. See `quality_reports/session_logs/2026-04-24_project-onboarding.md` for the explicit grade/year tables across spring-2015–spring-2018 cohorts. Wrong → right: v1/v2 ≠ CFR/sibling; v1/v2 = different prior-control grade/year combinations.
+
+[LEARN:domain] **Repo scope for `va_consolidated` consolidation is exactly TWO predecessor repos:** (1) `~/github_repos/cde_va_project_fork` — Christina's fork of Matt Naven's `ca_ed_lab-common_core_va` (Matt no longer active; fork supersedes the original); (2) `caschls` at `/Users/christinasun/Library/CloudStorage/Dropbox/Davis/Research_Projects/Ed Lab GSR/caschls` — Christina's own VA + CALSCHLS survey work. The 2022 `common_core_va_workflow_merge` repo is OUT of scope (abandoned, did not produce anything useful). Also out of scope: `ca_ed_lab-common_core_va` itself (superseded by the fork). va_consolidated/README.md needs correction on this.
+
+[LEARN:domain] **Paper status:** submitted to journal, rejected, currently in limbo pending coauthor/PI decision on next venue. Working draft is `commoncore_va_v2.tex` in `paper/`. A snapshot of the submitted version is in `va_paper_clone` (Overleaf clone). Christina is the sole person responsible for data and code; coauthors are senior faculty who are not involved with coding.
+
+## Discipline
+
+[LEARN:discipline] **No assumptions.** Global rule (~/github_repos/claude-config/rules/no-assumptions.md) prohibits guessing about workflow, infrastructure, tools, role boundaries, or preferences. Only state what was explicitly provided. If a detail is missing and relevant, ask or omit — never fill blanks with plausible-sounding inference. Wrong → right: never reframe ambiguous user terminology (e.g., v1/v2) by analogy to other projects; ask what it means.
