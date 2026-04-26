@@ -89,7 +89,7 @@ What this commits us to. What it rules out. Open questions it creates.
 
 | ID | Title | Date | Status | Scope |
 |----|-------|------|--------|-------|
-| *(no ADRs yet)* | | | | |
+| [0001](0001_consolidation-scope.md) | Consolidation scope — two predecessor repos in scope | 2026-04-25 | Decided | Infrastructure |
 
 ---
 
