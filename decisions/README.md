@@ -91,6 +91,7 @@ What this commits us to. What it rules out. Open questions it creates.
 |----|-------|------|--------|-------|
 | [0001](0001_consolidation-scope.md) | Consolidation scope — two predecessor repos in scope | 2026-04-25 | Decided | Infrastructure |
 | [0002](0002_runtime-server-only.md) | Runtime — Scribe server only, hostname-branched settings | 2026-04-25 | Decided | Infrastructure |
+| [0003](0003_languages-stata-primary-python-upstream.md) | Languages — Stata primary; Python preserved for upstream geocoding | 2026-04-25 | Decided | Methodology |
 
 ---
 
@@ -98,4 +99,19 @@ What this commits us to. What it rules out. Open questions it creates.
 
 Decisions that need to happen but aren't resolved. They get an ADR when resolved, not before.
 
-- *(none listed yet)*
+The full list of expected ADRs (with proposed slugs) lives in
+`quality_reports/plans/2026-04-25_consolidation-plan-draft.md` §5. Items deferred until Phase 0 deep-read completes:
+
+- **0004** sibling-xwalk canonical location (siblingoutxwalk relocation depends on dependency trace)
+- **0005** pipeline order (locks after Phase 0b dependency graph)
+- **0006** prior-score policy v1-canonical / v2-preserved (locks after VA core deep-read)
+- **0007** upstream-data-prep convention
+- **0008** local-script convention
+- **0009** custom vam ado handling (after .ado deep-read in Phase 0a)
+- **0010** paper source-of-truth
+- **0011** output paths mirror paper expectations
+- **0012** settings.do hostname branching pattern
+- **0013** cohort coverage 2014-15 to 2017-18
+- **0014** entry-point naming (main.do vs do_all.do — locked direction is main.do)
+- **0015** Stata version pin
+- **0016** server canonical folder (resolved via Phase 0d server reconciliation)
