@@ -156,3 +156,82 @@ Confirmed orphans (zero callers in active pipeline) — already archived per rou
 - Both repos have orphan py_files content → preserved in py/upstream/ per ADR-0003
 
 No new orphans surfaced at foundation level. To verify in downstream chunks.
+
+---
+
+## Chunk 2 additions: VA-core helper sub-graph
+
+```
+create_va_sample.doh  (Matt; master VA dataset constructor)
+  ├── inputs: k12_test_scores_clean.dta, va_samples.dta,
+  │           k12_lag_test_scores_clean.dta, k12_peer_test_scores_clean.dta,
+  │           k12_diff_school_prop_schyr.dta, k12_cohort_size_sch.dta,
+  │           k12_public_schools_clean.dta
+  └── early restrictions: conventional schools; cohort_size>10
+
+create_va_g11_sample.doh  (Christina; v1 prior-score sample for test scores)
+  ├── inputs: $va_dataset (= caller's master from create_va_sample.doh)
+  ├── sample: grade 11 + CAASPP only + years 2015-2018
+  ├── restriction: diff_school_prop>=0.95
+  ├── sourced helpers:
+  │     ├── create_diff_school_prop.doh  (year-2017 carve-out)
+  │     └── create_prior_scores_v1.doh   (prior_ela/math_z_score, peer_*)
+  └── outputs: tempfile va_g11_dataset
+
+create_va_g11_out_sample.doh  (Christina; v1 prior-score sample for outcomes)
+  ├── identical structure to score variant
+  ├── only difference: outcome_min_year/max_year window
+  └── outputs: tempfile va_g11_dataset  ← NAME COLLISION with score variant
+
+create_va_g11_sample_v2.doh / create_va_g11_out_sample_v2.doh
+  └── parallel files; source create_prior_scores_v2.doh instead
+
+create_prior_scores_v1.doh  (Christina, 12/29/2022; CANONICAL paper variant)
+  ├── prior_ela_z_score: L3 CST (yr<=2016) → L3 SBAC (yr=2018) → L4 CST (yr=2017 carve-out)
+  ├── prior_math_z_score: L5 CST (yr<=2017) → L3 SBAC (yr=2018)
+  └── peer_prior_*_z_score: parallel logic on peer scores
+
+create_prior_scores_v2.doh  (Christina, 12/20/2022; EXPLORATORY variant)
+  ├── prior_ela_z_score: L5 CST (yr<=2017) → L3 SBAC (yr=2018)
+  ├── prior_math_z_score: same as v1
+  └── HEADER COMMENT BLOCK has wrong calendar years (sp 2012/2013/2013) -- transcription bug
+
+create_diff_school_prop.doh  (2 lines)
+  ├── diff_school_prop = gr11_L3_diff_school_prop if year!=2017
+  └── replace = gr11_L4_diff_school_prop if year==2017
+
+merge_loscore.doh  (forecast-bias leave-out score)
+  └── drops obs missing both L4_cst_ela and L5_cst_ela; drops obs missing loscore
+
+merge_sib.doh  (sibling-restricted sample)
+  └── drops obs missing has_older_sibling_enr_*; keeps if sibling_out_sample==1
+
+merge_va_smp_acs.doh  (ACS-restricted sample)
+  ├── inputs: acs_ca_census_tract_clean.dta, address_list_census_batch_geocoded.csv,
+  │           address_list.dta, lagged_acs.dta
+  ├── joins on: geoid2 year_grade6 (matches student's grade-6 record)
+  └── peer ACS via rangestat (mean) ... excludeself by(cdscode)
+
+merge_lag2_ela.doh  (TBD)
+merge_k12_postsecondary.doh  (Matt, 6/11/2018; postsecondary outcomes merge)
+  ├── args: optional `enr_only`
+  ├── inputs: $crosswalks/{nsc,ccc,csu}_outcomes_crosswalk.dta + others
+  ├── builds: enr, enr_2year, enr_4year, enr_pub, enr_priv, enr_instate, enr_outstate,
+  │           persist_year2/3/4, deg, deg_2year, deg_4year
+  ├── load-bearing mutex rules: 4yr trumps 2yr (L346); pub/priv (L366); in/out-state (L386)
+  └── enr asymmetry: NSC anchors one-rule; CCC/CSU only in zero-rule (L326-327)
+```
+
+### Cross-repo wire-up (Chunk 2 detail)
+
+`caschls/do/share/siblingvaregs/vafilemacros.doh` defines locals that route input/output across both repo subroots:
+
+```
+vafilemacros.doh
+  ├── INPUTS routed to $projdir/dta/common_core_va/...     (caschls subroot)
+  └── OUTPUTS via vaestmacros.doh routed to:
+        ├── $vaprojdir/estimates/sbac/...    (test-score VA estimates → fork subroot)
+        └── $projdir/est/siblingvaregs/...   (sibling-VA estimates → caschls subroot)
+```
+
+Triangulation: master VA datasets → fork-side VA estimation → caschls-side sibling-VA estimation. Consolidation collapses both subroots under one repo.

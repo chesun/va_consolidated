@@ -480,9 +480,230 @@ See `quality_reports/audits/2026-04-25_dependency-graph.md`.
 
 ---
 
+## Chunk 2: VA-core helpers (COMPLETE)
+
+Files audited: `create_va_sample.doh`, `create_va_g11_sample.doh` (+ `_v1.doh`, `_v2.doh` siblings), `create_va_g11_out_sample.doh` (+ siblings), `create_diff_school_prop.doh`, `create_prior_scores_v1.doh`, `create_prior_scores_v2.doh`, `merge_k12_postsecondary.doh`, plus discovered helpers (`drift_limit.doh`, `out_drift_limit.doh`, `merge_lag2_ela.doh`, `merge_loscore.doh`, `merge_sib.doh`, `merge_va_smp_acs.doh`, `macros_va_all_samples_controls.doh`); caschls `vafilemacros.doh` and `vaestmacros.doh`.
+
+Chunk 2 agent: general-purpose; report received 2026-04-25.
+
+### File: cde_va_project_fork/do_files/sbac/create_va_sample.doh
+
+**Owner**: Matt Naven (no header; Matt-style merge chain)
+**Lines**: 57
+**Purpose**: Master VA dataset constructor. Use cleaned K12 test scores; merge in lagged scores, peer scores, school grade-span proportions, median cohort sizes, conventional-school flag; apply two early sample restrictions.
+
+**Sample restrictions**: L50 `keep if conventional_school==1`; L57 `drop if cohort_size<=10` (school-median cohort cut).
+
+**Inputs**: `k12_test_scores_clean.dta`, `va_samples.dta`, `k12_lag_test_scores_clean.dta`, `k12_peer_test_scores_clean.dta`, `k12_diff_school_prop_schyr.dta`, `k12_cohort_size_sch.dta`, `k12_public_schools_clean.dta`. **Gotchas**:
+- L52, L54 contain comments describing restrictions (">25% special ed", "home/hospital instruction") that are NOT implemented in code. Either upstream in `k12_test_scores_clean.dta` or unimplemented intent.
+- L26 keepusing list does NOT include `peer_L3_cst_ela_z_score`, but `create_prior_scores_v1.doh` L16 references it. **Possible silent bug** — `peer_prior_ela_z_score` may be missing for STAR-era cohorts in the `_g11_` pipeline.
+- L50's `keep if` is a HARDER drop than `touse_va.do` L102's `replace touse=0 if conventional_school!=1`.
+
+### File: cde_va_project_fork/do_files/sbac/create_va_g11_sample.doh
+
+**Owner**: Christina Sun (L1 "create version 1 of VA samples")
+**Lines**: 16
+**Purpose**: Restrict master VA dataset to grade-11 CAASPP, apply 95% same-school threshold, build v1 prior-score controls, save tempfile.
+**Sample restrictions**: L4 `use if grade==11 & dataset=="CAASPP" & inrange(year, test_score_min_year, test_score_max_year)`; L7 `keep if diff_school_prop>=0.95`.
+**Sourced helpers**: `create_diff_school_prop.doh` (L6), `create_prior_scores_v1.doh` (L9). **Byte-identical to `create_va_g11_sample_v1.doh`.**
+
+### File: cde_va_project_fork/do_files/sbac/create_va_g11_out_sample.doh
+
+Same structure as the score variant; uses `outcome_min_year`/`outcome_max_year` (instead of `test_score_*_year`). Tempfile name `va_g11_dataset` collides with the score variant's tempfile if both helpers are sourced in one session — verify no caller does this in Chunk 3+.
+
+### File: cde_va_project_fork/do_files/sbac/create_diff_school_prop.doh
+
+**Lines**: 2 — single year-conditional gen.
+
+```stata
+gen     diff_school_prop = gr11_L3_diff_school_prop if year!=2017
+replace diff_school_prop = gr11_L4_diff_school_prop if year==2017
+```
+
+**Critical**: the year-2017 carve-out matches v1's 2017 ELA carve-out (uses 7th-grade lookback because spring-2014 was the no-test transition year). Load-bearing logic; consolidation must preserve.
+
+### File: cde_va_project_fork/do_files/sbac/create_prior_scores_v1.doh — VERIFIED
+
+**v1 verification (all four cohorts match user's table exactly)**:
+
+| Cohort | v1 ELA prior | code line | v1 Math prior | code line |
+|---|---|---|---|---|
+| 2015 | 8th ELA sp 2012 | L12 (CST L3) | 6th math sp 2010 | L22 (CST L5) |
+| 2016 | 8th ELA sp 2013 | L12 (CST L3) | 6th math sp 2011 | L22 (CST L5) |
+| 2017 | 7th ELA sp 2013 | L14 (CST L4) | 6th math sp 2012 | L22 (CST L5) |
+| 2018 | 8th ELA sp 2015 | L13 (SBAC L3) | 8th math sp 2015 | L23 (SBAC L3) |
+
+The 2017 ELA carve-out (L4 instead of L3 lookback) is asymmetric with math (which stays on L5 for all cohorts) because grade-7 CST ELA is available for 2017 lookback whereas grade-8 CST ELA isn't.
+
+### File: cde_va_project_fork/do_files/sbac/create_prior_scores_v2.doh — DISCREPANCY WITH USER TABLE
+
+**v2 code says 6th-grade ELA (year-5)** for all STAR-era cohorts:
+
+| Cohort | User's v2 ELA claim | What code actually computes (L13: L5_cst_ela_z_score) |
+|---|---|---|
+| 2015 | 6th ELA sp 2012 | **6th ELA sp 2010** |
+| 2016 | 6th ELA sp 2013 | **6th ELA sp 2011** |
+| 2017 | 6th ELA sp 2013 | **6th ELA sp 2012** |
+| 2018 | 8th ELA sp 2015 | 8th ELA sp 2015 ✓ |
+
+The v2 file's own header comment block (lines 6-8) ALSO has the same wrong dates as the user's table. So it's a header transcription error that propagated to user's mental model. Code is authoritative.
+
+### File: cde_va_project_fork/do_files/merge_k12_postsecondary.doh
+
+**Owner**: Matt Naven (header L4 "First created by Matthew Naven on June 11, 2018")
+**Lines**: 479
+**Purpose**: Merge K-12 records to NSC, CCC, CSU postsecondary data; build composite enrollment, persistence, degree variables.
+**Args**: optional `enr_only` (skips persistence/degree construction).
+
+**Year windows defined as locals** (L22-44): NSC HS-grad 2010-2019, NSC enr 2010-2020, NSC deg 2011-2020, CCC enr 1993-2017, CCC deg 1993-2016, CSU app 2002-2017, CSU enr 2002-2017, CSU deg 2002-2016.
+
+**Variables**: `year_grad_hs`, `year_college`, `k12_nsc_match`, `k12_ccc_match`, `k12_csu_match`, composites `enr`, `enr_2year`, `enr_4year`, `enr_pub`, `enr_priv`, `enr_instate`, `enr_outstate`, `persist_year2/3/4`, `deg`, `deg_2year`, `deg_4year`.
+
+**Mutex rules** (load-bearing): L346 `replace enr_2year = 0 if enr_4year==1` (4-year trumps 2-year); L366 `replace enr_pub = 0 if enr_priv==1`; L386 `replace enr_instate = 0 if enr_outstate==1`. Preserve in consolidation.
+
+**Bugs / gotchas**:
+- **L7 hardcoded absolute path**: `local crosswalks "/home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/"`. Needs `$vaprojdir`-relative replacement.
+- **L326-327 enr asymmetry**: `gen enr = 1 if nsc_enr==1 /*| ccc_enr==1 | csu_enr==1*/` — CCC/CSU commented OUT of one-rule. Then L327 `replace enr = 0 if nsc_enr==0 & ccc_enr!=1 & csu_enr!=1` — CCC/CSU IN the zero-rule. **Asymmetry**: a student at CCC/CSU but not NSC gets `enr=.`, not `enr=1`. Either intentional NSC-anchoring or bug.
+- L67 keep mode is `keep(1 3 4 5)` — non-standard; codes 4 and 5 mean using-takes-master-values via update.
+- Many `tab grade year` lines are debug/diagnostic (L68, L86, L101, ...).
+
+### File: caschls/do/share/siblingvaregs/vafilemacros.doh
+
+**Lines**: 24
+**Purpose**: Define caschls-side filename macros for cross-repo dataset paths.
+**Macros**: `vaprojdofiles`, `va_dataset`, `va_g11_dataset`, `va_g11_out_dataset`, `siblingxwalk`, `ufamilyxwalk`, `k12_postsecondary_out_merge`, `sibling_out_xwalk`. All routed through `$projdir` (caschls) or `$vaprojdir` (cde_va_project_fork) — cross-repo wire-up.
+
+**Discrepancy**: `vafilemacros.doh` L18-20 routes `va_g11_dataset` to `$projdir/dta/common_core_va/va_g11_dataset` (caschls subroot), while `vaestmacros.doh` L19 routes test-score VA estimates to `$vaprojdir/data/sbac/va_g11_<subject>.dta` (fork subroot). Inputs come from caschls; outputs go to fork. Consolidation must collapse this triangulation.
+
+### File: caschls/do/share/siblingvaregs/vaestmacros.doh
+
+**Lines**: 160
+**Purpose**: Define `.ster` file path macros for stored regression estimates, partitioned by sample × spec × peer/no-peer.
+
+**Naming conventions discovered here** (parallel to macros_va.doh's b/l/a/s/d):
+
+- `_dta` = dataset suffix
+- `_spec_va` = specification-test estimates
+- `_va_peer` = peer-controls variant
+- `_l4` = L4 leave-out scores variant
+- `_census` = census-tract-restricted-sample variant
+- `_sibling` = sibling-restricted-sample variant
+- `_sibling_og` = original spec on sibling sample (no sibling controls)
+- `_fb_` = forecast-bias test
+- `_vam` = `vam` command (Stata vam package, school-by-year FE VA)
+- `_nosibctrl` = without sibling controls
+
+**Bugs**:
+- **L27**: filename ends `.dta.dta` — double extension typo.
+- **L45 and L118**: `"vaprojdir/estimates/sbac/..."` MISSING `$` prefix on `vaprojdir`. Resolves to literal subdirectory `vaprojdir/...` rather than the global. **TWO occurrences** — same bug class as Chunk 1's `asd_str` typo. Two `.ster` file paths affected.
+- L142-159 sibling-census macros are mostly commented out — the path was incomplete.
+- L1-5 header acknowledges maintenance debt: "does not include estimates from the sibling acs restricted sample. Too much bloating."
+
+---
+
+## Chunk 2 synthesis
+
+### v1 verification — PASSED EXACTLY against user's table
+
+Four cohort rows, four matches with code line citations. v1 is the canonical paper specification.
+
+### v2 vs user's table — DISCREPANCY (code-vs-doc)
+
+Code in `create_prior_scores_v2.doh` L13 uses `L5_cst_ela_z_score` (= 6th-grade ELA, year-5). For year=2015, that's spring 2010 — not spring 2012 as the user's table and the v2 file's own header (L6-8) claim. The math row matches. Either:
+- (a) The header comment block was copy-paste-edited from v1 with wrong dates, and your table inherited the error.
+- (b) The code drifted from L3 to L5 at some point without updating the header.
+- (c) Some other history.
+
+Code is authoritative: v2 ELA = year-5 (6th grade). Worth confirming intent.
+
+### `_scrhat_` resolution
+
+`prior_ela_z_score_hat` is computed in EXACTLY two files:
+
+- `cde_va_project_fork/do_files/explore/va_predicted_score.do` L58, L117
+- `cde_va_project_fork/do_files/explore/va_predicted_score_fb.do` L57, L161
+
+NOT in any helper or canonical pipeline. So `_scrhat_*` controls in `macros_va.doh` only matter if explore-pipeline scripts run first to populate the predicted variable. Per user's earlier "defer until full read", final disposition pending.
+
+**Conclusion**: `_scrhat_` is a **third axis**, orthogonal to v1/v2. Not "v3", not part of v2.
+
+### Naming convention catalog (full)
+
+Complete inventory after Chunk 2:
+
+| Token | Meaning | Defined in |
+|---|---|---|
+| `b` | base controls | macros_va.doh L208 |
+| `l` | leave-out (forecast-bias) prior score | macros_va.doh L223 |
+| `a` | ACS census-tract controls | macros_va.doh L233 |
+| `s` | sibling controls | macros_va.doh L242 |
+| `d` | postsecondary distance | macros_va.doh L200 |
+| `la/ls/as/las` (+`d`) | combinations | macros_va.doh / macros_va_all_samples_controls.doh |
+| `_p` / `peer_` | peer averages | macros_va.doh L137 |
+| `_str` | display string | macros_va.doh L481 |
+| `_fb_` | forecast-bias test | vaestmacros.doh L35 |
+| `_scrhat_` | predicted prior score | macros_va.doh L127 |
+| `_dta` | dataset filename suffix | vaestmacros.doh |
+| `_spec_va` | spec-test estimates | vaestmacros.doh |
+| `_l4` | L4 leave-out scores variant | vaestmacros.doh |
+| `_census` | census-tract sample | vaestmacros.doh |
+| `_sibling` | sibling-restricted sample | vaestmacros.doh |
+| `_og` | original spec on restricted sample (no add'l controls) | vaestmacros.doh |
+| `_vam` | vam command (FE VA) | vaestmacros.doh |
+| `_nosibctrl` | without sibling controls | vaestmacros.doh |
+
+**Still NOT FOUND**: `sp`, `ct`, `nw`, `_m`, `_wt`. These will appear in Chunk 3+ (output filename construction in main analysis files like `va_score_all.do`, `reg_out_va_all.do`).
+
+### Sample-restriction map (paper Table A.1 ↔ code)
+
+11 distinct restriction steps reconstructed from `touse_va.do`, `create_va_sample.doh`, `create_va_g11_sample.doh`, `create_diff_school_prop.doh`, `merge_sib.doh`, `merge_va_smp_acs.doh`, `merge_loscore.doh`. See chunk-2 audit detail above. **Two divergent counts**:
+
+- `create_va_sample.doh` L57: `drop if cohort_size<=10` (school-median cohort cut)
+- `touse_va.do` L155: `replace touse=0 if n_g11_*<7` (grade-11-specific count cut)
+
+The paper / TODO summary mentioned "<=10 11th-graders". The code's grade-11 count cut is `<7`, not `<=10`. Worth verifying against paper Table A.1 wording. (The cohort_size<=10 cut is a separate, prior, school-level cut.)
+
+### Distance + ACS variables (where computed/merged)
+
+- **Distance** (`mindist_any_nonprof_4yr`, `mindist_ccc`): not in Chunk 2 helpers. Likely merged in `do_files/k12_postsec_distance/*` (Chunk 3+).
+- **ACS** (7 census-tract vars): merged in `merge_va_smp_acs.doh` L97-98, joining `lagged_acs` on `geoid2 year_grade6`. Match window L62: grade-6 records in years `[year-5, year-5]`. With `census_grade=6`, this matches paper exactly: "matched student addresses in sixth grade to their specific Census tract".
+- ACS sources: `acs_ca_census_tract_clean.dta`, `address_list_census_batch_geocoded.csv`, `address_list.dta`. Three paths to consolidate.
+- Peer ACS computed via `rangestat (mean) ..., interval(year, 0, 0) by(cdscode) excludeself` (peer = same-school-and-year).
+
+### New bugs surfaced (parallel to Chunk 1's asd_str/semicolon)
+
+1. **`vaestmacros.doh` L27**: `.dta.dta` double extension.
+2. **`vaestmacros.doh` L45 + L118**: missing `$` prefix on `vaprojdir`. Two `.ster` paths affected.
+3. **`merge_k12_postsecondary.doh` L7**: hardcoded absolute path.
+4. **`merge_k12_postsecondary.doh` L326-327**: `enr` definition NSC/CCC/CSU asymmetry (CCC/CSU in zero-rule but commented out of one-rule).
+5. **`create_va_sample.doh` L26**: keepusing list missing `peer_L3_cst_ela_z_score` despite downstream reference.
+6. **`create_va_sample.doh` L52, L54**: comments describe restrictions not implemented (>25% special-ed, home/hospital).
+7. **v2 ELA spring-year discrepancy** (header L6-8 says wrong dates).
+8. **`<7` vs `<=10` 11th-grader cut**: code has `<7` not `<=10`.
+
+Per user's "form complete mental model first" directive, NOT fixing these in this chunk — collecting for end-of-Phase-0 review.
+
+### Open questions
+
+**For user (defer-able to end of Phase 0 unless flagged blocking)**:
+
+- Confirm v2 ELA = year-5 (6th grade) per code; the spring-2012/2013 dates in the v2 header / your table are transcription errors?
+- Was the NSC/CCC/CSU asymmetry in `enr` (`merge_k12_postsecondary.doh` L326-327) intentional NSC-anchoring? Significant for postsecondary identification.
+- Are the un-implemented restrictions in `create_va_sample.doh` L52/54 handled upstream in `k12_test_scores_clean.dta`, or never applied?
+- Is the grade-11-count cut `<7` (code) or `<=10` (paper claim)? Either fix code or fix paper.
+
+**For downstream chunks**:
+
+- Where do `sp/ct/nw/_m/_wt` get used? Output filename construction in main analysis files.
+- Where is `mindist_*` computed? Chunk 3 `do_files/k12_postsec_distance/`.
+- Verify no caller sources both `create_va_g11_sample.doh` AND `create_va_g11_out_sample.doh` (tempfile name collision risk).
+- Where (if anywhere) does `prior_ela_z_score_hat` get populated for non-explore pipeline use?
+
+---
+
 ## Chunks pending
 
-### Chunk 2: VA-core helpers (.doh files referenced by va_score_all / va_out_all)
+### Chunk 3: VA-core estimation (CAUTIOUS)
 
 - `cde_va_project_fork/do_files/sbac/macros_va.doh` ← DONE in foundation
 - `cde_va_project_fork/do_files/sbac/create_va_sample.doh`

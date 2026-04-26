@@ -118,3 +118,52 @@ Will populate the consumers column as the sibling chunk audit completes.
 - All `$projdir/dta/...` and `$vaprojdir/data/...` references (the data-output paths)
 - Hardcoded `/Users/...` paths (none expected on Scribe-targeted code, but worth confirming)
 - Any remaining cross-user (`/home/research/ca_ed_lab/users/<other>/...`) references
+
+---
+
+## Chunk 2 additions (2026-04-25)
+
+### New hardcoded server-absolute paths found
+
+| File | Line | Path | Action |
+|---|---|---|---|
+| `cde_va_project_fork/do_files/merge_k12_postsecondary.doh` | 7 | `/home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/` | Replace with `$vaprojdir/data/restricted_access/clean/crosswalks/` |
+
+### New cross-repo wire-up paths found
+
+`caschls/do/share/siblingvaregs/vafilemacros.doh` (24 lines) defines local macros for cross-repo dataset paths:
+
+| Local | Path | Cross-repo? |
+|---|---|---|
+| `vaprojdofiles` | `$vaprojdir/do_files` | yes |
+| `va_dataset` | `$projdir/dta/common_core_va/va_dataset` | caschls subroot |
+| `va_g11_dataset` | `$projdir/dta/common_core_va/va_g11_dataset` | caschls subroot |
+| `va_g11_out_dataset` | `$projdir/dta/common_core_va/va_g11_out_dataset` | caschls subroot |
+| `siblingxwalk` | `$projdir/dta/siblingxwalk/siblingpairxwalk` | caschls subroot |
+| `ufamilyxwalk` | `$projdir/dta/siblingxwalk/ufamilyxwalk` | caschls subroot |
+| `k12_postsecondary_out_merge` | `$projdir/dta/common_core_va/k12_postsecondary_out_merge` | caschls subroot |
+| `sibling_out_xwalk` | `$projdir/dta/siblingxwalk/sibling_out_xwalk` | caschls subroot |
+
+### vaestmacros.doh path bugs (preserve in path-translation pass)
+
+| File | Line | Bug | Effect |
+|---|---|---|---|
+| `caschls/.../vaestmacros.doh` | 27 | filename has `.dta.dta` | wrong filename / failed save/load |
+| `caschls/.../vaestmacros.doh` | 45 | `"vaprojdir/estimates/sbac/..."` missing `$` | resolves to literal `vaprojdir/...` directory |
+| `caschls/.../vaestmacros.doh` | 118 | same as L45 | same |
+
+These three are FILE-PATH bugs; the consolidation cleanup must NOT just rename `$vaprojdir → $projdir` blindly because lines 45 + 118 lack the `$` prefix entirely. A naive global-replace would not fix them.
+
+### ACS data-source paths (Chunk 2 finding)
+
+`caschls/.../merge_va_smp_acs.doh` references three ACS-pipeline data sources to be cataloged for consolidation (paths to verify in actual file):
+
+- `acs_ca_census_tract_clean.dta` (L81)
+- `address_list_census_batch_geocoded.csv` (L49)
+- `address_list.dta` (L74)
+
+### Other consolidation paths from Chunk 2
+
+`vaestmacros.doh` paths split across `$vaprojdir/estimates/sbac/...` (test-score VA) and `$projdir/est/siblingvaregs/...` (sibling-VA). Same triangulation as `vafilemacros.doh`.
+
+`do_files/sbac/create_va_g11_sample.doh` and its `_v1`/`_v2` siblings tempfile-name `va_g11_dataset` — collision risk if a downstream script sources both score and outcome variants in one session.
