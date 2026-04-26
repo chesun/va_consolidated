@@ -1,42 +1,48 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-04-24
+Last updated: 2026-04-25
 
 ## Active (doing now)
 
-- [ ] Onboarding context-gathering with Claude (session log: `quality_reports/session_logs/2026-04-24_project-onboarding.md`)
+- [ ] Phase 0a-v2 (independent blind verification) — awaiting Christina signoff on plan at `quality_reports/plans/2026-04-25_phase-0a-v2-verification-plan.md` before launching round-2 agents
+- [ ] Bug 93 T1 empirical verification — Christina runs Stata snippet on Scribe (snippet at `quality_reports/audits/round-2/README.md`)
 
 ## Up Next
 
-- [ ] Universal hook fix in the workflow repo (handed off to user; memo at `quality_reports/reviews/2026-04-24_primary-source-hook-fix-memo.md`)
-- [ ] Get user to confirm sibling-crosswalk specific do-file path inside caschls, then deep-read it as the entry point to the sibling pipeline
-- [ ] Deep-read `~/github_repos/cde_va_project_fork`: starting at `do_all.do` and `settings.do`, then SBAC subdirectory (the SBAC pipeline is the entry point per Naven's readme.txt, which lists 20 numbered do-files starting with `touse_va.do`). Map every script's inputs/outputs to the paper-map's six pipelines.
-- [ ] Deep-read `caschls` at the Dropbox path: `master.do`, `settings.do`, `file_dict.md`, sibling-crosswalk + factor-analysis subdirs.
-- [ ] Characterize the sibling-construction vs VA-estimation circular dependency in concrete script/output terms (deferred from round 3 -- user did not remember precisely; will surface during deep-read)
-- [ ] Verify filename-token glossary in `quality_reports/reviews/2026-04-24_paper-map.md` against the actual generating do-files. Tokens `las`, `sp`, `ct`, `nw`, `_m` are inferred only.
-- [ ] Confirm `literature/bibtex/common_core_va.bib` location (caschls vs fork vs va_paper_clone) -- needed for paper compilation in consolidated repo.
-- [ ] Draft consolidation ADRs in `decisions/`: (1) canonical sibling construction location, (2) pipeline ordering (sibling crosswalk -> VA estimation), (3) source-of-truth for student-year roster, (4) v1 vs v2 prior-score policy in the consolidated repo, (5) whether upstream CAASPP cleaning (`cleancaaspp*.do`) is in scope or treated as input.
-- [ ] Fix `README.md` factual errors: repo list (two not three), caschls path (Dropbox not `~/github_repos/`), paper status (rejected/in-limbo).
-- [ ] Fix `CLAUDE.md` placeholders: project name "Common Core VA", institution "California Education Lab, UC Davis", Stata 17, server-only runtime, paper file at `~/github_repos/va_paper_clone/paper/common_core_va_v2.tex`.
+- [ ] Phase 0a-v2 Step 1 — dispatch round-2 agents (chunks 1-10 in 4 parallel-batched waves)
+- [ ] Phase 0a-v2 Step 2 — produce per-chunk discrepancy reports (`round-2/chunk-N-discrepancies.md`)
+- [ ] Phase 0a-v2 Step 3 — adjudicate per tier (T1/T2/T3/T4)
+- [ ] Phase 0a-v2 Step 4 — produce verified-final audit doc
+- [ ] Phase 0a-v2 Step 5 — bug-priority triage (P1/P2/P3); ~101 bugs + Bug 93 scope correction
+- [ ] Phase 0a-v2 Step 6 — Q&A consolidation for Phase 0e walk-through
+- [ ] Phase 0e (design lock) — lock ADRs 0004-0016 against verified findings; consolidation plan v3
+- [ ] Phase 1 (migration) — execute consolidation per plan v3
 
 ## Waiting On
 
-- [ ] User confirmation of sibling-crosswalk specific path inside caschls (server hostname / project-root captured -- saved to `.claude/state/server.md` since machine-specific)
-
-## Waiting On
-
-- [ ] *(add blocked items here)*
+- [ ] Christina signoff on Phase 0a-v2 verification plan (5 questions in §10 of the plan)
+- [ ] Christina T1 Stata tests on Scribe (concentrated 30-90 min when convenient; Bug 93 + 4-5 others)
 
 ## Backlog
 
-- [ ] *(add future tasks here)*
+- [ ] Bug 93 (NSC UC inlist precedence) — P1 fix during Phase 1 (will need Stata test confirmation first)
+- [ ] Universal hook fix in workflow repo (status: shipped + propagated; only filter-ordering edge case remains, low priority)
+- [ ] Stata version compatibility revisit (post-consolidation, pre-submission)
 
 ## Done (recent)
 
 - [x] Initialize repo from `claude-code-my-workflow` applied-micro template — 2026-04-24
-- [x] Personalize template: project name, institution in CLAUDE.md; copyright in LICENSE; repo list in README.md — 2026-04-24
-- [x] 5-round Q&A onboarding context-gathering with Claude (session log + paper map + MEMORY updates) — 2026-04-24
-- [x] Read `paper/common_core_va_v2.tex` end-to-end; produce paper map indexing every table/figure to its expected input file — 2026-04-24
-- [x] Diagnose primary-source-check hook false-positive bugs and write fix memo for workflow repo — 2026-04-24
-- [x] Populate `.claude/state/primary_source_surnames.txt` with 210 surnames auto-extracted from the paper bibliography — 2026-04-24
-- [x] Capture server info (Scribe SSH, project root, Stata 17) to gitignored `.claude/state/server.md` — 2026-04-24
+- [x] Personalize template — 2026-04-24
+- [x] 5-round Q&A onboarding context-gathering — 2026-04-24
+- [x] Read `paper/common_core_va_v2.tex` end-to-end; produce paper map — 2026-04-24
+- [x] Diagnose primary-source-check hook false-positive bugs — 2026-04-24
+- [x] Populate `.claude/state/primary_source_surnames.txt` (210 surnames) — 2026-04-24
+- [x] Capture server info to gitignored `.claude/state/server.md` — 2026-04-24
+- [x] Master-file audit + 4 archival commits in cde_va_project_fork — 2026-04-25
+- [x] Master-file audit + 4 archival commits in caschls — 2026-04-25
+- [x] Consolidation plan v2 incorporating Christina's feedback — 2026-04-25
+- [x] CLAUDE.md folder structure refactor (scripts/ → root-level do/ + py/) — 2026-04-25
+- [x] ADRs 0001-0003 (foundational) — 2026-04-25
+- [x] **Phase 0a complete: 10-chunk deep-read, ~150 files audited, ~101 bugs inventoried, paper-output mapping closed loop, all foundational questions resolved (N1, N2, distance-FB, v1/v2, vam compat)** — 2026-04-25
+- [x] Phase 0a-v2 setup: round-1 docs sequestered, round-2 dir + protocol README created, pre-flight Bug 93 T3 verification (caught round-1 over-claim by 50%) — 2026-04-25
+- [x] Phase 0a-v2 plan drafted at `quality_reports/plans/2026-04-25_phase-0a-v2-verification-plan.md` — 2026-04-25
