@@ -167,3 +167,25 @@ These three are FILE-PATH bugs; the consolidation cleanup must NOT just rename `
 `vaestmacros.doh` paths split across `$vaprojdir/estimates/sbac/...` (test-score VA) and `$projdir/est/siblingvaregs/...` (sibling-VA). Same triangulation as `vafilemacros.doh`.
 
 `do_files/sbac/create_va_g11_sample.doh` and its `_v1`/`_v2` siblings tempfile-name `va_g11_dataset` — collision risk if a downstream script sources both score and outcome variants in one session.
+
+---
+
+## Chunk 3 additions (2026-04-25)
+
+### Output-filename grammar (formalized via Chunk 3 deep-read)
+
+The `sp / ct / lv` tokens are LITERAL filename separators (NOT macros). Full output-filename pattern:
+
+```
+estimates/va_cfr_all_<version>/{vam,spec_test,fb_test}/
+  [predicted_prior_score/]
+     {prefix}{_p}_<outcome>_<sample>_sp_<ctrl>_ct{_<fb_var>_lv}.ster
+```
+
+Implication for path-translation pass: estimate-file paths under `$vaprojdir/estimates/va_cfr_all_<version>/...` will collapse to `$projdir/estimates/...` in the consolidated layout. The `<version>` is `v1` for canonical paper outputs.
+
+### Dead-code paths (Chunk 3 confirmation)
+
+| File | Status |
+|---|---|
+| `cde_va_project_fork/do_files/sbac/out_drift_limit.doh` | Dead — never `include`d anywhere in either repo |

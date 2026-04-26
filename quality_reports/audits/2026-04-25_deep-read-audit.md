@@ -709,9 +709,143 @@ Per user's "form complete mental model first" directive, NOT fixing these in thi
 
 ---
 
+## Chunk 3: VA-core estimation (COMPLETE — synthesis-focused)
+
+Files audited: `va_score_all.do`, `va_out_all.do`, `va_score_fb_all.do`, `va_out_fb_all.do`, `va_score_sib_lag.do`, `va_out_sib_lag.do`, `merge_va_est.do`, `va_corr.do`, `va_score_spec_test_tab.do`, `va_out_spec_test_tab.do`, `va_score_fb_test_tab.do`, `va_out_fb_test_tab.do`, `va_spec_fb_tab.do`, `va_sib_lag_spec_fb_tab.do`, plus `drift_limit.doh` and `out_drift_limit.doh` re-checks.
+
+Chunk 3 agent: general-purpose; report received 2026-04-25. **Note**: agent returned synthesis sections rather than per-file template entries; can re-dispatch for per-file granularity if needed for any specific file. The synthesis below preserves all line-number citations and concrete findings.
+
+### `sp / ct / lv` resolved — they're literal filename separators, NOT macros
+
+Confirmed across all chunk-3 files (e.g., `va_score_all.do` L80, L87, L105, L112, L123):
+
+- `sp` = literal token between sample marker and control marker → `<sample>_sp_<ctrl>_ct`
+- `ct` = literal token at end after the control marker
+- `lv` = literal token at end of FB-var leave-out filename → `..._<fb_var>_lv.ster`
+
+These were never macros — they're static separators in the filename grammar. **Naming-convention catalog updated.**
+
+Plus the chunk found additional naming tokens:
+
+- `_p` (peer-controls variant suffix in variable name; `_p_` infix in filename)
+- `_dk` = Deep-Knowledge VA variant
+- `_r` / `_r_p` / `_r_d` = residual / residual-with-FB-control / residual difference
+- `predicted_prior_score/` = subfolder for scrhat (predicted prior-score) variant
+
+### `nw / _m / _wt` STILL NOT FOUND in Chunk 3
+
+Searched all 14 files; no occurrences. Likely live in share/, explore/, or replication-package files (Chunk 4+). User's description ("nw = non-weighted, _wt = weighted, _m = matched controls") suggests alternative inference modes overlaid on the standard pipeline.
+
+### Output-filename construction grammar (formalized)
+
+```
+Estimates (.ster):
+  estimates/va_cfr_all_<version>/{vam,spec_test,fb_test}/
+    [predicted_prior_score/]
+       {prefix}{_p}_<outcome>_<sample>_sp_<ctrl>_ct{_<fb_var>_lv}.ster
+
+  prefix    ∈ {va, spec, fb, dk_va, dk_spec, dk_fb}
+  peer infix `_p` inserted between prefix and outcome iff peer-controls run
+  outcome   ∈ {ela, math, enr, enr_2year, enr_4year}
+  sample    ∈ {b, l, a, s, ls, as, las, s}    (s = sibling sample, sib_lag only)
+  ctrl      ∈ {b, l, a, s, ls, as, las, sib1} (sib1 only in sib_lag)
+  fb_var    ∈ {l, s, a, las, sib2}            (sib2 only in sib_lag)
+
+Collapsed VA panels (.dta):
+  estimates/va_cfr_all_<version>/va_est_dta/
+    [predicted_prior_score/]
+       va_<outcome>_<sample>_sp_<ctrl>_ct.dta
+       va_<outcome>_all.dta            (merge_va_est output)
+       va_all.dta                      (fully merged across outcomes)
+
+Aggregate tables:
+  tables/va_cfr_all_<version>/{spec_test,fb_test,combined}/
+       spec_<outcome>_all.dta, fb_<outcome>_all.dta
+       spec_sib_lag.dta, fb_sib_lag.dta
+       fb_spec_<outcome>.csv           (combined CSV — paper Tables 2/3 source)
+```
+
+### vam invocation summary (count + pattern compliance)
+
+Verified ~30+ vam invocations across the 6 estimation files:
+
+- All follow the foundation-documented standard pattern (no deviations)
+- All followed by `rename tv ...` and `rename score_r ...` immediately (no reserved-name conflicts)
+- Spec-test-tab files use `data(variance)` mode (extracts σ̂ from variance components without saving estimates)
+- All other files use `data(merge tv score_r)` mode
+
+### Spec-test / FB-test β tracing — paper Tables 2 and 3
+
+Mapping of paper rows → ster file → producer:
+
+| Paper row | Description | Ster file pattern | Producer |
+|---|---|---|---|
+| Row 1 | σ̂ (VA SD) | `va_<outcome>_<smp>_sp_<ctrl>_ct.dta` (collapsed dta) | SD computed in `va_*_spec_test_tab.do` L113, L143 |
+| Row 2 | β specification test | `spec_test/spec_<outcome>_<smp>_sp_<ctrl>_ct.ster` | `va_score_all.do` L87, `va_out_all.do` L85 |
+| Row 3 | β FB-test, leave-out 7th-grade ELA | `fb_test/fb_<outcome>_<smp>_sp_<ctrl>_ct_l_lv.ster` | `va_score_fb_all.do` L120 (`fb_var=l`) |
+| Row 4 | β FB-test, older sibling enrollment | `..._s_lv.ster` | same files, `fb_var=s` |
+| Row 5 | β FB-test, ACS neighborhood | `..._a_lv.ster` | same files, `fb_var=a` |
+| Row 6 | β FB-test, **distance to nearest college** (per paper map) | NOT FOUND in chunk-3 fb_vars (`l, s, a, las` only — no `d`) | **OPEN: probably `do_files/explore/`** |
+
+Final paper table assembled by `va_spec_fb_tab.do` from .ster files via `matrix b = e(b)` / `matrix v = e(V)` per row, then `eststo` per (sample × control) combination, `esttab` to CSV at `tables/va_cfr_all_<version>/combined/fb_spec_<outcome>.csv`.
+
+**Anomaly**: paper map describes Row 6 as "distance to nearest 2yr/4yr college" but chunk-3 code's fb_vars are only {l, s, a, las}. Either paper map mis-described, or distance robustness lives in a different file. Defer to Chunk 4 (where reg_out_va_tab and other share/ files are).
+
+### drift_limit usage — surprising findings
+
+- **`drift_limit.doh` (4 lines, the active helper)**: sets `score_drift_limit` and `out_drift_limit` from year ranges in macros_va.doh.
+- **With current data** (2015-2018 for both): both equal `max(3-1, 1) = 2`.
+- **Score files use `score_drift_limit`; outcome files use `out_drift_limit`** — appropriate separation.
+- **Exception (latent bug)**: `va_out_sib_lag.do` L56, L97, L119 uses `score_drift_limit` for OUTCOME VA. Currently inert because both globals = 2, but if the year ranges ever diverge, outcome sib_lag VA will use the wrong drift limit.
+- **`out_drift_limit.doh` (2 lines, the OTHER helper) is DEAD CODE — never `include`d anywhere in the project.** Confirmed by grep across both repos.
+
+### Loop structure
+
+Most chunk-3 estimation files follow a 4-nested structure: `version × va_ctrl × sample × {subject|outcome}`. FB variants add `fb_var` for 5 levels. Spec-test-tab files invert subject-outermost vs va_ctrl-outermost (subject moves OUTSIDE va_ctrl) so each subject gets its own dta with clean `replace`/`append` macro handling.
+
+`va_corr.do` is a degenerate 2-loop (just `version × va_outcome`).
+
+`merge_va_est.do` uses dynamic command swapping (`use` first iteration → `merge 1:1 ... using` subsequent iterations) inside the loop — elegant idiom worth preserving.
+
+### New bugs / anomalies (12 surfaced; parallel to prior chunks' findings)
+
+1. **`va_out_all.do` L176 typo**: `dk_spec_p_..._cts.ster` (extra `s` on `cts` — should be `ct.ster`). Orphans the DK peer spec-test estimate.
+2. **`va_out_sib_lag.do` L56, L97, L119**: uses `score_drift_limit` instead of `out_drift_limit`. Latent bug, currently inert.
+3. **`va_out_fb_test_tab.do` L173-174**: missing `log close` and `translate` at end of file — asymmetric with score variant.
+4. **`va_out_spec_test_tab.do` L163**: uses `sd_va` (no-peer) when assembling the peer + predicted-score row; should be `sd_va_peer`.
+5. **`va_score_sib_lag.do` L99 / `va_out_sib_lag.do` L97**: hanging `///` continuation on `driftlimit(...)` line followed by blank line. Inert (Stata terminates command on blank line) but syntactically wrong.
+6. **`va_score_fb_all.do` and `va_out_fb_all.do`**: re-estimate the no-FB baseline VA without saving — duplicates work already done by `va_score_all.do` / `va_out_all.do`. Optimization target during consolidation.
+7. **`out_drift_limit.doh`**: never included anywhere — dead code in repo.
+8. **`va_corr.do` L82**: `date2` referenced but never defined.
+9. **`va_sib_lag_spec_fb_tab.do` L70**: uses `addlabel(p_value, ...)` while sibling spec-test-tabs use `pval` — naming inconsistency.
+10. **`va_out_all.do` L120-122**: builds `touse_g11_<outcome>_<subject>` flag never consumed. Dead code.
+11. **`va_out_fb_all.do` L191, L233, L285**: display strings reference undefined `subject` macro — log noise.
+12. **`va_score_spec_test_tab.do` and `va_out_spec_test_tab.do`**: indentation inconsistencies in the predicted_prior_score branch (extra-indented blocks, possibly tacked on later).
+
+### Open questions
+
+**For user**:
+
+1. Where do `nw / _m / _wt` get used? Likely in `do_files/share/`, `do_files/explore/`, or replication-package files (Chunk 4+).
+2. The L176 typo (`_cts.ster`) in `va_out_all.do` — fix during consolidation, or preserve to match historical outputs?
+3. `out_drift_limit.doh` is dead code — safe to delete in consolidated repo?
+4. The duplicated baseline-VA estimation in `va_*_fb_all.do` files — refactor to read .ster from disk?
+5. The `va_out_sib_lag.do` `score_drift_limit` bug — fix to `out_drift_limit` (currently inert)?
+6. The `p_value` vs `pval` inconsistency in `va_sib_lag_spec_fb_tab.do` — standardize to `pval`?
+
+**For downstream chunks**:
+
+- Where is `predicted_prior_score/` (scrhat) estimation done? `do_files/explore/va_predicted_score.do` and friends — pulled into chunk-3 spec-test-tab files but produced elsewhere.
+- Where is paper Table 4 (pass-through ρ) actually produced? Likely `do_files/share/reg_out_va_tab.do` (writes `persistence_single_subject.tex`). Need to verify clustering pattern + dependency on `va_<subject>_<smp>_sp_<ctrl>_ct.dta`.
+- Where is the "distance to nearest college" FB test computed? Not in chunk-3 fb_var set.
+- Where do CSVs from `va_spec_fb_tab.do` get converted to LaTeX for the paper?
+- Confirm `touse_sib_lag` flag origin (referenced at `va_score_sib_lag.do` L48).
+
+---
+
 ## Chunks pending
 
-### Chunk 3: VA-core estimation (CAUTIOUS)
+### Chunk 4: Pass-through and heterogeneity (CAUTIOUS)
 
 - `cde_va_project_fork/do_files/sbac/macros_va.doh` ← DONE in foundation
 - `cde_va_project_fork/do_files/sbac/create_va_sample.doh`
