@@ -4,13 +4,12 @@ Last updated: 2026-04-26
 
 ## Active (doing now)
 
-- [ ] Phase 0a-v2 batch 2 (chunks 4 + 5) — round-2 agents dispatched 2026-04-26, running in background
+- [ ] Phase 0a-v2 batch 3 (chunks 6, 7, 8) — round-2 agents dispatched 2026-04-26, running in background
 - [ ] Bug 93 T1 empirical verification — Christina runs Stata snippet on Scribe when convenient (snippet in `quality_reports/audits/round-2/README.md`); **scope expanded** to 4 instances (NSC UC, NSC UC ontime, CCC ontime, CSU ontime)
 
 ## Up Next
 
-- [ ] After batch 2 completes: draft chunks 4 and 5 disc reports
-- [ ] Dispatch Phase 0a-v2 batch 3 (chunks 6, 7, 8) round-2
+- [ ] After batch 3 completes: draft chunks 6, 7, 8 disc reports
 - [ ] Dispatch Phase 0a-v2 batch 4 (chunks 9, 10) round-2
 - [ ] Phase 0a-v2 Step 3 — adjudicate per tier (T1/T2/T3/T4) for all 10 chunks
 - [ ] Phase 0a-v2 Step 4 — produce verified-final audit doc
@@ -57,3 +56,4 @@ Last updated: 2026-04-26
 - [x] Phase 0a-v2 setup: round-1 docs sequestered, round-2 dir + protocol README created, pre-flight Bug 93 T3 verification (caught round-1 over-claim by 50%) — 2026-04-25
 - [x] Phase 0a-v2 plan drafted at `quality_reports/plans/2026-04-25_phase-0a-v2-verification-plan.md` — 2026-04-25
 - [x] Phase 0a-v2 batch 1 — chunks 1, 2, 3 round-2 verified; 3 disc reports written; T3 verifications resolved 5 latent-bug questions and confirmed Bug 93 family is 4 active instances — 2026-04-26
+- [x] Phase 0a-v2 batch 2 — chunks 4, 5 round-2 verified; 2 disc reports written; N1 SAFE-to-relocate verdict reaffirmed; new HIGH-priority mtitles bugs surfaced in chunk-4 file 4 and chunk-5 reg_out_va_sib_acs_tab.do — 2026-04-26

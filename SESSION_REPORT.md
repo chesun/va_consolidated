@@ -151,3 +151,33 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 
 - Done: 3 of 10 round-2 chunks verified; 3 disc reports written; T3 verifications complete.
 - Pending: chunks 4 and 5 round-2 (running); chunks 6-10 still to dispatch; Phase 1 bug priority triage; verified-final audit doc.
+
+---
+
+## 2026-04-26 (continued) — Phase 0a-v2 batch 2 + batch 3 dispatched
+
+**Operations:**
+
+- Received chunk 4 round-2 (53.8K, 11 files) and chunk 5 round-2 (1162-line, 32 files actually present — round-2 prompt had a spurious `reg_out_va_sib_acs_dk_tab.do` due to my symmetry assumption; T3 confirmed file doesn't exist).
+- Drafted chunk-4 disc report (13 AGREE, 5 ROUND-1-MISSED, 2 ROUND-2-MISSED, 0 DISAGREE) and chunk-5 disc report (14 AGREE, 6 ROUND-1-MISSED, 4 ROUND-2-MISSED, 0 DISAGREE).
+- Dispatched batch 3 round-2 agents (chunks 6, 7, 8) in parallel; running in background.
+
+**Commits:**
+
+- `23a801c` — batch 2 round-2 verified (chunks 4-5) + 2 disc reports
+- `e38ed0c` — SESSION_REPORT + TODO interim update
+- `36f874a` — MEMORY [LEARN] entries (Bug 93 family, _scrhat_ exploratory, verification-protocol discipline)
+
+**Key findings:**
+
+- **N1 verdict reaffirmed by both rounds**: SAFE to relocate `siblingoutxwalk.do` to `siblingxwalk/`. Two callers need updating in Phase 1: `master.do:103` and `do_all.do:142`. ADR-0004 unblocked.
+- **chunk 4 most-material**: `reg_out_va_all.do:235 local run_prior_score = 0` — gates off single-subject prior-decile heterogeneity regs; the fig file unconditionally tries to load the gated `.ster` files. Fragile reproducibility; T4 question for Phase 0e.
+- **chunk 4 file 4 mtitles 24-vs-32 column mismatch** (round-2 finding): possibly producing un-labeled or truncated columns in paper Table 4. T1 needed: open `$vaprojdir/tables/.../reg_*.csv` on Scribe and count columns vs declared mtitles. Combined with chunk-5 M1 mtitles labeling bug, suggests a multi-chunk pattern: Phase 1 should sweep all `esttab mtitles(...)` calls.
+- **chunk 5 mtitles labeling bug** in `reg_out_va_sib_acs_tab.do` L82-88: uses FB-test column titles for what is a persistence-on-VA regression table. HIGH PRIORITY if these CSVs feed paper Table 7.
+- **DK controls in `va_sib_acs_out_dk.do:64`**: hard-coded `va_ela_og va_math_og` across all 4 specs (og/acs/sib/both). Both rounds flagged. T4 question: design choice (single OG baseline) or bug (DK should be spec-matched)?
+- **Verification-protocol confirmed errors so far: 3** (round-2 asd_str false positive in chunk 2, round-1 peer_L3_cst false positive in chunk 2, my round-2 prompt's spurious filename in chunk 5 — caught when round-2 noted file doesn't exist). All resolved by T3 deterministic checks.
+
+**Status:**
+
+- Done: 5 of 10 round-2 chunks verified (chunks 1-5); 5 disc reports written; T3 verifications complete.
+- Pending: chunks 6, 7, 8 round-2 (running); chunks 9, 10 still to dispatch; Phase 1 bug priority triage; verified-final audit doc.
