@@ -150,6 +150,8 @@ This is the most important section. Even if you skip everything else, please fil
 What do you actually do, in order, when you need to regenerate the paper from scratch? (Or as close to "from scratch" as you go.)
 
 > Last time I ran it end to end was probably 2023. I think in the above sequence.
+>
+> **Revised 2026-04-25 (post-Phase-0a)**: probably 2024, not 2023. Christina doesn't remember exactly, but `tables/share/va/pub/counts_k12.tex` is dated 2024-07-04, and the submission cycle that summer aligns with a full-pipeline run. Consolidation bit-rot risk revised down from ~3 years to ~21 months.
 
 ### What's the entry point?
 

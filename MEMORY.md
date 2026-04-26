@@ -79,6 +79,8 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 
 [LEARN:domain] **Paper status:** submitted to journal, rejected, currently in limbo pending coauthor/PI decision on next venue. Working draft is `commoncore_va_v2.tex` in `paper/`. A snapshot of the submitted version is in `va_paper_clone` (Overleaf clone). Christina is the sole person responsible for data and code; coauthors are senior faculty who are not involved with coding.
 
+[LEARN:domain] **Last full-pipeline run was probably mid-2024**, NOT 2023 as initially stated in context dump §2. Evidence: `cde_va_project_fork/tables/share/va/pub/counts_k12.tex` is dated 2024-07-04; that summer's submission cycle aligns with a full run. Christina doesn't remember exactly. Consolidation bit-rot risk window: ~21 months (mid-2024 → 2026-04), not ~3 years. Stata version drift, ssc package updates, and CDE data refresh windows are all narrower than initially feared.
+
 ## Discipline
 
 [LEARN:discipline] **No assumptions.** Global rule (~/github_repos/claude-config/rules/no-assumptions.md) prohibits guessing about workflow, infrastructure, tools, role boundaries, or preferences. Only state what was explicitly provided. If a detail is missing and relevant, ask or omit — never fill blanks with plausible-sounding inference. Wrong → right: never reframe ambiguous user terminology (e.g., v1/v2) by analogy to other projects; ask what it means.
