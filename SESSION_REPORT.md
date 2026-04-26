@@ -181,3 +181,32 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 
 - Done: 5 of 10 round-2 chunks verified (chunks 1-5); 5 disc reports written; T3 verifications complete.
 - Pending: chunks 6, 7, 8 round-2 (running); chunks 9, 10 still to dispatch; Phase 1 bug priority triage; verified-final audit doc.
+
+---
+
+## 2026-04-26 (continued) — Phase 0a-v2 batch 3 + batch 4 dispatched
+
+**Operations:**
+
+- Received chunk 6 round-2 (~68K, 17 files), chunk 7 round-2 (~30K, 32 files), chunk 8 round-2 (~70K, 26 files). All 3 batch-3 agents completed cleanly with adversarial framing intact.
+- Drafted chunk-6, chunk-7, chunk-8 disc reports (cumulative AGREE counts: 14, 16, 14 respectively).
+- T3.6 verification: counts_k12.tex paper-vs-code path "mismatch" is between OLD paper version + archived producer (`tables/sbac/counts_k12.tex`) and CURRENT working draft + modern producer (`tables/share/va/pub/counts_k12.tex`). Current draft uses correct path. M1 severity downgraded from HIGH to LOW (Phase 1 cleanup only).
+- Dispatched batch 4 round-2 agents (chunks 9 and 10) in parallel; running.
+
+**Commits:**
+
+- `2f8e30d` — batch 3 round-2 verified (chunks 6-8) + 3 disc reports
+- `380874a` — T3.6 verification (counts_k12.tex path)
+
+**Key findings (batch 3):**
+
+- **Distance-FB Row 6 producer chain LOCKED** end-to-end (chunk 7 round-2 confirms). `mindist_*` produced in `k12_postsec_distances.do:120-122`, merged via `merge_k12_postsec_dist.doh:23`, `d` token wired in `macros_va_all_samples_controls.doh:69-86`. Only 2 of 5 mindist vars (`mindist_any_nonprof_4yr`, `mindist_ccc`) actually enter `d_controls`. Open question for paper attribution remains: does paper Table 2/3 row 6 use `d` (chunk 7 wires it correctly) or `las` (chunk 3's `va_spec_fb_tab.do` does NOT load `d`-suffixed `.ster` files)? T4 for Phase 0e.
+- **Sample-restriction map FINALIZED (chunk 8)**: 9-row map mapping paper Table A.1 to code. Two coexisting cohort cuts (`<=10` school-level + `<7` cell-level) confirmed not redundant.
+- **Chunk 6 paper-α attribution issue (M1)**: climate/quality index item lists in `compcase/imputedcategoryindex.do` (9/15/4 items) ≠ α item lists in `alpha.do` (20/17/4/4 items). If paper-reported α is from `alpha.do`, the paper describes a DIFFERENT index than the regression's. T4 for Phase 0e.
+- **Chunk 8 DISAGREE: 4 `pooledrr` definitions, not 2** (round-1 undercounted). Round-2 found definitions in 4 files with 2 structurally different formulas (conditional vs unconditional). All 4 save to different .dta files; on-disk collision avoided. Phase 1: rename to indicate scope.
+- **OpenCage API key in source** at `k12_postsec_distances.do:98` (commented but committed). `[REVOKED 2026-04-30]...` — should be revoked.
+
+**Status:**
+
+- Done: 8 of 10 round-2 chunks verified (chunks 1-8); 8 disc reports written; T3.1-T3.6 verifications complete.
+- Pending: chunks 9, 10 round-2 (running); Phase 1 bug priority triage; verified-final audit doc.
