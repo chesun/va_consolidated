@@ -843,9 +843,130 @@ Most chunk-3 estimation files follow a 4-nested structure: `version × va_ctrl �
 
 ---
 
+## Chunk 4: Pass-through and heterogeneity (COMPLETE)
+
+Files audited: `prior_decile_original_sample.do`, `reg_out_va_all.do`, `reg_out_va_dk_all.do`, `reg_out_va_all_tab.do`, `reg_out_va_dk_all_tab.do`, `reg_out_va_all_fig.do`, `reg_out_va_dk_all_fig.do`, `va_corr_schl_char.do`, `va_corr_schl_char_fig.do`, `va_het.do`, `persist_het_student_char_fig.do` (11 files).
+
+Chunk 4 agent: general-purpose; report received 2026-04-25. Full per-file entries available in saved tool result; key findings synthesized below. Per-file entries available on request.
+
+### Naming convention catalog — `nw / _m / _wt` ALL RESOLVED
+
+| Token | Meaning | Where defined / used |
+|---|---|---|
+| `_m` | matched second-stage controls (the second-stage regression replicates the controls used in VA estimation) | `reg_out_va_all.do` L152, L154, L166, L168 (and propagated to all `*_tab.do`, `*_fig.do`); `reg_out_va_dk_all.do` L119, L128 |
+| `_wt` | enrollment-weighted (`[w = enr_total]`) | `va_het.do` L81: `local w_str "wt"` when `w==1` |
+| `_nw` | non-weighted | `va_het.do` L78: `local w_str "nw"` when `w==0` |
+
+`_wt`/`_nw` appear ONLY in `va_het.do` outputs (the variance-decomposition and the school-char correlation tables — paper Tables 5 and 7). They do NOT appear in pass-through outputs because pass-through regressions are individual-level, not weighted.
+
+`_m` appears only in pass-through outputs. Not in `va_het.do` outputs because `va_het.do` regressions are descriptive, no second-stage-matches-VA-controls concept.
+
+**Naming convention catalog now complete** through the canonical pipeline.
+
+### Paper-output mapping (Tables 4-5, 7; Figs 5-6, C.1-C.2)
+
+| Paper artifact | Producer file | Lines |
+|---|---|---|
+| Table 4 (`tab:va-persistence`, `persistence_single_subject.tex`) | regression: `reg_out_va_all.do` L137-143 + matched L147-152; table CSV: `reg_out_va_all_tab.do` L219 | 219 |
+| Table 5 (`tab:hetero`, `corr_char_wt_v1.tex`) | `va_het.do` L219 (with `frag` for paper version) | 219 |
+| Table 7 (`tab:va-var-across-district`, `var_across_district_*.tex`) | `va_het.do` L138 | 138 |
+| Fig 5 (heterogeneity by prior decile, ELA) | regression: `reg_out_va_all.do` L338, L349, L360 (both-subjects × prior-decile); 4-panel combine: `reg_out_va_all_fig.do` L536 (subject=ela) | 536 |
+| Fig 6 (heterogeneity by prior decile, math) | same as Fig 5 with subject=math | 536 |
+| OA Fig C.1-C.2 (pass-through het by student chars) | regression: `reg_out_va_all.do` L297, L308, L318; per-panel gphs: `reg_out_va_all_fig.do` L305, L321, L357, L374; 4-panel combine: `persist_het_student_char_fig.do` L52 | 52 |
+| OA DK pass-through tables | `reg_out_va_dk_all_tab.do` L192, L254 | 192/254 |
+| OA DK heterogeneity figures | `reg_out_va_dk_all_fig.do` L212 | 212 |
+
+**CSV→TeX rendering step for Table 4** (`reg_<outcome>_va.csv` → `persistence_single_subject.tex`) NOT in chunk 4. Likely lives under `do_files/share/` (future chunk).
+
+### SE clustering audit
+
+| File | Cluster level | Paper-consistent? |
+|---|---|---|
+| `reg_out_va_all.do` | `cluster(school_id)` (L139, L149, L163, L191, L202, L215, L244, L255, L265, L294, L305, L315, L335, L346, L357) | ✓ |
+| `reg_out_va_dk_all.do` | `cluster(school_id)` (L106, L116, L125, L143, L153, L163) | ✓ |
+| `va_corr_schl_char.do` | `cluster(school_id)` (L85, L95) | ✓ (but see LHS-peer-suffix bug below) |
+| `va_het.do` (variance decomp) | NO `vce()` clause at L92 — defaults to iid OLS SEs | DEVIATION — but R² is the reported quantity, so OK in spirit |
+| `va_het.do` (correlation regs) | **`cluster(cdscode)`** at L158 | DEVIATION — paper claims `school_id`. Need to verify `cdscode == school_id` 1:1 in this data |
+
+No two-way clustering anywhere. No robust-only specifications without clustering.
+
+### Pass-through ρ — canonical regression specification
+
+```stata
+reg <outcome> va_<subject>_<sample>_sp_<control>_ct[_p] i.year <SECOND-STAGE CONTROLS>, cluster(school_id)
+```
+
+- `<outcome>` ∈ `{enr, enr_2year, enr_4year}` (Table 4 displays only `enr_2year` and `enr_4year`)
+- `<subject>` ∈ `{ela, math}` (both stacked in panels)
+- `<sample>` ∈ `{b, las}` — outcome sample
+- `<control>` ∈ `{b, las}` — VA-side control set
+- `[_p]` — peer controls in VA estimation: with vs. without (the 2 "Peer" / "No Peer" columns per panel)
+- **Second-stage controls (two variants per ster)**:
+  - Without `_m` (base): `i.year + b_controls` (year FE + base demographics + cubic prior scores)
+  - With `_m` (matched): `i.year + <control>_spec_controls` plus `peer_<control>_controls` if peer — full set of controls used in VA estimation. Paper text "each regression includes all controls used in VA estimation" refers to this matched variant.
+
+The 8-column structure of paper Table 4 corresponds to (outcome × {b sample b control × {peer, no-peer} × {base, matched 2nd-stage}}) projected to 4 columns per outcome, repeated for ELA and math panels.
+
+### Heterogeneity ρ — canonical specifications
+
+**Prior-decile heterogeneity (Figs 5-6)** — both-subjects regression with VA × prior-decile interaction:
+
+```stata
+reg <outcome> c.va_ela_<sample>_sp_<control>_ct[_p]#i.prior_<prior_subject>_z_score_xtile
+              c.va_math_<sample>_sp_<control>_ct[_p]#i.prior_<prior_subject>_z_score_xtile
+              i.year <controls>, cluster(school_id)
+```
+
+`reg_out_va_all.do` L331-335, L342-346, L352-357. The `c.#i.` syntax produces 10 decile-specific slope coefficients per VA subject.
+
+**Student-char heterogeneity (Figs C.1-C.2)** — single-subject VA × student-char interaction:
+
+```stata
+reg <outcome> c.va_<subject>_<sample>_sp_<control>_ct[_p]#i.<het_char>
+              i.year <controls>, cluster(school_id)
+```
+
+`reg_out_va_all.do` L291-294, with `<het_char>` ∈ {race, male, econ_disadvantage, charter, inc_median_hh_xtile (las only)}.
+
+### 15 anomalies / bugs surfaced
+
+1. **`reg_out_va_all.do:235` `local run_prior_score = 0` gates single-subject prior-decile heterogeneity OFF**, but `reg_out_va_all_fig.do:159` unconditionally tries to `est use` those ster files. **Fragile** — fails on fresh run unless ster files already on disk OR figure script made conditional. Investigate whether the both-subjects variant (which IS produced unconditionally at L331-360) is what the paper actually uses.
+2. **`va_corr_schl_char.do` L84, L94: LHS-peer-suffix bug.** Regression LHS lacks `<peer>` but output filename embeds `_p` from sample-coupled local. Result: when sample==las, output is named `…_ct_p.ster` but the regression actually used the no-peer VA. Fig companion does NOT have this bug.
+3. **`va_het.do:158 cluster(cdscode)`** vs paper-claimed `school_id`. May be equivalent if `cdscode == school_id` 1:1 in data; need verification.
+4. **`va_het.do:92 areg` has no `vce()` clause** — defaults to iid SEs. R²-only output mitigates impact.
+5. **`va_het.do:102` `if "\`district_type'" == "gr5"`** — `gr5` not in `district_type` loop (`gr2 top25`); dead code.
+6. **`reg_out_va_all_fig.do:568`** filename typo: `x_prior_x_prior_<prior_subject>` (duplicated token).
+7. **`reg_out_va_all_tab.do:463`** copy-paste in di message: references `reg_out_va_all_fig.do` instead of `_tab.do`.
+8. **`reg_out_va_all_tab.do:47` `las_sample_controls = "b a las"`** — subset of regression file's `"b a ls las bd ad lsd lasd"`. Tables format only a subset of regressions actually produced; the rest exist only for figures.
+9. **`reg_out_va_all_fig.do` and `reg_out_va_dk_all_fig.do` line-172 comment** says "90% CI" but `parmest`'s `min95`/`max95` are **95% CI bounds**.
+10. **`reg_out_va_dk_all_fig.do` L148-150** retains on-figure titles/subtitles — inconsistent with `reg_out_va_all_fig.do` (which has them commented out at L183-185).
+11. **`prior_decile_original_sample.do:106`**: `xtile inc_mean_hh_xtile = inc_median_hh, n(10)` — variable named "mean" computed from "median" input. Cosmetic (no downstream consumer).
+12. **`va_corr_schl_char.do` is functionally orphaned**: produces ster files at `va_het/va_<va_outcome>_het_<het_char>_<sample>_sp_<va_ctrl>_ct[_p].ster` that no chunk-4 file consumes. The paper-Table-5 producer is `va_het.do`. Worth confirming nothing reads these in later chunks.
+13. **Distance-FB-test mystery** (chunk 3 anomaly) NOT resolved — none of chunk 4 produces a "distance to nearest college" FB test. Defer to Chunk 9 (`do_files/explore/`).
+14. **Variable naming collision: nested `forvalues i = 1/2`** in 4 files (outer = peer, inner = match). Works because outer `i` is consumed before inner overwrites and outer is reset on next outer iteration, but fragile. Should be renamed (j, k) in consolidation.
+15. **Header inconsistencies**: `va_corr_schl_char.do` and `va_corr_schl_char_fig.do` lack author line; `va_het.do` shows only the date. All look like Christina's based on style.
+
+### Open questions
+
+**For user (Christina)**:
+
+1. Was `local run_prior_score = 0` at `reg_out_va_all.do:235` set deliberately or temporarily (skip recompute when ster already on disk)? Affects what the consolidated repo retains.
+2. In `va_corr_schl_char.do`, was the LHS-peer-suffix bug intentional (always use no-peer VA) or accidental? If unintended, the output ster files have miscoded labels.
+3. In `va_het.do:158`, is `cluster(cdscode)` intentional or a typo for `cluster(school_id)`? Affects SEs in Table 5's reported regressions.
+4. Confirm: paper Table 5 (`corr_char_wt_v1.tex`) uses the **weighted** specification (`_wt`) — correct?
+5. Is `va_corr_schl_char.do` superseded by `va_het.do`? If so, consolidation can drop it.
+
+**For downstream chunks**:
+
+- Chunk 7 (data prep): `sch_char_2018.dta`, `sch_char.dta`, `charter_status.dta` provenance.
+- Chunk 9 (`explore/`): the distance-FB Row-6 producer, if any.
+- A future chunk (likely `share/`): the CSV → `persistence_single_subject.tex` rendering step.
+
+---
+
 ## Chunks pending
 
-### Chunk 4: Pass-through and heterogeneity (CAUTIOUS)
+### Chunk 5: Sibling crosswalk + sibling VA regs (CAUTIOUS — N1 trace lives here)
 
 - `cde_va_project_fork/do_files/sbac/macros_va.doh` ← DONE in foundation
 - `cde_va_project_fork/do_files/sbac/create_va_sample.doh`
