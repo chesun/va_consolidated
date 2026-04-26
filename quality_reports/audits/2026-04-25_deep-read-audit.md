@@ -1244,9 +1244,92 @@ Most material:
 
 ---
 
+## Chunk 7: Data prep (COMPLETE — Distance-FB Row 6 RESOLVED)
+
+Files audited: ~30 files across `cde_va_project_fork/do_files/{acs,k12_postsec_distance,schl_chars}/` and `caschls/do/build/{prepare,buildanalysisdata/qoiclean}/`. Per-file detail in companion doc `quality_reports/audits/2026-04-25_chunk7-data-prep.md`.
+
+### Distance-FB Row 6 mystery RESOLVED
+
+The "distance" forecast-bias row in paper Tables 2/3 row 6 is wired via the `d` token in `cde_va_project_fork/do_files/sbac/macros_va_all_samples_controls.doh` (added 04/30/2023):
+
+- **Producer**: `k12_postsec_distances.do` L121-124 creates `mindist_uc/csu/pub4yr/any_nonprof_4yr/ccc`. Saves to `$distance_dtadir/clean/k12_postsec_mindistance.dta`.
+- **Patcher**: `reconcile_cdscodes.do` reconciles 11 cdscode mismatches in-place (lossy overwrite).
+- **`d_controls` macro**: only `mindist_any_nonprof_4yr` and `mindist_ccc` (2 of 5 mindist vars) actually enter regressions.
+- **FB-test wiring**: `d` is added to *every* `*_ctrl_leave_out_vars` list in `macros_va_all_samples_controls.doh`. Plus `local d_fb_<x>_samples` blocks define samples.
+- **Consumer**: chunk 3's `va_score_fb_all.do` and `va_out_fb_all.do` loops `foreach fb_var of local <va_ctrl>_ctrl_leave_out_vars`. When `fb_var=="d"`, `\`fb_var'_controls` resolves to `mindist_any_nonprof_4yr mindist_ccc`.
+- **Output filename**: `fb_<subject>_<sample>_sp_<va_ctrl>_ct_d_lv.ster`. The `_ct_d_lv` token identifies the distance row.
+
+**Chunk 3's "fb_var ∈ {l, s, a, las}" finding was incomplete** because `d` lives in `macros_va_all_samples_controls.doh` (briefly noted in chunk 2 but its full FB integration was missed). Now corrected: full fb_var set = {l, s, a, las, d}.
+
+### ACS data flow
+
+```
+clean_acs_census_tract.do  (2010-2013 only)
+   reads: ACSST5Y<year>.{S0601,S1501,S1702,S1901}_data_with_overlays.csv
+   appends → acs_ca_census_tract_clean.dta
+        ↓
+merge_va_smp_acs.doh (chunk 2)
+   joins ACS at student grade-6 census tract on geoid2 + year
+        ↓
+sample-construction → a/la/as/las/asd/lasd controls
+```
+
+**Potential coverage issue**: only 2010-2013 ACS years are processed. Grade-6 cohorts in the analysis sample may extend beyond 2013; need to verify whether 2014+ ACS is processed elsewhere or whether 2013 ACS is recycled.
+
+### School-characteristics dependency tree
+
+11 input files (cds_nces_xwalk, clean_locale, clean_charter, clean_ecn_disadv, clean_elsch, clean_enr, clean_frpm, clean_staffcred, clean_staffdemo, clean_staffschoolfte, plus sch_char itself) → `clean_sch_char.do` (549-line assembler) → `data/sch_char.dta` (master school × year panel) → consumed by `va_het.do` (chunk 4) for paper Tables 5/7.
+
+**Confirmed**: `data/sch_char.dta` IS the same `sch_char.dta` referenced in chunk 4's `va_het.do`. Top-level path location (not under `data/public_access/clean/cde/`) is a consolidation flag.
+
+### CalSCHLS QOI year-batching logic
+
+10 QOI files year-batched by question-numbering compatibility:
+
+- **2017 carve-out** (parallel to v1 ELA 2017 carve-out): sec 1617 + parent 1617 each have unique do files.
+- **Parent 1415 lacks qoi 64** (different response options); produces only parent QOI dataset without `pctwell64`/etc.
+- **Staff 1718/1819 lack `pctnotapp`** (the "not applicable" option dropped); downstream pooling must handle missing columns.
+
+### New naming tokens (additions to chunks 1-6 catalog)
+
+`d` (full FB integration), `mindist_<X>`, `qoi<N>`, `stragree<N>`/`agree<N>`/`disagree<N>`/`strdisagree<N>`/`dontknow<N>`/`missing<N>`, `pctagree<N>`/`pctdisagree<N>`/`pctdontknow<N>`, `pctwell<N>`/`pctokay<N>`/`pctnotwell<N>` (qoi 64 only), `pctyes<N>`/`pctno<N>`/`pctnotapp<N>` (staff yes/no), `pctsmallprob<N>`/`pctbigprob<N>` (staff qoi 98), `nettotalresp<N>`, `gr<i>{enr,femaleenr,...}`, `gr11enr_mean` (= `_wt` weight token), school-char tokens (`fte_teach_pc`/`fte_admin_pc`/`fte_pupil_pc`/`male_prop`/`eth_minority_prop`/`new_teacher_prop`/`credential_full_prop`/`locale_coarse`/`locale_fine`/`charter`/`public`).
+
+### 17 new bugs/anomalies in chunk 7 (running total ≈52)
+
+Most material:
+
+1. **`clean_acs_census_tract.do`**: only processes 2010-2013 — potential coverage gap for later cohorts.
+2. **`k12_postsec_distances.do:50,54,58`**: hardcoded asserts (CSU=23, UC=9, 4yr-non-profit=115) — will break with future IPEDS releases.
+3. **`k12_postsec_distances.do:98`**: hardcoded API key in commented-out opencagegeo line.
+4. **`reconcile_cdscodes.do:81`**: in-place `save, replace` overwrites unpatched mindist file (lossy).
+5. **`clean_charter.do:26`**: Apple Silicon detection broken (`c(machine_type)=="Macintosh (Intel 64-bit)"`).
+6. **`enrollmentclean.do:21` female-encoding bug**: missing-gender → `female==0` (treated as male), pollutes male-by-grade totals. **Real bug.**
+7. **`renamedata.do:77-84`**: comment claims to "discard" 5 parent-1415 rows; code does NOT actually drop them.
+8. `clean_sch_char.do`: top-level `data/sch_char.dta` location inconsistent with sibling outputs.
+9. `clean_sch_char.do`: charter + locale merged `m:1` (time-invariant assumption).
+10. `clean_staffdemo.do`: 90% code duplication between 2014-only and 2015+ blocks.
+11. `clean_ecn_disadv.do`: writes restricted-data-derivative to `public_access/clean/` (misleading folder).
+12. `clean_frpm.do`: hardcoded year-format branch (xls vs xlsx); fragile to layout changes.
+13. `clean_staffcred.do`: authorization code list hardcoded — will be incomplete for new authorizations.
+14. QOI files: `set varabbrev off` inconsistently set with `, perm`.
+15. Schema divergences across QOI year-batches (parent 1415 missing qoi 64; staff 1718/1819 missing `pctnotapp`).
+16. QOI files: extensive dead code in commented-out fallback blocks.
+17. `hd2021.do` (4322 lines): auto-generated NCES dictionary; treat as opaque blob.
+
+### Open questions for user (chunk 7)
+
+| # | Question | Affects |
+|---|---|---|
+| Q7.1 | Are 2014+ ACS years covered somewhere outside `clean_acs_census_tract.do`? Grade-6 cohorts may need post-2013 ACS coverage. | Sample completeness |
+| Q7.2 | Is `enrollmentclean.do` female-encoding bug (missing-gender → male inflation) known? Does analysis sample restrict to non-missing gender? | Possible silent bias in enrollment counts |
+| Q7.3 | Should `reconcile_cdscodes.do` write to a new file rather than overwrite unpatched? | Reproducibility provenance |
+| Q7.4 | Is `data/sch_char.dta` (top-level) the intended final location, or should it move to `data/public_access/clean/cde/`? | Folder consistency |
+
+---
+
 ## Chunks pending
 
-### Chunk 7: Data prep (AGGRESSIVE)
+### Chunk 8: Samples (AGGRESSIVE)
 
 - `cde_va_project_fork/do_files/sbac/macros_va.doh` ← DONE in foundation
 - `cde_va_project_fork/do_files/sbac/create_va_sample.doh`
