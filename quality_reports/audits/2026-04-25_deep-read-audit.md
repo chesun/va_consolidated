@@ -227,12 +227,12 @@ Foundation agent: general-purpose; report received 2026-04-25.
 
 **Gotchas**:
 
-- The change-log notes "v1/v2" but on inspection, **`scrhat` ≠ v2**. The `scrhat` variants are the *predicted-prior-score* exploratory specs (added Aug 2024). The v1/v2 distinction the user flagged is about prior-score controls more broadly; in this file the v2 manifests as the `_scrhat_` family. **Verify**: is `scrhat` *one of* the v2 variants, or orthogonal to v1/v2?
+- The change-log notes "v1/v2" but on inspection, **`scrhat` ≠ v2**. The `scrhat` variants are the *predicted-prior-score* exploratory specs (added Aug 2024). The v1/v2 distinction the user flagged is about prior-score controls more broadly; in this file the v2 manifests as the `_scrhat_` family. **Verify**: is `scrhat` *one of* the v2 variants, or orthogonal to v1/v2? **DEFERRED** until full read complete (per user direction 2026-04-25).
 - Naming convention confirmed: `b/l/a/s/d` with combinations, `peer_` prefix, `_str` suffix, `_controls` (standalone) vs `_spec_controls` (full spec), `_scrhat_` infix.
 - Conventions the user mentioned but **not visible in this file** (`sp`, `ct`, `nw`, `_m`, `_wt`): not defined in macros_va.doh — flagged for downstream chunks.
-- **Bug at line 535**: `asd_str = a_str` (NOT `as_str`) — looks like a copy-paste bug; the string "ACS" gets used as the label for the "ACS & sibling & distance" combo.
-- **Bug at line 558**: `prop_ecn_disadv_str` is missing a trailing `;` — Stata's `#delimit ;` mode means this label line continues into the next definition.
-- **Empty `peer_d_controls` issue** (line 304 loop): `peer_<combo>d_controls` lacks any peer-distance terms.
+- **Bug at line 535**: `asd_str = a_str` (NOT `as_str`) — copy-paste typo. **FIXED** in commit `e8dd083` (cde_va_project_fork). Verified the rest of the `<combo>d_str` family (sd, ld, ad, lad, lsd, lasd) all follow the correct pattern (`<combo>d_str = \`<combo>_str'`); asd_str was the only outlier.
+- **Bug at line 558**: `prop_ecn_disadv_str` missing trailing `;`. **FIXED** in commit `e8dd083` (cde_va_project_fork).
+- **Empty `peer_d_controls` issue** (line 304 loop): `peer_<combo>d_controls` lacks any peer-distance terms. Defer to downstream-chunk verification.
 
 **Reference to paper outputs**: source for **every** VA-estimation regression in the paper.
 
@@ -283,6 +283,37 @@ Foundation agent: general-purpose; report received 2026-04-25.
 - **Diff vs SSC vam recommendation**: version string `2.0.1 27jul2013` matches Stepner's GitHub release. On a careful read, **no Christina/Matt modifications are identifiable**. Either (a) this is a clean copy preserved locally to insulate against ssc updates, (b) modifications are subtle (numerical tolerance, print suppression) that need a `diff` to detect, or (c) misremembering. **Strongly recommend running `ssc install vam, replace` in a sandbox and `diff` against this file.**
 - The hardcoded `set seed 9827496` overriding `noseed` is a real bug if the user expects `noseed` to work. Should the consolidated version preserve or fix this?
 - Why is the `ind_weight` branch commented out?
+
+**Update 2026-04-25 (post-foundation, Christina ran the diff):**
+
+- User downloaded the server's `vam.ado` and placed it at `caschls/do/ado/server_vam/vam.ado`. **Diff against `caschls/do/ado/vam.ado` is empty; both files are byte-identical (26185 bytes).** Confirms: server's `vam.ado` matches local; both match Stepner v2.0.1 27jul2013; no Christina/Matt modifications.
+- **Critical operational finding via grep**: NO `adopath ++` or `sysdir set` invocation exists anywhere in either repo. The local `caschls/do/ado/vam.ado` is therefore **not on the Stata search path** at runtime. Stata's default adopath does not include `do/ado/`; it includes `./ado/` relative to cwd, which would be `caschls/ado/` (not `caschls/do/ado/`). So **the local `vam.ado` is dead code today** — every `vam` invocation hits the SSC-installed version. SSC version has the same content (Stepner v2.0.1) as the local copy, so behavior is unaffected, but this means:
+  - Bug fixes to the local `vam.ado` only take effect after consolidation (where `settings.do` will `adopath ++ "$projdir/ado"`).
+  - The two `ssc install vam, replace` lines (`do_all.do:51`, `master.do:73`) are how vam gets onto the adopath today (via PLUS).
+- **vam usage** (verified by grep): ~30 invocations across 9 files in cde_va_project_fork's sbac/ subdir + the explore/ predicted-score variant. Heavy use across va_score_all, va_out_all, va_score_fb_all, va_out_fb_all, va_score_spec_test_tab, va_out_spec_test_tab, va_score_sib_lag, va_out_sib_lag, va_predicted_score. Plus more in caschls's siblingvaregs (per the ssc-install comments at lines 40, 18, 43 in three va_sibling*.do files). vam is critical-path.
+
+**Fixes applied (post-foundation)**:
+
+- **noseed bug**: fixed in `caschls/do/ado/vam.ado` at commit `0202251` (caschls). Line 252 changed from `if "\`seed'"==""` to `if "\`noseed'"==""`. Note: fix only takes effect once vam.ado is on the adopath via consolidated settings.do; for predecessor pipeline runs, the SSC vam still has the bug (but the seed override is deterministic, so reproducibility is preserved either way).
+- **server_vam folder** preserved as a snapshot reference (per Christina's intention); not modified.
+
+**Fixed-effects compatibility verification (the question Christina raised)**:
+
+Christina recalled Matt saying the original vam package doesn't support fixed-effects controls. Investigated:
+
+- **Code uses `i.year` (and other factor variables) inside `controls(...)`**, not via `absorb()` or `tfx_resid()`. Verified by grep across va_score_all.do, va_out_all.do — no absorb/tfx_resid usage; all FE go through the controls list.
+- **Local vam.ado syntax declaration** (line 22): `controls(varlist ts fv)` — the `ts fv` qualifiers explicitly allow time-series operators AND factor-variable syntax in the controls list.
+- **Stepner v2.0.1 (27jul2013)** is what we have locally and what's on the server. v2.0.1 was a major refactor that added `ts fv` syntax support (Stata 11+ feature; Stata 11 released 2009).
+- **Matt's recollection likely refers to an earlier vam version** (v1.x circa 2010-2011), pre-`ts fv` syntax. The team upgraded to v2.0.1 at some point — whether deliberately or via an SSC update — and the `i.year` usage works fine on the published v2.0.1.
+
+**Bottom line**: there is **no custom vam**. The SSC-published v2.0.1 handles the team's `i.year`-in-controls usage natively. The "custom vam package" recollection was likely a misattribution from an earlier version of the codebase. Both the local copy and the server-downloaded copy are clean Stepner v2.0.1.
+
+**Implication for consolidation**: ADR-0009 (custom vam handling) should reframe — we're not preserving "modifications", we're pinning v2.0.1 against potential future SSC updates. Two options for the consolidated repo:
+
+- (a) Ship `ado/vam.ado` (the same Stepner v2.0.1 file, with the `noseed` fix applied) and `adopath ++ "$projdir/ado"` in settings.do. Pinned, drift-resistant.
+- (b) Rely on `ssc install vam, replace`. Simpler but vulnerable to future SSC updates if Stepner ever pushes a breaking change (unlikely; the package hasn't been updated since 2013).
+
+Recommendation: option (a). Same as v2 plan §3 + §7. The pin is cheap insurance.
 
 ---
 
