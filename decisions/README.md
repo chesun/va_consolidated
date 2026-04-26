@@ -90,6 +90,7 @@ What this commits us to. What it rules out. Open questions it creates.
 | ID | Title | Date | Status | Scope |
 |----|-------|------|--------|-------|
 | [0001](0001_consolidation-scope.md) | Consolidation scope — two predecessor repos in scope | 2026-04-25 | Decided | Infrastructure |
+| [0002](0002_runtime-server-only.md) | Runtime — Scribe server only, hostname-branched settings | 2026-04-25 | Decided | Infrastructure |
 
 ---
 
