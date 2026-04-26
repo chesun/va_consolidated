@@ -4,8 +4,8 @@ Last updated: 2026-04-25
 
 ## Active (doing now)
 
-- [ ] Phase 0a-v2 (independent blind verification) — awaiting Christina signoff on plan at `quality_reports/plans/2026-04-25_phase-0a-v2-verification-plan.md` before launching round-2 agents
-- [ ] Bug 93 T1 empirical verification — Christina runs Stata snippet on Scribe (snippet at `quality_reports/audits/round-2/README.md`)
+- [ ] Phase 0a-v2 — plan + §10 answers locked 2026-04-25; **execution paused at Christina's request (rate-limit reset ~2 hrs); awaiting explicit "go" signal in a future session before any round-2 agent dispatches**
+- [ ] Bug 93 T1 empirical verification — Christina runs Stata snippet on Scribe when convenient (snippet in `quality_reports/audits/round-2/README.md`)
 
 ## Up Next
 

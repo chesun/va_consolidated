@@ -408,13 +408,34 @@ Christina runs when convenient. Result feeds into Phase 1 bug-fix priority (P1 i
 
 ---
 
-## 10. Open questions for Christina before execution
+## 10. Open questions — RESOLVED 2026-04-25
 
-1. **Tier structure acceptable?** (yes already approved 2026-04-25)
-2. **Christina's T1 time budget**: 30-90 min OK? Concentrated in one session or spread?
-3. **Should adversarial agent (T2) be a different model than round-2 agent**? Recommendation: same model class (general-purpose) is fine for adversarial framing — it's the BRIEFING that creates the difference, not model variance.
-4. **Failure mode**: if a chunk has more than 5 discrepancies that can't be auto-adjudicated, escalate to a re-read by me with primary source rather than trying to triage piecemeal?
-5. **Hard stop**: any individual finding that round-2 + T2 agents BOTH disagree with round-1 → automatic T4 escalation to Christina (don't let majority of agents overturn a finding without human review)?
+| # | Question | Christina's decision |
+|---|---|---|
+| 1 | Tier structure acceptable? | **Yes** |
+| 2 | T1 time budget 30-90 min, concentrated or spread? | **OK** (Christina's call when convenient) |
+| 3 | Adversarial agent model: same class or different? | **Use suitable workflow agents where appropriate (e.g., `coder-critic`); fall back to `general-purpose` otherwise.** Practical mapping: |
+|   |   | - **`coder-critic`** for T2 verifications about CODE BEHAVIOR (regression specs, clustering levels, syntax patterns, vam invocation correctness, factor-variable handling). Its 12 check categories are tuned for Stata/R/Python and align well with adversarial code-behavior verification. |
+|   |   | - **`general-purpose`** for T2 verifications about PIPELINE/SEMANTIC mapping (which file produces which paper artifact, naming-token semantics, dependency-graph claims, cross-repo wiring). |
+|   |   | - Both agent types receive the same adversarial briefing pattern: "Find evidence the claim is wrong. Burden of proof is on the claim." |
+| 4 | Failure mode: chunk with >5 unresolvable discrepancies? | **Escalate to my full re-read with primary source.** Do not piecemeal-triage. |
+| 5 | Hard stop: round-2 + T2 BOTH disagree with round-1 → automatic T4 escalation? | **Yes — agree.** No agent-majority overrides without Christina's review. |
+
+All five answers locked. Plan ready for execution.
+
+## 10A — Execution gating: Christina's "do not execute yet"
+
+**Christina's directive (2026-04-25, end of plan-review session):**
+
+> "DO NOT execute yet. I am running out of session rate limits. the rate limit resets in 2 hours and you can run then"
+
+Interpretation: dispatch is approved in principle (questions 1-5 answered), but actual execution waits for Christina's explicit "go" signal in a future session. No round-2 agents dispatched until then. Plan doc, TODO, and session report capture the locked-in decisions so any future session can resume from the same state.
+
+When execution resumes:
+
+1. Re-read this plan + the §10 answers above
+2. Launch Step 1 batch 1 (chunks 1, 2, 3 in parallel) per §4 Step 1
+3. Continue per the gating diagram in §8
 
 ---
 
