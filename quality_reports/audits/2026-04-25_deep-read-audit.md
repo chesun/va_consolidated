@@ -1121,9 +1121,132 @@ Total ~14 packages. The consolidated `settings.do` install-block needs all:
 
 ---
 
+## Chunk 6: Survey VA + CalSCHLS factor analysis (COMPLETE)
+
+Files audited: 17 files across `caschls/do/share/factoranalysis/` (15), `caschls/do/share/svyvaregs/` (1: `allvaregs.do`), `caschls/do/build/buildanalysisdata/poolingdata/clean_va.do`. Plus `caschls/do/check/allsvymissing.do` (relocation discovery — listed in chunk 6 brief but actually lives in `check/`).
+
+**Per-file detail**: see companion doc `quality_reports/audits/2026-04-25_chunk6-survey-va.md` (872 lines).
+
+### Paper Table 8 producer chain (`tab:survey`, `imputed_index_combined_wdemo.tex`)
+
+```
+clean_va.do
+  ├─→ va_pooled_all.dta (school × VA-spec, 2015-2018 mean)
+  └─→ {sec,parent,staff}analysisready.dta (in-place overwrite to add VA cols)
+                                ↓
+allsvymerge.do
+  └─→ allsvyqoimeans.dta (3 surveys' QOI means + VA, school-level wide)
+                                ↓
+imputation.do
+  └─→ imputedallsvyqoimeans.dta (Stage 1 mean-impute + Stage 2 within-cat regression-impute)
+                                ↓
+[compcase branch]                       [imputed branch]
+compcasecategoryindex.do                imputedcategoryindex.do
+  └─→ compcasecategoryindex.dta           └─→ imputedcategoryindex.dta
+                                          (sums of items, z-standardized;
+                                           VA z-standardized in-place)
+                                ↓
+mattschlchar.do (school chars from $mattxwalks)         testscore.do (gr 6 math, gr 8 ELA)
+  └─→ schlcharpooledmeans.dta                             └─→ testscorecontrols.dta
+                                ↓
+[Panel A: bivar w/ controls]            [Panel B: horse race w/ controls]
+indexregwithdemo.do                      indexhorseracewithdemo.do
+  └─→ {compcase,imputed}_index_bivar_wdemo  └─→ {compcase,imputed}_index_horse_wdemo
+      .dta + .xls                              .dta + .csv (Excel-format)
+                                ↓
+[downstream chunk 7+ TeX writer (NOT IN CHUNK 6)]
+  └─→ tables/share/survey/pub/imputed_index_combined_wdemo.tex   ← paper Table 8
+```
+
+The chain stops at `_bivar_wdemo` and `_horse_wdemo` `.dta`/`.xls`/`.csv` artifacts. **The TeX-combination step is downstream** — likely a `tabletotex`-family file in chunks 7-10.
+
+### Index construction logic (paper §6 detail)
+
+- **3 indices** (post-winnowing): climate (9 items), teacher/staff quality (15 items), counseling support (4 items). Student-motivation index dropped (commented out at `imputedcategoryindex.do:31`).
+- **Aggregation**: code uses `gen <cat>index = 0; replace <cat>index = <cat>index + <var>` — i.e. **a SUM, not an average** as the paper claims. Because z-standardization (lines 64-66) follows immediately, the coefficient is invariant to sum-vs-mean choice. **Discrepancy worth flagging**: fix paper text or fix code.
+- **Standardization**: indices and VA both z-standardized to mean=0, SD=1 before regressions. So coefficients are SD-on-SD.
+- **Imputation pipeline**: Stage 1 mean-impute (lines 70-74), then Stage 2 within-category regression-impute with imputed-indicator dummies as controls (lines 80-128). Non-standard pipeline.
+- **Imputation-list mismatch**: `imputation.do` uses 20/17/4/4-item *wider* category lists for predictor pools; `imputedcategoryindex.do` uses *narrower* 9/15/4-item lists for index construction. So items removed from the index pool (e.g., `parentqoi9`) are still used as **predictors** during imputation.
+
+### Cronbach's α computation
+
+- **`indexalpha.do`** computes the α's reported in the paper footnote. Loads `compcasecategoryindex.dta` (complete-case items, NOT imputed), runs `alpha <items>, std item` for each of the three index-item lists. **Output goes only to the log file** — α values are hand-copied into the paper.
+- `alpha.do` separately computes α's at survey-level and category-level using **wider** item sets — these are NOT the paper-reported α's.
+
+### Survey-VA merge geometry — year-mismatch resolution
+
+- **All merges are at `cdscode` only (NO year)**.
+- VA: collapsed to mean over 2015-2018 → 1 row per school in `va_pooled_all.dta`.
+- Surveys: pooled across 2017-2019 (in upstream pooling files, chunk-7+ scope) → 1 row per school.
+- `clean_va.do` line 74: `merge 1:1 cdscode using va_pooled_all, keep(1 3) nogen` — survey-side master rows kept regardless of VA presence; VA-only schools dropped. Schools with missing VA → missing in regression (listwise deletion at run time).
+- **The asymmetric year-window (VA 2015-2018 vs surveys 2017-2019) is intentional but NOT robustness-tested** in chunk 6. Worth a sensitivity note.
+
+### VA specifications used in `allvaregs.do`
+
+```
+outcomes:  ela, math, enr, enr_2year, enr_4year,
+           dk_enr, dk_enr_2year, dk_enr_4year                          (8)
+samples:   b (base), las (leave-acs-sibling)                           (2)
+controls:  b → b ; las → las                                           (1 each)
+peer:      "" if b ; "_p" if las                                       (built into spec)
+```
+
+Spec strings: `va_<outcome>_<sample>_sp_<control>_ct{,_p}`. E.g., `va_ela_b_sp_b_ct` (no peer), `va_math_las_sp_las_ct_p` (with peer).
+
+`_m` (matched) does NOT appear in survey-VA spec naming — only the full outcome-name is in the spec.
+
+### New naming tokens / packages from chunk 6
+
+**New tokens**:
+
+- `horse` / `horserace` — multi-regressor index spec (all 3 indices on RHS together)
+- `wdemo` — with demographic controls (test-score + Matt-school-chars)
+- `bivar` — bivariate (one index at a time on RHS); pairs with `horse` for the two panel kinds
+- `imputed` / `compcase` — imputation-vs-complete-case branch (folder + filename suffix)
+- `qoi` = "question of interest" pattern: `<survey>qoi<NN>mean_pooled` is the per-question school-level pooled mean
+- `dk_` prefix on enrollment outcomes confirmed (Dukes-style cohort definition)
+
+**New ssc packages**:
+
+- **`mvpatterns`** (in `do/check/allsvymissing.do:38`)
+
+Combined ssc list now ~15 packages.
+
+### Distance-FB Row 6 — still NOT FOUND in chunk 6
+
+Chunk 6 is purely survey-VA / index analysis; no FB testing infrastructure here. Distance-FB Row 6 must be in chunks 7-10 (data prep / samples / share / explore / upstream).
+
+### 12 new bugs/anomalies in chunk 6 (running total ≈35)
+
+Most material:
+
+1. **`allvaregs.do:197`**: weighted-merge block saves to `_nw` filename instead of `_wt`. The `.dta` for unweighted combined regs is silently overwritten by weighted regs. The `.xls` is correctly suffixed `_wt`.
+2. **`pcascore.do:36-39`**: staff PC2 histogram code re-uses `pc1` instead of `pc2`. `staffpc2score.png` is a duplicate of `staffpc1score.png`.
+3. **Sum-vs-mean discrepancy**: paper says "averages"; code computes sums. Fix paper or fix code (z-standardization makes coefficients identical, but the on-disk variable is a sum).
+4. **In-place destructive saves**: `clean_va.do:76` (`save, replace` on analysisready files) and category-index files (z-standardize VA in place). Reproducibility relies on always rebuilding from upstream raw.
+5. **`mattschlchar.do:17`**: hard-coded path `/home/research/ca_ed_lab/msnaven/common_core_va/data/sch_char` — cross-user dependency, gated by `local clean = 0` toggle.
+6. **`factor.do:11, 79`**: log file written to `do/share/factoranalysis/factor.{smcl,log}` instead of `log/share/factoranalysis/`.
+7. **`indexalpha.do`**: no `translate` smcl→log; leaves smcl only.
+8. **Header attribution drift**: `indexhorseracewithdemo.do:6` says "Christina Sun" while sibling files say "Che Sun". Same person.
+9. **Empty `motivation` index**: `imputedcategoryindex.do:31` has `motivationvars` commented out, but `alpha.do` and `imputation.do` still process motivation items, leaving orphan downstream.
+10. **Silent merge attrition**: every `merge ... keep(1 3) nogen` in chunk 6 silently drops unmatched-using rows without an `assert _merge==3` check. In `mattschlchar.do:94` the OPPOSITE `keep if _merge==3` drops both unmatched cases — undocumented sample restriction.
+
+### 6 open questions for user (Chunk 6)
+
+| # | Question | Affects |
+|---|---|---|
+| Q6.1 | `allvaregs.do:197` weighted save → `_nw` filename — known typo or intentional? | Output integrity |
+| Q6.2 | Was `imputedallsvyqoimeans.dta` rebuilt after the 12/19/2024 `supportimputedummies` spelling fix in `imputation.do`? | Imputation correctness for downstream regressions |
+| Q6.3 | "Averages" (paper) vs "sums" (code) — fix paper or fix code? | Paper text or code |
+| Q6.4 | Asymmetric VA 2015-18 vs surveys 2017-19 — get robustness-tested? | Reviewer pushback |
+| Q6.5 | `mattschlchar.do:17` cross-user dependency — vendor into consolidated repo? | Reproducibility |
+| Q6.6 | `clean_va.do:39` says "2015-2018" but no `keep if inrange(year, 2015, 2018)` — year-restriction enforced upstream? | Sample window verification |
+
+---
+
 ## Chunks pending
 
-### Chunk 6: Survey VA (CAUTIOUS for regs, AGGRESSIVE for cleaning)
+### Chunk 7: Data prep (AGGRESSIVE)
 
 - `cde_va_project_fork/do_files/sbac/macros_va.doh` ← DONE in foundation
 - `cde_va_project_fork/do_files/sbac/create_va_sample.doh`
