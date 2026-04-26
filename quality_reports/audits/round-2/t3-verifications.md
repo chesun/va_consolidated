@@ -159,9 +159,50 @@ Same template for all 4 instances. Bundle as a single Phase 1 patch.
 | T3.4 | `peer_L3_cst_ela_z_score` missing from keepusing list? | **No** — round-1 false positive. Variable IS at L29 of `create_va_sample.doh`. |
 | T3.5 | Bug 93 family regression sweep | **4 active instances** across 2 files. Bundle Phase 1 patch. |
 
-**Two false positives caught by the protocol:**
+---
+
+## T3.6 — Paper-vs-code path mismatch for `counts_k12.tex` (chunk-8 disc M1)
+
+**Question (chunk-8 round-2 finding M1):** `paper/common_core_va.tex:163` reads `tables/sbac/counts_k12.tex` but `sample_counts_tab.do:615` writes to `tables/share/va/pub/counts_k12.tex`. Is this a real Phase 1 issue?
+
+**Method:** grep both `.tex` paths in the paper repo + find writer of the old path.
+
+**Result:**
+
+- `paper/common_core_va.tex:169` — reads `tables/sbac/counts_k12.tex` (OLD path; OLD paper version)
+- `paper/common_core_va_v2.tex:1098` — reads `tables/share/va/pub/counts_k12.tex` (NEW path; CURRENT working draft)
+- `paper/testfile.tex:169` — reads OLD path (test file)
+- Both files exist on disk in `cde_va_project_fork/tables/`:
+  - OLD: `tables/sbac/counts_k12.tex` (711 bytes, 9 rows, mtime 2024-07-04)
+  - NEW: `tables/share/va/pub/counts_k12.tex` (951 bytes, 12 rows, mtime 2024-07-04)
+- OLD path is produced by `_archive/matt_original/sum_stats_tab.do` (archived 2026-04-25 in commit `85a97e7`).
+- NEW path is produced by `do_files/share/sample_counts_tab.do:615` (wired in `do_all.do:226`).
+- NEW file has 3 extra rows: Leave Out Scores, +Sibling, +ACS.
+
+**Verdict:** **NOT a Phase 1 path-rerouting issue.** Current working draft uses the NEW path correctly. OLD path-and-file is residue from the older paper version + archived producer.
+
+**Phase 1 cleanup:**
+
+1. Delete stale `tables/sbac/counts_k12.tex` (it's no longer produced by any wired do-file).
+2. Decide fate of `paper/common_core_va.tex` and `paper/testfile.tex` — likely abandoned. (Christina to confirm.)
+3. Single-source-of-truth: `tables/share/va/pub/counts_k12.tex` is canonical.
+
+**Tier**: T3 deterministic, no T4 escalation needed.
+
+**Action**: chunk-8 disc report M1 severity downgrade from "HIGH (Phase 1 path-rerouting)" to "LOW (Phase 1 cleanup of stale OLD-path file)."
+
+---
+
+**Three false positives caught by the protocol so far:**
 
 - Round-2 chunk-2 mis-flagged `asd_str` as still broken (was fixed in `e8dd083`).
 - Round-1 chunk-2 mis-flagged `peer_L3_cst_ela_z_score` as missing from keepusing (it IS present at L29).
+- My round-2 chunk-5 prompt added spurious filename `reg_out_va_sib_acs_dk_tab.do` by symmetry assumption (T3 confirmed file doesn't exist; round-1 also didn't claim it did).
 
-The four-tier T3 verification (deterministic file read) caught both. **Verification protocol works as designed.**
+**Severity downgrades from T3:**
+
+- T3.1: `$vaprojdofiles` not consumed → L23 missing-`;` bug latent (LOW severity).
+- T3.2: `$ca_ed_lab` macro not consumed → confirms latent.
+- T3.6: `counts_k12.tex` path "mismatch" is OLD-paper / NEW-paper divergence; not a Phase 1 issue (LOW severity, cleanup only).
+
+The four-tier T3 verification (deterministic file read) catches errors in all three places: round-1, round-2, AND prompt construction. **Verification protocol works as designed.**
