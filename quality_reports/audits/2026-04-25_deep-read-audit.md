@@ -1512,9 +1512,123 @@ Most material:
 
 ---
 
-## Chunks pending
+## Chunk 10: Upstream / Python geocoding (COMPLETE — Phase 0a closed)
 
-### Chunk 10: Upstream / Python geocoding (final chunk)
+Files audited: 6 — `cde_va_project_fork/py_files/sbac/gecode_json.py`, `do_files/upstream/crosswalk_nsc_outcomes.do`, plus `caschls/do/upstream/crosswalk_{ccc,csu}_outcomes.do` and `caschls/do/local/{enrollmentconvert,siblingtest}.do`. Per-file detail: `quality_reports/audits/2026-04-25_chunk10-upstream.md` (~3300 words).
+
+### Geocoding pipeline mapped
+
+**Exactly one Python script** (`gecode_json.py`, 117 lines) is the entire Python surface area of the codebase. Byte-identical across all three predecessor repos.
+
+- **Service**: U.S. Census Bureau Geographies API (`geocoding.geo.census.gov/geocoder/geographies/address`), benchmark=9, vintage=910. **Free, no API key required.** NOT OpenCage, NOT Google.
+- **Input**: `address_list_census.csv` (tab-delimited). The script that produces this CSV is NOT in any in-scope repo — upstream of Matt's K-12 cleaning.
+- **Output**: `address_list_census_geocoded2.csv` (13 cols incl. `census_block_geoid`, lat/lon, `census_tract`).
+- **Manual rename gap**: between Python output (`_geocoded2.csv`) and Stata consumer (`_batch_geocoded.csv`) — undocumented manual step.
+- **Static, run-once-cached**: never invoked from any do-file.
+
+### Cross-repo crosswalk producer table (resolves chunk-2 dependencies)
+
+Per `merge_k12_postsecondary.doh`, FIVE `.dta` crosswalks are consumed:
+
+| Consumed dta | In-scope? | Producer |
+|---|---|---|
+| `nsc_outcomes_crosswalk_ssid.dta` | YES | `cde_va_project_fork/do_files/upstream/crosswalk_nsc_outcomes.do` (Christina, 2022) |
+| `k12_ccc_crosswalk.dta` | **NO** | External, Matt's pipeline at `/home/research/ca_ed_lab/users/msnaven/...` |
+| `ccc_outcomes_crosswalk.dta` | YES | `caschls/do/upstream/crosswalk_ccc_outcomes.do` (Matt, 2018) |
+| `k12_csu_crosswalk.dta` | **NO** | External, Matt's pipeline |
+| `csu_outcomes_crosswalk.dta` | YES | `caschls/do/upstream/crosswalk_csu_outcomes.do` (Matt, 2018) |
+
+### `lag2ela` upstream confirmed external
+
+`merge_lag2_ela.doh` reads `L4_cst_ela_z_score` and `L5_cst_ela_z_score` from `k12_lag_test_scores_clean.dta`. **No do-file in any in-scope repo produces this file** (verified by grep). External Matt-cleaning pipeline. Treat as static data input.
+
+### 5 external static inputs (need manifest in consolidated `data/raw/`)
+
+| File | Where on Scribe | Producer |
+|---|---|---|
+| `k12_test_scores_clean.dta` | `data/restricted_access/clean/k12_test_scores/` | Matt's external pipeline |
+| `k12_lag_test_scores_clean.dta` | same | Matt's external pipeline |
+| `k12_ccc_crosswalk.dta` | `data/restricted_access/clean/crosswalks/` | Matt's external pipeline |
+| `k12_csu_crosswalk.dta` | same | Matt's external pipeline |
+| `address_list.dta` | same | Matt's pipeline (untraced) |
+| `address_list_census.csv` | `data/sbac/` | Upstream of `gecode_json.py` |
+| `nsc_xgyr<year>.dta` | `data/restricted_access/clean/nsc/` | Kramer (NSC clean) |
+
+The `acs_ca_census_tract_clean.dta`, `pubschls.txt`, IPEDS HD2021 are public/in-scope (chunk 7).
+
+### `geoid2` lineage closed
+
+Produced inline in `va_cfr_forecast_bias.do:617` from `address_list_census_batch_geocoded.csv` (Python output). Also produced in `clean_acs_census_tract.do:90` (chunk 7) for the ACS side. Both meet at the `merge m:1 geoid2 year_grade<n>` join.
+
+### CRITICAL Bug 93 (paper-load-bearing) — P1 priority
+
+**`crosswalk_nsc_outcomes.do:219, 222, 228, 232`**: `inlist(A) | inlist(B)` operator-precedence error. Pattern is:
+
+```stata
+inlist(record, "001319-00", ...) & recordfoundyn == "Y" | inlist(record, "001319-00", ...) ...
+```
+
+Due to `&` binding tighter than `|`, this evaluates as `(A & B) | C` — meaning UC Merced (`001319-00`) is **silently coded as `nsc_enr_uc=1` even when `recordfoundyn != "Y"`** (i.e., even without an NSC enrollment record). **Affects paper outcomes `nsc_enr_uc` and `nsc_enr_ucplus`.**
+
+**Should be patched as P1 in Phase 1 (consolidation)**, not deferred to Phase 2. Worth a re-run of any analysis touching UC enrollment outcomes to verify whether numbers shift.
+
+### 16 new bugs in chunk 10 (Bug 86-101; running total ≈101)
+
+Most material:
+
+- Bug 93 (NSC UC inlist precedence) — paper-load-bearing
+- Bug 89 (`gecode_json.py` URL params not URL-encoded — addresses with `&`, `#`, `'` produce malformed URLs)
+- Bug 88 (`gecode_json.py` retry loop has no max-retries — infinite on bad address)
+- Bug 95 (CCC year-cutover hardcoded `[00, 20]` — silently miscodes 2021+ enrollment)
+- Bug 96/100 (Matt's CCC/CSU files have `if c(hostname)=="sapper" exit, STATA clear` — auto-shutdown breaks master-script chaining)
+- Bug 90 (geocoder output rename `_geocoded2 → _batch_geocoded` undocumented manual step)
+- Bug 92 (NSC `egen by(\`id' collegecodebranch)` — undefined local silently ignored)
+
+### No new naming tokens or ssc packages
+
+Catalog stable at ~80+ tokens, ~16 packages.
+
+---
+
+## PHASE 0a CLOSE — what's resolved vs. what remains
+
+### Resolved by deep-read (across all 10 chunks)
+
+1. **N1** — siblingoutxwalk relocation: SAFE (chunk 5)
+2. **N2** — server-folder reconciliation: co-resident, cross-wired; canonical `/home/research/ca_ed_lab/projects/common_core_va` (chunk 1)
+3. **v1/v2 prior-score table** — verified (chunks 2 + Q1)
+4. **`_scrhat_` orthogonal axis** — confirmed exploratory-only, wired to predicted-prior-score variable produced in `do_files/explore/` (chunks 2, 9)
+5. **vam compatibility** — Stepner v2.0.1 is sufficient; no customization needed; only the `noseed` bug (already fixed) was a real deviation (chunks 1, 3)
+6. **Naming convention catalog** — complete (chunks 2-9: `b/l/a/s/d/og/acs/sib/both/peer_/_str/_m/_wt/_nw/_dk/_p/_fb_/_scrhat_/_lv/sp/ct/horse/wdemo/bivar/imputed/compcase/qoi/predicted_prior_score/`)
+7. **Sample-restriction map** — finalized (chunks 2, 5, 8). Both `<7` and `<=10` cuts exist (different rows; not contradictory).
+8. **Sibling-matching specifics** — documented (5-component address join + exact last_name; transitive closure via `group_twoway`; 10-child cap)
+9. **Pass-through ρ canonical specification** — documented (chunk 4)
+10. **4-spec convention** (og/acs/sib/both) — documented (chunk 5)
+11. **Distance-FB Row 6** — `d` token in `macros_va_all_samples_controls.doh` (chunk 7)
+12. **Paper Tables 1-8 + Figs 1-4** — every producer mapped (chunks 4, 6, 9). Closed loop, no out-of-repo TeX writers.
+13. **Geocoding pipeline** — single Python script, Census Geocoder API, static-cached (chunk 10)
+14. **Cross-repo crosswalk producer table** — 3 in-scope, 2 external static (chunk 10)
+15. **`lag2ela` upstream** — external (Matt's pipeline) (chunk 10)
+
+### Phase 0 totals
+
+- **~150 files audited** across 10 chunks
+- **~101 bugs/anomalies** identified (some fixed in chunks 1-2; majority deferred to Phase 1)
+- **~30 user-facing questions** (Q1.x through Q9.x) deferred to end of Phase 0 review
+- **5 external static inputs** identified for `data/raw/` manifest in consolidated repo
+- **16 ssc/community packages** catalogued for `settings.do` install-block
+- **80+ naming tokens** catalogued for path-translation rules
+
+### Pending for Phase 0e (design lock)
+
+1. Consolidate all open user-questions across chunks (~30) into a single Q&A document for Christina to walk through.
+2. Lock the final folder structure in ADR-0004 (sibling-xwalk canonical location), now that N1 is resolved.
+3. Lock ADR-0007 through ADR-0016 with concrete content based on Phase 0a findings.
+4. Bug-priority triage: P1 (block consolidation if not fixed — Bug 93 NSC UC inlist precedence), P2 (fix during consolidation), P3 (fix post-consolidation or document as known issue).
+5. External-static-inputs manifest design.
+6. Christina's signoff on the consolidation plan v3 (incorporating all Phase 0a learnings).
+
+**Phase 0a is complete. Ready for Phase 0e.**
 
 - `cde_va_project_fork/do_files/sbac/macros_va.doh` ← DONE in foundation
 - `cde_va_project_fork/do_files/sbac/create_va_sample.doh`
