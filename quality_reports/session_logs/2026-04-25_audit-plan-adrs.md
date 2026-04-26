@@ -86,3 +86,88 @@ The session does NOT begin Phase 0 deep-read or any consolidation-step migration
 - [ ] Continue Phase 0a per the plan §6 sub-deliverables (per-file audit, dependency graph, path-reference catalog)
 - [ ] Phase 0d server-folder reconciliation (Christina runs diagnostic commands on Scribe; Claude synthesizes)
 - [ ] Phase 0e design lock; Christina sign-off; THEN Phase 1 migration begins.
+
+---
+
+## Update — Phase 0a CLOSED (2026-04-25)
+
+All 10 deep-read chunks complete. Marathon session; ~10 commits. Major resolutions:
+
+- **Chunk 1 (foundation)**: vam = unmodified Stepner v2.0.1 (no customization); two-folder server geometry mapped (N2 RESOLVED — co-resident, cross-wired); macros_va.doh `asd_str` and missing-`;` bugs fixed in commits `e8dd083`, vam.ado `noseed` bug fixed in `0202251`.
+- **Chunk 2 (helpers)**: v1 prior-score table verified line-by-line; v2 had wrong dates in user's table (header transcription bug — code uses L5 = 5-year lag); `_scrhat_` confirmed as orthogonal third axis (predicted vs observed prior scores), not part of v1/v2.
+- **Chunk 3 (VA core)**: output-filename grammar formalized (`<prefix>{_p}_<outcome>_<sample>_sp_<ctrl>_ct{_<fb_var>_lv}.ster`); `sp/ct/lv` confirmed literal separators not macros; vam compat fully verified (every invocation works on Stepner v2.0.1).
+- **Chunk 4 (pass-through)**: all paper Tables 4-7 + Figs 5-6, C.1-C.2 producers mapped; `_m`/`_wt`/`_nw` naming tokens resolved; SE clustering audit reveals `va_het.do:158` uses `cdscode` not `school_id` (deviation flagged).
+- **Chunk 5 (sibling)**: **N1 RESOLVED — SAFE to relocate `siblingoutxwalk.do`** to sibling_xwalk/; only single edit at master.do:103. Sibling-matching specifics documented (5-component address join + last_name; `group_twoway` transitive closure; 10-child cap). 4-spec convention `og/acs/sib/both` confirmed.
+- **Chunk 6 (survey VA)**: Paper Table 8 producer chain mapped. Sum-vs-mean discrepancy: code computes sum, paper says "averages"; z-standardization makes coefficient invariant.
+- **Chunk 7 (data prep)**: **Distance-FB Row 6 RESOLVED** — `d` token wired in `macros_va_all_samples_controls.doh` (not the macros_va.doh I'd checked). `enrollmentclean.do:21` female-encoding bug found (real bug). ACS only covers 2010-2013 (potential coverage gap).
+- **Chunk 8 (samples)**: Sample-restriction map definitively resolved — both `<7` per-cell and `<=10` cohort cuts exist (different rows, not contradictory). False alarm raised about archived `sum_stats.do`; chunk 9 corrected.
+- **Chunk 9 (share/explore)**: All paper Tables 1-8 + Figs 1-4 producers in `share/` — closed loop. Modern `share/sample_counts_tab.do` produces `counts_k12.tex` (chunk 8 alarm Q8.1 RESOLVED). scrhat pipeline confirmed exploratory-only.
+- **Chunk 10 (upstream)**: 1 Python script (Census Geocoder API, free, keyless, run-once-cached). Cross-repo crosswalks: 3 in-scope, 2 external static. **CRITICAL Bug 93** in `crosswalk_nsc_outcomes.do:219` (operator-precedence error silently codes UC Merced as `nsc_enr_uc=1` even without NSC record — paper-load-bearing).
+
+### Phase 0a totals
+
+- ~150 files audited
+- ~101 bugs/anomalies inventoried
+- ~30 user-facing questions queued (Q1.x-Q9.x)
+- 80+ naming tokens catalogued
+- 16 ssc/community packages
+- 5 external static inputs identified
+
+### Side correction on bit-rot risk
+
+Christina's "last full pipeline run was 2023" claim revised to mid-2024 based on `counts_k12.tex` mtime 2024-07-04 (commit `0ce6209`). Bit-rot window narrows from ~3 years to ~21 months. Consolidation risk lower than initially feared.
+
+### Companion audit docs produced
+
+`quality_reports/audits/`:
+
+- `2026-04-25_deep-read-audit.md` (master, ~2500 lines)
+- `2026-04-25_path-references.md` (path-translation catalog)
+- `2026-04-25_dependency-graph.md` (call-graph + cross-repo edges)
+- `2026-04-25_chunk5-sibling.md` (1168 lines per-file detail)
+- `2026-04-25_chunk6-survey-va.md` (872 lines)
+- `2026-04-25_chunk7-data-prep.md`
+- `2026-04-25_chunk8-samples.md`
+- `2026-04-25_chunk9-share-explore.md` (477 lines)
+- `2026-04-25_chunk10-upstream.md` (~3300 words)
+
+## Phase 0a-v2 — independent blind verification (proposed; awaiting user signoff)
+
+User raised concern that round-1 agents may suffer from confirmation bias / echo-chamber drift / detail-invention during synthesis. Given consolidation is load-bearing and the bug inventory is ~101 items (some paper-load-bearing), Phase 0a-v2 is a blind re-audit of every Phase 0a finding.
+
+### Three-tier verification structure
+
+User's sharper question: "what insurance do I have that you won't yourself suffer from confirmation bias when reading source for high-priority findings?" Honest acknowledgment: I synthesized round 1, so my reading of source is contaminated. Revised plan removes me as adjudicator for findings I produced. Three tiers:
+
+| Tier | What's verified | Adjudicator |
+|---|---|---|
+| **T1 — Empirical (gold standard)** | Bug 93 NSC UC precedence; Distance-FB `d` token wiring; v1/v2 prior-score variable construction; vam factor-variable behavior | Christina, by running 5-15 lines of Stata on Scribe |
+| **T2 — Adversarial third agent** | Discrepancies between rounds 1 and 2; high-stakes claims about paper-output mappings, sample-restriction map, output-filename grammar | Independent third agent with explicit "find evidence the claim is wrong" brief |
+| **T3 — Objective code facts** | Line numbers, syntax declarations, file existence, byte-identical diffs | My direct reading + deterministic checks (grep, wc, diff) — bias risk near-zero for these |
+
+### Cost / scope
+
+- ~10-25 hours total work, mostly compute on agents
+- ~30-90 min of Christina's active time (concentrated on T1 verifications)
+- Final deliverable: `2026-04-XX_deep-read-audit-FINAL.md` containing only verified findings; round-1 and round-2 preserved in subdirs for archeology
+
+### Awaiting user signoff
+
+3 design questions surfaced; user reviewing the revised tier structure before I execute.
+
+## Updated Open Questions / Blockers (2026-04-25 close)
+
+- [x] N1: ~~siblingoutxwalk.do relocation~~ — RESOLVED in chunk 5 (SAFE; single edit at master.do:103)
+- [x] N2: ~~Server-folder reconciliation~~ — RESOLVED in chunk 1 (co-resident, cross-wired; canonical = `/home/research/ca_ed_lab/projects/common_core_va`)
+- [ ] N3: Stata version compat revisit timing — DEFERRED, low risk
+- [ ] **Phase 0a-v2 verification plan** — awaiting user signoff before execution
+- [ ] ~30 user-facing questions consolidated into Phase 0e walk-through (post-verification)
+- [ ] Bug-priority triage (P1: Bug 93 NSC UC precedence; P2/P3 for the rest)
+
+## Next Steps (revised)
+
+1. **Christina decides on Phase 0a-v2 plan** — accept tier structure, propose changes, or skip verification entirely
+2. **If accepted**: Phase 0a-v2 execution (T1 + T2 + T3 verifications across all 10 chunks)
+3. **Phase 0e (design lock)**: against verified-final findings, lock ADRs 0004-0016 + write consolidation plan v3
+4. **Christina sign-off on plan v3**
+5. **Phase 1: Migration**
