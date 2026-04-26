@@ -1,22 +1,32 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-04-25
+Last updated: 2026-04-26
 
 ## Active (doing now)
 
-- [ ] Phase 0a-v2 — plan + §10 answers locked 2026-04-25; **execution paused at Christina's request (rate-limit reset ~2 hrs); awaiting explicit "go" signal in a future session before any round-2 agent dispatches**
-- [ ] Bug 93 T1 empirical verification — Christina runs Stata snippet on Scribe when convenient (snippet in `quality_reports/audits/round-2/README.md`)
+- [ ] Phase 0a-v2 batch 2 (chunks 4 + 5) — round-2 agents dispatched 2026-04-26, running in background
+- [ ] Bug 93 T1 empirical verification — Christina runs Stata snippet on Scribe when convenient (snippet in `quality_reports/audits/round-2/README.md`); **scope expanded** to 4 instances (NSC UC, NSC UC ontime, CCC ontime, CSU ontime)
 
 ## Up Next
 
-- [ ] Phase 0a-v2 Step 1 — dispatch round-2 agents (chunks 1-10 in 4 parallel-batched waves)
-- [ ] Phase 0a-v2 Step 2 — produce per-chunk discrepancy reports (`round-2/chunk-N-discrepancies.md`)
-- [ ] Phase 0a-v2 Step 3 — adjudicate per tier (T1/T2/T3/T4)
+- [ ] After batch 2 completes: draft chunks 4 and 5 disc reports
+- [ ] Dispatch Phase 0a-v2 batch 3 (chunks 6, 7, 8) round-2
+- [ ] Dispatch Phase 0a-v2 batch 4 (chunks 9, 10) round-2
+- [ ] Phase 0a-v2 Step 3 — adjudicate per tier (T1/T2/T3/T4) for all 10 chunks
 - [ ] Phase 0a-v2 Step 4 — produce verified-final audit doc
-- [ ] Phase 0a-v2 Step 5 — bug-priority triage (P1/P2/P3); ~101 bugs + Bug 93 scope correction
+- [ ] Phase 0a-v2 Step 5 — bug-priority triage (P1/P2/P3)
 - [ ] Phase 0a-v2 Step 6 — Q&A consolidation for Phase 0e walk-through
 - [ ] Phase 0e (design lock) — lock ADRs 0004-0016 against verified findings; consolidation plan v3
 - [ ] Phase 1 (migration) — execute consolidation per plan v3
+
+## Open T4 escalations (require Christina input at Phase 0e)
+
+- [ ] Paper Table 2/3 row 6 = `d` (distance) or `las` (joint)? — chunk-3 disc report Q1
+- [ ] `peer_<X>d_controls` peer-distance asymmetry — intentional or bug? — chunk-1 disc report Q1
+- [ ] `Xd_str` display-string aliases (all collapse to `X_str`) — intentional or labeling bug? — chunk-1 disc report
+- [ ] `enr=.` for NSC-non-matched-but-CCC-or-CSU-positive — intentional NSC anchoring or bug? — chunk-2 disc report A6
+- [ ] NSC `keep(1 3 4 5)` + `update` — multi-vintage protocol intent? — chunk-2 disc report M3
+- [ ] Where are special-ed/home-instruction restrictions enforced? — chunk-2 disc report A10
 
 ## Waiting On
 
@@ -46,3 +56,4 @@ Last updated: 2026-04-25
 - [x] **Phase 0a complete: 10-chunk deep-read, ~150 files audited, ~101 bugs inventoried, paper-output mapping closed loop, all foundational questions resolved (N1, N2, distance-FB, v1/v2, vam compat)** — 2026-04-25
 - [x] Phase 0a-v2 setup: round-1 docs sequestered, round-2 dir + protocol README created, pre-flight Bug 93 T3 verification (caught round-1 over-claim by 50%) — 2026-04-25
 - [x] Phase 0a-v2 plan drafted at `quality_reports/plans/2026-04-25_phase-0a-v2-verification-plan.md` — 2026-04-25
+- [x] Phase 0a-v2 batch 1 — chunks 1, 2, 3 round-2 verified; 3 disc reports written; T3 verifications resolved 5 latent-bug questions and confirmed Bug 93 family is 4 active instances — 2026-04-26

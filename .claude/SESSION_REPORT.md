@@ -120,3 +120,34 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 **Commits**: `fa07571` (sequester + protocol README + pre-flight result) + plan-and-TODO updates.
 
 **Status**: Phase 0a-v2 plan written and committed. **Awaiting Christina signoff on the plan before launching round-2 agents.** Five open questions in §10 of the plan.
+
+---
+
+## 2026-04-26 — Phase 0a-v2 batch 1 round-2 + chunk-1/2/3 disc reports + T3 verifications
+
+**Operations:**
+
+- Resumed Phase 0a-v2 after ~2hr rate-limit pause. Christina locked §10 answers; gave "ok lets resume".
+- Dispatched and received round-2 verification of chunks 1, 2, 3 via 3 sequestered general-purpose agents (forbidden from reading round-1, instructed adversarial framing, required line-citation). Outputs at `round-2/chunk-1-verified.md`, `chunk-2-verified.md`, `chunk-3-verified.md`.
+- Drafted per-chunk discrepancy reports at `round-2/chunk-1-discrepancies.md`, `chunk-2-discrepancies.md`, `chunk-3-discrepancies.md` with categories AGREE / ROUND-1-MISSED / ROUND-2-MISSED / DISAGREE / TEMPORAL-ARTIFACT.
+- Performed 5 T3 deterministic verifications at `round-2/t3-verifications.md` resolving latent-bug questions and Bug 93 family regression sweep.
+- Dispatched batch-2 round-2 agents (chunks 4 and 5) in parallel; running.
+
+**Decisions / commits:**
+
+- `9c41833` — chunks 1-3 round-2 verified + chunk-1 disc report
+- `ff0b1b3` — chunks 2 and 3 disc reports
+- `6f51ad7` — T3 verifications doc
+
+**Key findings:**
+
+- **Bug 93 family is 4 active instances** (NSC UC at L218-219 + L227-228, CCC ontime at merge_k12_postsecondary.doh:168-170, CSU ontime at :232-234). Phase 1 fix should bundle all 4 with a single inlist-precedence patch template. Adds CCC and CSU to the original chunk-10-only Bug 93 scope.
+- **Two confirmation-bias errors caught — one by each round.** Round-2 chunk-2 mis-flagged `asd_str` typo as still active (was fixed in `e8dd083`); round-1 mis-flagged `peer_L3_cst_ela_z_score` as missing from keepusing (it IS at L29). Both caught by T3. The verification protocol works in both directions.
+- **vam customization is a temporal artifact** — round-1 read pre-noseed-fix, round-2 read post-fix; both correct in their respective contexts. Phase 1 ADR-0009 should reflect the noseed fix as a deliberate customization (and update the `*!` line to bump version).
+- **macros_va.doh has TWO missing-`;` bugs**: round-1 caught L558 (fixed in `e8dd083`), round-2 caught L23 (still open). Both LATENT — `$vaprojdofiles` and `$ca_ed_lab` are never consumed.
+- **Distance-leave-out (`d`) FB-test row gap**: BOTH rounds independently flagged that `va_spec_fb_tab.do` loops `lovar in l s a las` and does NOT include `d`. Paper Table 2/3 row 6 attribution is the main open T4 question for chunk 3.
+
+**Status:**
+
+- Done: 3 of 10 round-2 chunks verified; 3 disc reports written; T3 verifications complete.
+- Pending: chunks 4 and 5 round-2 (running); chunks 6-10 still to dispatch; Phase 1 bug priority triage; verified-final audit doc.
