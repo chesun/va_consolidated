@@ -1415,9 +1415,106 @@ Most material:
 
 ---
 
+## Chunk 9: Share/output helpers + explore (COMPLETE — paper-output mapping closed loop)
+
+Files audited: 13 in `cde_va_project_fork/do_files/{share,share/check,explore}/`. Per-file detail: `quality_reports/audits/2026-04-25_chunk9-share-explore.md`.
+
+### CORRECTION to chunk 8 finding
+
+**`share/sample_counts_tab.do` is the MODERN producer for `counts_k12.tex`** (paper Table A.1), **superseding** `_archive/matt_original/sum_stats_tab.do`. So Q8.1 (Table A.1 staleness alarm) is **resolved** — the .tex IS being produced, just from the modern share/ path, not the archived file. The chunk-8 alarm was based on the older code path that's no longer active. **The archive disposition for `sum_stats.do` and `sum_stats_tab.do` is correct after all** — they ARE superseded.
+
+### Final paper-output mapping (all chunks consolidated)
+
+Closed loop — every paper artifact has a confirmed producer in `cde_va_project_fork/do_files/share/`:
+
+| Paper artifact | Filename | Producer |
+|---|---|---|
+| Table 1 (`tab:sum-stats`) | `sum_stats_g11.tex`, `sum_stats_college.tex` | `share/base_sum_stats_tab.do` (chunk 9) |
+| Table 2 (`tab:va-sum-stats`) | `va_score_v1.tex` | `share/va_spec_fb_tab_all.do` (chunk 9; chunk 3 deferred) |
+| Table 3 (`tab:va-enr-summary-statistics`) | `va_out_v1.tex` | `share/va_spec_fb_tab_all.do` (chunk 9) |
+| Table 4 (`tab:hetero`) | `va_het/corr_char_wt_v1.tex` | `share/va_het.do` (chunk 4) |
+| Table 5 (`tab:va-var-across-district`) | `va_het/var_across_district_wt_v1.tex` | `share/va_het.do` (chunk 4) |
+| Table 6 (`tab:va-persistence`) | `persistence_single_subject.tex` | `share/reg_out_va_tab.do` (chunk 9; chunk 4 deferred) |
+| Table 7 (`tab:va-enr-decomposition`) | `va_var_explain_v1.tex` | `share/va_var_explain.do` + `va_var_explain_tab.do` (chunk 9) |
+| Table 8 (`tab:survey`) | `imputed_index_combined_wdemo.tex` | `share/svyindex_tab.do` (chunk 9; chunk 6 deferred — no manual combination needed) |
+| Table A.1 (`tab:sample-counts`) | `counts_k12.tex` | `share/sample_counts_tab.do` (chunk 9 — corrects chunk 8 archive alarm) |
+| Figs 1-4 (VA correlations + scatter + heterogeneity panels) | combined PDFs | `share/va_scatter.do` (chunk 9) |
+
+**No paper-artifact producer lives outside `cde_va_project_fork/do_files/share/`.** The only out-of-repo dependency is the input data for Table 8 (`$projdir/out/dta/factor/index<reg>withdemo/...` from CASCHLS), but the TeX writer itself is in cde_va_project_fork.
+
+### scrhat (predicted-prior-score) pipeline
+
+```
+data/va_samples/{score,out}_<sample>.dta
+        ↓
+reg prior_ela_z_score lag2ela i.year <va_ctrl>_spec_controls
+predict prior_ela_z_score_hat       (only valid where lag2ela non-missing)
+        ↓
+explore/va_predicted_score.do          (no leave-out; main scrhat VA estimates)
+explore/va_predicted_score_fb.do       (with leave-out; FB tests on scrhat VA)
+        ↓
+estimates/va_cfr_all_<v>/{vam,spec_test,fb_test,va_est_dta}/predicted_prior_score/*.{ster,dta}
+        ↓
+explore/va_predicted_score_spec_fb_tab.do
+        ↓
+tables/explore/va_{score,out,<outcome>}_<version>.tex   (NOT in the paper)
+```
+
+**Confirmed**:
+
+- First-stage uses `lag2ela` (= `L4_cst_ela_z_score` for 2015-16, `L5_cst_ela_z_score` for 2017-18 — the leave-out-school CST score from 2 grades back).
+- The predicted score replaces the observed `prior_ela_z_score` everywhere `lag2ela` is non-missing; observations with missing `lag2ela` drop from the VA regression.
+- Effective scrhat sample = original VA sample ∩ `lag2ela` non-missing (strict subset).
+- **Reported in paper? NO.** Outputs to `tables/explore/`, never referenced from `paper/main.tex`. Robustness check / internal-only.
+- The scrhat per-cell `va_*.dta` files are written but never re-read (only `.ster` files consumed). Dead artifacts on disk.
+
+### New tokens / packages
+
+- `predicted_prior_score/` subdir (scrhat pipeline)
+- `_lv` filename-stem suffix (FB leave-out version) — partially seen earlier; now confirmed pattern
+- `_va_ela_math_` regression-target naming for both-subject simultaneous regressions
+
+**No new ssc packages.** Total catalog still ~16 packages.
+
+### 17 new bugs/anomalies in chunk 9 (running total ≈85)
+
+Most material:
+
+1. **`va_predicted_score_fb.do:43`**: uses `<va_ctrl>_ctrl_leave_out_vars` instead of `<va_ctrl>_ctrl_scrhat_leave_out_vars`. Result: FB tests on `loscore` are computed for scrhat VA, which is conceptually invalid (loscore is the first-stage IV — can't simultaneously be a leave-out for the second stage).
+2. **`va_spec_fb_tab_all.do:200-202`**: per-outcome `texsave` writes both versions to `check/`, never `pub/`. Per-outcome single-table files only exist in `check/`.
+3. **`va_scatter.do:308, 321, 333, 417, 430, 442`**: figure note says "Fitted line slope = `corr_*`" but should be `b_*` — copy-paste error in 6+ places. Affects panel 1 of paper Fig 3 and Fig 3-alt.
+4. **`reg_out_va_tab.do:47`**: `lasd_ct_p` in `sp_ct_p_combos` but 4-column reshape silently drops it. Either intentional (paper Table 6 has only 4 columns per outcome) or oversight.
+5. **`va_var_explain.do:19-20`** and **`va_var_explain_tab.do:17-18`**: `set trace on` never paired with `set trace off`.
+6. **`base_sum_stats_tab.do`**: hard-codes `data/va_samples_v1/base_nodrop.dta` — no v2 parallel.
+7. **`base_sum_stats_tab.do:463-579`**: long sequence of `esttab ... append` — failure mid-sequence leaves output file inconsistent.
+8. **`sample_counts_tab.do`**: cascading `if`-filters duplicated 12 times for counts AND 12 times for z-scores — a missing `&` would silently produce wrong table rows.
+9. **`svyindex_tab.do:185`**: missing space after `translate` keyword.
+10. **`va_predicted_score.do` and `va_predicted_score_fb.do`**: first-stage (`reg prior_ela_z_score lag2ela`) recomputed per iteration despite being identical — wasteful.
+11. **`corr_dk_score_va.do`**: redundantly hard-codes sample-control lists already in `macros_va_all_samples_controls.doh`.
+
+### Open questions
+
+**For user (Chunk 9)**:
+
+| # | Question | Affects |
+|---|---|---|
+| Q9.1 | Is the "predicted_score" column in `fb_<outcome>_all.dta` populated by chunk-3 producer, or did Christina's 2024 changes break the upstream contract? If upstream writes `predicted_score = 0`, the scrhat tab files produce empty tables. | scrhat exploratory pipeline integrity |
+| Q9.2 | Should the `va_predicted_score_fb.do:43` bug (non-scrhat leave-out list) be patched, even though scrhat is exploratory? | scrhat reproducibility |
+| Q9.3 | Should the `va_scatter.do` `corr_*` vs `b_*` typo (6+ occurrences) be fixed and figures re-rendered? Affects paper Fig 3 panel 1 and Fig 3-alt. | Paper figure note correctness |
+| Q9.4 | The `lasd` column dropping in `reg_out_va_tab.do` — intentional (Table 6 has 4 columns) or oversight (chunk 4 produces `lasd` cells)? | Paper Table 6 column count |
+| Q9.5 | Are scrhat per-cell `.dta` files (`va_est_dta/predicted_prior_score/`) dead artifacts to delete? | Cleanup scope |
+
+**For chunk 10**:
+
+- Where does `lag2ela` ultimately come from? `merge_lag2_ela.doh` reads from `k12_lag_test_scores_clean.dta` — chunk 10 should cover upstream lag-test-score panel construction.
+- The `sibling_out_xwalk` global path referenced in `sample_counts_tab.do:53` but never defined locally.
+- Distance controls Python pipeline (geocoding) — chunk 10 territory.
+
+---
+
 ## Chunks pending
 
-### Chunk 9: Share/output helpers + explore (AGGRESSIVE for share helpers; CAUTIOUS for explore/scrhat)
+### Chunk 10: Upstream / Python geocoding (final chunk)
 
 - `cde_va_project_fork/do_files/sbac/macros_va.doh` ← DONE in foundation
 - `cde_va_project_fork/do_files/sbac/create_va_sample.doh`
