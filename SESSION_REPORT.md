@@ -210,3 +210,34 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 
 - Done: 8 of 10 round-2 chunks verified (chunks 1-8); 8 disc reports written; T3.1-T3.6 verifications complete.
 - Pending: chunks 9, 10 round-2 (running); Phase 1 bug priority triage; verified-final audit doc.
+
+
+---
+
+## 2026-04-26 14:05 — Hooks: context-monitor stderr fix + PreCompact auto-compact bypass fallback
+
+**Operations:**
+
+- Diagnosed missing pre-compaction notification: `~/.claude/sessions/088d2ff7/` had no `pre-compact-state.json` after auto-compact, despite both `claude-code-my-workflow` and `va_consolidated` correctly configuring `PreCompact` at `.claude/settings.json`. Hook works manually; fails on auto-compact under MCP servers (anthropics/claude-code#14111).
+- Fixed `.claude/hooks/context-monitor.py`: warnings now print to `sys.stderr` (were going to stdout → invisible to user, model-only). Added `capture_precompact_snapshot()` fallback at the 90% threshold so state is written to `pre-compact-state.json` even when Claude Code silently bypasses PreCompact.
+- Tuned `MAX_TOOL_CALLS` from 150 → 500 (env-var overridable via `CONTEXT_MONITOR_MAX_TOOL_CALLS`) to match observed Opus 4.7 1M-context auto-compact timing (~500 tool calls in this repo).
+- Mirrored the patched `context-monitor.py` from `claude-code-my-workflow` to `va_consolidated`; verified byte-for-byte identical.
+
+**Decisions:**
+
+- Snapshot fallback added to `context-monitor.py` (PostToolUse) rather than as a new hook event — already runs every tool call and tracks the 90% threshold.
+- Distinct `"trigger": "context-monitor-fallback"` value in fallback snapshots so log analysis can tell which path captured the state. `post-compact-restore.py` does not key on `trigger`, so restore behavior is unchanged.
+- Did NOT promote PreCompact to global `~/.claude/settings.json`; user wants it as a workflow feature only, and the auto-compact bypass bug would not be fixed by going global.
+
+**Results:**
+
+- Manual test: 80% warning renders on stderr; 90% warning renders on stderr AND writes `pre-compact-state.json` with active plan + current task. `pre-compact.py` still works when manually invoked. Sync verified.
+
+**Commits:**
+
+- (this commit) — context-monitor stderr fix + PreCompact fallback + tuned heuristic
+
+**Status:**
+
+- Done: hook fix shipped + session log + SESSION_REPORT update.
+- Pending: nothing on this thread; pre-existing audit work (chunks 9–10 round-2) untouched.
