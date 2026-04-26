@@ -315,6 +315,35 @@ Christina recalled Matt saying the original vam package doesn't support fixed-ef
 
 Recommendation: option (a). Same as v2 plan §3 + §7. The pin is cheap insurance.
 
+**Beyond `i.year`: full vam-invocation compatibility verification (2026-04-25)**
+
+User asked to verify every vam usage pattern, not just `i.year`, against published v2.0.1. Inventoried 40+ vam invocations across 13 files (9 in cde_va_project_fork sbac/explore, 4 in caschls share/siblingvaregs).
+
+**Option-set actually used** (uniform across all invocations):
+
+| Option | Argument(s) used | Stepner v2.0.1 syntax | Valid? |
+|---|---|---|---|
+| `<depvar>` | simple z-score / outcome names | `varname(ts fv)` | ✓ |
+| `teacher()` | `school_id` (always) | `varname` | ✓ |
+| `year()` | `year` (always) | `varname` | ✓ |
+| `class()` | `school_id` (always — equals `teacher` for school-level VA) | `varname` | ✓ |
+| `controls()` | `i.year` + macros containing `i.year#(c.X##c.X##c.X)` cubic interactions | `varlist ts fv` accepts `i.`, `c.`, `##` | ✓ |
+| `data()` | `merge tv score_r` or `variance` (spec-test only) | `data(string)`; both values explicitly validated in vam.ado lines 67-75 | ✓ |
+| `driftlimit()` | numeric local | `integer -1` default | ✓ |
+| `estimates()` | path with `replace` | `string asis` | ✓ |
+
+**Options NOT used anywhere** (so we don't need to verify them): `by()`, `absorb()`, `tfx_resid()`, `output()`, `output_addvars()`, `quasiexperiment`, `constant`, `noseed`, `varclasszero`, `[aweight]`.
+
+**Patterns specifically checked**:
+
+1. **`teacher(school_id) class(school_id)`** (same variable for both): standard CFR school-level adaptation. Vam's variance decomposition handles the degenerate case (within-class variance becomes school-year residual variance).
+2. **`controls(i.year \`b_controls' ...)`**: macros already contain `i.year#(c....)` interactions; the explicit `i.year` adds the main effect. No double-counting; standard "year main + year-by-cubic" specification.
+3. **VA estimates as controls** (`va_cfr_g11_ela`, `va_cfr_g11_math` at va_out_all.do:138-139): continuous variables, no factor syntax needed; valid.
+4. **Reserved names** (`tv`, `score_r`): every vam call is followed by `rename tv ...` / `rename score_r ...`. Conflict-free.
+5. **Caschls vam invocations** (in va_sibling.do, va_sibling_out.do, va_sib_acs_out.do, va_sibling_out_forecast_bias.do): same pattern, same option set. Compatible.
+
+**Verdict**: the published Stepner vam v2.0.1 can run every invocation in the codebase as-is. No customization required. The `noseed` bug (now fixed in our local copy at commit `0202251`) is the only deviation from textbook; it's deterministic so reproducibility is unaffected.
+
 ---
 
 ## Foundation chunk synthesis
