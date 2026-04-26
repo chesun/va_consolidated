@@ -4,14 +4,14 @@ Last updated: 2026-04-26
 
 ## Active (doing now)
 
-- [ ] Phase 0a-v2 batch 4 (chunks 9, 10) — round-2 agents dispatched 2026-04-26, running in background
-- [ ] Bug 93 T1 empirical verification — Christina runs Stata snippet on Scribe when convenient; **scope expanded** to 4 instances (NSC UC, NSC UC ontime, CCC ontime, CSU ontime)
+- [ ] Phase 0a-v2 Step 4 — synthesize verified-final audit doc + bug-priority triage (P1/P2/P3)
+- [ ] Bug 93 T1 empirical verification — Christina runs Stata snippet on Scribe when convenient; **scope LOCKED at 4 instances** (NSC UC, NSC UC ontime, CCC ontime, CSU ontime); **paper blast radius is NULL for current paper** (downgrade priority to P2)
 - [ ] **Revoke OpenCage API key** committed in `k12_postsec_distances.do:98` (security hygiene)
+- [ ] **CRITICAL T1**: paper Tables 2/3 column 6 FB rows blank? (chunk 9 M1 — resolves distance-FB-row-6 mystery)
 
 ## Up Next
 
-- [ ] After batch 4 completes: draft chunks 9, 10 disc reports
-- [ ] Phase 0a-v2 Step 3 — adjudicate per tier (T1/T2/T3/T4) for all 10 chunks
+- [ ] Phase 0a-v2 Step 3 — adjudicate per tier (T1/T2/T3/T4) for all 10 chunks (most need T1 from Christina)
 - [ ] Phase 0a-v2 Step 4 — produce verified-final audit doc
 - [ ] Phase 0a-v2 Step 5 — bug-priority triage (P1/P2/P3)
 - [ ] Phase 0a-v2 Step 6 — Q&A consolidation for Phase 0e walk-through
@@ -58,3 +58,4 @@ Last updated: 2026-04-26
 - [x] Phase 0a-v2 batch 1 — chunks 1, 2, 3 round-2 verified; 3 disc reports written; T3 verifications resolved 5 latent-bug questions and confirmed Bug 93 family is 4 active instances — 2026-04-26
 - [x] Phase 0a-v2 batch 2 — chunks 4, 5 round-2 verified; 2 disc reports written; N1 SAFE-to-relocate verdict reaffirmed; new HIGH-priority mtitles bugs surfaced in chunk-4 file 4 and chunk-5 reg_out_va_sib_acs_tab.do — 2026-04-26
 - [x] Phase 0a-v2 batch 3 — chunks 6, 7, 8 round-2 verified; 3 disc reports written; Distance-FB Row 6 producer chain LOCKED end-to-end; sample-restriction map (paper Table A.1) FINALIZED; T3.6 confirmed counts_k12.tex paper-path "mismatch" is OLD-paper / NEW-paper divergence (NOT a Phase 1 issue) — 2026-04-26
+- [x] Phase 0a-v2 batch 4 — chunks 9, 10 round-2 verified; 2 disc reports written; **Phase 0a-v2 round-2 COMPLETE (10 chunks)**. CRITICAL: chunk 9 M1 resolves distance-FB-row-6 mystery — column 6 (lasd) FB rows DROPPED from paper Tables 2/3 by `va_spec_fb_tab_all.do` keeper-rule omission. Bug 93 family LOCKED at 4 instances; blast radius NULL for current paper — 2026-04-26

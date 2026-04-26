@@ -211,6 +211,37 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 - Done: 8 of 10 round-2 chunks verified (chunks 1-8); 8 disc reports written; T3.1-T3.6 verifications complete.
 - Pending: chunks 9, 10 round-2 (running); Phase 1 bug priority triage; verified-final audit doc.
 
+---
+
+## 2026-04-26 (continued) — Phase 0a-v2 round-2 COMPLETE (chunks 9-10) + 2 critical findings
+
+**Operations:**
+
+- Received chunk 9 round-2 (53K, 13 files) and chunk 10 round-2 (35K, 6 files). Both agents wrote outputs before hitting org's monthly usage limit on the final summary message.
+- Drafted chunk-9 and chunk-10 disc reports.
+- **Phase 0a-v2 round-2 COMPLETE: 10 of 10 chunks verified, 10 disc reports written.**
+
+**Commits:**
+
+- `150ff42` — batch 4 round-2 verified (chunks 9-10) + 2 disc reports — Phase 0a-v2 round-2 COMPLETE
+
+**Two CRITICAL paper-output integrity findings (from chunk 9):**
+
+1. **Column 6 (`lasd`) FB rows DROPPED from paper Tables 2 and 3** (M1). `va_spec_fb_tab_all.do:82-84` keeper rule has NO branch for `va_control=="lasd"`. Combined with L115 `keep row entry1-entry5` truncation, column 6 FB entry is explicitly removed. **Result: paper Tables 2 and 3 column 6 (Distance) shows the spec-test row but BLANK FB rows. THIS RESOLVES THE CHUNK-3 DISTANCE-FB-ROW-6 MYSTERY.** The producer drops what chunk-7 wires up correctly.
+
+2. **`va_spec_fb_tab_all.do` does NOT filter `predicted_score==0`** (M2). The chunks-7/8 added column would double rows in column-mapping reshape. The scrhat parallel `va_predicted_score_spec_fb_tab.do:59-64` correctly filters `& predicted_score == 1`. The non-scrhat producer of paper Tables 2 and 3 needs symmetric `& predicted_score == 0`.
+
+**Bug 93 reframing (from chunk 10):**
+
+- **Bug 93 paper-impact analysis: BLAST RADIUS IS NULL for current paper.** `nsc_enr_uc` consumed only by `csu_transfer_uc`; `csu_transfer_uc` not cited in paper. Composite outcomes (`enr_4year`, `enr_2year`, `enr`) do NOT use `nsc_enr_uc`. Phase 1 priority: still fix (cheap, prevents future inheritance), but **downgrade from PAPER-BLOCKING to LOW-impact (P2 not P1).**
+- **Bug 93 family BOUNDED at 4 instances.** Round-2 verified zero instances in CCC/CSU crosswalks. Phase 1 patch template is finalized.
+- **NEW potential silent bug at `crosswalk_nsc_outcomes.do:250`** — references local `id` which is not defined in the file. `egen ... by(\`id' collegecodebranch)` may collapse to `by(collegecodebranch)` only. T1 verification needed BEFORE Phase 1.
+
+**Status:**
+
+- **Phase 0a-v2 round-2 COMPLETE: 10 chunks verified, 10 disc reports written.**
+- Pending: Phase 0a-v2 Step 3 (T1/T4 escalations to Christina); Step 4 (verified-final audit doc); Step 5 (bug-priority triage P1/P2/P3); Step 6 (Phase 0e Q&A consolidation).
+
 
 ---
 
