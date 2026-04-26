@@ -81,6 +81,19 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 
 [LEARN:domain] **Last full-pipeline run was probably mid-2024**, NOT 2023 as initially stated in context dump §2. Evidence: `cde_va_project_fork/tables/share/va/pub/counts_k12.tex` is dated 2024-07-04; that summer's submission cycle aligns with a full run. Christina doesn't remember exactly. Consolidation bit-rot risk window: ~21 months (mid-2024 → 2026-04), not ~3 years. Stata version drift, ssc package updates, and CDE data refresh windows are all narrower than initially feared.
 
+[LEARN:domain] **Bug 93 family is 4 instances, not 2** (initially scoped at chunk 10 NSC UC only, then expanded by Phase 0a-v2 round-2). Active locations of the operator-precedence pattern `gen X = 1 if A & B | C` (Stata: `&` binds tighter than `|`, so `C` fires regardless of `A`):
+1. `cde_va_project_fork/do_files/upstream/crosswalk_nsc_outcomes.do:218-219` — `nsc_enr_uc` (UC Merced bypasses `recordfoundyn`)
+2. `cde_va_project_fork/do_files/upstream/crosswalk_nsc_outcomes.do:227-228` — `nsc_enr_ontime_uc` (UC Merced bypasses `recordfoundyn` AND `enrollmentbegin`)
+3. `cde_va_project_fork/do_files/merge_k12_postsecondary.doh:168-170` — `ccc_enr_ontime` (CCC ontime fires without `ccc_enr==1`)
+4. `cde_va_project_fork/do_files/merge_k12_postsecondary.doh:232-234` — `csu_enr_ontime` (CSU ontime fires without `csu_enr==1`)
+Phase 1 fix: wrap OR clauses in outer parens (`& ((...) | (...))`). Bundle as single patch.
+
+[LEARN:domain] **`_scrhat_` is exploratory, not v2.** It's the third axis (predicted prior-score, `prior_ela_z_score_hat`), orthogonal to v1/v2. Generated only in `do_files/explore/va_predicted_score.do` and `va_predicted_score_fb.do`. Canonical paper uses v1, not `_scrhat_`. So `_scrhat_*` macro bugs (e.g., L342-345 `l_scrhat_spec_controls` pattern break) affect exploratory outputs only.
+
 ## Discipline
 
 [LEARN:discipline] **No assumptions.** Global rule (~/github_repos/claude-config/rules/no-assumptions.md) prohibits guessing about workflow, infrastructure, tools, role boundaries, or preferences. Only state what was explicitly provided. If a detail is missing and relevant, ask or omit — never fill blanks with plausible-sounding inference. Wrong → right: never reframe ambiguous user terminology (e.g., v1/v2) by analogy to other projects; ask what it means.
+
+[LEARN:discipline] **Verification protocol catches confirmation-bias errors in BOTH directions.** Phase 0a-v2 surfaced two false positives within the first 3 chunks: round-2 chunk-2 mis-claimed `asd_str` typo still active (was fixed in `e8dd083`); round-1 chunk-2 mis-claimed `peer_L3_cst_ela_z_score` missing from `create_va_sample.doh` keepusing list (it IS at L29). Both caught by T3 deterministic file-read. Lesson: independent re-derivation works because the bias mode (anchor on prior framing) is asymmetric across rounds; either round can err. Don't assume either is the "trusted source."
+
+[LEARN:discipline] **Temporal artifacts vs. true contradictions.** When two audits disagree, first check whether intervening fixes occurred between the audits (git log on the artifact). Phase 0a-v2 chunk 1 had two such cases: vam.ado customization status (round-1 wrote pre-noseed-fix; round-2 wrote post-fix) and macros_va.doh missing-`;` location (round-1 found L558 fixed in `e8dd083`; round-2 found still-open L23). Both resolved cleanly to "both rounds correct in their respective time slices."
