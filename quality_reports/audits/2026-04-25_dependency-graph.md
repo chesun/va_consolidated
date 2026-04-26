@@ -235,3 +235,84 @@ vafilemacros.doh
 ```
 
 Triangulation: master VA datasets → fork-side VA estimation → caschls-side sibling-VA estimation. Consolidation collapses both subroots under one repo.
+
+---
+
+## Chunk 5 additions: sibling-xwalk + sibling-VA sub-graph
+
+### Sibling-xwalk pipeline (4 do-files; produce 3 dtas)
+
+```
+[k12_test_scores_clean.dta + cleaned address fields]
+       ↓
+siblingmatch.do (caschls/do/share/siblingxwalk/)
+   ├── 5-component address join (street_one + street_two + city + state + zip_code)
+   ├── + last_name (exact, no normalization)
+   ├── drop ≤1-char addresses, missing SSID, singletons
+   └── output: siblings_name_address_year (intermediate)
+       ↓
+uniquefamily.do (caschls/do/share/siblingxwalk/)
+   ├── group_twoway (Haghish — transitive closure across years via SSID)
+   ├── 10-child cap (drop if numsiblings >= 9)
+   └── output: $projdir/dta/siblingxwalk/ufamilyxwalk.dta
+       ↓
+siblingpairxwalk.do (caschls/do/share/siblingxwalk/)
+   ├── pairs of siblings within family
+   └── output: $projdir/dta/siblingxwalk/siblingpairxwalk.dta
+       ↓
+siblingoutxwalk.do (caschls/do/share/siblingvaregs/ — N1 anchor)
+   ├── inputs: ufamilyxwalk.dta + k12_test_scores_clean.dta + merge_k12_postsecondary.doh
+   ├── computes lag1/lag2 older-sibling outcome variables (old1_sib_<outcome>, old2_sib_<outcome>)
+   └── outputs:
+        - $projdir/dta/common_core_va/k12_postsecondary_out_merge.dta
+        - $projdir/dta/siblingxwalk/sibling_out_xwalk.dta  ← already in siblingxwalk/ data-side
+```
+
+**N1 verdict: relocation of siblingoutxwalk.do from siblingvaregs/ → sibling_xwalk/ is SAFE.** Only `master.do:103` needs path update. No circular reference; no `siblingvaregs/` data dependency.
+
+### Sibling-VA estimation pipeline (sibling-only files)
+
+```
+sibling_out_xwalk.dta → createvasample.do (creates va_dataset.dta)
+                     → siblingvasamples.do (creates sibling-restricted samples)
+                            ↓
+va_sibling.do (test-score VA on sibling sample)
+   args: setlimit (0=default, n=override drift_limit)
+   → fb_test_va_cfr_g11_<subj>_sibling.ster (Paper Table 2 sibling-FB row)
+
+va_sibling_out.do (outcome VA on sibling sample)
+   → fb_test_va_cfr_g11_<outcome>_sibling.ster (Paper Table 3 sibling-FB row)
+
+va_sibling_out_forecast_bias.do (sibling+census combined)
+   → fb_test_<outcome>_census.ster (Paper Table 3 sibling+census row)
+```
+
+### Sibling-VA estimation pipeline (4-spec ACS+sibling files)
+
+```
+create_va_sib_acs_restr_smp.do, create_va_sib_acs_out_restr_smp.do
+   create the 4-spec restricted samples
+            ↓
+va_sib_acs.do (test-score VA, 4 specs × 2 subjects = 8 vam invocations)
+va_sib_acs_out.do (outcome VA, 4 specs × 3 outcomes = 12 vam invocations)
+va_sib_acs_out_dk.do (DK outcome VA, 4 specs × 3 outcomes = 12 vam invocations)
+   → vam_<subj-or-out>_<og|acs|sib|both>{_dk}.ster (OA: 4-spec tables)
+            ↓
+reg_out_va_sib_acs.do, reg_out_va_sib_acs_dk.do
+   pass-through ρ regressions on sibling-restricted samples
+   → Paper Table 4 (sibling-restricted-sample 4-spec rows) + OA
+            ↓
+reg_out_va_sib_acs_tab.do, reg_out_va_sib_acs_fig.do
+   tables and figures
+   → Paper Fig 6 sibling rows + OA Figs C.1, C.2
+```
+
+### Naming-system fragmentation (consolidation hazard)
+
+Three different naming systems in sibling-VA territory:
+
+- **Older sibling-only files**: `_sibling`, `_nosibctrl`, `_nocontrol` (e.g., `va_sibling.do`, `va_sibling_out.do`)
+- **Newer 4-spec files**: `og`, `acs`, `sib`, `both` (e.g., `va_sib_acs.do`)
+- **Ad-hoc 3-way tokens** (only in `va_sibling_out_forecast_bias.do`): `_census_nosib_noacs`, `_census_noacs`, `_sib_census`
+
+Recommend standardizing on `og/acs/sib/both` for consolidation, with a migration ADR.

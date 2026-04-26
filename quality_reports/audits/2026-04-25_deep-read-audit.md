@@ -964,9 +964,166 @@ reg <outcome> c.va_<subject>_<sample>_sp_<control>_ct[_p]#i.<het_char>
 
 ---
 
+## Chunk 5: Sibling crosswalk + sibling VA regs (COMPLETE — N1 RESOLVED)
+
+Files audited: 33 files across `caschls/do/share/siblingxwalk/` (3) and `caschls/do/share/siblingvaregs/` (30 including `.doh`).
+
+**Per-file detail**: see companion doc `quality_reports/audits/2026-04-25_chunk5-sibling.md` (1168 lines, 33 per-file entries + full synthesis).
+
+Synthesis below.
+
+### N1 — siblingoutxwalk.do relocation: SAFE to move to `sibling_xwalk/`
+
+Concrete dependency-trace evidence:
+
+1. **Inputs of siblingoutxwalk.do**: only k-12 source data (`k12_test_scores_clean.dta`), Matt's helper `merge_k12_postsecondary.doh`, the `ufamilyxwalk.dta` produced by `uniquefamily.do` (which IS in `siblingxwalk/`), and shared macro includes (`vafilemacros.doh`, `macros_va.doh`). **NONE come from `siblingvaregs/` data outputs.**
+2. **Outputs**: `$projdir/dta/common_core_va/k12_postsecondary_out_merge.dta` and `$projdir/dta/siblingxwalk/sibling_out_xwalk.dta`. **The canonical output is already in the `siblingxwalk/` folder** (data-side, not code-side).
+3. **Consumers of `sibling_out_xwalk.dta`**: 7 files in `siblingvaregs/` (`createvasample`, `siblingvasamples`, `va_sibling`, `va_sibling_out`, `va_sibling_out_forecast_bias`, `create_va_sib_acs_restr_smp`, `create_va_sib_acs_out_restr_smp`). All access via `\`sibling_out_xwalk'` macro — relocation doesn't change resolved path.
+4. **Nothing in `siblingvaregs/` calls `do siblingoutxwalk.do`** — only `master.do:103` does.
+
+**Verdict: SAFE to relocate. Single edit needed: update `master.do:103` path** from `do/share/siblingvaregs/siblingoutxwalk.do` → `do/share/siblingxwalk/siblingoutxwalk.do` (or whatever the consolidated layout's path becomes). No circular reference. **Unblocks ADR-0004 (sibling-xwalk canonical location).**
+
+### Sibling-matching specifics (paper Q1 from paper-map open questions)
+
+- **Address join**: 5-component (`street_address_line_one street_address_line_two city state zip_code`). Note: `zip_code` included in `egen group` (`siblingmatch.do` L49) but NOT in the duplicates report (L41) — slight inconsistency.
+- **Surname**: `last_name` as-is (no normalization, no fuzzy matching).
+- **"Same year"**: within-year matches require enrolled in SAME calendar year (egen group keys on year + identifiers). Cross-year crosswalk drops year (`siblingmatch.do` L86).
+- **Transitive closure**: implemented via Haghish's **`group_twoway`** package (`uniquefamily.do` L32). Args = (within-year-family-ID, student-ID). Computes connected components over both, so a student in family A in year 1 and family B in year 2 (different addresses or surnames) is linked transitively via SSID.
+- **Family moves**: handled by transitive closure across years.
+- **Surname changes (remarriage)**: NOT explicitly handled. If both surname AND address change, link breaks. If only surname changes, transitive closure via SSID still links them.
+- **Data-entry typos**: NOT explicitly handled. Match is exact-string.
+- **Quality filters**:
+  - Drop addresses with ≤1 character (`siblingmatch.do` L22)
+  - Drop missing SSID (L23)
+  - Drop singletons (no siblings) (L53)
+  - **10-child cap** (`uniquefamily.do` L53: `drop if numsiblings >= 9`) — promote to ADR.
+
+### 4-spec convention for sibling-restricted sample
+
+Confirmed from `va_sib_acs.do` doc-comment + code structure:
+
+| Spec | `<ctrl>` token | Controls beyond CFR baseline |
+|---|---|---|
+| 1 | `og` | None (CFR baseline only) |
+| 2 | `acs` | + `census_controls` |
+| 3 | `sib` | + `sibling_controls` |
+| 4 | `both` | + `sibling_controls` + `census_controls` |
+
+`_str` macros (`og_str`, `acs_str`, `sib_str`, `both_str`) for human-readable labels live in `macros_va.doh` (chunk 2 confirmed).
+
+The 4-spec convention applies to:
+
+- `va_sib_acs.do` (test-score VA, 4 specs × 2 subjects = 8 vam invocations)
+- `va_sib_acs_out.do` (outcome VA, 4 specs × 3 outcomes = 12 vam)
+- `va_sib_acs_out_dk.do` (DK outcome VA, 4 specs × 3 outcomes = 12 vam)
+
+### Positional arg `0` semantics for `va_sibling*.do`
+
+```stata
+args setlimit
+if `setlimit' == 0 {
+    local drift_limit = max(`test_score_max_year' - `test_score_min_year' - 1, 1)
+}
+else {
+    local drift_limit = `setlimit'
+}
+```
+
+- `0` = sentinel, use default formula `max(year_range - 1, 1)`
+- Any non-zero integer = override drift_limit to that value
+
+`va_sibling_out.do` change-log notes: "re-ran with drift limit = 2. Still produces an error if drift limit = 3" — for the sibling outcome sample, drift_limit=3 hits a numerical issue (possibly singular variance matrix); 2 is the working override.
+
+**Inconsistency**: the older sibling-only files (`va_sibling`, `va_sibling_out`) accept the positional arg; the newer 4-spec files (`va_sib_acs*`) hardcode the formula. If 4-spec drift fails in the future, manual code edit required.
+
+### Paper-output mapping (sibling-VA artifacts)
+
+| Sibling-VA artifact | Paper destination |
+|---|---|
+| `va_sibling.do` | Paper Table 2 sibling-FB row |
+| `va_sibling_out.do` | Paper Table 3 sibling-FB row |
+| `va_sibling_out_forecast_bias.do` | Paper Table 3 sibling+census combined row |
+| `va_sib_acs.do` / `va_sib_acs_out.do` / `va_sib_acs_out_dk.do` | OA: 4-spec test-score / outcome / DK VA |
+| `va_sib_acs_spec_test_tab.do`, `va_sib_acs_fb_test_tab.do`, `va_sib_acs_vam_tab.do` | OA tables for 4-spec spec/FB/VAM |
+| `reg_out_va_sib_acs.do` | Paper Table 4 (pass-through, sibling-restricted-sample 4-spec rows) |
+| `reg_out_va_sib_acs_dk.do` | Paper Table 5 (DK pass-through, sibling-restricted rows) |
+| `reg_out_va_sib_acs_tab.do`, `reg_out_va_sib_acs_fig.do` | Tables for Table 4 sibling rows + OA Figs C.1-C.2 |
+
+**Distance-FB Row 6 mystery (chunk 3 open question) NOT in chunk 5 territory either.** Confirmed not in sibling-VA. Must live in `va_distance_*` files (Chunk 6/7 territory) or possibly `do_files/explore/` (Chunk 9).
+
+### New naming tokens found in chunk 5
+
+- **`og` / `acs` / `sib` / `both`** — 4-spec control tokens (major addition)
+- `_dk` suffix for deep-knowledge variants
+- `_nosibctrl` / `_nocontrol` — older sibling-only naming
+- `_sibling` suffix — older naming on `.ster` files (vs `_<ctrl>` token system)
+- `_census_nosib_noacs` / `_census_noacs` / `_sib_census` — older 3-way ad-hoc tokens (only in `va_sibling_out_forecast_bias.do`)
+- `_x_prior_<subject>` — heterogeneity-by-prior-decile pattern
+- `_sed{0,1}` — heterogeneity-by-SED-status pattern
+- `het_reg_` prefix
+- `old1_sib_<outcome>` / `old2_sib_<outcome>` — lag1/lag2 older-sibling outcome variables
+
+**Naming-system fragmentation in sibling-VA**: the older sibling-only files use `_sibling`/`_nosibctrl`/`_nocontrol`; the 4-spec files use `og/acs/sib/both`; `va_sibling_out_forecast_bias.do` uses ad-hoc tokens. Major consolidation hazard. Recommend standardizing on `og/acs/sib/both`.
+
+### ssc/community packages — full list across chunks 1-5
+
+Total ~14 packages. The consolidated `settings.do` install-block needs all:
+
+| Package | Source | First seen |
+|---|---|---|
+| `vam` | SSC (Stepner v2.0.1) | chunk 1 |
+| `reghdfe` | SSC | chunk 1 |
+| `ivreghdfe` | SSC | chunk 1 |
+| `estout` / `esttab` | SSC | chunk 3 |
+| `coefplot` | SSC | chunk 4 |
+| `palettes` | SSC | settings.do |
+| `cleanplots` | SSC | settings.do |
+| `egenmore` | SSC | settings.do |
+| `regsave` | SSC | settings.do |
+| `cdfplot` | SSC | settings.do |
+| `binscatter` / `binscatter2` | SSC | chunks 3-5 |
+| `parmest` | SSC | chunk 5 |
+| `rangestat` | SSC | chunk 5 |
+| `texsave` | SSC | settings.do |
+| **`group_twoway`** | **Haghish (NOT on SSC)** | chunk 5 |
+
+`group_twoway` is the one non-SSC dependency — installs via `net install` from Haghish's site. Settings.do install-block needs a separate branch for it.
+
+### 7 new bugs/anomalies in chunk 5 (running total ≈23 across all chunks)
+
+1. **`siblingpairxwalk.do` L24**: `rename middle_intl sibling_middle_intl` — but `uniquelinkedfamilyclean.dta` doesn't include `middle_intl` per `uniquefamily.do` L54 keep list. Will silently fail or error.
+2. **`siblingmatch.do` L41 vs L49**: duplicates report uses 6 keys; egen group uses 7 (with zip_code). Slight inconsistency.
+3. **`uniquefamily.do` L56**: `numsiblings_exclude_sef` typo for "self".
+4. **`va_sibling_out.do` L328-330 vs `va_sibling.do` L287-291**: outcome-VA collapse has NO `if sibling_full_sample == 1 & sibling_out_sample == 1` filter; test-score-VA collapse does. **Inconsistency — possible bug**: outcome-VA collapsed dataset spans more obs than sibling-only.
+5. **`reg_out_va_sib_acs.do` L151, L174, L211, L224**: heterogeneity regs cluster on `cdscode`, not `school_id` (which is used in main pass-through regs L94, L112). Same flag as chunk 4's `va_het.do:158`.
+6. **`vafilemacros.doh` L21**: `local siblingxwalk` defined but appears unused — dead local.
+7. **Naming-system fragmentation across sibling-VA files** — older `_sibling/_nosibctrl/_nocontrol` vs 4-spec `og/acs/sib/both` vs ad-hoc tokens.
+8. **`va_sib_acs_*` files lack `args setlimit`** — if 4-spec drift fails, manual edit required.
+9. **Dual-output pattern**: many post-est diagnostic files write PDFs to BOTH `$projdir/out/graph/...` AND `$vaprojdir/figures/...`. Path-rerouting must update both during consolidation.
+
+### Open questions for user
+
+| # | Question | Affects |
+|---|---|---|
+| Q5.1 | Confirm 10-child cap in `uniquefamily.do:53` is documented in paper / appendix | Reproducibility documentation |
+| Q5.2 | DK controls in `va_sib_acs_out_dk.do` (fixed on `_og` test-score VA across all 4 specs) — intentional or bug? | DK regression results |
+| Q5.3 | Is `va_sibling_out_forecast_bias.do` redundant given `va_sib_acs_out.do`? Both produce outcome-VA-with-sibling-and-census-controls FB tests with different sample restrictions and naming. Which feeds paper Table 3? | Table 3 producer attribution |
+| Q5.4 | Cluster-level inconsistency in heterogeneity regs (`cdscode` vs `school_id`) — intentional? | SE in OA tables |
+| Q5.5 | `va_sibling_out.do` collapse missing sibling-sample filter — bug or intentional? | Sibling outcome-VA dataset scope |
+| Q5.6 | Migrate older `_sibling/_nosibctrl/_nocontrol` naming to `og/acs/sib/both` at consolidation, or keep for backward compatibility? | Naming convention for consolidated repo |
+
+### Resolved questions from prior chunks
+
+- N1: SAFE to relocate siblingoutxwalk.do (this chunk).
+- v1/v2 prior-score table: chunk 2 (v1 verified, v2 corrected).
+- naming convention catalog: chunks 2-5 (all major tokens found).
+- vam compatibility: chunks 1-3 (no customization needed).
+
+---
+
 ## Chunks pending
 
-### Chunk 5: Sibling crosswalk + sibling VA regs (CAUTIOUS — N1 trace lives here)
+### Chunk 6: Survey VA (CAUTIOUS for regs, AGGRESSIVE for cleaning)
 
 - `cde_va_project_fork/do_files/sbac/macros_va.doh` ← DONE in foundation
 - `cde_va_project_fork/do_files/sbac/create_va_sample.doh`

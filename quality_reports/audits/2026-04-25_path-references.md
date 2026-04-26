@@ -189,3 +189,40 @@ Implication for path-translation pass: estimate-file paths under `$vaprojdir/est
 | File | Status |
 |---|---|
 | `cde_va_project_fork/do_files/sbac/out_drift_limit.doh` | Dead — never `include`d anywhere in either repo |
+
+---
+
+## Chunk 5 additions (2026-04-25)
+
+### N1 verdict (sibling-xwalk relocation): SAFE
+
+Single edit needed to relocate `siblingoutxwalk.do` from `caschls/do/share/siblingvaregs/` to `caschls/do/share/siblingxwalk/`:
+
+| File | Line | Change |
+|---|---|---|
+| `caschls/do/master.do` | 103 | `do $projdir/do/share/siblingvaregs/siblingoutxwalk.do` → `do $projdir/do/share/siblingxwalk/siblingoutxwalk.do` |
+
+The output dataset paths (`$projdir/dta/siblingxwalk/sibling_out_xwalk.dta`) are unchanged — they're already in `siblingxwalk/` data-side. All consumers reference via the `\`sibling_out_xwalk'` macro, which resolves the same regardless of source-file location.
+
+In the consolidated repo, this collapses to: `do/sibling_xwalk/siblingoutxwalk.do` produces `data/sibling_xwalk/sibling_out_xwalk.dta` — clean ADR-0004 disposition.
+
+### Sibling-VA paths
+
+`caschls/do/share/siblingvaregs/` (28 files post-relocation) folds into `do/survey_va/sibling_va_regs/` per plan §3 layout.
+
+Sibling-VA output paths span:
+
+- `$vaprojdir/estimates/sibling_va/test_score_va/...` (test-score VA estimates)
+- `$vaprojdir/estimates/sibling_va/outcome_va/...` (outcome VA estimates)
+- `$vaprojdir/estimates/sib_acs_restr_smp/test_score_va/...` and `.../outcome_va/...` (4-spec)
+- `$projdir/out/graph/...` AND `$vaprojdir/figures/...` (dual-output pattern — both must be updated during path translation)
+
+### group_twoway dependency (Haghish, NOT on SSC)
+
+Sibling-VA uses Haghish's `group_twoway` package for transitive-closure family ID. Not on SSC; installs via:
+
+```stata
+net install group_twoway, from("https://github.com/haghish/group_twoway/raw/master/")
+```
+
+Consolidated `settings.do` install-block needs a non-SSC branch.
