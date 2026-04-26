@@ -318,25 +318,25 @@ We can't write a target folder structure / pipeline ordering without knowing whe
 
 > Header (your authorship, June 2022): "Creates prior score deciles using the original 11th grade VA sample for merge with sibling census restricted sample." Production-sounding, but not in `do_all.do`. Is this load-bearing? If yes, where in the order? If deprecated, archive?
 
-> *(answer)*
+> I think this is production. There is a change log dated 2024.
 
 **A2. `cde_va_project_fork/do_files/sbac/va_scatter_plot.do`**
 
 > Header (your authorship, Oct 2022): "VA scatter plots for correlations." Paper Figs 3-4 are scatter plots. There's also a `do_files/share/va_scatter.do` (which IS in `do_all.do`). Are these the same purpose, or do they produce different plots? Is `va_scatter_plot.do` load-bearing for the paper figures, or superseded by `va_scatter.do`?
 
-> *(answer)*
+> deprecated, non-production.
 
 **A3. `cde_va_project_fork/do_files/crosswalk_nsc_outcomes.do`**
 
 > NSC linkage step. Not in `do_all.do`. Is the cleaned NSC dataset already on Scribe and treated as a static input to the project (so this script doesn't need to run end-to-end), or does the pipeline depend on it being run manually before `do_all.do`?
 
-> *(answer)*
+> Honestly no idea. Will need to trace output lineage to see if used by any other do files.
 
 **A4. `va_score_sib_lag.do` / `va_out_sib_lag.do` reactivation**
 
 > Your in-flight edit to `do_all.do` (committed as `c7867e4`) uncommented these two lines while adding the comment "forecast bias test with sibling bag is not used in paper." Was the reactivation intentional (running the test for diagnostic) or did you flip the comment by accident? If they should stay commented out, I'll send a quick fix-up commit; if they should be active, the comment should be reworded.
 
-> *(answer)*
+> It was intentional, becuase these are testing code and not in the paper, but we will keep them as production in case we want to use them.
 
 **A5. caschls "possibly production" 10-file checklist**
 
@@ -348,12 +348,12 @@ We can't write a target folder structure / pipeline ordering without knowing whe
 | `do/build/prepare/poolenrollment.do` | | |
 | `do/build/sample/enrollmentconvert.do` | | |
 | `do/build/sample/responseyear.do` | | |
-| `do/share/outcomesumstats/k12_nsc_match_sumstats.do` | | |
-| `do/share/outcomesumstats/matchdiscrep.do` | | |
-| `do/share/outcomesumstats/nsc2019new/nsc2019sumstats.do` | | |
-| `do/share/outcomesumstats/searchdate_sumstats.do` | | |
-| `do/share/siblingvaregs/reg_out_va_sib_acs_dk_tab.do` | | |
-| `do/share/siblingvaregs/vamtest.do` | | |
+| `do/share/outcomesumstats/k12_nsc_match_sumstats.do` | ARCHIVE |  has a comment marking it as deprecated|
+| `do/share/outcomesumstats/matchdiscrep.do` | ARCHIVE | also has comment marking as deprecated |
+| `do/share/outcomesumstats/nsc2019new/nsc2019sumstats.do` | | No idea honestly. my guess is to archive, but should trace input/output lineage |
+| `do/share/outcomesumstats/searchdate_sumstats.do` | | No idea. Looks like ad hoc code, should archive probably |
+| `do/share/siblingvaregs/reg_out_va_sib_acs_dk_tab.do` | ARCHIVE | This is an empty do file that never got completed. Only has scaffolding in the code for settings and doh files etc |
+| `do/share/siblingvaregs/vamtest.do` | ARCHIVE | ad hoc test code |
 
 **A6. caschls Matt-superseded archival (parallel to fork's `_archive/matt_original/`)**
 
@@ -365,7 +365,7 @@ We can't write a target folder structure / pipeline ordering without knowing whe
 - `do/share/siblingxwalk/matt_crosswalk_k12_siblings.do`
 - `do/share/siblingxwalk/sibling_example.do`
 
-> *(yes/no, or specifics)*
+> Yes, but I think some of these files might be used in producing the original input datasets for the VA. However this project does not depend on them. So archive is fine
 
 ### 10B. Reproducibility realism [HELPFUL but not blocking]
 
@@ -373,31 +373,31 @@ We can't write a target folder structure / pipeline ordering without knowing whe
 
 > You said py_files/ is dead AND that Matt did geocoding via Python. Two possible interpretations: (a) geocoded outputs are already on Scribe as static inputs, so the Python scripts are dead because we don't ever re-run them — reproducibility scope ends at "use the static geocoded dataset"; or (b) the geocoded outputs were lost/regenerated periodically and we'd need the scripts back to actually reproduce. Which is it?
 
-> *(answer)*
+> It's (a). But I was wrong before, this IS the geocoding file, so we should preserve it for completeness and record keeping.
 
 **B2. Outputs: where do figures/tables actually land at the end of a run?**
 
 > Section 3 of the dump still has placeholders for "Where outputs land." On Scribe? Synced to the Dropbox? Manually copied to Overleaf? Knowing the destination affects how the consolidated repo's output paths should be structured.
 
-> *(answer)*
+> They all get produced in Scribe server. You will see the figure and table directories during the deep read of the code. Then I pull them to local and overleaf
 
 **B3. Bit-rot reality check**
 
 > Last full end-to-end run was 2023. In ~3 years: Stata version may have shifted on the server (you said v17 — was it always v17?), some `ssc install` packages may have updated and broken syntax, server filesystem may have moved data dirs, CDE may have re-released cleaned files. What do you predict will be broken when we first try to re-run? Helps me prioritize what to verify when we start ground-truthing.
 
-> *(answer)*
+> It used to be 16, then got updated to 17 and is now 18 on the server. some do files mark the stata versions at the time. The CDE data is up to date, do not worry about raw data. the ssc packages should be able to be run with the replace option, but build in failsafes. 
 
 **B4. Settings.do project-root convention**
 
 > Both repos have a `settings.do`. Does it use `c(hostname)` branching, or hardcode `/home/research/ca_ed_lab/...` paths? If hardcoded, the consolidation will need to introduce hostname-branching for portability. (I can read this off the file directly during deep-read; only flag if there's a quirk worth knowing.)
 
-> *(answer or "see code")*
+> They are currently hard coded. The code is never run locally and always on the server so it is not a problem. If you think branching on hostname is better practice then thats fine.
 
 **B5. va_v2 branch merge residue**
 
 > The `va_v2` branch in the fork was merged into `changes_by_che`. Are there v2-prior-score artifacts still in the active codebase (do-files, intermediate dta files) that we should know about, or did the merge cleanly land and v1 is the only active variant?
 
-> *(answer)*
+> The active codebase in changes_by_che has loops for both v1 and v2 which i think is from the merge. I only pull v1 results actively but kept the v2 just in case, because senior coauthors change their mind all the time and I don't want to redo work.
 
 ### 10C. Section 2 placeholders worth a sentence each [LOW PRIORITY]
 
