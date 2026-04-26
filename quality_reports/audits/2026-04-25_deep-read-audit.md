@@ -607,14 +607,22 @@ The v2 file's own header comment block (lines 6-8) ALSO has the same wrong dates
 
 Four cohort rows, four matches with code line citations. v1 is the canonical paper specification.
 
-### v2 vs user's table — DISCREPANCY (code-vs-doc)
+### v2 vs user's table — RESOLVED (2026-04-25)
 
-Code in `create_prior_scores_v2.doh` L13 uses `L5_cst_ela_z_score` (= 6th-grade ELA, year-5). For year=2015, that's spring 2010 — not spring 2012 as the user's table and the v2 file's own header (L6-8) claim. The math row matches. Either:
-- (a) The header comment block was copy-paste-edited from v1 with wrong dates, and your table inherited the error.
-- (b) The code drifted from L3 to L5 at some point without updating the header.
-- (c) Some other history.
+Code in `create_prior_scores_v2.doh` L13 uses `L5_cst_ela_z_score` where **`L5` denotes 5-year lag, NOT grade 5**. For an 11th-grader taking SBAC in year T, the L5 lookback retrieves their grade-6 score (taken in year T-5). For year=2015 → spring 2010, year=2016 → spring 2011, year=2017 → spring 2012, year=2018 → year-3 (L3) SBAC = spring 2015.
 
-Code is authoritative: v2 ELA = year-5 (6th grade). Worth confirming intent.
+Christina confirmed (2026-04-25): "the L5 stands for 5 years lag, so the year math checks out." Code is internally consistent and authoritative.
+
+**The discrepant dates in the v2 file's header comment block (L6-8) and the user's context-dump v2 table** (sp 2012/2013/2013 for the STAR-era cohorts) **were transcription errors** that propagated from the buggy v2 header. The actual v2 spec is:
+
+| Cohort | v2 ELA prior (per code) | v2 Math prior (per code) |
+|---|---|---|
+| 2015 | 6th ELA sp 2010 | 6th math sp 2010 |
+| 2016 | 6th ELA sp 2011 | 6th math sp 2011 |
+| 2017 | 6th ELA sp 2012 | 6th math sp 2012 |
+| 2018 | 8th ELA sp 2015 | 8th math sp 2015 |
+
+Note: the v2 file's HEADER comment block still reads sp 2012/2013/2013 — this is a documentation bug deferred until end-of-Phase-0 per "form complete mental model first" directive.
 
 ### `_scrhat_` resolution
 
@@ -687,7 +695,7 @@ Per user's "form complete mental model first" directive, NOT fixing these in thi
 
 **For user (defer-able to end of Phase 0 unless flagged blocking)**:
 
-- Confirm v2 ELA = year-5 (6th grade) per code; the spring-2012/2013 dates in the v2 header / your table are transcription errors?
+- ~~Confirm v2 ELA = year-5 (6th grade) per code; the spring-2012/2013 dates in the v2 header / your table are transcription errors?~~ **RESOLVED 2026-04-25**: code is correct (L5 = 5-year lag); v2 header dates are transcription bugs (deferred fix).
 - Was the NSC/CCC/CSU asymmetry in `enr` (`merge_k12_postsecondary.doh` L326-327) intentional NSC-anchoring? Significant for postsecondary identification.
 - Are the un-implemented restrictions in `create_va_sample.doh` L52/54 handled upstream in `k12_test_scores_clean.dta`, or never applied?
 - Is the grade-11-count cut `<7` (code) or `<=10` (paper claim)? Either fix code or fix paper.
