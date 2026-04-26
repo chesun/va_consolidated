@@ -1327,9 +1327,97 @@ Most material:
 
 ---
 
+## Chunk 8: Samples (COMPLETE — sample-restriction map FINALIZED)
+
+Files audited: 25 files across `cde_va_project_fork/do_files/sbac/` (3) and `caschls/do/build/{buildanalysisdata/poolingdata,buildanalysisdata/responserate,sample}/` + `share/demographics/` (22). Per-file detail: `quality_reports/audits/2026-04-25_chunk8-samples.md`.
+
+### CRITICAL FINDING — `_archive/matt_original/sum_stats.do` is still load-bearing
+
+**The paper's `counts_k12.tex` (Online Appendix Table A.1) is produced by `_archive/matt_original/sum_stats.do` + `sum_stats_tab.do`** — files we archived in commit `85a97e7` (`archive: move 21 Matt-original VA do-files to _archive/matt_original/`).
+
+The user's earlier direction to archive Matt-originals was based on the assumption they were superseded by `va_score_all.do` / `va_out_all.do`. But `sum_stats.do` produces a different artifact (the Table A.1 sample-counts cascade), not a VA estimate.
+
+**The do-file references in `do_all.do` for `sum_stats.do` were already commented-out before our archival** — meaning Table A.1 hasn't been re-derived from this code in some time. So either `counts_k12.tex` is stale, or it's reproduced manually outside the master pipelines.
+
+**Action item flagged for user (Q8.1)**: confirm whether `counts_k12.tex` is currently stale, and decide whether `sum_stats.do` + `sum_stats_tab.do` should move out of `_archive/matt_original/` back into the active pipeline (or to a new `do/share/` location for paper-output formatting).
+
+### Final sample-restriction map (paper Table A.1 ↔ code)
+
+The 9 rows of Table A.1 (ELA branch — math symmetric) are produced by `_archive/matt_original/sum_stats.do` L215-460:
+
+| Row | Restriction (cumulative) | Source line |
+|---|---|---|
+| 1 | All grade-11 students | L218-228 |
+| 2 | School-level (grade-span >= 95%) | L230-243 |
+| 3 | First scores | L257-269 |
+| 4 | Conventional schools | L286-302 |
+| 5 | **Cohort size > 10** (CBEDS school-level cut) | L305-322 |
+| 6 | Non-missing test score | L326-344 |
+| 7 | Non-missing demographic controls | L348-368 |
+| 8 | Non-missing prior test scores | L372-394 |
+| 9 | **School VA sample size ≥ 7** (per-cell cut) | L425-452 |
+
+### "≥7 vs ≤10" question DEFINITIVELY RESOLVED
+
+**Both cuts exist and are different**:
+
+- **Row 5** (`touse_va.do:109`): `cohort_size > 10` at school × test × year level (drops schools with `cohort_size ≤ 10` per CBEDS).
+- **Row 9** (`touse_va.do:155, 180`): `n_g11_<subject> >= 7` at the school × year × subject × analysis-cell level (after all controls non-missing).
+
+Chunk 2's confusion was conflating them. **Internal consistency: confirmed**.
+
+### `gr11enr_mean` weight chain confirmed
+
+Generated upstream → merged via `mergegr11enr.do` → consumed as `[aweight=gr11enr_mean]` (the `_wt` token) in survey-on-VA second-stage regressions in `do_files/share/`.
+
+### Survey pooling logic
+
+Three pooling files (parent/sec/staff) follow common pattern: 5-year `append` → `wtmean` weighted by `nettotalresp<i>` → collapse to school level → output `<survey>pooledstats.dta` → response-rate merge → `<survey>analysisready.dta`. Schema divergences (parent 1415 missing qoi 64; staff 1718/1819 missing `pctnotapp`) handled by wtmean ignoring missings.
+
+### Response-rate semantics
+
+- `pooledrr` and `pooledrr_gr9and11` are **covariate / weight candidates, NOT sample restrictions**. No `keep if pooledrr > X` filter.
+- **Two parallel definitions of `pooledrr`** exist (`parentresponserate.do` vs `pooledparentdiagnostics.do`): same name, different semantics. Naming clash.
+- `trimparentdemo.do` / `trimsecdemo.do` are misleadingly named — they're projection helpers (variable subset + rename), NOT statistical trimming.
+
+### New naming tokens / packages
+
+**Tokens**: `touse_g11_<subj|out>`, `n_g11_<...>`, `score_<flag>` / `out_<flag>` (sample fan-out), `va_samples_v1/` path, `<var>_pooled` family (mean/pct{agree|disagree|neither|dontknow|well|okay|notwell|true|nottrue|yes|no|smallprob|bigprob}<i>_pooled), `nettotalresp<i>`, sex/race-stratified `svy<demo>gr<i>` / `enr<demo>gr<j>` / `pct` / `dif`, `pooledrr` family, `has<year>` / `has<year><survey>`, file-suffix forms (`analysisready`, `pooledstats`, `forpooling`, `paneldata`, `responseyear`).
+
+**Packages**: `_gwtmean` (`wtmean` egen extension).
+
+### 17+ new bugs/anomalies in chunk 8 (running total ≈70)
+
+Most material:
+
+1. **`_archive/matt_original/sum_stats.do` still produces paper Table A.1 — should not have been archived without flagging.** (Resolved by the action item Q8.1.)
+2. `create_score_samples.do:240-247` and `create_out_samples.do:225-232`: `egen n_g11_<subject>_<sample>_sp` computed but never `save`d — silent dead-code (the labels claim it's persisted).
+3. `parentdemographics.do:13`: 1415 missing grade-7 obs (`-8` code, 1327 obs) silently dropped.
+4. `pooledsecdemographics.do:23-24`: `gr<9|11>asianenr += filipinoenr` overwrites in-place — substantive demographic recoding without ADR.
+5. `pooledsecanalysis.do:31-43`: silent `drop if check<race>==1` data-quality filter applied only at graph time.
+6. `secdemographics.do:102` vs `elemdemographics.do:67`: sex coding inverts between elem (1=F) and sec (1=M) — landmine.
+7. `secdemographics.do:59`: 1718/1819 trans/nb/questioning gender option not handled.
+8. Two `pooledrr` definitions with same name in different files.
+9. `touse_va.do:104-107`: paper-mentioned ">25% special ed" + "home/hospital" filters never implemented in code.
+10. `create_out_samples.do:71`: `enr_ontime → enr` rename silently overwrites original `enr` semantics.
+
+### Open questions for user (Chunk 8)
+
+| # | Question | Affects |
+|---|---|---|
+| Q8.1 | **Is `counts_k12.tex` (paper Table A.1) currently stale?** Should `sum_stats.do` + `sum_stats_tab.do` move out of `_archive/matt_original/`? | **Paper Table A.1 reproducibility** |
+| Q8.2 | Does Table A.1 paper text caption need to disambiguate ≤10 cohort vs <7 per-cell cuts? | Paper text |
+| Q8.3 | Grade-7 1415 silent drop (1327 obs in `-8`) — flag or exclude pooled grade-7 stats? | Pooled grade-7 statistics |
+| Q8.4 | Trans/nb/questioning gender in 1718/1819 sec — drop or include in sex-stratified counts? | Section 2 representativeness |
+| Q8.5 | Silent `drop if check<race>==1` filter in `pooledsecanalysis.do` — promote to data-quality assertion? | Reproducibility |
+| Q8.6 | Two `pooledrr` definitions — rename one or document explicitly? | Risk of consuming wrong one |
+| Q8.7 | `gr<9|11>asianenr += filipinoenr` recoding — needs ADR if it survives consolidation | Methodology documentation |
+
+---
+
 ## Chunks pending
 
-### Chunk 8: Samples (AGGRESSIVE)
+### Chunk 9: Share/output helpers + explore (AGGRESSIVE for share helpers; CAUTIOUS for explore/scrhat)
 
 - `cde_va_project_fork/do_files/sbac/macros_va.doh` ← DONE in foundation
 - `cde_va_project_fork/do_files/sbac/create_va_sample.doh`
