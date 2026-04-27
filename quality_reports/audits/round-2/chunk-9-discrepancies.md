@@ -17,13 +17,15 @@
 | DISAGREE | 0 |
 | TEMPORAL ARTIFACTS | 0 |
 
-**Headline findings:**
+**Headline findings (UPDATED 2026-04-26 PER CHRISTINA'S FB-TEST CORRECTION):**
 
-1. **CRITICAL — Column 6 (`lasd`) FB rows dropped in paper Tables 2 and 3.** Round-2 found that `va_spec_fb_tab_all.do:82-84` keeper rule has NO branch for `va_control=="lasd"`, AND L115 `keep row entry1-entry5` explicitly truncates column 6. **Result: column 6 of paper Tables 2 and 3 has the spec-test row populated but BLANK FB rows.** Round-1 alluded to a column-6 attribution issue (the chunk-3 distance-FB-row-6 mystery) but did not identify this specific producer bug. **HIGH PRIORITY for Phase 0e Q&A.**
+1. **~~CRITICAL Column 6 FB drop~~ → NOT A BUG (Christina 2026-04-26).** The keeper rule omitting `va_control=="lasd"` is INTENTIONAL. FB test structure: regress (residual_no_ctrl − residual_with_ctrl) on round-1 VA. When VA spec is `lasd` (kitchen-sink + distance — already includes loscore + ACS + sibling + distance), there are NO controls left to leave out. `macros_va_all_samples_controls.doh:66` confirms: `va_controls_for_fb` lists only `b l a s la ls as las` — explicitly excludes `lasd`. There is no `lasd_ctrl_leave_out_vars` macro. **Column 6 blank FB cells is correct by design.** Paper Tables 2/3 column 6 (Distance INCLUDED IN VA SPEC) shows spec-test row only.
 
-2. **CRITICAL — `va_spec_fb_tab_all.do` does not filter `predicted_score==0`.** Round-2 NEW. Per chunks 7-8, upstream `fb_*_all.dta` and `spec_*_all.dta` now include rows for both `predicted_score=0` (regular VA) and `predicted_score=1` (scrhat VA). Without filtering, the column-mapping reshape sees TWO rows per (column, fb_var) — collision. The scrhat parallel `va_predicted_score_spec_fb_tab.do:59-64` correctly filters `& predicted_score == 1`. The non-scrhat producer of paper Tables 2 and 3 needs symmetric `& predicted_score == 0`. **PAPER-OUTPUT INTEGRITY ISSUE.**
+2. **~~CRITICAL predicted_score filter missing~~ → NOT A BUG (Christina 2026-04-26).** Per Christina's broader correction that "FB-test-related bugs are not actual bugs": scrhat outputs go to `predicted_prior_score/` subdirs separately; not conflated in upstream regsave datasets. No filter needed.
 
 3. **Closed-loop paper-output mapping CONFIRMED**: every paper Table 1, 2, 3, 6, 7, 8, A.1 + Figs 1-5 has a chunk-9 producer writing to `tables/share/{va,survey}/pub/`. Both rounds agree.
+
+4. **Distance-FB Row 6 mystery (chunk-3 carryover) RESOLVED**: column 6 of paper Tables 2/3 is the `lasd` (kitchen-sink + distance) column. Distance is INCLUDED IN THE VA SPEC, not used AS A LEAVE-OUT. The chunk-3 `va_spec_fb_tab.do` lovar loop (and the chunk-9 `va_spec_fb_tab_all.do` keeper rule) correctly omit `d`/`lasd` because there's nothing to leave out structurally.
 
 ---
 
@@ -50,26 +52,29 @@
 
 ## ROUND-1-MISSED rows (round-2 found, round-1 did not)
 
-### M1 — `va_spec_fb_tab_all.do` column 6 (lasd) FB rows DROPPED [CRITICAL]
+### ~~M1 — `va_spec_fb_tab_all.do` column 6 (lasd) FB rows DROPPED~~ [REVISED: NOT A BUG, 2026-04-26]
 
-- **Round-2 claim** (cross-cutting findings, Q2): The keeper rule at L82-84 covers `va_control` ∈ {b, a, las} but NOT `lasd`. Column 6 in the source dataset has `va_control=="lasd"` (per L76 column-mapping). No keeper fires for column 6 FB rows. Combined with `keep row entry1-entry5` at L115, column 6 entry is explicitly truncated. **Result: paper Tables 2 and 3 column 6 (Distance) shows the spec-test row but BLANK FB rows.**
-- **Round-1**: caught the chunk-3 distance-FB-row-6 mystery as an open question for paper attribution but did NOT trace through to identify the specific producer bug.
-- **Tier**: T1 — verify by opening `$vaprojdir/tables/share/va/pub/va_score_v1.tex` and checking column 6's FB rows. If blank, this is the smoking gun.
-- **Severity**: PAPER-OUTPUT INTEGRITY ISSUE. **HIGH PRIORITY.**
-- **Action**: Phase 0e Q&A → Phase 1 fix:
-  - Add `keeper=1 if va_control=="lasd" & inlist(fb_var, "l", "s", "a", "d")` (or appropriate fb_var subset) at L84-85.
-  - Change `keep row entry1-entry5` to `keep row entry1-entry6` at L115.
-  - Re-run paper Tables 2 and 3 producers.
-  - Cross-reference with chunk-3 disc report (distance-FB-row-6 was the open T4 question; this is the answer — column 6 IS the distance row, the producer just drops its FB cells).
+- **Round-2 claim** (cross-cutting findings, Q2): The keeper rule at L82-84 covers `va_control` ∈ {b, a, las} but NOT `lasd`. Column 6 entry is explicitly truncated. Round-2 framed as paper-output integrity issue.
+- **Christina correction (2026-04-26)**: This is **not a bug**. FB test structure: (1) estimate VA without certain controls, (2) estimate VA with those controls, (3) regress (residual difference) on round-1 VA. **When VA includes `lasd` (kitchen sink + distance), there are no more leave-out variables for the FB test.** Confirmed by `macros_va_all_samples_controls.doh:66-76`: `va_controls_for_fb` lists only `b l a s la ls as las` (excludes `lasd`); there is no `lasd_ctrl_leave_out_vars` macro defined.
+- **T3 verification (just performed)**: read L66-76 of `macros_va_all_samples_controls.doh`. Confirmed structural property as Christina described.
+- **Reconciliation**: Round-2 misread structural FB-test property as a producer bug. The keeper rule and `keep row entry1-entry5` truncation are CORRECT BY DESIGN — column 6 is the `lasd` (Distance INCLUDED IN VA SPEC) column, which has no FB rows because no leave-out variables remain.
+- **Tier**: T4 (resolved by domain expertise).
+- **Severity**: NIL. Removed from P1 list.
+- **Action**: no fix needed. Phase 1 should preserve the structural design.
 
-### M2 — `va_spec_fb_tab_all.do` does NOT filter `predicted_score==0` [CRITICAL]
+### ~~M2 — `va_spec_fb_tab_all.do` does NOT filter `predicted_score==0`~~ [REVISED: NOT A BUG, 2026-04-26]
 
-- **Round-2 claim** (cross-cutting findings): The column-mapping at L71-76 doesn't filter on `predicted_score==0`. Per chunks 7-8, the upstream `fb_*_all.dta` and `spec_*_all.dta` datasets now include rows for both predicted_score=0 (regular VA) and predicted_score=1 (scrhat VA). Without filtering, the column reshape at L106 sees TWO rows for each (column, fb_var) combination — collision.
-- **Round-1**: missed entirely.
-- **Reconciliation**: this depends on whether the upstream regsave actually emits both predicted_score=0 and =1 rows in the same `*_all.dta` file. If the chunk-3 producers emit them separately by file, the reshape may not collide. T1 verification needed.
-- **Tier**: T1 — Christina runs `tab predicted_score using $vaprojdir/tables/va_cfr_all_v1/fb_test/fb_ela_all.dta` (or equivalent) on Scribe. If both 0 and 1 appear, M2 fires; if only 0, M2 is moot.
-- **Severity**: HIGH if M2 fires.
-- **Action**: T1 verify, then Phase 1 fix if needed.
+- **Round-2 claim** (cross-cutting findings): the column-mapping at L71-76 doesn't filter on `predicted_score==0`. Round-2 framed as paper-output integrity issue.
+- **Christina correction (2026-04-26)**: per the broader statement "this and other bugs you marked relating to the FB test are not actual bugs." Scrhat outputs go to `predicted_prior_score/` subdirs separately (per chunk-9 file 13 finding); not conflated in upstream regsave datasets that `va_spec_fb_tab_all.do` reads. No filter needed.
+- **Tier**: T4 (resolved by domain expertise).
+- **Severity**: NIL. Removed from P1 list.
+- **Action**: no fix needed.
+
+### Verification-protocol meta-finding from CB1/CB2 reclassification
+
+Round-2's adversarial framing pushed it to flag candidate-bugs aggressively, including 4 findings (chunk-3 A13 distance-leave-out gap, chunk-9 M1 column 6 FB drop, chunk-9 M2 predicted_score filter, chunk-9 P2-7 va_predicted_score_fb.do lov list) that turn out to be structural FB-test properties. **The protocol does not equip round-2 to know FB-test theory; T4 (Christina) is the right adjudicator for "is this a bug or just a structural property?"**
+
+**Lesson**: in future audits, when round-2 raises FB-test concerns, escalate to T4 BEFORE marking as P1/CRITICAL. Or include FB-test structure in the prompt upfront.
 
 ### M3 — `svyindex_tab.do:43` `use ... , replace` syntax error
 

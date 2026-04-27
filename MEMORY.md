@@ -90,6 +90,10 @@ Phase 1 fix: wrap OR clauses in outer parens (`& ((...) | (...))`). Bundle as si
 
 [LEARN:domain] **`_scrhat_` is exploratory, not v2.** It's the third axis (predicted prior-score, `prior_ela_z_score_hat`), orthogonal to v1/v2. Generated only in `do_files/explore/va_predicted_score.do` and `va_predicted_score_fb.do`. Canonical paper uses v1, not `_scrhat_`. So `_scrhat_*` macro bugs (e.g., L342-345 `l_scrhat_spec_controls` pattern break) affect exploratory outputs only.
 
+[LEARN:domain] **FB (forecast-bias) test structure** (per Christina 2026-04-26): (1) estimate VA without certain controls, (2) estimate VA with those controls, (3) regress (residual_no_ctrl − residual_with_ctrl) on the round-1 VA estimates. **Critical structural property**: when VA spec already includes everything (`lasd` = loscore + ACS + sibling + distance kitchen sink), there are NO leave-out variables left → no FB test possible → blank FB cells by design. `macros_va_all_samples_controls.doh:66` confirms: `va_controls_for_fb` lists 8 specs (`b l a s la ls as las`) and EXCLUDES `lasd`. There is NO `lasd_ctrl_leave_out_vars` macro. Wrong → right: column 6 (lasd) blank FB cells in paper Tables 2/3 is correct, NOT a producer bug.
+
+[LEARN:domain] **Paper Table 2/3 row 6 attribution**: column 6 is the `lasd` (kitchen-sink + distance) VA spec column — Distance is INCLUDED IN THE VA SPECIFICATION, not used AS A LEAVE-OUT. The paper's "Distance" row shows the spec-test result for the most-saturated VA spec. Resolves the chunk-3 distance-FB-row-6 mystery: correctly NO FB rows, correctly populated spec-test row.
+
 ## Discipline
 
 [LEARN:discipline] **No assumptions.** Global rule (~/github_repos/claude-config/rules/no-assumptions.md) prohibits guessing about workflow, infrastructure, tools, role boundaries, or preferences. Only state what was explicitly provided. If a detail is missing and relevant, ask or omit — never fill blanks with plausible-sounding inference. Wrong → right: never reframe ambiguous user terminology (e.g., v1/v2) by analogy to other projects; ask what it means.

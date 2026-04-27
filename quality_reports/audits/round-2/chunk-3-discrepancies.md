@@ -38,7 +38,7 @@
 | A10 | `va_out_spec_test_tab.do:163` uses `sd_va` (no-peer) when assembling the predicted-score peer row; should be `sd_va_peer`. | R1 §"New bugs:4" | R2 §Q7 Bug 4 (more detailed) | T3 | LOCKED — Phase 1 fix |
 | A11 | `va_sib_lag_spec_fb_tab.do:70` uses `p_value` while other tab files use `pval` per change-log convention. Inconsistency bug. | R1 §"New bugs:9" | R2 §Q7 Bug 12 | T3 | LOCKED — Phase 1 fix |
 | A12 | Spec-test β estimator: `reg <outcome>_r va_cfr_g11_<outcome>, cluster(school_id)`. Cited at multiple lines. | R1 §"Spec-test / FB-test β tracing" | R2 §Q6 table | T3 | LOCKED |
-| A13 | **Distance leave-out (`d`) is in the FB-estimation set but NOT loaded by `va_spec_fb_tab.do`.** Both rounds independently flagged. Paper Table 2/3 row 6 attribution is unclear: code's `las` joint vs paper map's "distance". | R1 §"Spec-test / FB-test β tracing" Row 6 anomaly | R2 §Q7 Bug 9; Q2 final paragraph; Open Question 1 | T4 (Christina) | OPEN — KEY DOWNSTREAM QUESTION |
+| ~~A13~~ | ~~Distance leave-out (`d`) gap in `va_spec_fb_tab.do`~~ — **RESOLVED NOT-A-BUG (Christina 2026-04-26)**: structural FB-test property. `va_controls_for_fb` (`macros_va_all_samples_controls.doh:66`) excludes `lasd` — kitchen-sink VA has nothing left to leave out. Column 6 of paper Tables 2/3 is `lasd` (Distance INCLUDED IN VA SPEC, not as leave-out). Spec-test row populated; FB rows correctly blank. | R1 §"Spec-test / FB-test β tracing" Row 6 anomaly | R2 §Q7 Bug 9; Q2 final paragraph; Open Question 1 | T4 → RESOLVED | LOCKED |
 
 ---
 

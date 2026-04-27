@@ -33,10 +33,15 @@ This document consolidates the verified findings across 10 chunks of deep-read a
 - Sample-restriction map (paper Table A.1) finalized: 9 rows mapped to `sample_counts_tab.do` + `touse_va.do`. Two cohort cuts (school-level `<=10` + cell-level `<7`) coexist, not redundant.
 - **Distance-FB Row 6 mystery RESOLVED.** Producer chain (chunk 7) wires `d` token correctly. **But chunk 9 producer (`va_spec_fb_tab_all.do`) DROPS column 6 FB rows due to keeper-rule omission.** Paper Tables 2 and 3 column 6 has spec-test row but BLANK FB rows. **Real paper-output integrity bug.**
 
-**Two CRITICAL paper-output integrity bugs surfaced:**
+**Two findings initially flagged as CRITICAL — RECLASSIFIED NOT-A-BUG (Christina 2026-04-26):**
 
-- **CB1**: `va_spec_fb_tab_all.do:82-84` keeper rule has NO branch for `va_control=="lasd"`; combined with L115 `keep row entry1-entry5`, column 6 FB entry is truncated. **PAPER TABLES 2 AND 3 COLUMN 6 BLANK FB ROWS.**
-- **CB2**: `va_spec_fb_tab_all.do:71-76` does NOT filter `predicted_score==0`. Upstream regsave dataset includes both regular VA (predicted_score=0) and scrhat VA (=1) rows; reshape may double rows.
+- **~~CB1~~ → NOT A BUG (intentional, structural FB-test property)**: `va_spec_fb_tab_all.do:82-84` keeper rule omits `va_control=="lasd"` because **the FB test has no leave-out variable when VA already includes everything**. FB test structure: (1) estimate VA w/o some controls, (2) estimate VA with those controls, (3) regress (residual_no_ctrl − residual_with_ctrl) on the round-1 VA estimates. When the VA spec is `lasd` (loscore + ACS + sibling + distance — kitchen sink), there are no controls left to leave out, so no FB test is possible. `macros_va_all_samples_controls.doh:66-76` confirms: `va_controls_for_fb` lists 8 specs (`b l a s la ls as las`), **explicitly excludes `lasd`**, and there is NO `lasd_ctrl_leave_out_vars` macro. Column 6 blank FB cells is correct by design. Paper Tables 2/3 column 6 (Distance) shows the spec-test row only.
+- **~~CB2~~ → NOT A BUG (Christina 2026-04-26)**: same structural-FB-property reframing applies. Per Christina: "this and other bugs you marked relating to the FB test are not actual bugs."
+
+**Other FB-test-related findings reclassified (per Christina 2026-04-26):**
+
+- chunk-3 §A13 distance-leave-out (`d`) gap in `va_spec_fb_tab.do` lovar loop → NOT A BUG. The lovar loop omits `lasd` for the same structural reason.
+- chunk-9 M2 (`predicted_score==0` filter missing) → NOT A BUG. Scrhat outputs are written to `predicted_prior_score/` subdirs separately; not conflated in upstream regsave datasets.
 
 **Bug 93 family scoped at 4 instances (LOCKED):**
 
@@ -55,11 +60,11 @@ This document consolidates the verified findings across 10 chunks of deep-read a
 
 | # | Bug | File:Line | Source | Action |
 |---|---|---|---|---|
-| **P1-1** | **Column 6 FB rows DROPPED from paper Tables 2/3** — keeper rule missing for `va_control=="lasd"` | `va_spec_fb_tab_all.do:82-84` + L115 | chunk 9 disc M1 | T1 verify (open paper TeX); Phase 1 fix: add keeper, change `entry1-entry5` to `entry1-entry6`, re-run |
-| **P1-2** | **`predicted_score==0` filter MISSING** in non-scrhat producer of paper Tables 2/3 — reshape may double rows | `va_spec_fb_tab_all.do:71-76` | chunk 9 disc M2 | T1 verify (run on Scribe, check reshape collisions); Phase 1 fix: add `& predicted_score == 0` filter |
-| **P1-3** | **Distance-FB Row 6 attribution** (= P1-1's underlying paper question) | `paper/common_core_va_v2.tex` | chunk 3, 7, 9 | T4: confirm paper Table 2/3 row 6 is the Distance row. P1-1 fix re-renders. |
-| **P1-4** | **Local `id` macro undefined at `crosswalk_nsc_outcomes.do:250`** — `egen ... by(\`id' collegecodebranch)` may collapse to global-min-by-college | `crosswalk_nsc_outcomes.do:250` | chunk 10 disc M1 | T1: Christina runs on Scribe, checks whether `college_begin_date` varies by student. If empty `id`, persistence outcomes silently corrupted. |
-| **P1-5** | **Paper-α attribution issue** — climate/quality index item lists in `compcase/imputedcategoryindex.do` (9/15 items) ≠ α item lists in `alpha.do` (20/17 items). If paper-α is from `alpha.do`, paper describes a DIFFERENT object than Table 8 regression indices | `alpha.do` vs `compcasecategoryindex.do` | chunk 6 disc M1 | T4: Christina checks paper PDF for α attribution |
+| ~~**P1-1**~~ | ~~Column 6 FB rows DROPPED from paper Tables 2/3~~ — **NOT A BUG** (Christina 2026-04-26): structural FB-test property — `lasd` has no leave-out variables left, so no FB test possible. `va_controls_for_fb` (`macros_va_all_samples_controls.doh:66`) excludes `lasd` by design. Column 6 blank FB cells is correct. | `va_spec_fb_tab_all.do:82-84` | chunk 9 disc M1 | RESOLVED — no fix needed |
+| ~~**P1-2**~~ | ~~`predicted_score==0` filter MISSING~~ — **NOT A BUG** (Christina 2026-04-26): scrhat outputs go to `predicted_prior_score/` subdirs separately; not conflated in upstream regsave. | `va_spec_fb_tab_all.do:71-76` | chunk 9 disc M2 | RESOLVED — no fix needed |
+| ~~**P1-3**~~ | ~~Distance-FB Row 6 attribution~~ — **RESOLVED**: column 6 IS the `lasd` (kitchen-sink + distance) column. Paper Table 2/3 row 6 = Distance INCLUDED IN VA SPEC, not Distance-as-leave-out. Spec-test row populated; FB rows correctly blank. | `paper/common_core_va_v2.tex` | chunk 3, 7, 9 | RESOLVED |
+| **P1-1** | **Local `id` macro undefined at `crosswalk_nsc_outcomes.do:250`** — `egen ... by(\`id' collegecodebranch)` may collapse to global-min-by-college | `crosswalk_nsc_outcomes.do:250` | chunk 10 disc M1 | T1: Christina runs on Scribe, checks whether `college_begin_date` varies by student. If empty `id`, persistence outcomes silently corrupted. |
+| **P1-2** | **Paper-α attribution issue** — climate/quality index item lists in `compcase/imputedcategoryindex.do` (9/15 items) ≠ α item lists in `alpha.do` (20/17 items). If paper-α is from `alpha.do`, paper describes a DIFFERENT object than Table 8 regression indices | `alpha.do` vs `compcasecategoryindex.do` | chunk 6 disc M1 | T4: Christina checks paper PDF for α attribution |
 
 ### P2 — Medium-priority (correct in current paper but should be fixed; future-proofing)
 
@@ -71,7 +76,7 @@ This document consolidates the verified findings across 10 chunks of deep-read a
 | **P2-4** | **`run_prior_score = 0` hard-codes single-subject prior-decile heterogeneity OFF** — fig file unconditionally tries to load gated `.ster` files | `reg_out_va_all.do:235`, fig file `reg_out_va_all_fig.do:159` | chunk 4 disc A1 | T4: keep gate, remove gate, or make explicit toggle? |
 | **P2-5** | **`reg_out_va_sib_acs_tab.do` mtitles labeling bug** — uses FB-test column titles for persistence-on-VA regression table | `reg_out_va_sib_acs_tab.do:82-88` | chunk 5 disc M1 | T4: confirm CSV feeds paper Table 7. Phase 1: replace mtitles with "Original Specification" / "Census Controls" / "Sibling Controls" / "Sibling and Census Controls" |
 | **P2-6** | **`reg_out_va_all_tab.do` mtitles 24 cols vs 32 actual eststo** — possible silently un-labeled columns | `reg_out_va_all_tab.do` (file 4 of chunk 4) | chunk 4 disc M4 | T1: open `$vaprojdir/tables/.../reg_*.csv` on Scribe and count columns vs declared mtitles |
-| **P2-7** | **`va_predicted_score_fb.do:43` uses `<va_ctrl>_ctrl_leave_out_vars`** instead of `_scrhat_leave_out_vars` — runs invalid `l`-containing FB tests under scrhat (exploratory only) | `va_predicted_score_fb.do:43` | chunk 9 disc A2 | Phase 1: fix to use `_scrhat_` macro |
+| ~~**P2-7**~~ | ~~`va_predicted_score_fb.do:43` uses `<va_ctrl>_ctrl_leave_out_vars`~~ — **NOT A BUG** (Christina 2026-04-26): may be intentional given scrhat is exploratory; structural FB-test reasoning means extra runs are either inert (sample list undefined) or just exploratory output. Reclassified per Christina's broad statement that "FB-test-related bugs are not actual bugs." | `va_predicted_score_fb.do:43` | chunk 9 disc A2 | RESOLVED |
 | **P2-8** | **`va_scatter.do` figure-note `corr_*` vs `b_*` typos** — 6 lines say "Fitted line slope = `corr_*`" when value is correlation rho | `va_scatter.do:308, 321, 333, 417, 430, 442` | chunk 4 + 9 disc A3 | Phase 1: fix typos + re-render figures |
 | **P2-9** | **`merge_k12_postsecondary.doh:7` HARDCODED ABSOLUTE PATH** to `/home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/` | `merge_k12_postsecondary.doh:7` | chunk 2 disc A5 | Phase 1: parameterize via `$vaprojxwalks` |
 | **P2-10** | **NSC/CCC/CSU asymmetry in `enr` definition** — `enr=1` requires NSC (CCC/CSU commented out); `enr=0` requires NSC=0 AND CCC!=1 AND CSU!=1. Students never matched to NSC end up `enr=.` | `merge_k12_postsecondary.doh:326-327` | chunk 2 disc A6 | T4: intentional NSC-anchoring or bug? |
@@ -155,7 +160,7 @@ This document consolidates the verified findings across 10 chunks of deep-read a
 | **P3-68** | Naven hardcoded user-machine paths in CCC/CSU crosswalks | `crosswalk_{ccc,csu}_outcomes.do:8-18` | chunk 10 disc A10 |
 | **P3-69** | Geocoding rename gap (Python `_geocoded2.csv` vs Stata `_batch_geocoded.csv`) | `gecode_json.py:11` vs `merge_va_smp_acs.doh:49` | chunk 10 disc A4 |
 
-**Total bug count: 89 (5 P1 + 15 P2 + 69 P3).** Compare to round-1's "~85 bugs" estimate — round-2 expanded to 89 verified bugs after de-duping and downgrading some to LATENT.
+**Total bug count: 85 (2 P1 + 14 P2 + 69 P3).** Original 89 minus 4 reclassified as NOT-A-BUG (CB1/P1-1, CB2/P1-2, P1-3 distance-FB attribution, P2-7 scrhat lov list) per Christina 2026-04-26 FB-test structural correction.
 
 ---
 
@@ -163,17 +168,20 @@ This document consolidates the verified findings across 10 chunks of deep-read a
 
 ### 3.1 — T1 Empirical Tests for Christina (run on Scribe when convenient)
 
-These resolve P1-1, P1-2, P1-4, P2-1, P2-3, P2-6, P2-13. Approximate time: 30-90 minutes total in one session.
+These resolve P1-1, P2-1, P2-3, P2-6, P2-13. Approximate time: 30-60 minutes total in one session.
 
 | # | Test | Resolves | Snippet |
 |---|---|---|---|
-| **T1-1** | Open `$vaprojdir/tables/share/va/pub/va_score_v1.tex` and `va_out_v1.tex`. Check whether column 6 has FB rows populated or blank. | P1-1 (column 6 FB drop) | manual visual inspection |
-| **T1-2** | Open `$vaprojdir/tables/va_cfr_all_v1/fb_test/fb_ela_all.dta` (or equivalent). Run `tab predicted_score`. If both 0 and 1 appear, P1-2 fires; if only 0, P1-2 is moot. | P1-2 (predicted_score filter) | `use $vaprojdir/tables/va_cfr_all_v1/fb_test/fb_ela_all.dta, clear` then `tab predicted_score` |
-| **T1-3** | After loading `nsc_outcomes_crosswalk_ssid.dta`, run: `egen check_grouping = tag(\`id' collegecodebranch)` then `count if check_grouping`. If `id` is empty, count = collegecodebranch count (small); if `id` resolves to ssid, count = ssid×collegecodebranch (large). | P1-4 (id macro at L250) | T3 verify on Scribe |
-| **T1-4** | Bug 93 verification — count UC Merced rows with no NSC record. Confirms 4 family instances. | P2-1 | `use $vaprojdir/data/sbac/k12_postsecondary_out_merge.dta, clear` then `count if nsc_enr_uc==1 & recordfoundyn!="Y"` (>0 confirms bug for instance 1; analogous tests for the other 3) |
-| **T1-5** | `school_id == cdscode` 1:1 check — resolves whether `va_het.do:158 cluster(cdscode)` and chunk-5 sibling regs `cdscode` clustering are equivalent to `school_id`. | P2-3, P2-11 | `use $vaprojdir/estimates/.../va_all.dta, clear` then `egen tag1 = tag(school_id)` `egen tag2 = tag(cdscode)` `count if tag1 != tag2` |
-| **T1-6** | Open `$vaprojdir/tables/va_cfr_all_v1/reg_out_va/reg_*.csv`. Count actual columns vs declared `mtitles` (24 expected, 32 actual?). | P2-6 | open file in editor or `head` |
-| **T1-7** | Revoke / rotate the OpenCage API key `[REVOKED 2026-04-30]`. | P2-13 | log into OpenCage account, revoke key |
+| **T1-1** | After loading `nsc_outcomes_crosswalk_ssid.dta`, run: `egen check_grouping = tag(\`id' collegecodebranch)` then `count if check_grouping`. If `id` is empty, count = collegecodebranch count (small); if `id` resolves to ssid, count = ssid×collegecodebranch (large). | P1-1 (id macro at L250) | T3 verify on Scribe |
+| **T1-2** | Bug 93 verification — count UC Merced rows with no NSC record. Confirms 4 family instances. | P2-1 | `use $vaprojdir/data/sbac/k12_postsecondary_out_merge.dta, clear` then `count if nsc_enr_uc==1 & recordfoundyn!="Y"` (>0 confirms bug for instance 1; analogous tests for the other 3) |
+| **T1-3** | `school_id == cdscode` 1:1 check — resolves whether `va_het.do:158 cluster(cdscode)` and chunk-5 sibling regs `cdscode` clustering are equivalent to `school_id`. | P2-3, P2-11 | `use $vaprojdir/estimates/.../va_all.dta, clear` then `egen tag1 = tag(school_id)` `egen tag2 = tag(cdscode)` `count if tag1 != tag2` |
+| **T1-4** | Open `$vaprojdir/tables/va_cfr_all_v1/reg_out_va/reg_*.csv`. Count actual columns vs declared `mtitles` (24 expected, 32 actual?). | P2-6 | open file in editor or `head` |
+| **T1-5** | Revoke / rotate the OpenCage API key `[REVOKED 2026-04-30]`. | P2-13 | log into OpenCage account, revoke key |
+
+**T1 items removed (resolved by Christina 2026-04-26):**
+
+- ~~T1-1 (column 6 FB blank)~~ — NOT A BUG (intentional)
+- ~~T1-2 (predicted_score filter)~~ — NOT A BUG (separate dirs)
 
 ### 3.2 — Phase 0e Q&A Items (T4 escalations)
 
@@ -181,7 +189,7 @@ Christina to discuss/decide. Most can be batched into a single Phase 0e walkthro
 
 | # | Question | Source |
 |---|---|---|
-| **Q-1** | Does paper Table 2/3 row 6 actually display the Distance leave-out result, or is it the joint `las` test? (P1-3 / chunk 3, 7, 9) | distance-FB-row-6 |
+| ~~**Q-1**~~ | ~~Paper Table 2/3 row 6 attribution~~ — **RESOLVED** (Christina 2026-04-26): Column 6 is the `lasd` column (kitchen-sink + distance INCLUDED IN VA SPEC). Spec-test row populated; FB rows correctly blank by FB-test structural property. | RESOLVED |
 | **Q-2** | Is the `run_prior_score = 0` gate intentional? Single-subject prior-decile heterogeneity figures need it ON to regenerate cleanly. | P2-4 |
 | **Q-3** | Where does the paper-reported α come from — `alpha.do` (wider 20/17/4/4-item lists) or `indexalpha.do` (narrower 9/15/4-item lists matching the regression indices)? | P1-5 |
 | **Q-4** | Is the `enr=.` for NSC-non-matched-but-CCC-or-CSU-positive intentional NSC-anchoring or a bug? | P2-10 |
@@ -295,12 +303,14 @@ Preserved (sequestered from round-2 agents):
 
 ## 5. Verdict
 
-**Phase 0a-v2 round-2 is COMPLETE.** 10 chunks verified independently with adversarial framing. Total: 89 verified bugs (5 P1 + 15 P2 + 69 P3). 20 T4 questions for Phase 0e. 7 T1 empirical tests for Christina. 13 ADRs queued for Phase 0e.
+**Phase 0a-v2 round-2 is COMPLETE.** 10 chunks verified independently with adversarial framing. Total: **85 verified bugs (2 P1 + 14 P2 + 69 P3)** after Christina's 2026-04-26 FB-test correction reclassified 4 findings as NOT-A-BUG. 19 T4 questions for Phase 0e. 5 T1 empirical tests for Christina. 13 ADRs queued for Phase 0e.
 
-**The most material outcome of Phase 0a-v2** is the resolution of the chunk-3 distance-FB-row-6 mystery as a chunk-9 producer bug (P1-1), and the discovery of P1-2 (`predicted_score==0` filter missing). Both are HIGH-priority paper-output integrity issues that round-1 missed.
+**Distance-FB Row 6 mystery RESOLVED**: column 6 of paper Tables 2/3 is the `lasd` (kitchen-sink + distance) column. Distance is INCLUDED IN THE VA SPEC, not used AS A LEAVE-OUT. Spec-test row populated; FB rows correctly blank because `lasd` has no controls left to leave out (structural property of the FB test: `va_controls_for_fb` excludes `lasd` by design per `macros_va_all_samples_controls.doh:66`).
 
-**Bug 93 is bounded and re-prioritized.** 4 instances, all in NSC/merge files. Paper blast radius is null for current paper. Phase 1 still fixes (cheap), but Bug 93 is no longer the headline finding — chunk-9 P1-1/P1-2 are.
+**Bug 93 is bounded and re-prioritized.** 4 instances, all in NSC/merge files. Paper blast radius is null for current paper. Phase 1 still fixes (cheap), but Bug 93 is no longer the headline finding.
 
-**Verification protocol works.** 3 confirmation-bias errors caught and resolved by T3. The round-1+round-2+T3 architecture is reusable for future high-stakes audits.
+**Verification protocol works in BOTH directions.** 3 confirmation-bias errors caught and resolved by T3 (round-2 false positive, round-1 false positive, prompt-construction error). PLUS a 4th-class error caught by Christina herself: round-2 misframed structural FB-test properties as bugs. This last class is what T4 escalation is for — domain expertise the protocol can't supply.
 
-**Ready for Phase 0e** (design lock — ADRs 0004-0016 against verified findings; consolidation plan v3) once Christina has time for the T1 empirical tests + Phase 0e Q&A walkthrough.
+**Round-2 false-positive rate (re-estimated)**: 4 of round-2's findings were FB-structure misreadings. The protocol's adversarial framing made round-2 surface candidate-bugs aggressively; T4 (Christina) is the right adjudicator for "is this actually a bug or just a structural property I don't understand". Lesson: **round-2 should flag structural-FB-test concerns more cautiously OR the prompt should explain FB-test structure upfront.**
+
+**Ready for Phase 0e** (design lock — ADRs 0004-0016 against verified findings; consolidation plan v3) once Christina has time for the remaining 5 T1 empirical tests + Phase 0e Q&A walkthrough.

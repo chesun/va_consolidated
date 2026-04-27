@@ -160,3 +160,35 @@ All 7 T1 tests + 20 T4 questions consolidated in `quality_reports/audits/2026-04
 - Round-1 archeology: `quality_reports/audits/round-1/`
 - Plan: `quality_reports/plans/2026-04-25_phase-0a-v2-verification-plan.md`
 - Pre-Phase-0a-v2 session log: `quality_reports/session_logs/2026-04-25_audit-plan-adrs.md`
+
+---
+
+## Late-evening update — Christina FB-test correction (2026-04-26)
+
+After synthesis was committed, Christina pointed out that my CB1/CB2 (column 6 FB drop in `va_spec_fb_tab_all.do`) findings misread the structural property of the FB test. **Forecast-bias test requires leave-out variables**: estimate VA without controls X, estimate VA with X, regress residual difference on round-1 VA. When VA spec is `lasd` (kitchen sink + distance), there are no controls left to leave out → no FB test possible → blank FB cells BY DESIGN.
+
+**T3 verified `macros_va_all_samples_controls.doh:66-76`**:
+- `va_controls_for_fb` lists 8 specs: `b l a s la ls as las` (8 specs, **excludes `lasd`**).
+- Per-spec leave-out lists shrink monotonically as VA spec grows: `b_ctrl_leave_out_vars` has 8 fb_vars, `l_ctrl_leave_out_vars` has 4, ..., `las_ctrl_leave_out_vars` has 1 (`d`), and **NO `lasd_ctrl_leave_out_vars` macro exists**.
+
+Christina extended: "this and other bugs you marked relating to the FB test are not actual bugs."
+
+**Reclassified 4 findings as NOT-A-BUG**:
+1. P1-1 / chunk-9 M1: column 6 FB drop in `va_spec_fb_tab_all.do:82-84` — structural correctness.
+2. P1-2 / chunk-9 M2: `predicted_score==0` filter missing — scrhat outputs in separate dir, no conflation.
+3. P1-3 / chunk-3 A13: distance-leave-out gap in `va_spec_fb_tab.do` lovar loop — same structural reason.
+4. P2-7: `va_predicted_score_fb.do:43` non-scrhat lov list — exploratory only, not paper-impacting.
+
+**Distance-FB Row 6 mystery FULLY RESOLVED**: column 6 of paper Tables 2/3 is the `lasd` (kitchen-sink + distance) column. Distance is INCLUDED IN THE VA SPEC, not used as a LEAVE-OUT. Spec-test row populated; FB rows correctly blank. **The chunk-3 distance-FB-row-6 mystery turns out to be a misframing in the paper map — there's no separate "distance leave-out" row to find.**
+
+**Bug count revised**: 89 → **85** (2 P1 + 14 P2 + 69 P3).
+
+**T1 tests reduced**: 7 → **5** (T1-1 column 6 visual check and T1-2 predicted_score check both removed).
+
+**Documents updated**:
+- Verified-final audit (`2026-04-26_deep-read-audit-FINAL.md`) — strikethrough on reclassified items, bug count revised, verdict updated.
+- chunk-9 disc report — M1 and M2 marked NOT-A-BUG with reasoning + meta-finding about structural FB-test theory.
+- chunk-3 disc report — A13 marked NOT-A-BUG.
+- MEMORY.md — added 2 [LEARN:domain] entries: FB test structure + paper Table 2/3 row 6 attribution.
+
+**Verification-protocol meta-finding**: Round-2 doesn't have FB-test theory. T4 (Christina) is the right adjudicator for "is this a bug or just a structural property?" In future audits: include FB-test structure in the prompt upfront, OR escalate FB-test concerns to T4 before P1/CRITICAL marking.

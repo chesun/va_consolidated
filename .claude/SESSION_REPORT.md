@@ -276,6 +276,29 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 - Phase 0a-v2 SYNTHESIS COMPLETE. 13 commits over the day; ~10K lines of audit/disc/synthesis docs written.
 - Ready for Phase 0e once Christina has time for T1 tests + Q&A walkthrough.
 
+---
+
+## 2026-04-26 (continued) — Christina FB-test correction: 4 findings reclassified NOT-A-BUG
+
+**Operations:**
+
+- Christina corrected my CB1 finding (column 6 FB drop in `va_spec_fb_tab_all.do`). FB test structure: (1) estimate VA without controls, (2) estimate VA with controls, (3) regress residual difference on round-1 VA. When VA spec is `lasd` (kitchen sink + distance), there are NO controls left to leave out → no FB test possible → blank FB cells BY DESIGN.
+- T3 verified `macros_va_all_samples_controls.doh:66-76`: `va_controls_for_fb` lists 8 specs (`b l a s la ls as las`) and explicitly excludes `lasd`. There is NO `lasd_ctrl_leave_out_vars` macro defined.
+- Christina extended: "this and other bugs you marked relating to the FB test are not actual bugs."
+- Reclassified 4 findings as NOT-A-BUG: P1-1 / chunk-9 M1 (column 6 FB drop), P1-2 / chunk-9 M2 (predicted_score filter), P1-3 / chunk-3 A13 (distance-leave-out gap), P2-7 (va_predicted_score_fb.do non-scrhat lov list).
+- Updated verified-final audit doc, chunk-3 disc, chunk-9 disc, MEMORY.md (added 2 [LEARN:domain] entries on FB test structure + paper Table 2/3 row 6 attribution).
+
+**Bug count revised**: 89 → **85** (2 P1 + 14 P2 + 69 P3).
+
+**Verification-protocol meta-finding (added)**: Round-2's adversarial framing pushed it to flag candidate-bugs aggressively, including 4 findings that turn out to be structural FB-test properties. Round-2 doesn't have FB-test theory; T4 (Christina) is the right adjudicator for "is this a bug or just a structural property?" **Lesson**: in future audits, escalate FB-test concerns to T4 BEFORE marking as P1/CRITICAL, OR include FB-test structure in the prompt upfront.
+
+**Distance-FB Row 6 mystery FULLY RESOLVED**: column 6 of paper Tables 2/3 is the `lasd` (kitchen-sink + distance) column. Distance is INCLUDED IN THE VA SPEC, not used as a LEAVE-OUT. Spec-test row populated; FB rows correctly blank.
+
+**Status:**
+
+- Phase 0a-v2 SYNTHESIS revised. 5 T1 tests remaining for Christina (down from 7); 19 T4 questions (down from 20).
+- Ready for Phase 0e.
+
 
 ---
 
