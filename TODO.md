@@ -4,7 +4,8 @@ Last updated: 2026-04-26
 
 ## Active (doing now)
 
-- [ ] **Phase 0a-v2 SYNTHESIS COMPLETE** — verified-final audit at `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md`. Awaiting T1 empirical tests + Phase 0e Q&A walkthrough.
+- [ ] **Phase 0e Q&A walkthrough is BLOCKING** for Phase 1 plan creation. 19 T4 questions queued at `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md` §3.2. Estimated 1-2 hours of Christina's time. Per Christina's "Phase 0e is blocking, don't create Phase 1 plan yet."
+- [ ] **Phase 1 sub-phase structure agreed** (pending Phase 0e to lock specifics): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. **File ownership constraint**: Matt Naven's files (NSC/CCC/CSU crosswalks, `merge_k12_postsecondary.doh`, `gecode_json.py`) stay UNTOUCHED. Bug 93 family stays UNFIXED in Phase 1.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~30-60 min in one session)
 
@@ -74,3 +75,4 @@ See verified-final audit §3.1 for snippets. **Reduced from 7 to 5 tests after C
 - [x] Phase 0a-v2 batch 4 — chunks 9, 10 round-2 verified; 2 disc reports written; **Phase 0a-v2 round-2 COMPLETE (10 chunks)**. CRITICAL: chunk 9 M1 resolves distance-FB-row-6 mystery — column 6 (lasd) FB rows DROPPED from paper Tables 2/3 by `va_spec_fb_tab_all.do` keeper-rule omission. Bug 93 family LOCKED at 4 instances; blast radius NULL for current paper — 2026-04-26
 - [x] Phase 0a-v2 SYNTHESIS — verified-final audit doc at `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md`. 89 verified bugs (5 P1 + 15 P2 + 69 P3); 7 T1 tests; 20 T4 questions; 13 ADRs queued for Phase 0e; 10-step Phase 1 playbook. **Verification protocol caught 3 confirmation-bias errors (1 per round + 1 prompt-construction). All resolved by T3 deterministic checks.** — 2026-04-26
 - [x] Phase 0a-v2 FB-test correction — Christina identified that column 6 (lasd) FB blank cells are structurally correct, NOT a bug. FB test requires leave-out variables; `lasd` (kitchen sink + distance) has nothing left to leave out. `va_controls_for_fb` (`macros_va_all_samples_controls.doh:66`) excludes `lasd` by design. Reclassified 4 findings as NOT-A-BUG. Bug count revised: 89 → 85 (2 P1 + 14 P2 + 69 P3). T1 tests reduced 7 → 5. Distance-FB Row 6 mystery FULLY RESOLVED. — 2026-04-26
+- [x] Phase 1 framing agreed — consolidate-first-fix-bugs-later split into Phase 1a/1b/1c. File ownership constraint locked: Matt Naven's files (NSC/CCC/CSU crosswalks, `merge_k12_postsecondary.doh`, `gecode_json.py`) stay UNTOUCHED. `mattschlchar.do` traced as Christina-owned production code (paper Table 8 chain). Phase 1 plan creation paused per Christina until Phase 0e walkthrough completes. — 2026-04-26

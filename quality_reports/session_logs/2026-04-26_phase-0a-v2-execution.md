@@ -192,3 +192,64 @@ Christina extended: "this and other bugs you marked relating to the FB test are 
 - MEMORY.md — added 2 [LEARN:domain] entries: FB test structure + paper Table 2/3 row 6 attribution.
 
 **Verification-protocol meta-finding**: Round-2 doesn't have FB-test theory. T4 (Christina) is the right adjudicator for "is this a bug or just a structural property?" In future audits: include FB-test structure in the prompt upfront, OR escalate FB-test concerns to T4 before P1/CRITICAL marking.
+
+---
+
+## Late-evening — Phase 1 framing discussion + ownership clarifications + plan deferred
+
+### User Q: "Are we able to consolidate first and fix bugs later?"
+
+I proposed the **Phase 1a/1b/1c split**:
+
+- **Phase 1a (consolidate, behavior-preserving)**: structural reorganization, path parameterization, dedupe, byte-equivalent output target. Replication target = predecessor outputs (bugs intact).
+- **Phase 1b (bug fixes)**: P1/P2 bugs, paper-affecting subset first then code-quality, each with own ADR + commit.
+- **Phase 1c (cosmetic cleanup)**: P3 bugs at convenience.
+
+Argued advantages: clear scope, faster Phase 1a, provable verification, decouples bug-fix from paper-revision-vs-not decision.
+
+### User constraint added: "leave Matt Naven's files as-is; only fix code Christina owns"
+
+- NSC/CCC/CSU crosswalks (`crosswalk_{nsc,ccc,csu}_outcomes.do`) → leave as-is
+- `merge_k12_postsecondary.doh` (Matt's) → leave as-is
+- `gecode_json.py` (Christina confirmed Matt-authored) → leave as-is
+- Bug 93 family (4 instances, all in NSC/merge files) → stays UNFIXED in Phase 1
+- Naven hardcoded user-machine paths in CCC/CSU → stay UNTOUCHED
+
+**Path resolution still works on Scribe** because Matt's hardcoded paths ARE the Scribe paths; the consolidated repo runs at `$vaprojdir = /home/research/ca_ed_lab/projects/common_core_va` (per ADR-0001, ADR-0002), so the paths Matt's files use happen to resolve correctly.
+
+### `mattschlchar.do` I/O lineage trace (resolved during this exchange)
+
+**Verdict**: Christina-authored wrapper, IS production code, can be edited.
+
+- Header: "written by Che Sun. Email: ucsun@ucdavis.edu"
+- Wired into `master.do:412` (survey-side master)
+- Produces `$projdir/dta/schoolchar/schlcharpooledmeans.dta`
+- Consumed by `indexregwithdemo.do:37` (paper Table 8 Panel A) and `indexhorseracewithdemo.do:41` (paper Table 8 Panel B)
+- Underlying data dependency: `$projdir/dta/schoolchar/mattschlchar.dta` originates from Matt's dir `/home/research/ca_ed_lab/msnaven/...`. Currently `local clean = 0` (L15) so production reads pre-built copy, not Matt's dir directly.
+
+Phase 1 implication: do-file is editable; data file may need vendoring (Phase 0e Q-5).
+
+### Plan deferred — Phase 0e is blocking
+
+Christina deferred Phase 1 plan creation: "Phase 0e is blocking — I need to answer your T4 questions first."
+
+**Phase 0e Q&A walkthrough** is queued at `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md` §3.2 (19 T4 questions; Q-1 already resolved by FB-test correction). Most relevant for Phase 1 plan:
+
+- Q-2: `run_prior_score = 0` gate decision
+- Q-3: Paper-α attribution (alpha.do vs indexalpha.do)
+- Q-4: NSC-anchoring intent for `enr` definition
+- Q-5: mattschlchar path strategy (refined by trace above)
+- Q-6: `reg_out_va_sib_acs_tab.do` mtitles → paper Table 7?
+- Q-13: `paper/common_core_va.tex` (OLD version) abandoned?
+- Q-19: `base_sum_stats_tab.do` / `sample_counts_tab.do` v1-only
+
+### Commits this segment
+
+- `322a33d` — FB-test correction (4 findings reclassified NOT-A-BUG)
+- (this commit) — late-evening logs + MEMORY [LEARN] entries
+
+### Next session
+
+- **Phase 0e walkthrough** with Christina (1-2 hours estimated for 19 T4 questions; can batch into one session)
+- After Phase 0e: write 13 ADRs (0004-0016) against verified findings
+- After ADRs: detailed consolidation plan v3 with Phase 1a/1b/1c structure

@@ -299,6 +299,33 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 - Phase 0a-v2 SYNTHESIS revised. 5 T1 tests remaining for Christina (down from 7); 19 T4 questions (down from 20).
 - Ready for Phase 0e.
 
+---
+
+## 2026-04-26 (continued) — Phase 1 framing discussion + ownership clarifications + plan deferred
+
+**Operations:**
+
+- Discussed consolidate-first-fix-bugs-later approach. Proposed Phase 1a (consolidate, behavior-preserving), 1b (bug fixes by priority), 1c (cosmetic cleanup) split. Christina agreed to the framing.
+- Christina added scope constraint: "leave Matt Naven's files as-is; only fix code Christina owns." Bug 93 family stays UNFIXED in Phase 1; NSC/CCC/CSU crosswalks + `merge_k12_postsecondary.doh` + `gecode_json.py` (confirmed Matt-authored) stay UNTOUCHED. Path resolution still works on Scribe because Matt's hardcoded paths ARE the Scribe paths.
+- Traced `mattschlchar.do` I/O lineage: Christina-authored wrapper (header L4-5: "written by Che Sun"); IS production code (wired into `master.do:412`; produces `schlcharpooledmeans.dta` consumed by both Table 8 panel producers). Underlying data file originates from Matt's user dir but is gated off; current production reads pre-built copy.
+- Christina deferred Phase 1 plan creation: "Phase 0e is blocking — I need to answer your T4 questions first."
+
+**Decisions:**
+
+- Phase 1 plan creation BLOCKED until Phase 0e Q&A walkthrough is complete.
+- File ownership constraint locked via [LEARN:domain] entry in MEMORY.md.
+
+**Commits:**
+
+- `322a33d` — Christina FB-test correction (4 findings reclassified NOT-A-BUG)
+- (this commit) — late-evening logs + MEMORY [LEARN] entries
+
+**Status:**
+
+- Phase 0a-v2 fully closed.
+- Up next: Phase 0e Q&A walkthrough (19 T4 questions; ~1-2 hours of Christina's time). Then 13 ADRs (0004-0016). Then detailed Phase 1 plan v3.
+- All audit/synthesis work pushed to remote (origin: chesun/va_consolidated).
+
 
 ---
 
