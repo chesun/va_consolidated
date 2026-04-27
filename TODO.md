@@ -4,14 +4,25 @@ Last updated: 2026-04-26
 
 ## Active (doing now)
 
-- [ ] Phase 0a-v2 Step 4 — synthesize verified-final audit doc + bug-priority triage (P1/P2/P3)
-- [ ] Bug 93 T1 empirical verification — Christina runs Stata snippet on Scribe when convenient; **scope LOCKED at 4 instances** (NSC UC, NSC UC ontime, CCC ontime, CSU ontime); **paper blast radius is NULL for current paper** (downgrade priority to P2)
-- [ ] **Revoke OpenCage API key** committed in `k12_postsec_distances.do:98` (security hygiene)
-- [ ] **CRITICAL T1**: paper Tables 2/3 column 6 FB rows blank? (chunk 9 M1 — resolves distance-FB-row-6 mystery)
+- [ ] **Phase 0a-v2 SYNTHESIS COMPLETE** — verified-final audit at `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md`. Awaiting T1 empirical tests + Phase 0e Q&A walkthrough.
+
+## T1 Tests for Christina (run on Scribe when convenient — ~30-90 min in one session)
+
+See verified-final audit §3.1 for snippets.
+
+- [ ] **T1-1 (CRITICAL)** — Open `$vaprojdir/tables/share/va/pub/va_score_v1.tex` and `va_out_v1.tex`; check column 6 FB rows blank (resolves chunk-3 distance-FB-row-6 + chunk-9 M1)
+- [ ] **T1-2 (CRITICAL)** — `tab predicted_score using $vaprojdir/tables/va_cfr_all_v1/fb_test/fb_ela_all.dta` (resolves chunk-9 M2)
+- [ ] **T1-3** — `crosswalk_nsc_outcomes.do:250` `id` macro — does `college_begin_date` vary by student? (chunk-10 M1)
+- [ ] **T1-4** — Bug 93 count test (4 instances)
+- [ ] **T1-5** — `assert school_id == cdscode` in `va_all.dta`
+- [ ] **T1-6** — Open `$vaprojdir/tables/.../reg_*.csv`; count actual columns vs declared mtitles (chunk-4 M4)
+- [ ] **T1-7** — Revoke OpenCage API key at `k12_postsec_distances.do:98`
 
 ## Up Next
 
-- [ ] Phase 0a-v2 Step 3 — adjudicate per tier (T1/T2/T3/T4) for all 10 chunks (most need T1 from Christina)
+- [ ] **Phase 0e Q&A walkthrough** with Christina — 20 T4 questions queued (verified-final §3.2). Estimated 1-2 hours.
+- [ ] **Phase 0e ADRs 0004-0016** — write 13 ADRs against verified findings (consolidation-plan v3 lock).
+- [ ] **Phase 1 (migration)** — execute consolidation per plan v3. 10-step playbook in verified-final §3.3.
 - [ ] Phase 0a-v2 Step 4 — produce verified-final audit doc
 - [ ] Phase 0a-v2 Step 5 — bug-priority triage (P1/P2/P3)
 - [ ] Phase 0a-v2 Step 6 — Q&A consolidation for Phase 0e walk-through
@@ -59,3 +70,4 @@ Last updated: 2026-04-26
 - [x] Phase 0a-v2 batch 2 — chunks 4, 5 round-2 verified; 2 disc reports written; N1 SAFE-to-relocate verdict reaffirmed; new HIGH-priority mtitles bugs surfaced in chunk-4 file 4 and chunk-5 reg_out_va_sib_acs_tab.do — 2026-04-26
 - [x] Phase 0a-v2 batch 3 — chunks 6, 7, 8 round-2 verified; 3 disc reports written; Distance-FB Row 6 producer chain LOCKED end-to-end; sample-restriction map (paper Table A.1) FINALIZED; T3.6 confirmed counts_k12.tex paper-path "mismatch" is OLD-paper / NEW-paper divergence (NOT a Phase 1 issue) — 2026-04-26
 - [x] Phase 0a-v2 batch 4 — chunks 9, 10 round-2 verified; 2 disc reports written; **Phase 0a-v2 round-2 COMPLETE (10 chunks)**. CRITICAL: chunk 9 M1 resolves distance-FB-row-6 mystery — column 6 (lasd) FB rows DROPPED from paper Tables 2/3 by `va_spec_fb_tab_all.do` keeper-rule omission. Bug 93 family LOCKED at 4 instances; blast radius NULL for current paper — 2026-04-26
+- [x] Phase 0a-v2 SYNTHESIS — verified-final audit doc at `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md`. 89 verified bugs (5 P1 + 15 P2 + 69 P3); 7 T1 tests; 20 T4 questions; 13 ADRs queued for Phase 0e; 10-step Phase 1 playbook. **Verification protocol caught 3 confirmation-bias errors (1 per round + 1 prompt-construction). All resolved by T3 deterministic checks.** — 2026-04-26

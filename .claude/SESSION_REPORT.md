@@ -242,6 +242,40 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 - **Phase 0a-v2 round-2 COMPLETE: 10 chunks verified, 10 disc reports written.**
 - Pending: Phase 0a-v2 Step 3 (T1/T4 escalations to Christina); Step 4 (verified-final audit doc); Step 5 (bug-priority triage P1/P2/P3); Step 6 (Phase 0e Q&A consolidation).
 
+---
+
+## 2026-04-26 (continued) — Phase 0a-v2 SYNTHESIS COMPLETE (verified-final audit doc)
+
+**Operations:**
+
+- Wrote `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md` consolidating 10 chunks of round-2 disc reports + 6 T3 verifications into a single 306-line reference doc.
+- Synthesized Step 4 (verified-final audit) and Step 5 (bug-priority triage) into one document. Sections: Executive Summary, Bug-Priority Triage (P1/P2/P3), Action Items by Audience (T1 / Phase 0e / Phase 1), Reference (per-chunk pointers, ADRs, deps).
+
+**Commits:**
+
+- `6a8f74d` — VERIFIED-FINAL audit doc — Phase 0a-v2 SYNTHESIS COMPLETE
+
+**Bug-priority triage outcomes:**
+
+- **89 verified bugs** total: 5 P1 + 15 P2 + 69 P3.
+- **P1 (5)**: Column 6 FB drop (chunk 9 M1 — paper Tables 2/3 integrity); `predicted_score==0` filter missing (chunk 9 M2); Distance-FB-Row-6 paper attribution; `id` macro at `crosswalk_nsc_outcomes.do:250` (potential silent corruption); paper-α attribution issue (chunk 6 M1).
+- **P2 (15)**: Bug 93 family (4 instances, downgraded from P1 due to NULL paper blast radius); `va_corr_schl_char.do` LHS-peer-suffix bug; `cdscode` vs `school_id` cluster level; `run_prior_score=0` gate; `reg_out_va_sib_acs_tab.do` mtitles labeling bug; `reg_out_va_all_tab.do` mtitles 24-vs-32 col mismatch; `va_predicted_score_fb.do` non-scrhat lov list; `va_scatter.do` corr/b typos (6 lines); `merge_k12_postsecondary.doh:7` hardcoded path; NSC/CCC/CSU `enr` asymmetry; sibling het cluster mismatch; `va_var_explain.do` set-trace; OpenCage API key; `enrollmentclean.do` female-encoding; mattschlchar.do msnaven path.
+- **P3 (69)**: cosmetic, dead code, comment-only restrictions, naming hygiene.
+
+**Action items queued:**
+
+- 7 T1 empirical tests for Christina on Scribe (~30-90 min in one session): paper TeX column-6 inspection, predicted_score check, `id` macro at L250, Bug 93 count, `school_id == cdscode`, mtitles vs CSV column count, OpenCage key revocation.
+- 20 T4 questions for Phase 0e walkthrough (paper Table 2/3 row 6 attribution, paper-α attribution, NSC anchoring intent, sum-vs-mean, naming standardization, etc.).
+- 13 ADRs queued for Phase 0e (ADRs 0004-0016).
+- 10-step Phase 1 implementation playbook.
+
+**Verification-protocol meta-finding:** 3 confirmation-bias-style errors caught (one per round + one prompt-construction artifact). All resolved by T3 deterministic checks. **Protocol works as designed in both directions.**
+
+**Status:**
+
+- Phase 0a-v2 SYNTHESIS COMPLETE. 13 commits over the day; ~10K lines of audit/disc/synthesis docs written.
+- Ready for Phase 0e once Christina has time for T1 tests + Q&A walkthrough.
+
 
 ---
 
