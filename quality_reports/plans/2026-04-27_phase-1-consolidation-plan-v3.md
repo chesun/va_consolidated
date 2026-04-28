@@ -369,6 +369,23 @@ Buffer: ~0 weeks. If 1a slips, 1b/1c compress; if 1c bumps the offboarding date,
 
 Each milestone gets a session log + commit so the audit trail is durable.
 
+### 6.5 Per-commit review discipline (added 2026-04-28)
+
+Every in-scope code commit during Phase 1 goes through `coder-critic` at a hard 80/100 gate before push, per `.claude/rules/phase-1-review.md`. Layered defense:
+
+| Tier | Mechanism | Fires on |
+|---|---|---|
+| 1 | Pre-commit self-check (path-references, scope, ADR cite) | Every in-scope commit |
+| 2 | `coder-critic` agent dispatch | Substantive code changes (relocations, bug fixes, new `check_*.do`) |
+| 3 | Data-checks pipeline (§5.3) | Every `main.do` run on Scribe |
+| 4 | Golden-master M4 (§3.5) | End of Phase 1a |
+
+Tiers 1-2 are the new addition; Tiers 3-4 are §5.3 and §3.5 respectively. Hard-gate score < 80 blocks commit; up to 3 worker-critic rounds before escalation. Commit message footer records the verdict (`coder-critic: PASS (89/100)` etc.) so `git log --grep='coder-critic'` is the audit trail.
+
+Out of scope for `coder-critic`: ADR files, session logs, README rewrite (writer-critic instead), folder stubs, plan v3 edits.
+
+Sunsets at `v1.0-final` per ADR-0018.
+
 ---
 
 ## 7. Risk register
