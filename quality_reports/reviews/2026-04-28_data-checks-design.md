@@ -30,7 +30,7 @@ This memo translates what the codebook revealed into a per-check-file specificat
 - 4 analytic cohorts confirmed: 2015 (402,416), 2016 (406,084), 2017 (450,201), 2018 (525,744). Counts give a hard tolerance for the per-cohort assertion.
 - 1,389 unique schools in `score_b` vs 5,009 schools in `k12_main` vs 5,625 schools in CalSCHLS — CalSCHLS is the broadest school sample, k12_main filters to VA-estimable schools, `score_b` filters further to schools with g11 in 2015-18. The drop pattern is meaningful, not anomalous.
 - CalSCHLS QOIs are coded on a **-2 to +2 scale** (e.g., `parentqoi9mean_pooled` range = [-2, 2], mean ≈ 1.22 — strongly-disagree to strongly-agree centered at 0). NOT 1-4 or 1-5 as initially assumed. Index z-scores derived from these will have mean 0, SD 1 by construction.
-- 45 unique source survey items: 11 parent QOIs (9, 15, 16, 17, 27, 30, 31, 32, 33, 34, 64) + 19 sec QOIs (22-40 sequential) + 15 staff QOIs (10, 20, 24, 41, 44, 64, 87, 98, 103, 104, 105, 109, 111, 112, 128). ADR-0010's "9 / 15 / 4" item counts must refer to *subsets* selected by `imputedcategoryindex.do` / `compcasecategoryindex.do`, not the totals. Identifying the exact subsets is a Phase 1c task — read the constructor scripts at edit time.
+- 45 unique source survey items: 11 parent QOIs (9, 15, 16, 17, 27, 30, 31, 32, 33, 34, 64) + 19 sec QOIs (22-40 sequential) + 15 staff QOIs (10, 20, 24, 41, 44, 64, 87, 98, 103, 104, 105, 109, 111, 112, 128). ADR-0010's "9 / 15 / 4" item counts refer to *subsets* selected by `imputedcategoryindex.do` / `compcasecategoryindex.do` — verified 2026-04-28: `climateindex` (9), `qualityindex` (15), `supportindex` (4), totaling 28 of 45 source items. Built variable names in the saved index files are `climateindex` / `qualityindex` / `supportindex` (raw) and `z_climateindex` / `z_qualityindex` / `z_supportindex` (z-scored). Both constructor scripts use identical item lists. See §5 for full lists.
 
 ---
 
@@ -170,9 +170,26 @@ foreach v of varlist n_g11_ela_*_sp n_g11_math_*_sp {
 **Inputs:** both CalSCHLS source files (`imputedallsvyqoimeans.dta`, `allsvyqoimeans.dta`) + the BUILT index files (`$projdir/dta/allsvyfactor/categoryindex/imputedcategoryindex.dta`, same path with `compcase` prefix).
 **Purpose:** verify source items are within Likert range and built indices are well-formed z-scores.
 
+### Index structure (resolved 2026-04-28 from `imputedcategoryindex.do` + `compcasecategoryindex.do`)
+
+Both constructor scripts use identical item lists, so checks apply uniformly across the imputed and compcase output files. Three indices, matching ADR-0010's "9 / 15 / 4":
+
+| Index | N items | Components | Built var (raw) | Built var (z-scored) |
+|---|---:|---|---|---|
+| `climateindex` (school climate) | 9 | `parentqoi16/17/27_mean_pooled` + `secqoi22/23/24/26/27/29_mean_pooled` | `climateindex` | `z_climateindex` |
+| `qualityindex` (teacher-staff quality) | 15 | `parentqoi30/31/32/33/34_mean_pooled` + `secqoi28/35/36/37/38/39/40_mean_pooled` + `staffqoi20/24/87_mean_pooled` | `qualityindex` | `z_qualityindex` |
+| `supportindex` (student support) | 4 | `parentqoi15/64_mean_pooled` + `staffqoi10/128_mean_pooled` | `supportindex` | `z_supportindex` |
+
+Total source items used: **28** of the 45 QOIs in the source files (3 + 6 + 5 + 7 + 3 + 2 + 2 = 28). The remaining 17 source QOIs (`parentqoi9`, `secqoi25/30/31/32/33/34`, `staffqoi41/44/64/98/103/104/105/109/111/112`) are present in the source datasets but not consumed by any of the three indices used in the paper.
+
+A fourth `motivationindex` (4 items: `secqoi31/32/33/34_mean_pooled`) is declared but commented out in both files (line 31 of `imputedcategoryindex.do`, line 33 of `compcasecategoryindex.do`) — exploratory, dropped from the paper. `check_survey_indices.do` should NOT assert its existence.
+
 ### Hard `assert` invariants on source
 
 ```stata
+* school-level row count — codebook line 105 (calschls_1) + 24269 (calschls_2)
+assert _N == 5625
+
 * source-item Likert range — codebook line 1415: parentqoi9mean range [-2, 2]
 * (5-point Likert centered at 0)
 foreach v of varlist parentqoi*mean_pooled secqoi*mean_pooled staffqoi*mean_pooled {
@@ -181,33 +198,63 @@ foreach v of varlist parentqoi*mean_pooled secqoi*mean_pooled staffqoi*mean_pool
     assert inrange(r(max), 0, 2.01)
 }
 
-* school-level row count — codebook line 105 (calschls_1) + 24269 (calschls_2)
-assert _N == 5625
+* every index component must be present in the source file
+local climateitems  parentqoi16mean_pooled parentqoi17mean_pooled parentqoi27mean_pooled secqoi22mean_pooled secqoi23mean_pooled secqoi24mean_pooled secqoi26mean_pooled secqoi27mean_pooled secqoi29mean_pooled
+local qualityitems  parentqoi30mean_pooled parentqoi31mean_pooled parentqoi32mean_pooled parentqoi33mean_pooled parentqoi34mean_pooled secqoi28mean_pooled secqoi35mean_pooled secqoi36mean_pooled secqoi37mean_pooled secqoi38mean_pooled secqoi39mean_pooled secqoi40mean_pooled staffqoi20mean_pooled staffqoi24mean_pooled staffqoi87mean_pooled
+local supportitems  parentqoi15mean_pooled parentqoi64mean_pooled staffqoi10mean_pooled staffqoi128mean_pooled
+foreach v in `climateitems' `qualityitems' `supportitems' {
+    capture confirm variable `v'
+    assert _rc == 0
+}
+
+* item-count invariants per ADR-0010
+assert `: word count `climateitems'' == 9
+assert `: word count `qualityitems'' == 15
+assert `: word count `supportitems'' == 4
 ```
 
-### Hard `assert` invariants on built indices (post-`imputedcategoryindex.do` / `compcasecategoryindex.do`)
+### Hard `assert` invariants on built indices
 
 ```stata
-* per ADR-0010, three indices: counts 9 / 15 / 4 items
-* (item lists in imputedcategoryindex.do — verify at edit time)
-foreach idx in <index1_name> <index2_name> <index3_name> {
+* z-scored indices: mean 0, SD 1 by construction (z-score absorbs any sums-vs-means scaling)
+foreach idx in z_climateindex z_qualityindex z_supportindex {
     qui sum `idx'
     assert abs(r(mean)) < 0.01            // z-scored
     assert inrange(r(sd), 0.95, 1.05)     // z-scored, SD ≈ 1
     assert inrange(r(min), -5, -1)        // typical z-score lower tail
     assert inrange(r(max),  1,  5)        // typical z-score upper tail
 }
+
+* RAW indices: range depends on whether ADR-0011 (sums→means) fix has been applied.
+* Post-fix (mean of items, each in [-2, 2]) → raw range should be [-2, 2].
+* Pre-fix (sum of items) → raw range scales with N items: ~[-18, 18] / [-30, 30] / [-8, 8].
+* This assertion catches whether the fix has been applied correctly.
+foreach idx in climateindex qualityindex supportindex {
+    qui sum `idx'
+    assert inrange(r(min), -2.01, 0)
+    assert inrange(r(max), 0, 2.01)       // FAILS pre-ADR-0011-fix; PASSES post-fix
+}
 ```
 
-### Open question (Phase 1c task)
+### Soft signals
 
-The exact item lists per index — the 9, 15, and 4 source QOIs that go into each — must be read from `imputedcategoryindex.do` and `compcasecategoryindex.do` at edit time. Once known, add an item-count assertion: `assert <count of items in index1> == 9` etc., per ADR-0010 / ADR-0011.
+- `z_climateindex` / `z_qualityindex` correlation expected high (~0.7+); soft-flag if negative or near zero.
+- Imputed vs compcase index correlation per school expected very high (~0.95+); soft-flag if <0.85.
+
+### Note on ADR-0011 invariance
+
+`imputedcategoryindex.do:34-50` and `compcasecategoryindex.do:36-52` build the raw `<X>index` as `sum_i x_i` (sums). ADR-0011 changes this to `(1/N) * sum_i x_i` (means). Mathematically: under z-score normalization, `z_X = (X - μ_X) / σ_X` where μ and σ are sample moments. If X scales by 1/N, then μ and σ also scale by 1/N, and `z_X` is invariant. So:
+
+- `z_climateindex` / `z_qualityindex` / `z_supportindex` assertions are **identical** before and after the fix.
+- Raw `climateindex` / `qualityindex` / `supportindex` assertions **distinguish** before and after — the [-2, 2] bound is the post-fix invariant.
+
+The check pipeline therefore catches whether the fix has landed by inspecting the raw indices, while remaining stable on the z-scored variants used in the paper regressions.
 
 ### Codebook references
 
-- `calschls_1` parentqoi9mean_pooled: lines 1404-1422
-- `calschls_1` describe: lines 101-1320 (long; 957 vars)
-- 45 source QOIs enumerated above (§1)
+- `calschls_1` parentqoi9mean_pooled (Likert range): lines 1404-1422
+- `calschls_1` describe: lines 101-1320 (957 vars)
+- 45 source QOIs enumerated above (§1); 28 used across the 3 indices, 17 unused
 
 ---
 
@@ -275,13 +322,13 @@ Defaults ON. A failed `assert` in any check halts the pipeline; partial outputs 
 
 ## 9. Summary of TBD / open items
 
-| Item | Owned-by | Resolves-when |
-|---|---|---|
-| Item lists per CalSCHLS index (9 / 15 / 4 — which exact QOIs?) | Christina (or Claude reading `imputedcategoryindex.do`) | Phase 1c when `check_survey_indices.do` is written |
-| K12 ↔ NSC / CCC / CSU merge-rate baselines | Claude | After Phase 1a §3.5 golden-master verification |
-| Paper-table cell magnitudes (Table 2/3 main coefficients) | Claude | After Phase 1a §3.3 share/ relocation |
-| `<index1_name>` / `<index2_name>` / `<index3_name>` actual variable names | Claude reading constructor scripts | Phase 1c |
-| Stata version Christina ran on (codebook log header would have it but I haven't pulled it) | trivial | Anytime |
+| Item | Owned-by | Resolves-when | Status |
+|---|---|---|---|
+| ~~Item lists per CalSCHLS index (9 / 15 / 4 — which exact QOIs?)~~ | Claude | — | **RESOLVED 2026-04-28** — see §5 index-structure table |
+| ~~`<index1_name>` / `<index2_name>` / `<index3_name>` actual variable names~~ | Claude | — | **RESOLVED 2026-04-28** — `climateindex`, `qualityindex`, `supportindex` (+ `z_` prefix variants) |
+| K12 ↔ NSC / CCC / CSU merge-rate baselines | Claude | After Phase 1a §3.5 golden-master verification | OPEN |
+| Paper-table cell magnitudes (Table 2/3 main coefficients) | Claude | After Phase 1a §3.3 share/ relocation | OPEN |
+| Stata version Christina ran on (codebook log header would have it but I haven't pulled it) | trivial | Anytime | OPEN |
 
 ## 10. What's NOT in scope here
 
