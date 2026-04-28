@@ -69,7 +69,8 @@ if !`on_scribe' {
 CANONICAL PATHS (consolidated repo)
 ==============================================================================*/
 
-* Root of the consolidated repo on Scribe (the rsync target per ADR-0007).
+* Root of the consolidated repo on Scribe (file-transfer destination
+* per ADR-0007 + ADR-0020; transfer mechanism is operator-choice — FileZilla today).
 global consolidated_dir "/home/research/ca_ed_lab/projects/common_core_va/consolidated"
 
 * Subdirectories under $consolidated_dir.  These match the CLAUDE.md folder

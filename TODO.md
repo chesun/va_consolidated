@@ -27,7 +27,7 @@ Consolidated as a single .do file at `do/check/t1_empirical_tests.do` (2026-04-2
 
 - [ ] **Draft Phase 1 plan v3** — operationalize ADRs 0004-0017 into sequenced playbook. Use audit §3.3 as starting structure.
 - [ ] **Phase 1 (migration)** — execute consolidation per plan v3.
-- [ ] **Phase 1 deliverables (per ADR-0007)**: rewrite README for non-git Stata-skilled successor; build `sync_to_scribe.sh` wrapper; establish `VERSION` marker convention on Scribe.
+- [ ] **Phase 1 deliverables (per ADR-0007 + ADR-0020)**: rewrite README for non-git Stata-skilled successor (Phase 1c §5.2 step 5). File transfer is operator-choice — FileZilla currently per ADR-0020; no `sync_to_scribe.sh` wrapper, no on-Scribe `VERSION` marker. Successor's reproduction instruction (in offboarding deliverable memo per §5.2 step 8) is "clone GitHub at `v1.0-final`, copy contents to Scribe via your preferred file-transfer tool."
 
 ## Open T4 escalations (require Christina input at Phase 0e)
 

@@ -48,23 +48,20 @@ End of Phase 1 = offboarding-ready state. SESSION_REPORT and audit trail closed;
 
 ## 3. Phase 1a — Consolidate (behavior-preserving)
 
-### 3.1 Scribe folder + git remote setup
+### 3.1 Scribe folder + .gitignore setup
+
+**Revised 2026-04-28 per ADR-0020.** Original §3.1 prescribed an `rsync` wrapper-script workflow (`sync_to_scribe.sh` / `sync_from_scribe.sh`) with SSH ControlMaster setup. ADR-0020 simplifies: file transfer is operator-choice (Christina uses FileZilla; her interactive-SSH workflow has worked reliably for years). The architectural commitments from ADR-0007 (code-data separation, no `.git/` on Scribe, `.gitignore` policy) all stand; only the *sync mechanism* simplifies.
 
 1. **Create the Scribe consolidated folder.** Christina creates `/home/research/ca_ed_lab/projects/common_core_va/consolidated/` on Scribe.
 2. **Initialize the GitHub repo's `.gitignore`** per ADR-0007:
    - Excluded paths: `data/`, `estimates/`, `log/`, `output/`
-   - Excluded extensions: `*.dta`, `*.smcl`, `*.log`, `*.ster`, `.DS_Store`
+   - Excluded extensions: `*.dta`, `*.smcl`, `*.ster`, `.DS_Store`
    - Tracked everything else: tables, figures, code, docs, ADRs, paper LaTeX
-3. **Build `sync_to_scribe.sh` wrapper script** (committed at repo root). Does:
-   - Verify clean working tree (`git status` reports nothing uncommitted)
-   - Capture current commit SHA
-   - rsync local → Scribe with the exclusions per ADR-0007
-   - Write the SHA to `consolidated/VERSION` on Scribe
-   - One command, idempotent
-4. **Build companion `sync_from_scribe.sh`** for pulling tables/figures back from Scribe to local for git commit.
-5. **SSH ControlMaster setup** in `~/.ssh/config` per ADR-0007 (one-time, on Christina's local Mac).
+   - Note on `*.log`: stays scoped per LaTeX dirs (existing convention) rather than globally excluded — Stata `.smcl` master logs are already excluded above, and `log/` dir-level exclusion covers their translated `.log` companions.
+3. **File transfer mechanism (per ADR-0020)**: Christina uses FileZilla drag-and-drop for code changes from local Mac → Scribe `consolidated/`. Interactive SSH (`ssh chesun1@Scribe.ssds.ucdavis.edu` + password) for running the pipeline. No `~/.ssh/config` alias, no SSH key auth, no ControlMaster setup required for offboarding readiness.
+4. **Clean-tree discipline at offboarding** (Phase 1c §5.4): Christina manually verifies local repo is at the `v1.0-final` tag with no uncommitted changes BEFORE pushing files to Scribe via FileZilla. One-time discipline at the offboarding moment, not a daily concern. The successor's reproduction instruction (in the offboarding deliverable memo per §5.2 step 8) is "clone GitHub at `v1.0-final`, copy contents to Scribe via your preferred file-transfer tool" — the GitHub tag is the authoritative version stamp, replacing the dropped on-Scribe `VERSION` marker from the original ADR-0007 design.
 
-**Success criterion:** `bash sync_to_scribe.sh` works end-to-end. Scribe `consolidated/VERSION` matches local `git rev-parse HEAD`.
+**Success criterion:** Scribe `consolidated/` exists; `.gitignore` excludes the right paths; file transfer mechanism documented (this section + ADR-0020) for Christina's daily work and for the successor's offboarding-time reproduction.
 
 ### 3.2 Folder layout build-out
 
@@ -322,7 +319,7 @@ Scaffolding can begin opportunistically during Phase 1a: as each stage of the pi
 13. **Full-pipeline acceptance run on Scribe** (`stata -b do main.do` with `run_data_checks = 1`) — Christina runs the pipeline end-to-end. **Non-negotiable per ADR-0018**: this is the last action before `v1.0-final` tag. Captures clean log + all output artifacts + documented runtime. If it fails (including any data-check assertion), root-cause and fix before continuing.
 14. **README cold-read test**: a friendly lab member (NOT Christina) reads the README cold and tries to run the pipeline. Iterate README until they succeed without asking questions. Per ADR-0018, this pairs with step 13 as the offboarding acceptance criteria — both must pass.
 15. **Final commit + GitHub push**. Tag the commit as `v1.0-final` per ADR-0018 (not `v1.0-handoff`).
-16. **Final rsync to Scribe** with `VERSION` marker pointing to the `v1.0-final` tag.
+16. **Final file transfer to Scribe** (per ADR-0020): Christina pushes the `v1.0-final` working tree to Scribe via FileZilla (or her preferred tool). No on-Scribe `VERSION` marker — the GitHub tag is the authoritative version stamp, recorded in the offboarding deliverable memo.
 17. **Deposit with Kramer** per ADR-0018: hand over the offboarding deliverable memo (§5.2 step 8) + GitHub repo URL + Scribe folder location.
 
 **Success criterion** (per ADR-0018): full-pipeline acceptance run (with data checks ON) produces clean output AND a Stata-skilled stranger with SSH access can read README cold and reproduce the pipeline. Both gates required.
@@ -359,7 +356,7 @@ Buffer: ~0 weeks. If 1a slips, 1b/1c compress; if 1c bumps the offboarding date,
 
 | Milestone | Target | Gate |
 |---|---|---|
-| M1: Scribe sync + folder layout | Phase 1a §3.1 + §3.2 done | `sync_to_scribe.sh` works |
+| M1: Scribe folder + .gitignore + file-transfer mechanism documented | Phase 1a §3.1 + §3.2 done | Scribe `consolidated/` exists; `.gitignore` covers ADR-0007 paths; FileZilla workflow tested with a sample file (per ADR-0020) |
 | M2: Files relocated | Phase 1a §3.3 done | Predecessor `do_all.do` + `master.do` retired |
 | M3: main.do works | Phase 1a §3.4 done | `stata -b do main.do` runs on Scribe |
 | M4: Golden-master pass | Phase 1a §3.5 done | Outputs match predecessor pipeline |
