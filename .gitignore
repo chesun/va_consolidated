@@ -58,6 +58,10 @@ env/
 .DS_Store
 Thumbs.db
 
+# --- Codebook exports (may surface restricted-access metadata in
+#     `codebook` Examples blocks for ID / name / DOB string variables) ---
+master_supporting_docs/codebooks/
+
 # --- Claude Code (local-only, not shared across machines) ---
 .claude/settings.local.json
 .claude/state/*

@@ -270,7 +270,7 @@ Per ADRs and Q-answers:
 ### 5.1 Code-side cleanup
 
 1. **Dead code archival**: `out_drift_limit.doh` (P3-14), any other Phase-0a-flagged dead files → `do/_archive/dead/`.
-2. **Log/translate consistency**: ensure all do-files end with `cap log close` and `translate` for `.smcl` → `.log` conversion.
+2. **Per-do-file logging** (added 2026-04-28): every do file opens its own log near the top — `log using "$logdir/<filename>.smcl", replace text` — and closes at the bottom — `cap log close` + `translate "$logdir/<filename>.smcl" "$logdir/<filename>.log", replace`. `settings.do` defines `$logdir` per host. Phase 1c sweep audits each relocated do file: any without per-file logging gets the convention added. Convention enforced by `do/check/check_logs.do` (lives with the data-checks pipeline, §5.3 step 9; asserts every do file under `do/` produced a log on a clean `main.do` run; fails if any are missing). Predecessor convention — single global log per pipeline — is replaced because per-file logs make failures localizable for offboarding-era debugging.
 3. **Header comments**: every `do/` file gets a 4-line header (purpose, inputs, outputs, ADR refs if applicable) per the convention used in `do/check/t1_empirical_tests.do`.
 4. **`.gitignore` hardening**: pre-commit hook (optional) verifying no `.dta`/`.ster`/`.smcl` files are staged.
 
@@ -298,15 +298,34 @@ Per ADRs and Q-answers:
    - Inventory of what Kramer is responsible for (custodian, not maintainer)
    - Any conversations/decisions that didn't make it into ADRs
 
-### 5.3 Final verification + freeze (per ADR-0018 acceptance criteria)
+### 5.3 Automated data checks (added 2026-04-28; serves audit-survivability def-of-done)
 
-9. **Full-pipeline acceptance run on Scribe** (`stata -b do main.do`) — Christina runs the pipeline end-to-end. **Non-negotiable per ADR-0018**: this is the last action before `v1.0-final` tag. Captures clean log + all output artifacts + documented runtime. If it fails, root-cause and fix before continuing.
-10. **README cold-read test**: a friendly lab member (NOT Christina) reads the README cold and tries to run the pipeline. Iterate README until they succeed without asking questions. Per ADR-0018, this pairs with step 9 as the offboarding acceptance criteria — both must pass.
-11. **Final commit + GitHub push**. Tag the commit as `v1.0-final` per ADR-0018 (not `v1.0-handoff`).
-12. **Final rsync to Scribe** with `VERSION` marker pointing to the `v1.0-final` tag.
-13. **Deposit with Kramer** per ADR-0018: hand over the offboarding deliverable memo (§5.2 step 8) + GitHub repo URL + Scribe folder location.
+Goal: every pipeline run produces verifiable signals that the analytical chain is intact. Complements M4 golden-master verification (a *relative* check — predecessor vs consolidated outputs) with *absolute* invariant checks tied to codebook ranges and historical sample sizes. The check pipeline becomes the offboarding-era smoke test — any future operator running `main.do` learns immediately whether the data and analysis are still well-formed.
 
-**Success criterion** (per ADR-0018): full-pipeline acceptance run produces clean output AND a Stata-skilled stranger with SSH access can read README cold and reproduce the pipeline. Both gates required.
+Scaffolding can begin opportunistically during Phase 1a: as each stage of the pipeline relocates and is verified against the predecessor, write its companion check file. By the start of Phase 1c the check files exist; this section is where they get systematized, integrated into `main.do`, and finalized against codebook-derived bounds.
+
+9. **Build `do/check/` pipeline** of assertion-based verification scripts. One file per analytical stage (filename mirrors the pipeline section it guards):
+   - `check_samples.do` — row counts per cohort year (against historical N from the audit), key uniqueness (`isid` on student / school / cohort keys), no missings on critical vars, FRPM / EL / race-ethnicity / sex categorical levels in expected sets (codebook-derived where available).
+   - `check_merges.do` — K12 ↔ NSC / CCC / CSU merge rates within historical bounds; flag if `_merge` distribution shifts >0.5 pp from the relocated baseline.
+   - `check_va_estimates.do` — VA SD / cross-sectional spread within paper-reported ranges (~0.10–0.15 σ depending on outcome); estimate-level missings flagged; v1 prior-score deciles non-degenerate.
+   - `check_survey_indices.do` — Likert-scale ranges per CalSCHLS codebook; index z-score completeness; item counts per index match `indexalpha.do` per ADR-0010 (9 / 15 / 4).
+   - `check_paper_outputs.do` — sample sizes printed in paper tables match `share/` producer outputs and the audit-locked counts from chunk-9.
+   - `check_logs.do` — every relocated do file under `do/` produced a log file on the most recent clean `main.do` run; fail-loud listing for missing logs (pairs with §5.1 step 2).
+10. **Assertion conventions**: `assert` for hard invariants (pipeline halts on failure); `display as error` for soft signals (printed but non-halting). Each check file gets a 4-line header documenting invariant + tolerance + remediation pointer. Where a check has no documented bound yet, it carries an explicit `// TBD-codebook` marker so missing bounds are auditable.
+11. **`main.do` integration**: a `local run_data_checks 1` toggle invokes the check pipeline AFTER main analysis completes. A clean `main.do` run = all checks pass. A failed assertion stops the pipeline at the offending check, leaving partial output on disk so the failure is diagnosable. Toggle defaults ON; can be disabled for dev iteration but production / acceptance runs must run with checks ON.
+12. **Codebook-derived bounds**: per Christina-supplied codebooks for SBAC, CalSCHLS, CALPADS, NSC (etc.), each check file cites its codebook source for the ranges it asserts. If a codebook is unavailable for a given dataset, the bound derives from current pipeline output and is flagged TBD-codebook (see step 10) so the audit trail records what is and isn't pinned to an external source.
+
+**Success criterion**: `local run_data_checks 1` block runs clean on Scribe at the v1.0-final acceptance run; all `do/check/check_*.do` log files committed alongside the production-run logs.
+
+### 5.4 Final verification + freeze (per ADR-0018 acceptance criteria)
+
+13. **Full-pipeline acceptance run on Scribe** (`stata -b do main.do` with `run_data_checks = 1`) — Christina runs the pipeline end-to-end. **Non-negotiable per ADR-0018**: this is the last action before `v1.0-final` tag. Captures clean log + all output artifacts + documented runtime. If it fails (including any data-check assertion), root-cause and fix before continuing.
+14. **README cold-read test**: a friendly lab member (NOT Christina) reads the README cold and tries to run the pipeline. Iterate README until they succeed without asking questions. Per ADR-0018, this pairs with step 13 as the offboarding acceptance criteria — both must pass.
+15. **Final commit + GitHub push**. Tag the commit as `v1.0-final` per ADR-0018 (not `v1.0-handoff`).
+16. **Final rsync to Scribe** with `VERSION` marker pointing to the `v1.0-final` tag.
+17. **Deposit with Kramer** per ADR-0018: hand over the offboarding deliverable memo (§5.2 step 8) + GitHub repo URL + Scribe folder location.
+
+**Success criterion** (per ADR-0018): full-pipeline acceptance run (with data checks ON) produces clean output AND a Stata-skilled stranger with SSH access can read README cold and reproduce the pipeline. Both gates required.
 
 ---
 
@@ -330,9 +349,9 @@ Phase 1a → Phase 1b → Phase 1c. Each gates the next.
 
 3 months total. Rough allocation:
 
-- **Phase 1a (~6 weeks)** — folder setup, ~150 file relocations + path updates, main.do, golden-master verification. The relocation work is the single largest chunk.
+- **Phase 1a (~6 weeks)** — folder setup, ~150 file relocations + path updates, main.do, golden-master verification. The relocation work is the single largest chunk. Per-do-file logging convention (§5.1 step 2) and stub data-check files (§5.3) added opportunistically as each stage relocates.
 - **Phase 1b (~4 weeks)** — bug fixes by priority, P3 sweep, paper-text edits.
-- **Phase 1c (~2 weeks)** — README rewrite, offboarding deliverable memo, full-pipeline acceptance run, README cold-read test, freeze.
+- **Phase 1c (~3 weeks)** — README rewrite, offboarding deliverable memo, automated data-checks pipeline finalized against codebook bounds (§5.3), per-do-file logging audit (§5.1 step 2), full-pipeline acceptance run (with `run_data_checks = 1`), README cold-read test, freeze. (Bumped from ~2 to ~3 weeks 2026-04-28 to absorb the data-checks build-out and codebook integration.)
 
 Buffer: ~0 weeks. If 1a slips, 1b/1c compress; if 1c bumps the offboarding date, that's coordinated with Kramer + lab admin (no successor to discuss with — see ADR-0018).
 
@@ -347,8 +366,9 @@ Buffer: ~0 weeks. If 1a slips, 1b/1c compress; if 1c bumps the offboarding date,
 | M5: Paper-affecting bugs fixed | Phase 1b §4.1 + §4.2 done | Paper produces same numbers; α footnote updated |
 | M6: P2/P3 sweep done | Phase 1b §4.3 + §4.4 done | TODO.md backlog reflects what's deferred |
 | M7: README rewrite done | Phase 1c §5.2 done | Cold-read test passes |
-| M8: Acceptance run + README cold-read pass | Phase 1c §5.3 steps 9-10 done | Pipeline runs clean; cold-read test passes (per ADR-0018) |
-| M9: Offboarding freeze + Kramer deposit | Phase 1c §5.3 steps 11-13 done | `v1.0-final` tag pushed; deliverable memo handed to Kramer |
+| M8: Automated data checks pipeline live | Phase 1c §5.3 done | `local run_data_checks 1` block runs clean as part of `main.do`; per-do-file logs present (§5.1 step 2) |
+| M9: Acceptance run + README cold-read pass | Phase 1c §5.4 steps 13-14 done | Pipeline runs clean (checks ON); cold-read test passes (per ADR-0018) |
+| M10: Offboarding freeze + Kramer deposit | Phase 1c §5.4 steps 15-17 done | `v1.0-final` tag pushed; deliverable memo handed to Kramer |
 
 Each milestone gets a session log + commit so the audit trail is durable.
 
@@ -360,7 +380,7 @@ Each milestone gets a session log + commit so the audit trail is durable.
 |---|---|---|---|
 | Path-reference updates miss something during relocation | Medium | High (silent breakage) | Systematic `grep -rn` sweeps; golden-master verification (M4) catches divergences |
 | Matt's account decommissioned during Phase 1 | Low | High (pipeline breaks at NSC/CCC/CSU merge) | ADR-0008 backups give a recovery path; trigger successor ADR for the merge code |
-| README cold-read fails for hypothetical future reader (per ADR-0018, no live introduction) | Medium | High | §5.3 step 10 cold-read test by friendly non-Christina lab member; iterate README until it works without questions |
+| README cold-read fails for hypothetical future reader (per ADR-0018, no live introduction) | Medium | High | §5.4 step 14 cold-read test by friendly non-Christina lab member; iterate README until it works without questions |
 | Full-pipeline acceptance run fails before `v1.0-final` (ADR-0018 non-negotiable) | Low-Medium | High | Root-cause and fix before tagging; do NOT deposit a broken pipeline with Kramer |
 | Golden-master verification fails | Medium | Medium-High | Root-cause before moving to Phase 1b; never paper over with "close enough" |
 | Repo size grows unmanageably from tracked tables/figures | Low | Low | ADR-0007 open question — monitor; switch to Git LFS for any single artifact > 50MB |
@@ -382,6 +402,27 @@ Each milestone gets a session log + commit so the audit trail is durable.
 Remaining open questions (need Christina's answers before Phase 1a starts):
 
 - See Q1, Q2 above. (Q3-Q5 superseded by ADR-0018.)
+
+---
+
+## 9. 2026-04-28 plan revision — per-do-file logging + automated data checks
+
+Two additions, both Phase 1c:
+
+- **§5.1 step 2 upgraded** — every do file opens its own log; predecessor's single-global-log convention replaced. Localizes failures for offboarding-era debugging.
+- **§5.3 added** — automated data-checks pipeline under `do/check/check_*.do`. Six check files (samples, merges, va estimates, survey indices, paper outputs, logs) wired into `main.do` via a `run_data_checks` toggle. Codebook-derived bounds where available; `// TBD-codebook` markers where not.
+
+Knock-on edits: §6.3 Phase 1c bumped 2 → 3 weeks; §6.4 milestones M8/M9/M10 added/renumbered; §7 risk register §5.3-step-10 reference updated to §5.4-step-14.
+
+**Codebooks needed** (Christina to supply when convenient — does not block Phase 1a start). Priority order:
+
+1. **CalSCHLS** — Likert scales, item counts per index, missing codes. Highest leverage: directly pins the survey-index checks per ADR-0010 / ADR-0011 (9 / 15 / 4 items + sums-vs-means).
+2. **SBAC** — score range, performance bands, missing/exempt codes. Pins prior-score deciles and outcome-score sanity.
+3. **CALPADS demographics** — race/ethnicity codes (esp. for ADR-0015 Filipino-into-Asian recoding), FRPM, EL, special-ed, sex coding. Pins categorical-level checks across samples.
+4. **NSC outcomes** — sector codes (UC / CSU / CCC / private / OOS), persistence-year flags, degree-level codes. Pins K12 ↔ NSC merge checks.
+5. **CCC / CSU outcomes** (Matt's pipeline; checks read the merged result, don't touch Matt's files per ADR-0017) — sector codes + transfer flags. Lower priority since downstream merges are Matt-owned.
+
+Where a codebook is not available before v1.0-final, the corresponding check carries a `// TBD-codebook` marker and asserts only against the current pipeline output. Audit trail is honest about what is and isn't pinned externally.
 
 ---
 

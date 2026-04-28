@@ -33,9 +33,21 @@ Consolidated as a single .do file at `do/check/t1_empirical_tests.do` (2026-04-2
 
 **ALL RESOLVED 2026-04-27** in `quality_reports/audits/2026-04-27_T4_answers_CS.md`. ADRs 0004-0016 operationalize. Q-14 (special-ed/home-instruction restrictions) deferred per Christina's "honestly no idea, took from Matt" answer.
 
+## Codebook export for Christina (run on Scribe — for plan v3 §5.3 data checks)
+
+Single .do file at `do/explore/codebook_export.do`. Produces a consolidated codebook log Claude needs to design the Phase 1c automated data-checks pipeline. ~5-15 min runtime.
+
+**Status 2026-04-28**: COMPLETE. First run surfaced PII in `codebook` Examples blocks; remediated by (1) adding `master_supporting_docs/codebooks/` to `.gitignore` and (2) editing the script to `cap drop` known PII columns before `describe`/`codebook`. Christina re-ran; sanitized log at `master_supporting_docs/codebooks/codebook_export_28-Apr-2026_13-25-41.log` (3.8 MB, gitignored, PII-scrub fired in all 10 datasets). Findings extracted to **`quality_reports/reviews/2026-04-28_data-checks-design.md`** — ~250-line design memo covering all six future `do/check/check_*.do` files (assertions, Likert ranges, sample-size invariants, codebook line refs).
+
+- [x] Verify dataset paths in §0 — done; all 10 datasets loaded without [SKIP].
+- [x] First run on Scribe — done.
+- [x] PII-scrub re-run on Scribe — done.
+- [x] Extract findings into data-checks design memo — done (`quality_reports/reviews/2026-04-28_data-checks-design.md`).
+
 ## Waiting On
 
 - [ ] Christina T1-5 (revoke OpenCage API key — manual action). T1-3 and T1-4 RESOLVED 2026-04-27.
+- [ ] Christina codebook-export run on Scribe (above section). Not blocking Phase 1a start; needed before Phase 1c §5.3 finalizes.
 
 ## Backlog
 
