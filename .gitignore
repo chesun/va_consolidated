@@ -62,6 +62,24 @@ Thumbs.db
 #     `codebook` Examples blocks for ID / name / DOB string variables) ---
 master_supporting_docs/codebooks/
 
+# --- Stata + project data artifacts (per ADR-0007) ---
+# Code in git, data on Scribe.  These dirs/extensions are NEVER tracked:
+# they hold restricted-access data, large estimates, or run-time output
+# that should never leave the Scribe filesystem.  The repo's role per
+# ADR-0007 is code + docs + tables + figures only.
+data/
+estimates/
+log/
+output/
+*.dta
+*.smcl
+*.ster
+# Note: bare `*.log` is NOT excluded (would conflict with shell nohup.out
+# and other tools).  Stata `.smcl` master logs ARE excluded above; the
+# translated `.log` companion files land in log/ which is also gitignored,
+# so they're covered by the dir-level rule.  Codebook export logs land
+# in master_supporting_docs/codebooks/ which is gitignored above.
+
 # --- Claude Code (local-only, not shared across machines) ---
 .claude/settings.local.json
 .claude/state/*
