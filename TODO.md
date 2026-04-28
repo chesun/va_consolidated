@@ -1,54 +1,45 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-04-26
+Last updated: 2026-04-27
 
 ## Active (doing now)
 
-- [ ] **Phase 0e Q&A walkthrough is BLOCKING** for Phase 1 plan creation. 19 T4 questions queued at `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md` §3.2. Estimated 1-2 hours of Christina's time. Per Christina's "Phase 0e is blocking, don't create Phase 1 plan yet."
-- [ ] **Phase 1 sub-phase structure agreed** (pending Phase 0e to lock specifics): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. **File ownership constraint**: Matt Naven's files (NSC/CCC/CSU crosswalks, `merge_k12_postsecondary.doh`, `gecode_json.py`) stay UNTOUCHED. Bug 93 family stays UNFIXED in Phase 1.
+- [ ] **Draft Phase 1 plan v3** — Phase 0e walkthrough COMPLETE; ADRs 0004-0017 all written. 13 ADRs operationalize into a sequenced playbook. Use audit §3.3 + ADR consequences as input.
+- [ ] **Phase 1 sub-phase structure** (locked): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. **File ownership constraint**: Matt Naven's files stay UNTOUCHED per ADR-0017.
 
-## T1 Tests for Christina (run on Scribe when convenient — ~30-60 min in one session)
+## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
-See verified-final audit §3.1 for snippets. **Reduced from 7 to 5 tests after Christina's FB-test correction (2026-04-26) reclassified 4 findings as NOT-A-BUG.**
+Consolidated as a single .do file at `do/check/t1_empirical_tests.do` (2026-04-27). **Reduced from 5 to 3 tests after ADR-0017 retired Matt-Naven-file tests (T1-1, T1-2).**
 
-- [ ] **T1-1** — `crosswalk_nsc_outcomes.do:250` `id` macro — does `college_begin_date` vary by student? (chunk-10 M1, potential silent corruption)
-- [ ] **T1-2** — Bug 93 count test (4 instances)
-- [ ] **T1-3** — `assert school_id == cdscode` in `va_all.dta`
-- [ ] **T1-4** — Open `$vaprojdir/tables/.../reg_*.csv`; count actual columns vs declared mtitles (chunk-4 M4)
-- [ ] **T1-5** — Revoke OpenCage API key at `k12_postsec_distances.do:98`
+- [x] **T1-3** — `school_id == cdscode` 1:1 check — **VERDICT: 1:1 (N=5009).** Cosmetic rename only in Phase 1. Resolves P2-3, P2-11. — 2026-04-27
+- [x] **T1-4** — mtitles count test — **BUG FIRED** (49/33/33/33 cols vs 24 declared). Per Q-6, CSVs don't feed paper → cosmetic. — 2026-04-27
+- [ ] **T1-5** — Revoke OpenCage API key (manual external action; reminder in script)
 
-**Removed (resolved by Christina 2026-04-26):**
+**Retired (Matt-Naven file ownership constraint — ADR-0017):**
+- ~~T1-1 — `crosswalk_nsc_outcomes.do:250` `id` macro~~ — Matt's file, not fixed in Phase 1, not worth testing
+- ~~T1-2 — Bug 93 family count (4 instances)~~ — spans `crosswalk_nsc_outcomes.do` + `merge_k12_postsecondary.doh`, both Matt's, not fixed in Phase 1
+
+**Removed earlier (resolved by Christina 2026-04-26 FB-test correction):**
 - ~~Column 6 FB rows blank?~~ — NOT A BUG (intentional, FB-test structural property)
 - ~~`predicted_score==0` filter?~~ — NOT A BUG (separate dirs, no conflation)
 
 ## Up Next
 
-- [ ] **Phase 0e Q&A walkthrough** with Christina — 20 T4 questions queued (verified-final §3.2). Estimated 1-2 hours.
-- [ ] **Phase 0e ADRs 0004-0016** — write 13 ADRs against verified findings (consolidation-plan v3 lock).
-- [ ] **Phase 1 (migration)** — execute consolidation per plan v3. 10-step playbook in verified-final §3.3.
-- [ ] Phase 0a-v2 Step 4 — produce verified-final audit doc
-- [ ] Phase 0a-v2 Step 5 — bug-priority triage (P1/P2/P3)
-- [ ] Phase 0a-v2 Step 6 — Q&A consolidation for Phase 0e walk-through
-- [ ] Phase 0e (design lock) — lock ADRs 0004-0016 against verified findings; consolidation plan v3
-- [ ] Phase 1 (migration) — execute consolidation per plan v3
+- [ ] **Draft Phase 1 plan v3** — operationalize ADRs 0004-0017 into sequenced playbook. Use audit §3.3 as starting structure.
+- [ ] **Phase 1 (migration)** — execute consolidation per plan v3.
+- [ ] **Phase 1 deliverables (per ADR-0007)**: rewrite README for non-git Stata-skilled successor; build `sync_to_scribe.sh` wrapper; establish `VERSION` marker convention on Scribe.
 
 ## Open T4 escalations (require Christina input at Phase 0e)
 
-- [ ] Paper Table 2/3 row 6 = `d` (distance) or `las` (joint)? — chunk-3 disc report Q1
-- [ ] `peer_<X>d_controls` peer-distance asymmetry — intentional or bug? — chunk-1 disc report Q1
-- [ ] `Xd_str` display-string aliases (all collapse to `X_str`) — intentional or labeling bug? — chunk-1 disc report
-- [ ] `enr=.` for NSC-non-matched-but-CCC-or-CSU-positive — intentional NSC anchoring or bug? — chunk-2 disc report A6
-- [ ] NSC `keep(1 3 4 5)` + `update` — multi-vintage protocol intent? — chunk-2 disc report M3
-- [ ] Where are special-ed/home-instruction restrictions enforced? — chunk-2 disc report A10
+**ALL RESOLVED 2026-04-27** in `quality_reports/audits/2026-04-27_T4_answers_CS.md`. ADRs 0004-0016 operationalize. Q-14 (special-ed/home-instruction restrictions) deferred per Christina's "honestly no idea, took from Matt" answer.
 
 ## Waiting On
 
-- [ ] Christina signoff on Phase 0a-v2 verification plan (5 questions in §10 of the plan)
-- [ ] Christina T1 Stata tests on Scribe (concentrated 30-90 min when convenient; Bug 93 + 4-5 others)
+- [ ] Christina T1-5 (revoke OpenCage API key — manual action). T1-3 and T1-4 RESOLVED 2026-04-27.
 
 ## Backlog
 
-- [ ] Bug 93 (NSC UC inlist precedence) — P1 fix during Phase 1 (will need Stata test confirmation first)
+- [ ] ~~Bug 93 (NSC UC inlist precedence) — P1 fix during Phase 1~~ — RETIRED per ADR-0017 (Matt's files untouched in Phase 1)
 - [ ] Universal hook fix in workflow repo (status: shipped + propagated; only filter-ordering edge case remains, low priority)
 - [ ] Stata version compatibility revisit (post-consolidation, pre-submission)
 
@@ -76,3 +67,8 @@ See verified-final audit §3.1 for snippets. **Reduced from 7 to 5 tests after C
 - [x] Phase 0a-v2 SYNTHESIS — verified-final audit doc at `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md`. 89 verified bugs (5 P1 + 15 P2 + 69 P3); 7 T1 tests; 20 T4 questions; 13 ADRs queued for Phase 0e; 10-step Phase 1 playbook. **Verification protocol caught 3 confirmation-bias errors (1 per round + 1 prompt-construction). All resolved by T3 deterministic checks.** — 2026-04-26
 - [x] Phase 0a-v2 FB-test correction — Christina identified that column 6 (lasd) FB blank cells are structurally correct, NOT a bug. FB test requires leave-out variables; `lasd` (kitchen sink + distance) has nothing left to leave out. `va_controls_for_fb` (`macros_va_all_samples_controls.doh:66`) excludes `lasd` by design. Reclassified 4 findings as NOT-A-BUG. Bug count revised: 89 → 85 (2 P1 + 14 P2 + 69 P3). T1 tests reduced 7 → 5. Distance-FB Row 6 mystery FULLY RESOLVED. — 2026-04-26
 - [x] Phase 1 framing agreed — consolidate-first-fix-bugs-later split into Phase 1a/1b/1c. File ownership constraint locked: Matt Naven's files (NSC/CCC/CSU crosswalks, `merge_k12_postsecondary.doh`, `gecode_json.py`) stay UNTOUCHED. `mattschlchar.do` traced as Christina-owned production code (paper Table 8 chain). Phase 1 plan creation paused per Christina until Phase 0e walkthrough completes. — 2026-04-26
+- [x] T1 empirical tests consolidated into `do/check/t1_empirical_tests.do`; T1-1 and T1-2 retired per ADR-0017 (Matt-Naven file ownership). Active T1 list = 3 tests (T1-3, T1-4, T1-5). — 2026-04-27
+- [x] ADR-0017 written: Matt Naven's files stay untouched through Phase 1 (formalizes constraint previously held only in MEMORY/TODO). — 2026-04-27
+- [x] **Phase 0e Q&A walkthrough COMPLETE** — Christina answered all 19 T4 questions in `quality_reports/audits/2026-04-27_T4_answers_CS.md`. — 2026-04-27
+- [x] **T1-3 and T1-4 RUN ON SCRIBE** — T1-3 verdict: school_id == cdscode 1:1 (cosmetic rename only). T1-4: bug fired but per Q-6 CSVs not paper-feeding (cosmetic for paper). Logs in `quality_reports/audits/`. — 2026-04-27
+- [x] **ADRs 0004-0016 (13 ADRs) all written and approved** — Phase 0e ADR sweep COMPLETE. Decision queue at `decisions/README.md`. Audit doc §4.6 synced. — 2026-04-27

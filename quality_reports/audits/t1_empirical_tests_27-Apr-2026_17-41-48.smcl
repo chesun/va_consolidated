@@ -1,0 +1,246 @@
+{smcl}
+{txt}{sf}{ul off}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/home/research/ca_ed_lab/projects/common_core_va/log_files/check/t1_empirical_tests_27-Apr-2026_17-41-48.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}27 Apr 2026, 17:41:48
+{txt}
+{com}. 
+. di as text _n(2) "{c -(}hline 80{c )-}"
+{res}
+
+{txt}{hline 80}
+
+{com}. di as text "T1 EMPIRICAL TESTS — RUN START: `c(current_date)' `c(current_time)'"
+{res}{txt}T1 EMPIRICAL TESTS — RUN START: 27 Apr 2026 17:41:48
+
+{com}. di as text "{c -(}hline 80{c )-}" _n
+{res}{txt}{hline 80}
+
+
+{com}. 
+. 
+. /*==============================================================================
+> TEST T1-3 — `school_id == cdscode` 1:1 check (P2-3, P2-11)
+> ================================================================================
+> BUG
+>     va_het.do:158 clusters on `cdscode` while paper claims clustering at
+>     `school_id`. Same pattern in chunk-5 sibling regs (reg_out_va_sib_acs.do
+>     L151, L174, L211, L225). If school_id and cdscode are 1:1, the difference
+>     is cosmetic only.
+> 
+> DIAGNOSTIC
+>     Load va_all.dta (or any analysis-ready VA file). Confirm school_id and
+>     cdscode are 1:1 — i.e., the tag of school_id is identical to the tag of
+>     cdscode.
+> 
+> VERDICT KEYS
+>     n_diff == 0 : 1:1 — clustering equivalent — fix is COSMETIC (rename only)
+>     n_diff >  0 : not 1:1 — clustering is SUBSTANTIVELY different — re-run
+>                   affected regressions in Phase 1
+> ==============================================================================*/
+. 
+. di as text _n(2) "{c -(}hline 80{c )-}"
+{res}
+
+{txt}{hline 80}
+
+{com}. di as text "T1-3 — school_id == cdscode 1:1 check"
+{res}{txt}T1-3 — school_id == cdscode 1:1 check
+
+{com}. di as text "{c -(}hline 80{c )-}"
+{res}{txt}{hline 80}
+
+{com}. 
+. capture noisily {c -(}
+.     * Pick an analysis-ready VA file. va_all.dta is the pooled estimates file.
+.     * Adjust path if your project uses a different location.
+.     local va_file "$vaprojdir/estimates/va_cfr_all_v1/va_all.dta"
+.     confirm file "`va_file'"
+{err}{p 0 4 2}
+file {bf:{err}/home/research/ca_ed_lab/projects/common_core_va/estimates/va_cfr_all_v1/va_all.dta}
+not found
+{p_end}
+{txt}{search r(601), local:r(601);}
+{com}. 
+.     use "`va_file'", clear
+.     di as text "  loaded `va_file' — N = `=_N'"
+. 
+.     capture confirm variable school_id cdscode
+.     if _rc {c -(}
+.         di as error "  school_id and/or cdscode not present in this file. " ///
+>             "Try a different file (e.g., a sample-construction output)."
+.     {c )-}
+.     else {c -(}
+.         * Tag uniqueness: every distinct school_id should map to exactly one cdscode and vice versa.
+.         egen tag_sid  = tag(school_id)
+.         egen tag_cds  = tag(cdscode)
+.         count if tag_sid != tag_cds
+.         local n_tag_diff = r(N)
+. 
+.         * Stronger check: any (school_id, cdscode) pair where the mapping is many-to-one?
+.         bysort school_id (cdscode): gen byte _multi_cds = cdscode != cdscode[1]
+.         bysort cdscode (school_id): gen byte _multi_sid = school_id != school_id[1]
+.         count if _multi_cds == 1
+.         local n_school_to_many_cds = r(N)
+.         count if _multi_sid == 1
+.         local n_cds_to_many_school = r(N)
+. 
+.         di as result _n "  n_tag_diff:               `n_tag_diff'"
+.         di as result    "  school_id -> many cdscode:`n_school_to_many_cds'"
+.         di as result    "  cdscode   -> many school: `n_cds_to_many_school'"
+. 
+.         if `n_tag_diff'==0 & `n_school_to_many_cds'==0 & `n_cds_to_many_school'==0 {c -(}
+.             di as result _n "  VERDICT: school_id == cdscode (1:1). " ///
+>                 "Clustering on either is EQUIVALENT. Phase 1 fix is cosmetic rename only."
+.         {c )-}
+.         else {c -(}
+.             di as error  _n "  VERDICT: school_id != cdscode (NOT 1:1). " ///
+>                 "Clustering is SUBSTANTIVELY different. Phase 1 must re-run affected regs."
+.         {c )-}
+.     {c )-}
+. {c )-}
+{txt}
+{com}. if _rc {c -(}
+.     di as error "  T1-3 failed with rc=`_rc'. Check \$vaprojdir and the file path."
+{res}{err}  T1-3 failed with rc=. Check $vaprojdir and the file path.
+{com}. {c )-}
+{txt}
+{com}. 
+. 
+. /*==============================================================================
+> TEST T1-4 — mtitles 24 cols vs eststo 32 cols in reg_out_va_all_tab.do (P2-6)
+> ================================================================================
+> BUG (chunk 4 disc M4)
+>     reg_out_va_all_tab.do declares mtitles for 24 columns but accumulates
+>     32 eststo (2 subjects × 16 sample-ctrl-peer-match). esttab will silently
+>     produce un-labeled columns in the published CSV.
+> 
+> DIAGNOSTIC
+>     Read the produced CSV(s) directly and count columns. This .do file
+>     does the count via `import delimited' and reports the column count.
+> 
+> NOTE
+>     Adjust the glob pattern below if the table dir is named differently on the
+>     server (e.g., va_cfr_v1 vs va_cfr_all_v1). The check is shallow — it just
+>     counts comma-separated columns in the first row of each matching file.
+> ==============================================================================*/
+. 
+. di as text _n(2) "{c -(}hline 80{c )-}"
+{res}
+
+{txt}{hline 80}
+
+{com}. di as text "T1-4 — reg_out_va_all_tab.do mtitles vs CSV column count"
+{res}{txt}T1-4 — reg_out_va_all_tab.do mtitles vs CSV column count
+
+{com}. di as text "{c -(}hline 80{c )-}"
+{res}{txt}{hline 80}
+
+{com}. 
+. capture noisily {c -(}
+.     local tab_dir "$vaprojdir/tables/va_cfr_all_v1/reg_out_va"
+.     local files : dir "`tab_dir'" files "reg_*.csv"
+.     local nfiles : word count `files'
+.     if `nfiles' == 0 {c -(}
+.         di as error "  No reg_*.csv files found in `tab_dir' (or directory missing)."
+.     {c )-}
+.     else {c -(}
+.         di as text "  Found `nfiles' CSV file(s) in `tab_dir':"
+{res}{txt}  Found 4 CSV file(s) in /home/research/ca_ed_lab/projects/common_core_va/tables/va_cfr_all_v1/reg_out_va:
+{com}.         foreach f of local files {c -(}
+{txt}  2{com}.             capture import delimited "`tab_dir'/`f'", varnames(nonames) stringcols(_all) clear
+{txt}  3{com}.             if _rc {c -(}
+{txt}  4{com}.                 di as error "    `f' — failed to read (rc=`_rc')"
+{txt}  5{com}.             {c )-}
+{txt}  6{com}.             else {c -(}
+{txt}  7{com}.                 local ncols = c(k)
+{txt}  8{com}.                 di as result "    `f' — `ncols' columns (declared mtitles = 24; expect 32 if bug fired)"
+{txt}  9{com}.             {c )-}
+{txt} 10{com}.         {c )-}
+{res}    reg_out_va_ela_math.csv — 49 columns (declared mtitles = 24; expect 32 if bug fired)
+    reg_enr_4year_va.csv — 33 columns (declared mtitles = 24; expect 32 if bug fired)
+    reg_enr_2year_va.csv — 33 columns (declared mtitles = 24; expect 32 if bug fired)
+    reg_enr_va.csv — 33 columns (declared mtitles = 24; expect 32 if bug fired)
+{com}.     {c )-}
+. {c )-}
+{txt}
+{com}. if _rc {c -(}
+.     di as error "  T1-4 failed with rc=`_rc'. Check \$vaprojdir/tables path."
+. {c )-}
+{txt}
+{com}. 
+. 
+. /*==============================================================================
+> TEST T1-5 — Revoke OpenCage API key (P2-13)
+> ================================================================================
+> BUG
+>     OpenCage API key `[REVOKED 2026-04-30]` committed in source at
+>     k12_postsec_distances.do:98 (commented out, but live in git history).
+> 
+> ACTION (manual, NOT Stata)
+>     1. Log into the OpenCage account that owns the key.
+>     2. Revoke / rotate `[REVOKED 2026-04-30]`.
+>     3. If the key is still needed for a Phase-1 reproduction, generate a new
+>        one and store it OUTSIDE the repo (e.g., in `.claude/state/`, gitignored,
+>        or via an environment variable).
+> 
+> This block is a printed reminder only — no Stata logic.
+> ==============================================================================*/
+. 
+. di as text _n(2) "{c -(}hline 80{c )-}"
+{res}
+
+{txt}{hline 80}
+
+{com}. di as text "T1-5 — Revoke OpenCage API key (manual external action)"
+{res}{txt}T1-5 — Revoke OpenCage API key (manual external action)
+
+{com}. di as text "{c -(}hline 80{c )-}"
+{res}{txt}{hline 80}
+
+{com}. di as text "  Key to revoke: [REVOKED 2026-04-30]"
+{res}{txt}  Key to revoke: [REVOKED 2026-04-30]
+
+{com}. di as text "  Source:        k12_postsec_distances.do:98 (committed-but-commented)"
+{res}{txt}  Source:        k12_postsec_distances.do:98 (committed-but-commented)
+
+{com}. di as text "  Action:        log into OpenCage, revoke key, rotate if still needed."
+{res}{txt}  Action:        log into OpenCage, revoke key, rotate if still needed.
+
+{com}. di as text "  Storage:       new key (if any) goes in .claude/state/ or env var, NOT the repo."
+{res}{txt}  Storage:       new key (if any) goes in .claude/state/ or env var, NOT the repo.
+
+{com}. 
+. 
+. /*==============================================================================
+> END OF TESTS
+> ==============================================================================*/
+. 
+. di as text _n(2) "{c -(}hline 80{c )-}"
+{res}
+
+{txt}{hline 80}
+
+{com}. di as text "T1 EMPIRICAL TESTS — RUN END: `c(current_date)' `c(current_time)'"
+{res}{txt}T1 EMPIRICAL TESTS — RUN END: 27 Apr 2026 17:41:49
+
+{com}. di as text "{c -(}hline 80{c )-}"
+{res}{txt}{hline 80}
+
+{com}. di as text "Read the per-test VERDICT lines above. Report results back to Claude:"
+{res}{txt}Read the per-test VERDICT lines above. Report results back to Claude:
+
+{com}. di as text "  - T1-3 verdict (1:1 / not 1:1)"
+{res}{txt}  - T1-3 verdict (1:1 / not 1:1)
+
+{com}. di as text "  - T1-4 column counts per CSV"
+{res}{txt}  - T1-4 column counts per CSV
+
+{com}. di as text "  - T1-5 confirmation that key is revoked"
+{res}{txt}  - T1-5 confirmation that key is revoked
+
+{com}. 
+. cap log close _all
+{smcl}
+{com}{sf}{ul off}

@@ -92,6 +92,20 @@ What this commits us to. What it rules out. Open questions it creates.
 | [0001](0001_consolidation-scope.md) | Consolidation scope — two predecessor repos in scope | 2026-04-25 | Decided | Infrastructure |
 | [0002](0002_runtime-server-only.md) | Runtime — Scribe server only, hostname-branched settings | 2026-04-25 | Decided | Infrastructure |
 | [0003](0003_languages-stata-primary-python-upstream.md) | Languages — Stata primary; Python preserved for upstream geocoding | 2026-04-25 | Decided | Methodology |
+| [0004](0004_sibling-va-canonical-pipeline.md) | Sibling-VA canonical pipeline — `va_{score,out}_all.do`; `siblingvaregs/` regressions deprecated | 2026-04-27 | Decided | Specification |
+| [0005](0005_siblingoutxwalk-relocation.md) | `siblingoutxwalk.do` canonical location — `do/sibling_xwalk/` | 2026-04-27 | Decided | Infrastructure |
+| [0006](0006_vam-ado-pinning.md) | `vam.ado` pinned at v2.0.1 + noseed customization | 2026-04-27 | Decided | Methodology |
+| [0007](0007_code-data-separation-and-sync-model.md) | Code-data separation; Scribe non-git working copy; GitHub frozen archive at handoff | 2026-04-27 | Decided | Infrastructure |
+| [0008](0008_external-crosswalks-vendoring.md) | External crosswalks vendored as defensive backup on Scribe; runtime unchanged | 2026-04-27 | Decided | Infrastructure |
+| [0009](0009_prior-score-v1-canonical.md) | Prior-score variant — v1 canonical for paper; v2 preserved as exploratory | 2026-04-27 | Decided | Specification |
+| [0010](0010_paper-alpha-canonical.md) | Paper-reported α from `indexalpha.do`; `alpha.do` archived as exploratory | 2026-04-27 | Decided | Specification |
+| [0011](0011_survey-indices-as-means.md) | Survey indices computed as means, not sums; code fix in `imputedcategoryindex.do` + `compcasecategoryindex.do` | 2026-04-27 | Decided | Specification |
+| [0012](0012_tab-csvs-local-review-only.md) | `_tab.do` CSV outputs are local-review-only; paper tables come from `share/` | 2026-04-27 | Decided | Specification |
+| [0013](0013_mattschlchar-gate-kept.md) | `mattschlchar.do` clean-gate kept; `sch_char.dta` consumed as-is, not reproduced | 2026-04-27 | Decided | Data |
+| [0014](0014_old-paper-draft-preserved.md) | Old paper draft `common_core_va.tex` preserved as historical artifact | 2026-04-27 | Decided | Infrastructure |
+| [0015](0015_filipino-asian-recoding-intentional.md) | Filipino-into-Asian race recoding intentional; documented in code | 2026-04-27 | Decided | Data |
+| [0016](0016_pooledrr-renamed-by-scope.md) | `pooledrr` variable renamed by scope across the four producers | 2026-04-27 | Decided | Specification |
+| [0017](0017_matt-naven-files-untouched.md) | Matt Naven's files stay untouched through Phase 1 | 2026-04-27 | Decided | Infrastructure |
 
 ---
 
@@ -102,16 +116,18 @@ Decisions that need to happen but aren't resolved. They get an ADR when resolved
 The full list of expected ADRs (with proposed slugs) lives in
 `quality_reports/plans/2026-04-25_consolidation-plan-draft.md` §5. Items deferred until Phase 0 deep-read completes:
 
-- **0004** sibling-xwalk canonical location (siblingoutxwalk relocation depends on dependency trace)
-- **0005** pipeline order (locks after Phase 0b dependency graph)
-- **0006** prior-score policy v1-canonical / v2-preserved (locks after VA core deep-read)
-- **0007** upstream-data-prep convention
-- **0008** local-script convention
-- **0009** custom vam ado handling (after .ado deep-read in Phase 0a)
-- **0010** paper source-of-truth
-- **0011** output paths mirror paper expectations
-- **0012** settings.do hostname branching pattern
-- **0013** cohort coverage 2014-15 to 2017-18
-- **0014** entry-point naming (main.do vs do_all.do — locked direction is main.do)
-- **0015** Stata version pin
-- **0016** server canonical folder (resolved via Phase 0d server reconciliation)
+- ~~**0004** sibling-xwalk canonical location~~ → **resolved 2026-04-27 as ADR-0004 (sibling-VA canonical pipeline) and ADR-0005 (siblingoutxwalk.do relocation)**
+- ~~**0005** pipeline order~~ → reframed and resolved 2026-04-27 as ADR-0005 (siblingoutxwalk.do relocation); broader pipeline-order decision deferred to Phase 1 plan
+- ~~**0006** prior-score policy v1-canonical / v2-preserved~~ → **resolved 2026-04-27 as ADR-0009**
+- ~~**0007** upstream-data-prep convention~~ → **subsumed by ADR-0007 (code-data separation) — `data/raw/upstream/` directory convention defined there**
+- ~~**0008** local-script convention~~ → **subsumed by ADR-0007 — local scripts live in `do/local/` per the folder layout**
+- ~~**0009** custom vam ado handling~~ → **resolved 2026-04-27 as ADR-0006 (vam.ado pinned at v2.0.1 + noseed)**
+- ~~**0010** paper source-of-truth~~ → **resolved 2026-04-27 as ADR-0014 (old draft preserved); current draft remains canonical at `va_paper_clone`**
+- ~~**0011** output paths mirror paper expectations~~ → **subsumed by ADR-0007 (`tables/`, `figures/` paths in repo) + ADR-0012 (paper producers in `share/`)**
+- ~~**0012** settings.do hostname branching pattern~~ → **already in ADR-0002 (runtime — Scribe only, hostname-branched)**
+- **0013** cohort coverage 2014-15 to 2017-18 — *deferred*; not raised in Phase 0e walkthrough; data-scope question, can wait for Phase 1 if needed
+- ~~**0014** entry-point naming~~ → **already established as `main.do` per CLAUDE.md and ADR-0002**
+- **0015** Stata version pin — *deferred*; backlog item per TODO.md; revisit pre-submission per AEA package requirements
+- ~~**0016** server canonical folder~~ → **resolved 2026-04-27 as ADR-0007 (`/home/research/ca_ed_lab/projects/common_core_va/consolidated/`)**
+
+**Phase 0e ADR sweep COMPLETE 2026-04-27.** All committed-Decided ADRs in the index above. Remaining "pending" items (cohort coverage, Stata version pin) are non-blocking deferrals.

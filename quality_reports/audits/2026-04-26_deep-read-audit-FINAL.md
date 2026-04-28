@@ -4,6 +4,9 @@
 **Date:** 2026-04-26
 **Method:** Independent blind verification (round 2) of every Phase 0a finding (round 1). 10 chunks × 2 rounds + 6 T3 deterministic checks. **3 confirmation-bias-style errors caught and resolved by the protocol.**
 
+> **Update 2026-04-27 — ADR-0017 (Matt Naven's files stay untouched through Phase 1).**
+> Bugs in the 5 Matt-authored files (`crosswalk_nsc_outcomes.do`, `crosswalk_ccc_outcomes.do`, `crosswalk_csu_outcomes.do`, `merge_k12_postsecondary.doh`, `gecode_json.py`) are NOT fixed in Phase 1. Affected entries: P1-1 (id macro), P2-1 (Bug 93 family), P2-9 (hardcoded path in merge_k12_postsecondary.doh), P3-65, P3-66, P3-67, P3-68, P3-69. T1-1 and T1-2 retired from the active T1 list. See `decisions/0017_matt-naven-files-untouched.md`.
+
 This document consolidates the verified findings across 10 chunks of deep-read audit. It supersedes the round-1 docs at `quality_reports/audits/round-1/` for reference purposes (round-1 is preserved for archeology). Per-chunk discrepancy details are in `quality_reports/audits/round-2/chunk-N-discrepancies.md`.
 
 ---
@@ -63,14 +66,14 @@ This document consolidates the verified findings across 10 chunks of deep-read a
 | ~~**P1-1**~~ | ~~Column 6 FB rows DROPPED from paper Tables 2/3~~ — **NOT A BUG** (Christina 2026-04-26): structural FB-test property — `lasd` has no leave-out variables left, so no FB test possible. `va_controls_for_fb` (`macros_va_all_samples_controls.doh:66`) excludes `lasd` by design. Column 6 blank FB cells is correct. | `va_spec_fb_tab_all.do:82-84` | chunk 9 disc M1 | RESOLVED — no fix needed |
 | ~~**P1-2**~~ | ~~`predicted_score==0` filter MISSING~~ — **NOT A BUG** (Christina 2026-04-26): scrhat outputs go to `predicted_prior_score/` subdirs separately; not conflated in upstream regsave. | `va_spec_fb_tab_all.do:71-76` | chunk 9 disc M2 | RESOLVED — no fix needed |
 | ~~**P1-3**~~ | ~~Distance-FB Row 6 attribution~~ — **RESOLVED**: column 6 IS the `lasd` (kitchen-sink + distance) column. Paper Table 2/3 row 6 = Distance INCLUDED IN VA SPEC, not Distance-as-leave-out. Spec-test row populated; FB rows correctly blank. | `paper/common_core_va_v2.tex` | chunk 3, 7, 9 | RESOLVED |
-| **P1-1** | **Local `id` macro undefined at `crosswalk_nsc_outcomes.do:250`** — `egen ... by(\`id' collegecodebranch)` may collapse to global-min-by-college | `crosswalk_nsc_outcomes.do:250` | chunk 10 disc M1 | T1: Christina runs on Scribe, checks whether `college_begin_date` varies by student. If empty `id`, persistence outcomes silently corrupted. |
+| ~~**P1-1**~~ | ~~Local `id` macro undefined at `crosswalk_nsc_outcomes.do:250`~~ — **RETIRED per ADR-0017 (2026-04-27).** Matt's file, not fixed in Phase 1. T1-1 retired. Bug remains documented for future re-authoring of NSC crosswalk. | `crosswalk_nsc_outcomes.do:250` | chunk 10 disc M1 | RETIRED |
 | **P1-2** | **Paper-α attribution issue** — climate/quality index item lists in `compcase/imputedcategoryindex.do` (9/15 items) ≠ α item lists in `alpha.do` (20/17 items). If paper-α is from `alpha.do`, paper describes a DIFFERENT object than Table 8 regression indices | `alpha.do` vs `compcasecategoryindex.do` | chunk 6 disc M1 | T4: Christina checks paper PDF for α attribution |
 
 ### P2 — Medium-priority (correct in current paper but should be fixed; future-proofing)
 
 | # | Bug | File:Line | Source | Action |
 |---|---|---|---|---|
-| **P2-1** | **Bug 93 family — 4 instances of `& inlist(...) | inlist(...)` precedence error** | `crosswalk_nsc_outcomes.do:218-219, 227-228` + `merge_k12_postsecondary.doh:168-170, 232-234` | chunks 2, 10 disc reports | T1: Christina runs `count if nsc_enr_uc==1 & recordfoundyn!="Y"` etc. Phase 1: bundled patch wrapping OR clauses in outer parens. |
+| ~~**P2-1**~~ | ~~Bug 93 family — 4 instances of `& inlist(...) | inlist(...)` precedence error~~ — **RETIRED per ADR-0017 (2026-04-27).** All 4 instances are in Matt's files (NSC crosswalk + merge_k12_postsecondary.doh); not fixed in Phase 1. Paper blast radius confirmed null. T1-2 retired. | `crosswalk_nsc_outcomes.do:218-219, 227-228` + `merge_k12_postsecondary.doh:168-170, 232-234` | chunks 2, 10 disc reports | RETIRED |
 | **P2-2** | **`va_corr_schl_char.do` LHS-peer-suffix bug** — when sample==las, regression uses non-peer VA but saves under `..._ct_p.ster` filename | `va_corr_schl_char.do:84-88, 94-98` | chunk 4 disc A2 | Phase 1: fix LHS to use peer VA when filename suffix is `_p` |
 | **P2-3** | **`va_het.do:158 cluster(cdscode)`** vs paper-claimed `school_id` (only chunk-4 reg using `cdscode`) | `va_het.do:158` | chunk 4 disc A3 | T1: Christina runs `assert school_id == cdscode` on Scribe. If 1:1, cosmetic only. |
 | **P2-4** | **`run_prior_score = 0` hard-codes single-subject prior-decile heterogeneity OFF** — fig file unconditionally tries to load gated `.ster` files | `reg_out_va_all.do:235`, fig file `reg_out_va_all_fig.do:159` | chunk 4 disc A1 | T4: keep gate, remove gate, or make explicit toggle? |
@@ -78,7 +81,7 @@ This document consolidates the verified findings across 10 chunks of deep-read a
 | **P2-6** | **`reg_out_va_all_tab.do` mtitles 24 cols vs 32 actual eststo** — possible silently un-labeled columns | `reg_out_va_all_tab.do` (file 4 of chunk 4) | chunk 4 disc M4 | T1: open `$vaprojdir/tables/.../reg_*.csv` on Scribe and count columns vs declared mtitles |
 | ~~**P2-7**~~ | ~~`va_predicted_score_fb.do:43` uses `<va_ctrl>_ctrl_leave_out_vars`~~ — **NOT A BUG** (Christina 2026-04-26): may be intentional given scrhat is exploratory; structural FB-test reasoning means extra runs are either inert (sample list undefined) or just exploratory output. Reclassified per Christina's broad statement that "FB-test-related bugs are not actual bugs." | `va_predicted_score_fb.do:43` | chunk 9 disc A2 | RESOLVED |
 | **P2-8** | **`va_scatter.do` figure-note `corr_*` vs `b_*` typos** — 6 lines say "Fitted line slope = `corr_*`" when value is correlation rho | `va_scatter.do:308, 321, 333, 417, 430, 442` | chunk 4 + 9 disc A3 | Phase 1: fix typos + re-render figures |
-| **P2-9** | **`merge_k12_postsecondary.doh:7` HARDCODED ABSOLUTE PATH** to `/home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/` | `merge_k12_postsecondary.doh:7` | chunk 2 disc A5 | Phase 1: parameterize via `$vaprojxwalks` |
+| **P2-9** | **`merge_k12_postsecondary.doh:7` HARDCODED ABSOLUTE PATH** to `/home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/` — **DEFERRED per ADR-0017 (Matt's file).** Path resolves on Scribe. | `merge_k12_postsecondary.doh:7` | chunk 2 disc A5 | DEFERRED — Phase 1 leaves untouched |
 | **P2-10** | **NSC/CCC/CSU asymmetry in `enr` definition** — `enr=1` requires NSC (CCC/CSU commented out); `enr=0` requires NSC=0 AND CCC!=1 AND CSU!=1. Students never matched to NSC end up `enr=.` | `merge_k12_postsecondary.doh:326-327` | chunk 2 disc A6 | T4: intentional NSC-anchoring or bug? |
 | **P2-11** | **`reg_out_va_sib_acs.do` heterogeneity regs cluster on `cdscode`** while main regs cluster on `school_id` (same flag as chunk-4 P2-3) | `reg_out_va_sib_acs.do:151, 174, 211, 225` | chunk 5 disc A10 | T1: same `school_id == cdscode` test resolves jointly with P2-3 |
 | **P2-12** | **`set trace on` without matching `off`** in `va_var_explain.do` | `va_var_explain.do:20` | chunk 9 disc A5 | Phase 1: add `set trace off` |
@@ -168,20 +171,25 @@ This document consolidates the verified findings across 10 chunks of deep-read a
 
 ### 3.1 — T1 Empirical Tests for Christina (run on Scribe when convenient)
 
-These resolve P1-1, P2-1, P2-3, P2-6, P2-13. Approximate time: 30-60 minutes total in one session.
+**Update 2026-04-27:** T1 list reduced from 5 to 3 active tests after **ADR-0017** retired T1-1 and T1-2 (Matt-Naven file ownership constraint — Phase 1 leaves those files untouched, so empirical testing is wasted effort). Active tests consolidated as a single .do file at `do/check/t1_empirical_tests.do`. Approximate time: 5-15 minutes.
+
+Active tests resolve P2-3 (and P2-11), P2-6, P2-13.
 
 | # | Test | Resolves | Snippet |
 |---|---|---|---|
-| **T1-1** | After loading `nsc_outcomes_crosswalk_ssid.dta`, run: `egen check_grouping = tag(\`id' collegecodebranch)` then `count if check_grouping`. If `id` is empty, count = collegecodebranch count (small); if `id` resolves to ssid, count = ssid×collegecodebranch (large). | P1-1 (id macro at L250) | T3 verify on Scribe |
-| **T1-2** | Bug 93 verification — count UC Merced rows with no NSC record. Confirms 4 family instances. | P2-1 | `use $vaprojdir/data/sbac/k12_postsecondary_out_merge.dta, clear` then `count if nsc_enr_uc==1 & recordfoundyn!="Y"` (>0 confirms bug for instance 1; analogous tests for the other 3) |
-| **T1-3** | `school_id == cdscode` 1:1 check — resolves whether `va_het.do:158 cluster(cdscode)` and chunk-5 sibling regs `cdscode` clustering are equivalent to `school_id`. | P2-3, P2-11 | `use $vaprojdir/estimates/.../va_all.dta, clear` then `egen tag1 = tag(school_id)` `egen tag2 = tag(cdscode)` `count if tag1 != tag2` |
-| **T1-4** | Open `$vaprojdir/tables/va_cfr_all_v1/reg_out_va/reg_*.csv`. Count actual columns vs declared `mtitles` (24 expected, 32 actual?). | P2-6 | open file in editor or `head` |
-| **T1-5** | Revoke / rotate the OpenCage API key `[REVOKED 2026-04-30]`. | P2-13 | log into OpenCage account, revoke key |
+| ~~**T1-3**~~ | ~~`school_id == cdscode` 1:1 check~~ — **RESOLVED 2026-04-27**: 1:1 confirmed (N=5009; n_tag_diff=0; many-to-many checks both 0). P2-3 and P2-11 downgrade to **cosmetic rename only** in Phase 1; no regression re-runs needed. Log: `quality_reports/audits/t1_empirical_tests_27-Apr-2026_17-49-08.smcl`. | P2-3, P2-11 | RESOLVED |
+| ~~**T1-4**~~ | ~~Open `$vaprojdir/tables/va_cfr_all_v1/reg_out_va/reg_*.csv`~~ — **RESOLVED 2026-04-27**: bug fired (49/33/33/33 cols vs 24 declared mtitles). Per Q-6 the CSVs are local-review-only — bug is **cosmetic for paper integrity**; Phase 1 fixes mtitles only for completeness. Log: same file as T1-3. | P2-6 | RESOLVED |
+| **T1-5** | Revoke / rotate the OpenCage API key `[REVOKED 2026-04-30]`. | P2-13 | log into OpenCage account, revoke key (manual action) |
 
-**T1 items removed (resolved by Christina 2026-04-26):**
+**T1 items retired (per ADR-0017, 2026-04-27 — Matt-Naven file ownership):**
 
-- ~~T1-1 (column 6 FB blank)~~ — NOT A BUG (intentional)
-- ~~T1-2 (predicted_score filter)~~ — NOT A BUG (separate dirs)
+- ~~T1-1 (P1-1: `id' macro at `crosswalk_nsc_outcomes.do:250`)~~ — Matt's file, not fixed in Phase 1
+- ~~T1-2 (P2-1: Bug 93 family count, 4 instances)~~ — spans Matt's NSC crosswalk and `merge_k12_postsecondary.doh`, not fixed in Phase 1
+
+**T1 items removed earlier (resolved by Christina 2026-04-26 FB-test correction):**
+
+- ~~Column 6 FB blank~~ — NOT A BUG (intentional)
+- ~~`predicted_score` filter~~ — NOT A BUG (separate dirs)
 
 ### 3.2 — Phase 0e Q&A Items (T4 escalations)
 
@@ -212,17 +220,17 @@ Christina to discuss/decide. Most can be batched into a single Phase 0e walkthro
 
 ### 3.3 — Phase 1 Implementation Playbook (after Phase 0e)
 
-Phase 1 fixes can proceed in this order after Phase 0e Q&A:
+Phase 1 fixes can proceed in this order after Phase 0e Q&A. **Items touching Matt's files are removed per ADR-0017.**
 
-1. **Bundled Bug 93 patch** (4 instances, single template).
-2. **Column 6 FB / `predicted_score==0` fixes** in `va_spec_fb_tab_all.do` (after T1-1, T1-2 confirm).
-3. **mtitles audit sweep** across all `_tab.do` files (P2-5, P2-6, P3-62, P3-63).
+1. ~~**Bundled Bug 93 patch**~~ — REMOVED per ADR-0017 (Matt's files).
+2. ~~**Column 6 FB / `predicted_score==0` fixes**~~ — already RESOLVED 2026-04-26 (FB-test structural property, not bugs).
+3. **mtitles audit sweep** across all `_tab.do` files (P2-5, P2-6, P3-62, P3-63) — Christina's files.
 4. **`run_prior_score` gate decision** + figure regeneration (after Q-2 resolved).
-5. **Cross-repo path consolidation** — `merge_k12_postsecondary.doh:7` hardcoded path; mattschlchar.do msnaven path; OpenCage rotation; Naven user-machine paths in CCC/CSU.
+5. **Cross-repo path consolidation** — `mattschlchar.do` msnaven path (Christina-owned wrapper), OpenCage rotation. **Removed from this item per ADR-0017:** `merge_k12_postsecondary.doh:7` hardcoded path, Naven user-machine paths in CCC/CSU.
 6. **vam.ado provenance** — bump `*!` version to reflect noseed-fix.
-7. **vendor external crosswalks** (`k12_ccc_crosswalk.dta`, `k12_csu_crosswalk.dta`) into consolidated repo.
+7. **vendor external crosswalks** (`k12_ccc_crosswalk.dta`, `k12_csu_crosswalk.dta`) into consolidated repo — open question whether ADR-0017 covers Matt's data files (see ADR-0017 Open Questions).
 8. **Sample-restriction code path simplification** — `touse_va.do` enforcement + paper-mentioned restrictions implementation.
-9. **All P3 cleanup** — typos, dead code, log/translate fixes, naming consistency.
+9. **All P3 cleanup** — typos, dead code, log/translate fixes, naming consistency. **Excludes** P3-65 / P3-66 / P3-67 / P3-68 (all in Matt's CCC/CSU/NSC crosswalks) and P3-69 (geocoding rename gap, gecode_json.py is Matt's).
 10. **siblingoutxwalk.do relocation** to `siblingxwalk/` (N1 SAFE) — 2 callers updated.
 
 ### 3.4 — Cross-cutting verification protocol meta-findings
@@ -283,21 +291,34 @@ Preserved (sequestered from round-2 agents):
 - ADR-0002: Runtime = Scribe only, hostname-branched settings.do.
 - ADR-0003: Languages = Stata primary, Python upstream-only (geocoding preserved), R out of scope.
 
-### 4.6 — Pending ADRs for Phase 0e
+### 4.6 — Phase 0e ADRs (status)
 
-- ADR-0004: siblingoutxwalk.do canonical location (now unblocked — SAFE to relocate).
-- ADR-0005: VA estimator pinning (vam.ado v2.0.1.1 with noseed-fix).
-- ADR-0006: external crosswalks vendoring (k12_ccc, k12_csu).
-- ADR-0007: column 6 FB row producer fix (`va_spec_fb_tab_all.do`).
-- ADR-0008: predicted_score filter discipline.
-- ADR-0009: prior-score variant standardization (v1 canonical).
-- ADR-0010: DK controls intentionality (single OG baseline vs spec-matched).
-- ADR-0011: Filipino/Asian recoding documentation.
-- ADR-0012: Sex coding inversion landmine documentation.
-- ADR-0013: Sample-restriction map (paper Table A.1) implementation.
-- ADR-0014: Naming convention for `_tab.do` mtitles audit.
-- ADR-0015: pooledrr renaming convention.
-- ADR-0016: Bug 93 family fix template.
+**ALL DECIDED 2026-04-27.** ADR sweep complete.
+
+- ADR-0004 (sibling-VA canonical pipeline) — `va_{score,out}_all.do` canonical; `siblingvaregs/` regressions deprecated. Resolves N2, Q-9, Q-10.
+- ADR-0005 (siblingoutxwalk.do relocation) — moves to `do/sibling_xwalk/`.
+- ADR-0006 (vam.ado pinning) — v2.0.1 + noseed fix vendored to `ado/vam.ado`.
+- ADR-0007 (code-data separation + sync model) — major architecture: GitHub holds code; Scribe `consolidated/` is non-git working copy; rsync-only sync; GitHub frozen archive at handoff.
+- ADR-0008 (external crosswalks vendoring) — k12_ccc/k12_csu backed up to Scribe `consolidated/data/raw/upstream/`; runtime unchanged.
+- ADR-0009 (prior-score v1 canonical) — paper uses v1 only; v2 preserved as exploratory.
+- ADR-0010 (paper-α canonical) — `indexalpha.do` is paper-α producer; `alpha.do` archived.
+- ADR-0011 (survey indices as means) — sums→means code fix in `imputedcategoryindex.do` + `compcasecategoryindex.do`.
+- ADR-0012 (`_tab.do` CSVs local-only) — paper tables come from `share/`; `_tab.do` CSV irregularities are NOT paper-blocking.
+- ADR-0013 (mattschlchar gate) — `local clean=0` permanent; `sch_char.dta` consumed as-is.
+- ADR-0014 (old paper draft preserved) — `common_core_va.tex` kept as historical artifact.
+- ADR-0015 (Filipino/Asian recoding) — intentional analyst choice; documented in code.
+- ADR-0016 (pooledrr rename) — scope-tagged names in 4 producers.
+- ADR-0017 (Matt Naven's files untouched) — written 2026-04-27 (pre-Phase-0e); covers Bug 93 family + 4 other Matt-source bugs.
+
+**Reclassified findings (no longer P1/P2):**
+
+- ~~P1-1~~ (id macro at `crosswalk_nsc_outcomes.do:250`) — RETIRED per ADR-0017
+- ~~P2-1~~ (Bug 93 family, 4 instances) — RETIRED per ADR-0017
+- ~~P2-5, P2-6, P3-62, P3-63~~ — reclassified per ADR-0012 (NOT paper-blocking; local-review CSVs)
+- ~~P2-9~~ (`merge_k12_postsecondary.doh:7` hardcoded path) — DEFERRED per ADR-0017
+- ~~P3-53~~ (Filipino/Asian recoding) — INTENTIONAL per ADR-0015
+- ~~P3-55~~ (4 pooledrr definitions) — Phase 1 rename per ADR-0016
+- ~~P3-56~~ (counts_k12.tex paper-vs-code path) — preserved per ADR-0014
 
 ---
 

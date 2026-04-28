@@ -356,3 +356,53 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 
 - Done: hook fix shipped + session log + SESSION_REPORT update.
 - Pending: nothing on this thread; pre-existing audit work (chunks 9–10 round-2) untouched.
+
+---
+
+<!-- primary-source-ok: sun_2026 -->
+
+## 2026-04-27 — Phase 0e walkthrough complete + 13 ADRs decided + architecture pivot + T1 closeout
+
+**Operations:**
+
+- Drafted `do/check/t1_empirical_tests.do` consolidating 5 T1 tests, then narrowed to 3 active tests after Christina's "skip Matt's files" instruction. T1-1 (id macro) and T1-2 (Bug 93 family) retired.
+- Wrote ADR-0017 (Matt Naven's files untouched) formalizing the scope rule.
+- Christina ran T1 tests on Scribe (logs in `quality_reports/audits/`):
+  - T1-3 (school_id == cdscode): 1:1 confirmed (N=5009). P2-3, P2-11 → cosmetic rename only in Phase 1.
+  - T1-4 (mtitles count): bug fired (49/33/33/33 cols vs 24 declared). Per Q-6, CSVs not paper-feeding → cosmetic for paper.
+  - T1-5: manual reminder (revoke OpenCage key).
+- Server path conventions corrected in t1_empirical_tests.do (`do_files/` and `log_files/` per fork structure).
+- Christina completed Phase 0e Q&A walkthrough — all 19 T4 questions answered in `quality_reports/audits/2026-04-27_T4_answers_CS.md`.
+- **Architecture pivot** triggered by Christina's clarifying questions on (a) repo scope (code-only vs code+data) and (b) GitHub remote on Scribe (network-exposure concern) and (c) handoff to non-git senior coauthor. Decision crystallized in ADR-0007.
+- Wrote 13 ADRs (0004-0016) interactively with Christina approving each:
+  - ADR-0004: Sibling-VA canonical pipeline (`va_{score,out}_all.do`); `siblingvaregs/` regressions deprecated
+  - ADR-0005: `siblingoutxwalk.do` relocation to `do/sibling_xwalk/`
+  - ADR-0006: vam.ado pinned at v2.0.1 + noseed-fix vendored to `ado/`
+  - ADR-0007: Code-data separation; Scribe non-git working copy; rsync-only sync; GitHub frozen archive at handoff
+  - ADR-0008: External crosswalks vendored to Scribe `consolidated/data/raw/upstream/` (Path B); runtime unchanged
+  - ADR-0009: Prior-score v1 canonical for paper; v2 preserved as exploratory
+  - ADR-0010: Paper-α from `indexalpha.do`; `alpha.do` archived as exploratory
+  - ADR-0011: Survey indices computed as means, not sums (code fix in two factor-analysis files)
+  - ADR-0012: `_tab.do` CSV outputs are local-review-only; paper tables come from `share/`
+  - ADR-0013: `mattschlchar.do` clean-gate kept; `sch_char.dta` consumed as-is
+  - ADR-0014: Old paper draft `common_core_va.tex` preserved as historical artifact
+  - ADR-0015: Filipino-into-Asian race recoding intentional; documented in code
+  - ADR-0016: `pooledrr` variable renamed by scope across 4 producers
+- Synced docs: `decisions/README.md` (index + pending list pruned); audit doc §3.1 (T1 verdicts) + §4.6 (ADR status table); TODO.md (Phase 0e closed; Phase 1 plan up next); session log appended.
+
+**Decisions (committed as ADRs):** see list above.
+
+**Key meta-finding — architecture pivot:** Christina's 2026-04-27 questions about code-data separation reshaped Phase 1 design. Net architecture: GitHub repo holds code+docs+tables+figures only (no `.dta`/data); Scribe `consolidated/` is non-git working copy synced via rsync from Christina's local Mac (`.git/` never on Scribe = no GitHub credentials on restricted server); GitHub becomes frozen archive at handoff to non-git senior coauthor; single living README serves both audiences. Documentation discipline rule baked in: every ADR/log/commit written with successor in mind.
+
+**Commits:**
+
+- (this commit) — Phase 0e ADR sweep + T1 closeout + architecture pivot + audit/TODO sync
+
+**Status:**
+
+- Phase 0a-v2: CLOSED.
+- Phase 0e Q&A: CLOSED.
+- ADR sweep: 17 ADRs total, all Decided.
+- T1 tests: 2 of 3 active tests run (T1-3 1:1, T1-4 bug fired but cosmetic per Q-6); T1-5 awaiting manual action.
+- Audit doc + TODO + decisions index: synced.
+- Up next: draft comprehensive Phase 1 plan v3 operationalizing ADRs 0004-0017.
