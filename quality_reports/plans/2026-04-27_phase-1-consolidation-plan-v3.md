@@ -440,7 +440,7 @@ Where a codebook is not available before v1.0-final, the corresponding check car
 
 ---
 
-## 9. Sources
+## 10. Sources
 
 - ADRs 0001-0018 in `decisions/`
 - `quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md` (audit + bug priority triage)
@@ -452,12 +452,13 @@ Where a codebook is not available before v1.0-final, the corresponding check car
 
 ---
 
-## 10. Approval and next steps
+## 11. Approval and next steps
 
 This plan is DRAFT. After Christina reviews:
 
 - Open questions in §8 get answered, plan becomes APPROVED.
-- Christina commits the approved plan, then begins Phase 1a §3.1 (Scribe folder + sync setup).
+- Christina commits the approved plan, then begins Phase 1a §3.1 (Scribe folder + `.gitignore` setup; file-transfer mechanism is operator-choice per ADR-0020).
 - Each milestone (§6.4) produces a session log + commit on completion.
+- Per-commit review discipline (§6.5) applies from the first Phase 1 code commit through `v1.0-final`.
 
 Once the plan is APPROVED, Christina signals start of Phase 1a and the milestone clock starts.

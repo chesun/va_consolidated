@@ -90,11 +90,13 @@ if `run_data_prep' {
     *   do do/data_prep/prepare/<scripts>
     *   do do/data_prep/caschls_qoiclean/<scripts>
     *
-    * NOTE per plan v3 §8 Q1 / ADR-0019: the crosswalk_*_outcomes.do files
-    * are NOT invoked from main.do.  They are static, run-once-cached
-    * artifacts.  Their .dta outputs are pre-existing inputs that
-    * merge_k12_postsecondary.doh consumes when called by Christina's
-    * sample-construction code (in the run_samples block below).
+    * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
+    * + plan v3 §8 Q1 (verified by grep — ZERO production invocations of
+    * crosswalk_*_outcomes.do): these crosswalk-build files are NOT invoked
+    * from main.do.  They are static, run-once-cached artifacts.  Their
+    * .dta outputs are pre-existing inputs that merge_k12_postsecondary.doh
+    * consumes when called by Christina's sample-construction code (in the
+    * run_samples block below).
 }
 
 
@@ -145,11 +147,16 @@ if `run_va_tables' {
     di as text "PHASE 4: VA TABLES + FIGURES"
     di as text "{hline 80}"
 
-    * TODO Phase 1a §3.3 step 10: paper-shipping tables (per ADR-0012,
-    * _tab.do CSVs are local-review-only; canonical paper outputs come
-    * from share/).  Examples:
+    * TODO Phase 1a §3.3 step 10 (VA-specific share/ producers): paper-shipping
+    * VA tables and figures (per ADR-0012, _tab.do CSVs are local-review-only;
+    * canonical paper outputs come from share/).  Examples:
     *   do do/share/va/<table producers>
     *   do do/share/va/<figure producers>
+    *
+    * Phase 4 vs Phase 6: §3.3 step 10 covers ALL share/ producers as one
+    * bucket; main.do splits VA-specific producers (Phase 4, depend on
+    * va_estimation outputs) from non-VA producers (Phase 6, e.g.,
+    * sample_counts_tab, base_sum_stats_tab, survey-VA tables).
 }
 
 
@@ -182,7 +189,9 @@ if `run_paper_outputs' {
     di as text "PHASE 6: PAPER OUTPUTS"
     di as text "{hline 80}"
 
-    * TODO Phase 1a §3.3 step 10: paper-shipping tables/figures from share/.
+    * TODO Phase 1a §3.3 step 10 (non-VA share/ producers): paper-shipping
+    * tables/figures that don't depend on VA estimates (counts, descriptives,
+    * survey-VA tables).  See Phase 4 note for the §3.3-step-10 split rationale.
     *   do do/share/sample_counts_tab.do             // ADR-0009 v1-only
     *   do do/share/base_sum_stats_tab.do            // ADR-0009 v1-only
     *   ... etc.
