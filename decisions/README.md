@@ -106,6 +106,7 @@ What this commits us to. What it rules out. Open questions it creates.
 | [0015](0015_filipino-asian-recoding-intentional.md) | Filipino-into-Asian race recoding intentional; documented in code | 2026-04-27 | Decided | Data |
 | [0016](0016_pooledrr-renamed-by-scope.md) | `pooledrr` variable renamed by scope across the four producers | 2026-04-27 | Decided | Specification |
 | [0017](0017_matt-naven-files-untouched.md) | Matt Naven's files stay untouched through Phase 1 | 2026-04-27 | Decided | Infrastructure |
+| [0018](0018_offboarding-model-refinement.md) | Offboarding model — Kramer is custodian; successor unknown; full-pipeline acceptance run before `v1.0-final` | 2026-04-27 | Decided | Infrastructure |
 
 ---
 
