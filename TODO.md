@@ -15,9 +15,9 @@ Consolidated as a single .do file at `do/check/t1_empirical_tests.do` (2026-04-2
 - [x] **T1-4** — mtitles count test — **BUG FIRED** (49/33/33/33 cols vs 24 declared). Per Q-6, CSVs don't feed paper → cosmetic. — 2026-04-27
 - [ ] **T1-5** — Revoke OpenCage API key (manual external action; reminder in script)
 
-**Retired (Matt-Naven file ownership constraint — ADR-0017):**
-- ~~T1-1 — `crosswalk_nsc_outcomes.do:250` `id` macro~~ — Matt's file, not fixed in Phase 1, not worth testing
-- ~~T1-2 — Bug 93 family count (4 instances)~~ — spans `crosswalk_nsc_outcomes.do` + `merge_k12_postsecondary.doh`, both Matt's, not fixed in Phase 1
+**Retired:**
+- ~~T1-1 — `crosswalk_nsc_outcomes.do:250` `id` macro~~ — file is Christina's (per ADR-0019, refining ADR-0017) but **out of scope by time-budget** in Phase 1: file not pipeline-active, paper blast radius for Bug 93 null, ½-day fix not justified vs. offboarding acceptance run.
+- ~~T1-2 — Bug 93 family count (4 instances)~~ — NSC instances in Christina's file (per ADR-0019) but out of scope by time-budget; CCC/CSU instances in Matt's files (`merge_k12_postsecondary.doh`) per ADR-0017.
 
 **Removed earlier (resolved by Christina 2026-04-26 FB-test correction):**
 - ~~Column 6 FB rows blank?~~ — NOT A BUG (intentional, FB-test structural property)

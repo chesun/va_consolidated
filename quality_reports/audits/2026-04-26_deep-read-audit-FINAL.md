@@ -181,10 +181,10 @@ Active tests resolve P2-3 (and P2-11), P2-6, P2-13.
 | ~~**T1-4**~~ | ~~Open `$vaprojdir/tables/va_cfr_all_v1/reg_out_va/reg_*.csv`~~ — **RESOLVED 2026-04-27**: bug fired (49/33/33/33 cols vs 24 declared mtitles). Per Q-6 the CSVs are local-review-only — bug is **cosmetic for paper integrity**; Phase 1 fixes mtitles only for completeness. Log: same file as T1-3. | P2-6 | RESOLVED |
 | **T1-5** | Revoke / rotate the OpenCage API key `[REVOKED 2026-04-30]`. | P2-13 | log into OpenCage account, revoke key (manual action) |
 
-**T1 items retired (per ADR-0017, 2026-04-27 — Matt-Naven file ownership):**
+**T1 items retired (rationale corrected per ADR-0019, 2026-04-27):**
 
-- ~~T1-1 (P1-1: `id' macro at `crosswalk_nsc_outcomes.do:250`)~~ — Matt's file, not fixed in Phase 1
-- ~~T1-2 (P2-1: Bug 93 family count, 4 instances)~~ — spans Matt's NSC crosswalk and `merge_k12_postsecondary.doh`, not fixed in Phase 1
+- ~~T1-1 (P1-1: `id' macro at `crosswalk_nsc_outcomes.do:250`)~~ — file is Christina's (heavy refactor of Matt's archived original, Mar 2022) per ADR-0019; out of scope in Phase 1 by time-budget (file not pipeline-active; Bug 93 paper-null).
+- ~~T1-2 (P2-1: Bug 93 family count, 4 instances)~~ — NSC instances in Christina's file (per ADR-0019) but out of scope by time-budget; CCC/CSU instances in Matt's files per ADR-0017.
 
 **T1 items removed earlier (resolved by Christina 2026-04-26 FB-test correction):**
 

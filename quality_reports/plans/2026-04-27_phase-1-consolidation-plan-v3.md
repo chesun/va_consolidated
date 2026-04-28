@@ -3,7 +3,7 @@
 
 # Phase 1 Consolidation Plan v3
 
-**Status:** DRAFT — pending Christina approval.
+**Status:** DRAFT — §8 questions all resolved 2026-04-27; ready for Christina to mark APPROVED and start Phase 1a §3.1.
 **Date:** 2026-04-27
 **Supersedes:** `2026-04-25_consolidation-plan-draft.md` (v2)
 **Inputs:** ADRs 0001-0018, audit `2026-04-26_deep-read-audit-FINAL.md`, T4 answers `2026-04-27_T4_answers_CS.md`, T1 empirical-test results.
@@ -153,11 +153,11 @@ local run_paper_outputs  1
 
 if `run_data_prep' {
     do do/data_prep/...
-    // Matt's crosswalks are called as-is from their predecessor location:
-    do /home/research/ca_ed_lab/projects/common_core_va/do_files/upstream/crosswalk_nsc_outcomes.do
-    do /home/research/ca_ed_lab/projects/common_core_va/do_files/upstream/crosswalk_ccc_outcomes.do
-    do /home/research/ca_ed_lab/projects/common_core_va/do_files/upstream/crosswalk_csu_outcomes.do
-    // merge_k12_postsecondary.doh is NOT a top-level do; it's included by callers
+    // NOTE: crosswalk_nsc/ccc/csu_outcomes.do are NOT invoked from main.do.
+    // They are static, run-once-cached artifacts (same pattern as gecode_json.py
+    // per chunk-10 audit). Their .dta outputs are pre-existing inputs that
+    // merge_k12_postsecondary.doh consumes when called by Christina's
+    // sample-construction code (see `run_samples` block below).
 }
 
 if `run_samples' {
@@ -369,10 +369,12 @@ Each milestone gets a session log + commit so the audit trail is durable.
 
 ---
 
-## 8. Open questions (discuss with Christina before Phase 1a starts)
+## 8. Open questions — ALL RESOLVED 2026-04-27
 
-1. **Phase 1a §3.4 `main.do` Matt-file calls** — should `main.do` directly invoke Matt's `crosswalk_nsc_outcomes.do` etc. via absolute paths, or should those calls live in a separate "predecessor-bridge" script that `main.do` includes? Cleaner separation might be useful for the senior coauthor.
-2. **Paper-LaTeX scope for Phase 1** — does Phase 1c include moving the paper LaTeX from `va_paper_clone` into `consolidated/paper/`, or is that out of scope for this milestone? ADR-0001 says paper folder may be empty for current milestone; clarify.
+1. ~~**Phase 1a §3.4 `main.do` Matt-file calls**~~ — **RESOLVED**: grep confirmed ZERO production invocations of any `crosswalk_*_outcomes.do` file (they're static, run-once-cached). main.do does NOT invoke them. settings.do gets a `$matt_files_dir` global (e.g., `/home/research/ca_ed_lab/projects/common_core_va/do_files`); Christina's relocated sample-construction files reference Matt's `merge_k12_postsecondary.doh` via that global. No predecessor-bridge wrapper needed.
+2. ~~**Paper-LaTeX scope for Phase 1**~~ — **RESOLVED**: paper LaTeX **out of scope** for Phase 1. ADR-0010 (α footnote update) and ADR-0014 (old-draft header note) happen in `va_paper_clone`, NOT in this repo. Consolidated `paper/` folder stays empty per ADR-0001.
+
+**Bonus discovery** (ADR-0019): `crosswalk_nsc_outcomes.do` is Christina-authored (Mar 2022, heavy refactor of Matt's archived original), not Matt's. ADR-0017 file list corrected to 4 files (CCC + CSU crosswalks, merge_k12_postsecondary.doh, gecode_json.py). Phase 1 still leaves NSC crosswalk untouched per option (B) — file isn't pipeline-active, Bug 93 paper-null, time better spent on offboarding acceptance run.
 3. ~~**`v1.0-handoff` tag timing**~~ — **RESOLVED by ADR-0018**: tag is `v1.0-final`, frozen at last commit before offboarding; no availability window.
 4. ~~**Senior coauthor identity**~~ — **RESOLVED by ADR-0018**: successor is unknown at offboarding time; README is generic. Kramer is custodian, not maintainer.
 5. ~~**Phase 2 placeholder in TODO**~~ — **RESOLVED by ADR-0018**: Phase 1 ends at offboarding; no Phase 2 tracking. Anything not done by `v1.0-final` is the future successor's concern, fully off Christina's plate.

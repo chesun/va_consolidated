@@ -107,3 +107,81 @@ Audit doc §3.1 updated with verdicts; TODO entries marked done.
 - Phase 0e Q&A: CLOSED.
 - Audit doc: synced with ADR-0017, T1 results, ADR cross-refs.
 - Next after 0011: 0012 _tab.do CSVs local-only, then continue down the list.
+
+---
+
+<!-- primary-source-ok: sun_2022, sun_2026 -->
+(Note: "Che Sun" / "Sun 2022" / "Sun 2026-04-27" below refer to Christina Sun, project author, not external citations.)
+
+## 2026-04-27 (late evening) — ADR sweep complete + Phase 1 plan v3 + offboarding pivot + NSC crosswalk authorship surprise
+
+### ADRs 0012-0016 written + index pruned
+
+- ADR-0012: `_tab.do` CSV outputs are local-review-only (Q-6 cascade settles P2-5, P2-6, P3-62, P3-63).
+- ADR-0013: mattschlchar.do gate kept (Q-5).
+- ADR-0014: Old paper draft `common_core_va.tex` preserved as historical artifact (Q-13).
+- ADR-0015: Filipino/Asian recoding intentional, documented in code (Q-15).
+- ADR-0016: pooledrr renamed by scope across 4 producers (Q-16).
+- decisions/README.md pending-decisions list pruned: most original placeholders subsumed by 0004-0017; 2 remain deferred (cohort coverage, Stata version pin).
+
+**Phase 0e ADR sweep COMPLETE: 13 ADRs (0004-0016) decided + ADR-0017 from earlier today.**
+
+### Commit + push (mid-evening)
+
+Commit `5d5f62d` pushed to origin/main. Captures 13 new ADRs + ADR-0017 + T1 .do file + audit doc updates + TODO sync + session log + SESSION_REPORT entry.
+
+### Phase 1 plan v3 drafted
+
+Written at `quality_reports/plans/2026-04-27_phase-1-consolidation-plan-v3.md`. ~10 sections covering: v2-vs-v3 deltas, sub-phase structure (1a/1b/1c), Phase 1a Scribe sync setup + folder build-out + script relocation + main.do construction + golden-master verification, Phase 1b bug fixes by priority, Phase 1c cosmetic cleanup + offboarding prep, milestones M1-M9, risk register, open questions (originally 5).
+
+### Architecture pivot — offboarding model (ADR-0018)
+
+Christina clarified: there is no live handoff event. Her exit is offboarding from the lab; deliverable goes to **Kramer (lab data-management custodian)**, not a successor. Successor is unknown at offboarding time. README is the only orientation. Phase 1 plan v3's "handoff" framing is wrong.
+
+ADR-0018 written formalizing:
+
+- Endpoint = offboarding date, not handoff event
+- Kramer = custodian (preserve + transfer), not maintainer
+- Successor = unknown; README is sole orientation
+- Tag = `v1.0-final` (not `v1.0-handoff`)
+- **Acceptance criteria before tag**: Christina runs full pipeline end-to-end on Scribe (`stata -b do main.do`); README cold-read test by friendly non-Christina lab member. Both must pass. Non-negotiable.
+- No "Christina available for 30 days" buffer
+
+ADR-0018 supersedes ADR-0007's "Handoff endpoint" subsection only; the rest of ADR-0007 (sync model, code-data separation, .gitignore policy) stands.
+
+Plan v3 updated to reflect ADR-0018: §1, §2, §5.2 step 8 (offboarding deliverable memo to Kramer), §5.3 acceptance run + cold-read test, §6.4 milestones M8/M9, §7 risk register (cold-read failure + acceptance-run failure), §8 Q3-Q5 resolved.
+
+Commit `e7e71d5` pushed to origin/main.
+
+### Plan §8 open questions worked through
+
+- **Q1 (main.do Matt-file calls)**: Christina pushed back on my §3.4 example — she didn't think the pipeline invoked the crosswalks. Verified via grep: ZERO production invocations of `crosswalk_nsc/ccc/csu_outcomes.do` (only the file's own header docstring matches). The crosswalk .dta outputs are static, run-once-cached artifacts; `merge_k12_postsecondary.doh` reads them. Plan §3.4 corrected to remove crosswalk invocations from main.do. Resolution: settings.do gets a `$matt_files_dir` global; Christina's relocated sample-construction files reference Matt's `merge_k12_postsecondary.doh` via that global. No predecessor-bridge wrapper needed.
+- **Q2 (paper LaTeX scope)**: out of scope. Phase 1 doesn't touch paper LaTeX. ADR-0010 footnote update + ADR-0014 old-draft header note happen in `va_paper_clone`, NOT in this repo. Consolidated `paper/` folder stays empty per ADR-0001.
+
+### NSC-crosswalk authorship surprise
+
+While checking Q1, found `crosswalk_nsc_outcomes.do` header reads "First created by Che Sun March 17, 2022 ... Based on code from Matt Naven". The file is **Christina-authored**, not Matt's, despite Christina's earlier instruction "leave Matt's do files alone. for example, the nsc crosswalk." Round-1 chunk-10 audit had already flagged this: "Heavy refactor by Christina vs. archived Matt original."
+
+CCC and CSU crosswalks unambiguously Matt's (his name + his user paths in headers).
+
+Christina asked for input/output lineage trace before deciding what to do. Lineage from round-1 chunk-10 §File 2:
+
+- INPUT: `$nscdtadir/nsc_xgyr<gradyear>.dta` (cleaned by Kramer)
+- OUTPUT: `$vaprojxwalks/nsc_outcomes_crosswalk_ssid.dta` (consumed by `merge_k12_postsecondary.doh:67`)
+- DOWNSTREAM: nsc_enr*, nsc_persist_year*, nsc_deg* — flow to paper Tables 4-7 via merge_k12_postsecondary.doh:79-90
+
+Output IS paper-load-bearing in general. Bug 93 specifically (the `nsc_enr_uc` precedence error) is paper-null per chunk-10 round-2 trace (`csu_transfer_uc` not cited in paper, composite outcomes don't use `nsc_enr_uc`). The `id` macro bug at L250 could affect `nsc_persist_year2/3/4` which IS paper-relevant.
+
+Three options surfaced for Christina:
+- (A) Refine ADR-0017 + add Bug 93 NSC fix to Phase 1b (~½ day work: edit + re-run + verify)
+- (B) Documentation-only ADR-0019 noting authorship but no Phase 1 work change
+- (C) Status quo — keep treating as Matt's
+
+**Christina's decision pending.**
+
+### Status
+
+- ADR sweep: 18 ADRs Decided (0001-0018).
+- Phase 1 plan v3: DRAFT. §8 Q1 + Q2 resolved. NSC-crosswalk authorship question pending Christina's choice from (A)/(B)/(C).
+- Commits pushed: 5d5f62d (Phase 0e closeout), e7e71d5 (ADR-0018 + plan v3 draft).
+- Up next: Christina's decision on NSC-crosswalk scope; then plan moves to APPROVED; then Phase 1a §3.1 begins.
