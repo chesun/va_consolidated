@@ -406,3 +406,40 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 - T1 tests: 2 of 3 active tests run (T1-3 1:1, T1-4 bug fired but cosmetic per Q-6); T1-5 awaiting manual action.
 - Audit doc + TODO + decisions index: synced.
 - Up next: draft comprehensive Phase 1 plan v3 operationalizing ADRs 0004-0017.
+
+---
+
+<!-- primary-source-ok: sun_2022, sun_2026 -->
+
+## 2026-04-27 (evening + end of day) — ADR-0018 (offboarding pivot) + ADR-0019 (NSC authorship) + Phase 1 plan v3 + closeout
+
+**Operations:**
+
+- Phase 1 plan v3 drafted at `quality_reports/plans/2026-04-27_phase-1-consolidation-plan-v3.md` — 10 sections, 3 sub-phases, 9 milestones, risk register, originally 5 open questions.
+- Architecture pivot: Christina clarified there is no live handoff event. Her exit is offboarding from the lab; deliverable goes to **Kramer (lab data-management custodian)**. Successor is unknown at offboarding time. README is the only orientation. ADR-0018 written formalizing this; supersedes ADR-0007's "Handoff endpoint" subsection. Tag becomes `v1.0-final` (not `v1.0-handoff`). Acceptance criteria before tag: Christina runs full pipeline end-to-end on Scribe + README cold-read test by friendly non-Christina lab member; both must pass.
+- Plan v3 updated to reflect ADR-0018: handoff→offboarding throughout, milestones M8/M9 split (acceptance run + cold-read pass / freeze + Kramer deposit), risk register replaces successor-onboarding risk with cold-read-failure + acceptance-run-failure, §8 Q3-Q5 resolved.
+- Plan §8 Q1 (main.do Matt-file calls) — Christina pushed back; verified via grep that ZERO production code invokes `crosswalk_*_outcomes.do`. They're static run-once-cached artifacts. Plan §3.4 corrected; settings.do gets `$matt_files_dir` global; no predecessor-bridge wrapper needed.
+- **NSC-crosswalk authorship surprise**: file header reads "First created by Che Sun March 17, 2022 ... Based on code from Matt Naven." Round-1 chunk-10 audit had flagged this as "heavy refactor by Christina." File is Christina's, not Matt's. ADR-0017's "Matt's files" list was wrong on this one. Lineage trace from round-1 chunk-10 §File 2 captured: input is per-cohort raw NSC (Kramer-cleaned); output `nsc_outcomes_crosswalk_ssid.dta` is paper-load-bearing via `merge_k12_postsecondary.doh:67` → paper Tables 4-7. Producer is NOT pipeline-active.
+- Christina chose option (B): own authorship + add Phase 1c header note, but don't change Phase 1 scope (Bug 93 paper-null per audit; ½-day fix not justified vs. offboarding acceptance run). ADR-0019 written formalizing.
+- Plan v3 §8 fully resolved; Q2 (paper LaTeX) confirmed out of scope.
+- Synced: TODO.md T1-retired rationale (now Christina-time-budget for NSC instances, Matt-ownership for CCC/CSU); audit doc §3.1 T1 entries; session log final wrap entry.
+
+**Decisions (committed as ADRs):**
+
+- ADR-0018 (offboarding model refinement: Kramer custodian, successor unknown, full-pipeline acceptance run + README cold-read as gates before `v1.0-final` tag, no Christina-availability buffer).
+- ADR-0019 (NSC crosswalk authorship correction: Christina-authored, Mar 2022; refines ADR-0017 file list to 4 files; Phase 1 leaves untouched anyway by time-budget).
+
+**Commits:**
+
+- `e7e71d5` — ADR-0018 + Phase 1 plan v3 draft
+- `f113ba1` — ADR-0019 + plan v3 §8 closeout
+- (this commit) — end-of-day session log + SESSION_REPORT update + MEMORY [LEARN] entries
+
+**Status (end of 2026-04-27):**
+
+- ADR ledger: **19 Decided** (0001-0019). Phase 0e fully closed.
+- Phase 1 plan v3: DRAFT, all open questions resolved, ready for Christina to mark APPROVED and start Phase 1a §3.1.
+- T1 tests: 2 of 3 run successfully (T1-3, T1-4); T1-5 (OpenCage revoke) awaiting manual action.
+- 3 commits pushed today: 5d5f62d (Phase 0e closeout), e7e71d5 (ADR-0018 + plan v3), f113ba1 (ADR-0019 + plan §8 closeout).
+- Documentation discipline per ADR-0007 holding: every decision captured in ADRs + session logs + audit cross-refs. Audit trail durable for offboarding.
+- Outstanding for Christina: mark plan v3 APPROVED when ready; T1-5 OpenCage key revocation when convenient; start Phase 1a §3.1 (Scribe sync setup) on next session.

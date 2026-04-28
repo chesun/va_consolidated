@@ -185,3 +185,24 @@ Three options surfaced for Christina:
 - Phase 1 plan v3: DRAFT. §8 Q1 + Q2 resolved. NSC-crosswalk authorship question pending Christina's choice from (A)/(B)/(C).
 - Commits pushed: 5d5f62d (Phase 0e closeout), e7e71d5 (ADR-0018 + plan v3 draft).
 - Up next: Christina's decision on NSC-crosswalk scope; then plan moves to APPROVED; then Phase 1a §3.1 begins.
+
+---
+
+## 2026-04-27 (end of day) — ADR-0019 + plan v3 §8 closeout
+
+Christina chose option (B) for the NSC-crosswalk authorship question: own authorship in the record, add a Phase 1c header note in the file, but don't change Phase 1 scope (no fix, no re-run). Reasoning: file isn't pipeline-active, Bug 93 paper-null per audit, ½-day fix not justified vs. offboarding acceptance run.
+
+ADR-0019 written formalizing the authorship correction + the time-budget rationale for non-fix. ADR-0017 file list narrowed to 4 (CCC + CSU crosswalks, merge_k12_postsecondary.doh, gecode_json.py). T1-1 and T1-2 stay retired with rationale updated (Christina-time-budget for NSC instances; Matt-ownership for CCC/CSU instances).
+
+Plan v3 §8 fully resolved. Status flipped from "DRAFT pending" to "DRAFT ready for Christina to mark APPROVED and start Phase 1a §3.1." Audit doc §3.1 + TODO.md T1-retired entries synced with new rationale.
+
+Commit `f113ba1` pushed to origin/main.
+
+### Final status (end of 2026-04-27)
+
+- **ADR ledger: 19 Decided** (0001-0019). Phase 0e fully closed.
+- **Phase 1 plan v3**: ready for APPROVED. Phase 1a §3.1 (Scribe sync setup) is next.
+- **3 commits pushed today**: 5d5f62d, e7e71d5, f113ba1.
+- **T1 tests**: 2 of 3 active tests run successfully; T1-5 (OpenCage revoke) pending manual.
+- **Documentation discipline (per ADR-0007)**: every decision today captured in ADRs + session log + audit cross-refs. Audit trail is durable.
+- **Outstanding for Christina**: mark plan v3 APPROVED when ready; T1-5 OpenCage key revocation when convenient.
