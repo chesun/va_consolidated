@@ -443,3 +443,66 @@ All 10 chunks of Phase 0a deep-read complete via dispatched general-purpose agen
 - 3 commits pushed today: 5d5f62d (Phase 0e closeout), e7e71d5 (ADR-0018 + plan v3), f113ba1 (ADR-0019 + plan §8 closeout).
 - Documentation discipline per ADR-0007 holding: every decision captured in ADRs + session logs + audit cross-refs. Audit trail durable for offboarding.
 - Outstanding for Christina: mark plan v3 APPROVED when ready; T1-5 OpenCage key revocation when convenient; start Phase 1a §3.1 (Scribe sync setup) on next session.
+
+---
+
+<!-- primary-source-ok: sun_2026 -->
+(Note: "C. Sun 2026-04-25" or similar references in artifacts below denote Christina Sun, project author; not external citations.)
+
+## 2026-04-28 — Plan v3 revision + data-checks design + ADR-0020 architectural simplification + phase-1-review rule + Phase 1a §3.1/§3.2 pre-drafts
+
+**Operations:**
+
+Long, dense day across multiple threads. Compressed summary by thread:
+
+- **Plan v3 revision (per-do-file logging + automated data checks).** Christina requested two additions to plan v3 §5: every do file opens its own log (replaces predecessor's single global log convention; helps offboarding-era debugging), and a six-file `do/check/check_*.do` automated data-checks pipeline wired into `main.do` via a `run_data_checks` toggle. Plan v3 §5.1 step 2 upgraded; new §5.3 added; old §5.3 → §5.4; §6.3 Phase 1c bumped 2 → 3 weeks; §6.4 milestones M8/M9/M10 added/renumbered.
+
+- **Codebook export pipeline + PII remediation.** Drafted `do/explore/codebook_export.do` to dump `describe` + `codebook` for the 10 datasets the Phase 1c data-checks need to assert against. Iterated: initial helper-with-tabvars version → minimal `describe` + `codebook` version (Christina's instinct: simpler is better). Verified 10 dataset paths against actual source code (2 corrections: CCC/CSU `_ssid` suffix wrong; 4 additions: compcase CalSCHLS source, `score_b.dta`, `sch_char.dta`, K12↔CCC/CSU bridge crosswalks). Christina ran on Scribe; first-run output (3.8 MB) leaked PII in `codebook` Examples blocks for the bridge crosswalks (real student `first_name`, `last_name`, `birth_date`). Two-part remediation: gitignored `master_supporting_docs/codebooks/`, added `cap drop` PII block to script. Re-run produced sanitized 3.8 MB log (79,071 lines, ~300 lines of PII output dropped).
+
+- **Data-checks design memo.** Read describe blocks + key codebook entries across all 10 datasets; wrote `quality_reports/reviews/2026-04-28_data-checks-design.md` (~250 lines). Per-check-file specs for `check_samples.do`, `check_merges.do`, `check_va_estimates.do`, `check_survey_indices.do`, `check_paper_outputs.do`, `check_logs.do`. Codebook line citations on every assertion. Resolved CalSCHLS Likert-scale guess (NOT 1-4; actually -2 to +2 5-point centered at 0).
+
+- **CalSCHLS index TBDs resolved.** Read `imputedcategoryindex.do` + `compcasecategoryindex.do` — both use identical item lists. Three indices match ADR-0010's "9 / 15 / 4": `climateindex` (3 parent + 6 sec = 9), `qualityindex` (5 parent + 7 sec + 3 staff = 15), `supportindex` (2 parent + 2 staff = 4). Total 28 of 45 source QOIs used. Fourth `motivationindex` declared but commented out — exploratory, dropped from paper. Design memo §5 updated with full item lists + raw-vs-z-scored invariants. Bonus: raw-index `[-2, 2]` assertion catches whether ADR-0011 sums→means fix has landed (post-fix passes; pre-fix fails because sum scales with item count).
+
+- **Phase 1a §3.1 v1 pre-drafts (heavy version).** Drafted .gitignore extensions per ADR-0007 (data/, estimates/, log/, output/, *.dta, *.smcl, *.ster); `settings.do` (hostname-branched, master seed `20260428`, hard-fails rc=601 if `$consolidated_dir` missing); `main.do` (7-phase skeleton with TODO markers); `sync_to_scribe.sh` (clean-tree gate + rsync + VERSION marker + SSH ControlMaster docs); `sync_from_scribe.sh` (tables/figures pull). Christina supplied SSH correction: user is `chesun1`, host is `Scribe.ssds.ucdavis.edu` — fixed in script.
+
+- **ADR-0020 (architectural simplification — drop sync scripts).** Christina honest-feedback: the rsync wrapper layer was over-engineered for her actual workflow. FileZilla + interactive SSH has worked reliably for years; the wrapper's offboarding value (deterministic Scribe-matches-GitHub state) is captured by the GitHub `v1.0-final` tag itself. Wrote ADR-0020 refining ADR-0007's "Sync model" subsection only (other ADR-0007 commitments stand: code-data separation, no `.git/` on Scribe, `.gitignore` policy). Removed both sync scripts (-356 lines). Simplified plan v3 §3.1 (5 steps → 4) + §5.4 step 16 + §6.4 M1. Pattern matches ADR-0018 (also a partial-supersession of ADR-0007).
+
+- **Phase 1a §3.2 folder build-out.** Created 13 missing tracked dir stubs (.gitkeep): `ado/`, `supplementary/`, `do/_archive/`, `do/upstream/`, `do/local/`, `do/sibling_xwalk/`, `do/data_prep/`, `do/samples/`, `do/va/`, `do/survey_va/`, `do/share/`, `do/debug/`, `py/upstream/`. CLAUDE.md folder map now matches repo reality. Gitignored data dirs (data/, log/, output/, estimates/) deliberately NOT stubbed (they appear on Scribe at runtime).
+
+- **`.claude/rules/phase-1-review.md` — hard-gate coder-critic on every Phase 1 code commit.** Christina requested a review structure to guard against bias / mistakes / fabrication. Layered defense: Tier 1 (pre-commit self-check), Tier 2 (`coder-critic` agent dispatch), Tier 3 (data-checks pipeline at runtime), Tier 4 (golden-master M4). Hard gate at 80/100 per `quality.md` §1. Dispatch matrix specifies WHEN to dispatch (relocations, paper-affecting fixes, new check_*.do — YES; ADRs / session logs / folder stubs — NO). Commit message footer convention (`coder-critic: PASS (XX/100)`) makes the audit trail grep-able via `git log --grep='coder-critic'`. Operationalizes `agents.md` §1 (Adversarial Pairing) for the manual Claude+Christina pair-flow. Sunsets at `v1.0-final`. Cross-referenced from CLAUDE.md Core Principles + plan v3 §6.5.
+
+- **First coder-critic dispatch (settings.do + main.do).** Validated the protocol end-to-end. Score: **94/100 PASS**. Two findings addressed in followup: `[M1]` Phase 4 + Phase 6 both cited "§3.3 step 10" — disambiguated as VA-specific vs non-VA share/ producers; `[M2]` data_prep block's NSC-crosswalk note had compressed cite — expanded to full ADR-0019 + plan v3 §8 Q1 + grep verification phrasing. Bonus catch: plan v3 had two `## 9.` sections (my 2026-04-28 addendum collided with Sources). Renumbered: §9 stays as the addendum, Sources → §10, Approval → §11. Pre-commit checklist concern 1 (legacy paths byte-match predecessor settings.do) verified by local diff; ALL 6 paths byte-match.
+
+**Decisions (committed as ADRs):**
+
+- ADR-0020 (file transfer is operator-choice; refines ADR-0007 §"Sync model"; rest of ADR-0007 stands).
+
+**Commits (7 today, in order):**
+
+- `a078f27` — plan(phase-1c): per-do-file logging + automated data checks + codebook export
+- `8215bb0` — spec(data-checks): resolve CalSCHLS index TBDs (climateindex/qualityindex/supportindex)
+- `82a565e` — phase-1a(§3.1): pre-draft Scribe sync infrastructure + settings/main skeletons
+- `3eb7167` — adr(0020): drop sync wrapper scripts; file transfer is operator-choice
+- `f79d755` — phase-1a(§3.2): folder layout build-out — 13 tracked dir stubs
+- `51036f5` — rule(phase-1-review): hard-gate coder-critic on every Phase 1 code commit
+- `e1cbc56` — phase-1a(coder-critic-followup): address M1+M2 findings; renumber plan v3 §10/§11
+
+**Status (end of 2026-04-28):**
+
+- **ADR ledger: 20 Decided** (0001-0020).
+- Phase 1 plan v3: DRAFT, all §8 questions resolved, today's revisions are additive (per-do-file logging + automated data checks + ADR-0020 simplification + per-commit review discipline). Ready for Christina to mark APPROVED.
+- Phase 1a §3.1 (Scribe folder + .gitignore) and §3.2 (folder build-out) **pre-drafted**: artifacts exist as reviewable code. Phase 1a §3.3 (script relocations — bulk of Phase 1a, ~6 weeks) **NOT started** — requires explicit go-ahead and isn't safe to do speculatively because each file move changes repo state.
+- phase-1-review rule active: every Phase 1 code commit going forward goes through coder-critic at 80/100 hard gate. First dispatch validated the protocol (94/100 PASS on settings.do + main.do).
+- T1-5 OpenCage key revocation: still pending manual action by Christina.
+- Files created today (high-level): plan v3 revisions; `do/explore/codebook_export.do`; `quality_reports/reviews/2026-04-28_data-checks-design.md`; `decisions/0020_sync-mechanism-operator-choice.md`; `.claude/rules/phase-1-review.md`; `settings.do`; `main.do`; 13 `.gitkeep` folder stubs; session log + 2 SESSION_REPORT entries.
+
+**Tomorrow pickup pointers:**
+
+- **Tomorrow's first action:** read this entry + `quality_reports/session_logs/2026-04-28_plan-v3-revision-and-data-checks-design.md` Status section to reorient.
+- **Plan v3 still DRAFT.** Christina can mark APPROVED at any point — all open questions are resolved.
+- **Active options for next code work** (in approximate priority order):
+  1. Pre-draft `do/check/check_*.do` skeletons per the data-checks design memo. Six runnable files. Codebook context fresh in the design memo. **First commit that exercises the phase-1-review hard gate on substantively new code.**
+  2. Pre-draft README.md skeleton for Phase 1c §5.2 step 5. Offboarding-critical; cold-read test depends on it.
+  3. Begin Phase 1a §3.3 script relocation — start with `siblingoutxwalk.do` per ADR-0005 (single-file move, clean precedent). Requires Christina go-ahead since it changes repo state.
+- **Open TBDs in design memo §9** (all unblocked by future Phase 1a/1b work): K12↔NSC/CCC/CSU merge-rate baselines (after §3.5 golden-master); paper-table cell magnitudes (after §3.3 share/ relocation); Stata version pull from codebook log header (trivial; can do anytime).
+- **Per-commit review reminder:** any code commit tomorrow goes through coder-critic at 80/100. Footer convention: `coder-critic: PASS (XX/100)` (or `skipped` with rationale for cosmetic-only commits).

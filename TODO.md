@@ -1,11 +1,27 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-04-27
+Last updated: 2026-04-28
 
-## Active (doing now)
+## Active (next-up)
 
-- [ ] **Draft Phase 1 plan v3** — Phase 0e walkthrough COMPLETE; ADRs 0004-0017 all written. 13 ADRs operationalize into a sequenced playbook. Use audit §3.3 + ADR consequences as input.
-- [ ] **Phase 1 sub-phase structure** (locked): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. **File ownership constraint**: Matt Naven's files stay UNTOUCHED per ADR-0017.
+- [ ] **Christina decision: pick next code work** (see options A/B/C below).
+- [ ] **Christina: mark plan v3 APPROVED** when ready — all §8 questions resolved 2026-04-27; today's revisions are additive (per-do-file logging, automated data checks, ADR-0020 simplification, per-commit review discipline).
+- [ ] Phase 1 sub-phase structure (locked): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. File ownership constraint: Matt Naven's files stay UNTOUCHED per ADR-0017.
+
+### Options for next code work (Christina picks; in priority order)
+
+- [ ] **Option A — pre-draft `do/check/check_*.do` skeletons** per `quality_reports/reviews/2026-04-28_data-checks-design.md`. Six runnable files. **First commit that exercises the phase-1-review hard gate on substantively new code** — coder-critic dispatch required.
+- [ ] **Option B — pre-draft README.md skeleton** for Phase 1c §5.2 step 5. Audience: Stata-skilled, no git. Triggers writer-critic, not coder-critic.
+- [ ] **Option C — begin Phase 1a §3.3 script relocation** starting with `siblingoutxwalk.do` per ADR-0005 (single-file move). Requires Christina go-ahead — changes repo state.
+
+### Per-commit review discipline (active)
+
+Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.claude/rules/phase-1-review.md`. Commit message footer convention:
+
+- Code commits: `coder-critic: PASS (XX/100)`
+- Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
+
+Audit trail: `git log --grep='coder-critic'`. First entry: `e1cbc56`.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -25,9 +41,13 @@ Consolidated as a single .do file at `do/check/t1_empirical_tests.do` (2026-04-2
 
 ## Up Next
 
-- [ ] **Draft Phase 1 plan v3** — operationalize ADRs 0004-0017 into sequenced playbook. Use audit §3.3 as starting structure.
-- [ ] **Phase 1 (migration)** — execute consolidation per plan v3.
-- [ ] **Phase 1 deliverables (per ADR-0007 + ADR-0020)**: rewrite README for non-git Stata-skilled successor (Phase 1c §5.2 step 5). File transfer is operator-choice — FileZilla currently per ADR-0020; no `sync_to_scribe.sh` wrapper, no on-Scribe `VERSION` marker. Successor's reproduction instruction (in offboarding deliverable memo per §5.2 step 8) is "clone GitHub at `v1.0-final`, copy contents to Scribe via your preferred file-transfer tool."
+- [ ] **Phase 1a §3.3 script relocation** (the bulk of Phase 1a — ~6 weeks). Each file move is one commit; coder-critic dispatch on each per phase-1-review rule. Order: helpers/macros → samples → VA estimation → heterogeneity/pass-through → sibling crosswalk → siblingvaregs deprecation → survey VA → data prep → share/.
+- [ ] **Phase 1a §3.5 golden-master verification** (M4) at end of §3.3. Verifier in submission mode; the canonical relative regression check (predecessor vs consolidated outputs).
+- [ ] **Phase 1b bug fixes by priority** — paper-text corrections (ADR-0010, ADR-0014) → code corrections (ADR-0011 sums→means, P3 typos) → naming/clarity (ADR-0016 pooledrr rename, ADR-0015 Filipino-into-Asian comment, ADR-0013 mattschlchar dormant-branch comment).
+- [ ] **Phase 1c §5.1 cosmetic cleanup** — dead-code archival, log/translate sweep (per-do-file logging convention from §5.1 step 2).
+- [ ] **Phase 1c §5.2 README rewrite** — for non-git Stata-skilled successor. File transfer is operator-choice per ADR-0020; offboarding deliverable memo instructs "clone GitHub at v1.0-final, copy contents to Scribe via preferred tool".
+- [ ] **Phase 1c §5.3 automated data checks** — six `do/check/check_*.do` files per design memo. Optionally pre-draft as Option A above.
+- [ ] **Phase 1c §5.4 acceptance run** (per ADR-0018) — `stata -b do main.do` on Scribe with `run_data_checks 1`; README cold-read test by friendly non-Christina lab member. BOTH must pass before `v1.0-final` tag.
 
 ## Open T4 escalations (require Christina input at Phase 0e)
 
@@ -84,3 +104,12 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **Phase 0e Q&A walkthrough COMPLETE** — Christina answered all 19 T4 questions in `quality_reports/audits/2026-04-27_T4_answers_CS.md`. — 2026-04-27
 - [x] **T1-3 and T1-4 RUN ON SCRIBE** — T1-3 verdict: school_id == cdscode 1:1 (cosmetic rename only). T1-4: bug fired but per Q-6 CSVs not paper-feeding (cosmetic for paper). Logs in `quality_reports/audits/`. — 2026-04-27
 - [x] **ADRs 0004-0016 (13 ADRs) all written and approved** — Phase 0e ADR sweep COMPLETE. Decision queue at `decisions/README.md`. Audit doc §4.6 synced. — 2026-04-27
+- [x] **Plan v3 §5.1/§5.3/§5.4 revisions** — per-do-file logging convention + automated data-checks pipeline (six `do/check/check_*.do` files spec'd). Phase 1c bumped 2 → 3 weeks. (`a078f27`) — 2026-04-28
+- [x] **Codebook export pipeline + PII remediation** — `do/explore/codebook_export.do`; ran on Scribe twice (PII-leakage caught + sanitized re-run). 10 datasets covered; sanitized log (3.8 MB) lives at gitignored `master_supporting_docs/codebooks/codebook_export_28-Apr-2026_13-25-41.log`. (`a078f27`) — 2026-04-28
+- [x] **Data-checks design memo** — `quality_reports/reviews/2026-04-28_data-checks-design.md` (~250 lines). Per-check-file specs with codebook line citations. (`a078f27`) — 2026-04-28
+- [x] **CalSCHLS index TBDs resolved** — climateindex (9), qualityindex (15), supportindex (4); 28 of 45 source QOIs used. ADR-0010 "9/15/4" fully decoded. (`8215bb0`) — 2026-04-28
+- [x] **Phase 1a §3.1 pre-drafts** — settings.do (hostname-branched + master seed + fail-fast), main.do (7-phase skeleton), .gitignore extensions per ADR-0007. (`82a565e`, refined `e1cbc56`) — 2026-04-28
+- [x] **ADR-0020** — file transfer is operator-choice (FileZilla); refines ADR-0007 §"Sync model"; sync wrapper scripts removed. (`3eb7167`) — 2026-04-28
+- [x] **Phase 1a §3.2 folder build-out** — 13 missing tracked-dir stubs created (.gitkeep). CLAUDE.md folder map matches repo reality. (`f79d755`) — 2026-04-28
+- [x] **`.claude/rules/phase-1-review.md`** — hard-gate coder-critic on every Phase 1 code commit. 4-tier defense; 80/100 gate; commit-message-footer audit trail. (`51036f5`) — 2026-04-28
+- [x] **First coder-critic dispatch** — settings.do + main.do scored 94/100 PASS. M1+M2 findings + plan v3 §9 numbering bug addressed in followup. (`e1cbc56`) — 2026-04-28
