@@ -35,9 +35,21 @@ EXPECTED RUNTIME
 OUTPUT
     Stata log to log_files/check/t1_empirical_tests_<datetime>.smcl + .log
 
+ROLE IN ADR-0021 SANDBOX
+    Diagnostic, NOT pipeline-active in the consolidated sandbox.  Runs on
+    the predecessor Scribe layout (`do_files/` + `log_files/`) and reads
+    predecessor data; its log lands under predecessor `log_files/check/`,
+    not under `$consolidated_dir/log/`.  This is intentional — the file's
+    purpose is to verify findings from the Phase 0a deep-read audit against
+    predecessor-pipeline state on Scribe before Phase 1a §3.3 relocation.
+    Once the corresponding files are relocated and re-verified, this script
+    is superseded by `do/check/check_*.do` (consolidated-sandbox checks per
+    plan v3 §5.3).
+
 REFERENCES
     Audit doc:  quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md §3.1
     TODO:       TODO.md (T1 Tests for Christina)
+    ADRs:       0021 (description convention; sandbox role above)
 ------------------------------------------------------------------------------*/
 
 clear all

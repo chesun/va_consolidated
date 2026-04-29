@@ -45,11 +45,11 @@ va_consolidated/
 ├── decisions/                   # ADRs — NNNN_slug.md, append-only
 ├── quality_reports/             # Plans, session logs, reviews, audits
 │
-├── main.do                      # SINGLE Stata pipeline entry point (phase toggles)
-├── settings.do                  # Hostname-branched paths (Scribe vs other)
 ├── ado/                         # Custom-modified .ado packages (vam shrinkage etc.)
 │
 ├── do/                          # Stata pipeline (root-level; no scripts/ parent)
+│   ├── main.do                  # SINGLE Stata pipeline entry point (phase toggles)
+│   ├── settings.do              # Hostname-branched paths (Scribe vs other)
 │   ├── _archive/                # Historical / superseded
 │   ├── upstream/                # Stata data prep producing static project inputs
 │   ├── local/                   # Local-machine ad-hoc keepers
@@ -93,8 +93,8 @@ va_consolidated/
 
 ```bash
 # Pipeline run (on Scribe via SSH)
-cd /home/research/ca_ed_lab/projects/common_core_va
-stata -b do main.do
+cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+stata -b do do/main.do
 
 # Paper compilation (canonical paper lives in ~/github_repos/va_paper_clone)
 cd ~/github_repos/va_paper_clone/paper

@@ -47,7 +47,7 @@ Consolidated as a single .do file at `do/check/t1_empirical_tests.do` (2026-04-2
 - [ ] **Phase 1c §5.1 cosmetic cleanup** — dead-code archival, log/translate sweep (per-do-file logging convention from §5.1 step 2).
 - [ ] **Phase 1c §5.2 README rewrite** — for non-git Stata-skilled successor. File transfer is operator-choice per ADR-0020; offboarding deliverable memo instructs "clone GitHub at v1.0-final, copy contents to Scribe via preferred tool".
 - [ ] **Phase 1c §5.3 automated data checks** — six `do/check/check_*.do` files per design memo. Optionally pre-draft as Option A above.
-- [ ] **Phase 1c §5.4 acceptance run** (per ADR-0018) — `stata -b do main.do` on Scribe with `run_data_checks 1`; README cold-read test by friendly non-Christina lab member. BOTH must pass before `v1.0-final` tag.
+- [ ] **Phase 1c §5.4 acceptance run** (per ADR-0018) — `stata -b do do/main.do` on Scribe with `run_data_checks 1`; README cold-read test by friendly non-Christina lab member. BOTH must pass before `v1.0-final` tag.
 
 ## Open T4 escalations (require Christina input at Phase 0e)
 

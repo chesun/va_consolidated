@@ -69,11 +69,11 @@ Materialize the CLAUDE.md folder structure in the GitHub repo, leaving data/log/
 
 ```
 va_consolidated/
-├── main.do                          # Phase 1a writes the SINGLE pipeline entry point
-├── settings.do                      # Hostname-branched paths
 ├── ado/
 │   └── vam.ado                      # Vendored per ADR-0006
 ├── do/
+│   ├── main.do                      # Phase 1a writes the SINGLE pipeline entry point (lives under do/ per ADR-0021)
+│   ├── settings.do                  # Hostname-branched paths (lives under do/ per ADR-0021)
 │   ├── _archive/                    # Holds the deprecated siblingvaregs/ etc. (Phase 1a moves)
 │   ├── upstream/                    # Christina-owned upstream prep (excludes Matt's files)
 │   ├── local/                       # Local-machine ad-hoc keepers
@@ -128,17 +128,27 @@ Move predecessor-repo files to the consolidated layout. **This is the bulk of Ph
 
 **Path-reference updates.** Every relocated file's `do $projdir/.../old_path` calls update to the new structure. Phase 1a uses `grep -rn` to find all such calls and update systematically.
 
-**Success criterion:** All Christina-owned files relocated; predecessor `do_all.do` and `master.do` callers retired; the new `main.do` is the single entry point.
+**Description convention (per ADR-0021).** Every relocated file gets:
+1. A header block describing what the file does — purpose, inputs, outputs, key invariants. Use the existing settings.do / main.do header style as template (purpose / invoked-from / conventions / references).
+2. A one-liner inline next to its `do do/<path>/<file>.do` call site in `main.do`, summarizing the script's role at a glance.
+
+The header is the authoritative longer description; the main.do one-liner is the at-a-glance index. Coder-critic checks both on each relocation per phase-1-review.md §3 dispatch matrix.
+
+**Sandbox principle (per ADR-0021).** Every `save`, `export`, `outsheet`, `esttab using`, `graph export`, etc. in a relocated file must write to a path under `$consolidated_dir` (i.e., one of the CANONICAL globals: `$datadir`, `$logdir`, `$estimates_dir`, `$output_dir`, or `$consolidated_dir/tables/` / `$consolidated_dir/figures/`). Writing to a LEGACY path (`$vaprojdir`, `$projdir`, `$matt_files_dir`, `$nscdtadir`, etc.) breaks the diff-r comparability. Phase 1a uses `grep -nE 'save|export|esttab using|graph export|outsheet'` per relocated file as part of the per-commit self-check.
+
+**Success criterion:** All Christina-owned files relocated; predecessor `do_all.do` and `master.do` callers retired; the new `do/main.do` is the single entry point; every relocated file has a header description and a one-liner in main.do; no relocated file writes to a LEGACY path.
 
 ### 3.4 main.do construction
 
 `main.do` is the new single entry point. It replaces `cde_va_project_fork/do_files/do_all.do` and `caschls/do/master.do`. Sequence:
 
 ```stata
-// main.do — single pipeline entry point for the Common Core VA project
+// do/main.do — single pipeline entry point for the Common Core VA project
 // Per ADR-0014 (entry-point naming): main.do is canonical, do_all.do retired
+// Per ADR-0021: main.do + settings.do live under do/; CWD = $consolidated_dir
+//               at runtime so `include do/settings.do` resolves correctly.
 
-include settings.do                    // hostname-branched paths per ADR-0002
+include do/settings.do                 // hostname-branched paths per ADR-0002
 
 // Toggle phases for dev convenience
 local run_data_prep      1
@@ -197,14 +207,14 @@ di as text "main.do complete."
 
 **Settings.do** uses `c(hostname)` branching to set `$vaprojdir`, `$projdir`, `$vaprojxwalks`, etc. Default branch resolves to Scribe paths.
 
-**Success criterion:** `cd consolidated && stata -b do main.do` runs end-to-end with all phase toggles ON. Output matches predecessor pipeline byte-for-byte (or estimate-for-estimate to numerical tolerance per replication-protocol.md).
+**Success criterion:** `cd consolidated && stata -b do do/main.do` runs end-to-end with all phase toggles ON. Output matches predecessor pipeline byte-for-byte (or estimate-for-estimate to numerical tolerance per replication-protocol.md).
 
 ### 3.5 Golden-master verification
 
 Before starting Phase 1b bug fixes, verify Phase 1a is **behavior-preserving**:
 
 1. Run the predecessor pipeline (`cde_va_project_fork/do_files/do_all.do` + `caschls/do/master.do`) on Scribe; capture the produced tables/figures + key estimates `.dta` files.
-2. Run `consolidated/main.do` on Scribe; capture the same outputs.
+2. Run `consolidated/do/main.do` on Scribe; capture the same outputs.
 3. Compare:
    - **Tables** (`.tex` fragments): byte-identical OR identical to display precision.
    - **Figures** (`.pdf`): visually identical (eyeball check; vector PDFs may differ in metadata but match visually).
@@ -316,7 +326,7 @@ Scaffolding can begin opportunistically during Phase 1a: as each stage of the pi
 
 ### 5.4 Final verification + freeze (per ADR-0018 acceptance criteria)
 
-13. **Full-pipeline acceptance run on Scribe** (`stata -b do main.do` with `run_data_checks = 1`) — Christina runs the pipeline end-to-end. **Non-negotiable per ADR-0018**: this is the last action before `v1.0-final` tag. Captures clean log + all output artifacts + documented runtime. If it fails (including any data-check assertion), root-cause and fix before continuing.
+13. **Full-pipeline acceptance run on Scribe** (`stata -b do do/main.do` with `run_data_checks = 1`) — Christina runs the pipeline end-to-end. **Non-negotiable per ADR-0018**: this is the last action before `v1.0-final` tag. Captures clean log + all output artifacts + documented runtime. If it fails (including any data-check assertion), root-cause and fix before continuing.
 14. **README cold-read test**: a friendly lab member (NOT Christina) reads the README cold and tries to run the pipeline. Iterate README until they succeed without asking questions. Per ADR-0018, this pairs with step 13 as the offboarding acceptance criteria — both must pass.
 15. **Final commit + GitHub push**. Tag the commit as `v1.0-final` per ADR-0018 (not `v1.0-handoff`).
 16. **Final file transfer to Scribe** (per ADR-0020): Christina pushes the `v1.0-final` working tree to Scribe via FileZilla (or her preferred tool). No on-Scribe `VERSION` marker — the GitHub tag is the authoritative version stamp, recorded in the offboarding deliverable memo.
@@ -358,7 +368,7 @@ Buffer: ~0 weeks. If 1a slips, 1b/1c compress; if 1c bumps the offboarding date,
 |---|---|---|
 | M1: Scribe folder + .gitignore + file-transfer mechanism documented | Phase 1a §3.1 + §3.2 done | Scribe `consolidated/` exists; `.gitignore` covers ADR-0007 paths; FileZilla workflow tested with a sample file (per ADR-0020) |
 | M2: Files relocated | Phase 1a §3.3 done | Predecessor `do_all.do` + `master.do` retired |
-| M3: main.do works | Phase 1a §3.4 done | `stata -b do main.do` runs on Scribe |
+| M3: main.do works | Phase 1a §3.4 done | `stata -b do do/main.do` runs on Scribe |
 | M4: Golden-master pass | Phase 1a §3.5 done | Outputs match predecessor pipeline |
 | M5: Paper-affecting bugs fixed | Phase 1b §4.1 + §4.2 done | Paper produces same numbers; α footnote updated |
 | M6: P2/P3 sweep done | Phase 1b §4.3 + §4.4 done | TODO.md backlog reflects what's deferred |

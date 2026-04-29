@@ -37,6 +37,7 @@ Before staging any in-scope change, run through this checklist:
 - [ ] **ADR cited.** If the change implements an ADR (e.g., ADR-0005 for `siblingoutxwalk.do` relocation, ADR-0011 for sums→means), the ADR number appears in the commit message.
 - [ ] **For bug fixes specifically:** the fix matches the ADR's prescribed change. Diff is minimal. Affected upstream/downstream callers identified.
 - [ ] **For new `check_*.do` files specifically:** every `assert` cites the design memo line range that justifies its bound, OR carries a `// TBD-codebook` marker.
+- [ ] **For relocated/new do files specifically (per ADR-0021):** (a) header description block present (purpose / invoked-from / conventions / references); (b) one-liner present in `do/main.do` at the invocation site, cross-checked against the relocated script's own header; (c) every `save` / `export` / `outsheet` / `esttab using` / `graph export` / `outreg2 using` / `texsave` targets a CANONICAL global from `do/settings.do` (no LEGACY-path writes — verify with `grep -nE 'save|export|esttab using|graph export|outsheet|outreg2 using|texsave'`).
 
 A commit that fails any item gets fixed, not committed.
 

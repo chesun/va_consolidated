@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
-settings.do — global path configuration for the consolidated VA project
+do/settings.do — global path configuration for the consolidated VA project
 ================================================================================
 
 PURPOSE
@@ -9,29 +9,47 @@ PURPOSE
     using wrong paths).
 
 INVOKED FROM
-    `main.do` via `include settings.do`.  Standalone diagnostic scripts
-    (e.g., `do/explore/codebook_export.do`) define their own defensive
-    auto-define block; this file is the canonical source.
+    `do/main.do` via `include do/settings.do` (CWD is $consolidated_dir per
+    main.do's INVOCATION block).  Standalone diagnostic scripts (e.g.,
+    `do/explore/codebook_export.do`) define their own defensive auto-define
+    block; this file is the canonical source.
+
+SANDBOX PRINCIPLE (per ADR-0021)
+    Path globals split into two classes — see CANONICAL vs LEGACY sections
+    below.  CANONICAL paths point inside $consolidated_dir; the pipeline may
+    READ and WRITE these freely.  LEGACY paths point outside $consolidated_dir
+    (predecessor repos, Matt's files, restricted-access raw data); the
+    pipeline READS these but MUST NOT WRITE to them.  This keeps consolidated/
+    a self-contained output sandbox, so `diff -r consolidated/output
+    predecessor/output` cleanly compares the new pipeline against the old.
 
 CONVENTIONS (per plan v3 §3.4 + §5.1 step 2)
-    $consolidated_dir   — root of the consolidated repo on Scribe
-    $logdir             — per-do-file logs land here (`log_using $logdir/<file>.smcl`)
-    $datadir            — gitignored data root on Scribe
-    $estimates_dir      — gitignored estimates root on Scribe
-    $output_dir         — gitignored intermediate output root
-    $matt_files_dir     — Matt Naven's pipeline files (untouched per ADR-0017)
-    $vaprojdir          — Matt's data dir (legacy compat for un-relocated callers)
-    $vaprojxwalks       — crosswalks subdirectory under $vaprojdir
-    $caschls_projdir    — caschls predecessor repo root (legacy: scripts that
-                          assume `$projdir` is the caschls dir use $caschls_projdir
-                          via a per-script alias)
-    $nscdtadir          — Kramer-cleaned NSC raw data
-    $mattxwalks         — Matt's crosswalks (separate from $vaprojxwalks)
+    CANONICAL (read + write):
+        $consolidated_dir   — root of the consolidated repo on Scribe
+        $logdir             — per-do-file logs (`log using $logdir/<file>.smcl`)
+        $datadir            — gitignored data root inside consolidated/
+        $datadir_clean      — cleaned-data subdir under $datadir
+        $datadir_raw        — raw-data subdir under $datadir
+        $estimates_dir      — gitignored estimates root
+        $output_dir         — gitignored intermediate output root
+
+    LEGACY (read-only — predecessor or restricted-access locations):
+        $matt_files_dir     — Matt Naven's pipeline files (untouched per ADR-0017)
+        $vaprojdir          — fork-repo data dir (legacy compat for callers
+                              not yet relocated)
+        $vaprojxwalks       — crosswalks subdir under $vaprojdir
+        $caschls_projdir    — caschls predecessor repo root (legacy: scripts
+                              that assume `$projdir` is the caschls dir use
+                              $caschls_projdir via a per-script alias)
+        $nscdtadir          — Kramer-cleaned NSC raw data
+        $nscdtadir_oldformat — pre-2017 NSC oldformat subdir
+        $mattxwalks         — Matt's crosswalks (separate from $vaprojxwalks)
 
 REFERENCES
     ADR-0002 (runtime: server only)
     ADR-0007 (code/data separation; Scribe non-git working copy)
     ADR-0017 (Matt Naven's files untouched)
+    ADR-0021 (do/ relocation; self-contained sandbox; description convention)
     Plan v3 §3.4 (main.do / settings.do construction)
     Plan v3 §5.1 step 2 (per-do-file logging convention)
 ------------------------------------------------------------------------------*/
@@ -66,7 +84,7 @@ if !`on_scribe' {
 
 
 /*==============================================================================
-CANONICAL PATHS (consolidated repo)
+CANONICAL PATHS (consolidated repo) — WRITE-allowed per ADR-0021 sandbox
 ==============================================================================*/
 
 * Root of the consolidated repo on Scribe (file-transfer destination
@@ -86,7 +104,10 @@ global datadir_raw      "$datadir/raw"
 
 
 /*==============================================================================
-LEGACY PATHS (preserved for un-relocated callers + Matt's files)
+LEGACY PATHS — READ-ONLY per ADR-0021 sandbox
+    Predecessor / restricted-access locations.  Pipeline scripts may READ
+    from these but MUST NOT WRITE.  Any save/export targeting these paths
+    breaks the diff-r comparability the sandbox is designed for.
 ==============================================================================*/
 
 * Matt Naven's pipeline files (per ADR-0017 they stay in their predecessor

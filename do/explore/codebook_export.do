@@ -27,10 +27,19 @@ NOTE
     file prints `[SKIP]` and the script continues.  Edit the matching
     global and re-run; previously-successful blocks finish in seconds.
 
+ROLE IN ADR-0021 SANDBOX
+    Diagnostic, NOT pipeline-active in the consolidated sandbox.  Runs on
+    the predecessor Scribe layout (`do_files/` + `log_files/`) and reads
+    predecessor data globals; its log lands under predecessor `log_files/`,
+    not under `$consolidated_dir/log/`.  This is intentional — the file's
+    purpose is to dump codebook metadata from datasets that the predecessor
+    pipeline produces.  When/if a consolidated codebook export becomes
+    needed, write a separate consolidated-sandbox script at that time.
+
 REFERENCES
     Plan:    quality_reports/plans/2026-04-27_phase-1-consolidation-plan-v3.md §5.3, §9
     Audit:   quality_reports/audits/2026-04-26_deep-read-audit-FINAL.md
-    ADRs:    0010, 0011, 0015, 0017
+    ADRs:    0010, 0011, 0015, 0017, 0021 (description convention; sandbox role above)
 ------------------------------------------------------------------------------*/
 
 clear all
