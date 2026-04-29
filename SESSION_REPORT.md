@@ -506,3 +506,45 @@ Long, dense day across multiple threads. Compressed summary by thread:
   3. Begin Phase 1a §3.3 script relocation — start with `siblingoutxwalk.do` per ADR-0005 (single-file move, clean precedent). Requires Christina go-ahead since it changes repo state.
 - **Open TBDs in design memo §9** (all unblocked by future Phase 1a/1b work): K12↔NSC/CCC/CSU merge-rate baselines (after §3.5 golden-master); paper-table cell magnitudes (after §3.3 share/ relocation); Stata version pull from codebook log header (trivial; can do anytime).
 - **Per-commit review reminder:** any code commit tomorrow goes through coder-critic at 80/100. Footer convention: `coder-critic: PASS (XX/100)` (or `skipped` with rationale for cosmetic-only commits).
+
+---
+
+## 2026-04-29 — ADR-0021: main.do+settings.do under do/; self-contained sandbox; description convention
+
+**Operations:**
+
+Christina raised three architectural refinements to the Phase 1a pre-drafts:
+
+- **Move main.do + settings.do under do/** — consistency: every other .do file lives under do/, so the two entry-point files should too. `git mv main.do do/main.do; git mv settings.do do/settings.do`. Pipeline invocation becomes `cd $consolidated_dir && stata -b do do/main.do`. Inside main.do: `include do/settings.do` (CWD remains `$consolidated_dir` because Stata's `do` doesn't change CWD).
+- **Self-contained sandbox** — make explicit that consolidated/ is its own output sandbox. settings.do globals labeled CANONICAL (under `$consolidated_dir`, write-allowed) vs LEGACY (predecessor / restricted-access, read-only). Pipeline scripts must not write to LEGACY paths — preserves `diff -r consolidated/output predecessor/output` comparability for offboarding handoff.
+- **Description convention** — every do file under do/ (excluding _archive/) gets (a) a header description block (purpose / invoked-from / conventions / references) and (b) a one-liner inline next to its `do do/<path>/<file>.do` invocation in main.do. Header is the authoritative longer description; main.do one-liner is the at-a-glance index.
+
+Wrote ADR-0021 (`decisions/0021_main-settings-relocation-and-self-contained-sandbox.md`) capturing all three sub-decisions. Edited do/main.do + do/settings.do headers + phase-block one-liners. Updated CLAUDE.md folder map + Commands block (cd path and invocation both corrected). Updated plan v3 §3.1, §3.2, §3.3 (added Description + Sandbox subsections), §3.4, §3.5, §5.4 step 13, §6.4 M3. Updated TODO.md acceptance-run command. Codified description convention + sandbox-write discipline in `.claude/rules/stata-code-conventions.md` (persists past v1.0-final). Extended `.claude/rules/phase-1-review.md` per-commit checklist with ADR-0021 items. Added ADR-0021 to decisions/README.md ledger.
+
+ADR-0018 and ADR-0020 still reference the old `stata -b do main.do` invocation in their bodies; kept intact per `.claude/rules/decision-log.md` ADR-immutability rule. Decisions ledger surfaces ADR-0021 alongside.
+
+Coder-critic dispatched per phase-1-review.md §3 dispatch matrix (substantive change to entry-point files + new architectural rule). Score: **92/100 PASS**. Two Minor findings:
+- M1 — ADR-0021's scope statement enumerates `do/explore/codebook_export.do` + `do/check/t1_empirical_tests.do` but the convention wasn't applied retroactively. Resolved option (1): added ROLE IN ADR-0021 SANDBOX block to both (clarifying they are predecessor-layout diagnostics, not consolidated-pipeline scripts).
+- M2 — placeholder one-liners in main.do phase blocks lacked an explicit per-line audit marker. Resolved: added a CONVENTIONS bullet in main.do header noting that Phase 1a §3.3 must cross-check each one-liner against the relocated script's header.
+
+**Decisions (committed as ADRs):**
+
+- ADR-0021 (main.do+settings.do under do/; self-contained sandbox; description convention).
+
+**Commits:**
+
+- `9120754` — adr(0021): main.do+settings.do under do/; self-contained sandbox; description convention. 11 files, 278+/83-. Pushed to origin/main.
+
+**Status (end of 2026-04-29 mid-day):**
+
+- **ADR ledger: 21 Decided** (0001-0021).
+- Phase 1a §3.1 pre-drafts now post-ADR-0021: do/main.do + do/settings.do at their final location, with sandbox principle + description convention applied. Phase 1a §3.2 (folder build-out) was already complete on 2026-04-28; no changes today.
+- `.claude/rules/stata-code-conventions.md` and `.claude/rules/phase-1-review.md` extended with ADR-0021 enforcement language. Persists past v1.0-final (project-internal rules) for any successor inheriting the codebase.
+- Plan v3 still DRAFT. All open §8 questions still resolved; 2026-04-29 changes are additive (sandbox + description convention).
+- T1-5 OpenCage key revocation: still pending manual action by Christina.
+
+**Tomorrow pickup pointers:**
+
+- Christina to pick next code work (Options A/B/C in TODO.md remain valid; ADR-0021 didn't change them).
+- Christina to mark plan v3 APPROVED when ready.
+- Per-commit review discipline active: every code commit goes through coder-critic at 80/100. Audit trail: `git log --grep='coder-critic'`. Two entries so far: `e1cbc56`, `9120754`.

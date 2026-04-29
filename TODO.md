@@ -1,11 +1,11 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-04-28
+Last updated: 2026-04-29
 
 ## Active (next-up)
 
 - [ ] **Christina decision: pick next code work** (see options A/B/C below).
-- [ ] **Christina: mark plan v3 APPROVED** when ready — all §8 questions resolved 2026-04-27; today's revisions are additive (per-do-file logging, automated data checks, ADR-0020 simplification, per-commit review discipline).
+- [ ] **Christina: mark plan v3 APPROVED** when ready — all §8 questions resolved 2026-04-27; subsequent revisions are additive (per-do-file logging, automated data checks, ADR-0020 simplification, per-commit review discipline, ADR-0021 sandbox + description convention).
 - [ ] Phase 1 sub-phase structure (locked): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. File ownership constraint: Matt Naven's files stay UNTOUCHED per ADR-0017.
 
 ### Options for next code work (Christina picks; in priority order)
@@ -21,7 +21,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. First entry: `e1cbc56`.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -113,3 +113,4 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **Phase 1a §3.2 folder build-out** — 13 missing tracked-dir stubs created (.gitkeep). CLAUDE.md folder map matches repo reality. (`f79d755`) — 2026-04-28
 - [x] **`.claude/rules/phase-1-review.md`** — hard-gate coder-critic on every Phase 1 code commit. 4-tier defense; 80/100 gate; commit-message-footer audit trail. (`51036f5`) — 2026-04-28
 - [x] **First coder-critic dispatch** — settings.do + main.do scored 94/100 PASS. M1+M2 findings + plan v3 §9 numbering bug addressed in followup. (`e1cbc56`) — 2026-04-28
+- [x] **ADR-0021 — main.do+settings.do relocated under do/; self-contained sandbox principle (CANONICAL=write, LEGACY=read-only); description convention (header + main.do one-liner) codified in stata-code-conventions.md and phase-1-review.md checklist.** Coder-critic 92/100 PASS; both Minor findings (M1: retroactive coverage of two diagnostic files; M2: audit-marker for placeholder one-liners) addressed in same commit per reviewer's option (1). 11 files, 278+/83-. (`9120754`) — 2026-04-29
