@@ -450,9 +450,13 @@ Per-dataset coverage status:
 4. **NSC outcomes** (`nsc_outcomes_crosswalk_ssid.dta`) — PARTIALLY PINNED. 4.8M rows × 59 vars visible; merge-rate baselines TBD-codebook (need first production-run baseline post-Phase-1a §3.5 golden-master). Tagged in `check_merges.do` with `// TBD-codebook` markers.
 5. **CCC / CSU outcomes** — PARTIALLY PINNED via the K12↔CCC and K12↔CSU bridge codebooks. `match_level ∈ {1, 2, 3, 4}` distribution visible (codebook lines 77317-77321); historical match-level==1 share (~68.7%) tagged as TBD-codebook in `check_merges.do` until first production-run baseline.
 
-**What's NOT covered by this log** (additive, not blocking): provider PDF codebooks from CDE / CalSCHLS / NSC explaining the *meaning* of codes (vs. their empirical distributions). Useful for offboarding-era debugging if a code's semantics is ambiguous; not required for `v1.0-final` per ADR-0018 because the data-checks pipeline asserts on empirical distributions, not coded semantics.
+**There are no provider PDF codebooks for this project.** Confirmed by Christina 2026-04-29. The Stata-generated codebook log captures empirical metadata (variable types, ranges, label-to-numeric maps); the *semantic* meaning of codes (e.g., what does NSC sector code 5 indicate? what's the CalSCHLS missing-value convention for non-respondents vs. truly-blank?) has no external authority document.
 
-Where a check carries a `// TBD-codebook` marker, the audit trail is honest about what is and isn't pinned externally; those markers resolve as Phase 1a §3.5 golden-master + first production runs supply the baseline values.
+**Christina is the codebook authority during the consolidation.** Any ambiguity about coded values, missing-value conventions, sampling design, or variable provenance routes to her. The data-checks pipeline (§5.3) is designed to assert on empirical distributions rather than coded semantics precisely because empirical distributions are the only thing pinnable.
+
+**Post-`v1.0-final` there is no fallback for residual semantic ambiguities.** The offboarding successor cannot consult Christina (offboarded), Kramer (custodian, not maintainer per ADR-0018), or a provider PDF (does not exist). This is a known constraint per ADR-0018; the offboarding-deliverable memo (`quality_reports/handoff/`) is the place to surface any open semantic questions Christina identified but did not resolve before `v1.0-final`. The successor inherits with eyes-open about what is and isn't documented.
+
+Where a check carries a `// TBD-codebook` marker, the audit trail is honest about what is and isn't pinned externally; those markers resolve as Phase 1a §3.5 golden-master + first production runs supply the baseline values, OR get promoted into the offboarding memo as a residual unknown.
 
 ---
 

@@ -259,6 +259,13 @@ A short list of files and conventions you should leave alone unless you have a s
 - **Kramer (CEL data-management custodian)** — owns the offboarding deposit per ADR-0018. Best contact for: access to Scribe, location of restricted-access data, lab IT escalation.
 - **CEL lab IT** — provisions Scribe SSH accounts; handles server-side issues. *[VERIFY at offboarding]* — at offboarding, the lab IT contact + escalation path is recorded in the offboarding memo under `quality_reports/handoff/` (folder exists; the dated memo lands there at the offboarding event per ADR-0018).
 
+### Codebook ambiguities — there is no provider PDF
+
+There are no provider PDF codebooks for this project. The Stata-generated codebook log under `master_supporting_docs/codebooks/` captures empirical metadata (ranges, label-to-numeric maps) — useful for the data-checks pipeline (Phase 7), not for resolving semantic questions about what a code means. If you hit an ambiguous code (e.g., "what does NSC sector code 5 mean?", "what's the CalSCHLS convention for skipped vs. truly-missing items?"):
+
+- **During the project (pre-`v1.0-final`):** route to Christina. She is the codebook authority.
+- **Post-`v1.0-final`:** check `quality_reports/handoff/` for the offboarding memo, which surfaces residual semantic ambiguities Christina identified but didn't resolve before deposit. If your question isn't in the memo, it's a true open unknown — document it in your own working notes; there is no further authority to consult.
+
 ### Specific failure modes documented during consolidation
 
 - `filelist` ssc not installed → `do/check/check_logs.do` fails immediately with `r(199)`. Fix: `ssc install filelist` from inside Stata on Scribe. (Per `MEMORY.md` 2026-04-29.)
