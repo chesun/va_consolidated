@@ -27,7 +27,9 @@ LEGACY globals (`$matt_files_dir`, `$vaprojdir`, `$vaprojxwalks`, `$caschls_proj
 Per-commit self-check (per `phase-1-review.md` Tier 1): run `grep -nE 'save|export|esttab using|graph export|outsheet|outreg2 using|texsave'` on each relocated file; verify each match targets a CANONICAL global.
 
 ## Required Packages
-reghdfe, estout, coefplot, ivreghdfe, palettes, cleanplots, egenmore, regsave, cdfplot, binscatter, binscatter2
+reghdfe, estout, coefplot, ivreghdfe, palettes, cleanplots, egenmore, regsave, cdfplot, binscatter, binscatter2, filelist
+
+`filelist` (ssc) walks a directory tree and returns a Stata dataset with columns `dirname` + `filename` — used by `do/check/check_logs.do` to enumerate `.do` files under `do/` and verify each has a matching log under `$logdir/`.
 
 When new package used: save `[LEARN:stata] New package: name — purpose` to MEMORY.md.
 
