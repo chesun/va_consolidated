@@ -548,3 +548,49 @@ Coder-critic dispatched per phase-1-review.md §3 dispatch matrix (substantive c
 - Christina to pick next code work (Options A/B/C in TODO.md remain valid; ADR-0021 didn't change them).
 - Christina to mark plan v3 APPROVED when ready.
 - Per-commit review discipline active: every code commit goes through coder-critic at 80/100. Audit trail: `git log --grep='coder-critic'`. Two entries so far: `e1cbc56`, `9120754`.
+
+---
+
+## 2026-04-29 (afternoon) — Option A: six check_*.do skeletons per data-checks design memo
+
+**Operations:**
+
+Christina picked Option A from the three options I outlined post-ADR-0021. Pre-drafted six `do/check/check_*.do` skeleton files per the data-checks design memo (`quality_reports/reviews/2026-04-28_data-checks-design.md` §2-§7). Each file applies ADR-0021 discipline (header description block + main.do one-liner already in place + sandbox-write to CANONICAL only). First commit that exercises the phase-1-review.md hard gate on substantively new code under the new ADR-0021 conventions.
+
+Six files (~1,084 → 1,139 lines post-M1):
+- `check_logs.do` — filelist ssc walk under `do/`; assert every relocated `.do` (excl. `_archive/`) has matching log under `$logdir/`. Halts on missing logs.
+- `check_samples.do` — verbatim invariants from design memo §2: 1,784,445 student-years, 402416/406084/450201/525744 per-cohort, 1,389 schools, race-orthogonality, binary demographic ranges. Soft signals on age + cohort_size.
+- `check_merges.do` — _merge flag value-count assertions; k12_main N=5009; bridge match_level distribution flagged TBD-codebook (needs production-run baseline).
+- `check_va_estimates.do` — VA centeredness (\|mean\| < 0.05), paper SD bound [0.05, 0.30], CFR-minimum cell N >= 5; soft signals on cross-spec + peer-control correlations.
+- `check_survey_indices.do` — full item lists per ADR-0010 (climate=9 / quality=15 / support=4); source-Likert range [-2.01, 2.01]; z-scored index moments; raw-index range [-2.01, 2.01] as ADR-0011 sums→means fix detector.
+- `check_paper_outputs.do` — Table 1 N=1,784,445; Table 2 N=5,009; rest TBD-codebook per design memo §9 (deferred until Phase 1a §3.3 share/ relocation).
+
+Each file uses `capture confirm file` + `cap translate` + `exit 0` clean-skip shim for unproduced inputs (Phase 1a §3.3 hasn't relocated producing scripts yet); skeletons are runnable today as no-ops, become real checks post-relocation.
+
+Coder-critic dispatched per phase-1-review.md §3 ("§5.3 new check_*.do file" = required YES). Score: **84/100 PASS.** Three findings, all addressed in same commit per yesterday's same-commit-fix precedent:
+- **M1 (Major, -5)**: ~22 early-exit `exit N` sites needed `cap translate` before terminating (Stata `exit` doesn't run end-of-file cleanup → orphan .smcl without companion .log). Fixed via per-file `replace_all` of `log close\nexit` pattern + 4 manual fixes for 8-space-indent and comment-line-between sites.
+- **M2 (Major, -2)**: verification ledger not seeded for the six new files. Added 19 entries (3 standard checks/file: no-hardcoded-paths, no-raw-data-overwrites, adr-0021-sandbox-write — all PASS; plus 1 ASSUMED for check_paper_outputs design-memo-fidelity).
+- **M3 (Minor, -2)**: `filelist` ssc package undocumented. Added to `.claude/rules/stata-code-conventions.md` Required Packages list with description; added 2 new `[LEARN:stata]` entries to MEMORY.md (filelist invocation pattern + Stata `exit N` cleanup-required pattern).
+
+**Decisions (committed as ADRs):** none (today's Option A work refines plan v3 §5.3 implementation only; no new ADR needed).
+
+**Commits (1 today, plus pending hygiene):**
+
+- `d775efe` — phase-1c(§5.3): pre-draft six do/check/check_*.do skeletons per data-checks design memo. 9 files changed, 1,139+/2-. Pushed to origin/main; integrated workflow-sync `b64f671` (anti-AI-prose rule + /humanize skill from applied-micro) that landed on origin between pushes.
+- (pending) hygiene commit — TODO Done entry + this SESSION_REPORT entry + session log Continuation section + status flip to COMPLETED.
+
+**Status (end of 2026-04-29):**
+
+- **ADR ledger: 21 Decided** (0001-0021). No new ADR today.
+- Phase 1c §5.3 data-checks pipeline: SIX SKELETONS LANDED. Each runnable today as a no-op (capture-confirm-file shim); each becomes a real check when Phase 1a §3.3 produces its CANONICAL inputs. Open items per design memo §9: K12↔NSC/CCC/CSU merge-rate baselines (post-M4 golden-master); paper-table cell magnitudes (post-§3.3 share/ relocation); `filelist` install verification (post-§5.4 acceptance run prep).
+- Phase 1a §3.1 + §3.2 + §3.3 (script relocation): unchanged from earlier today — §3.1/§3.2 pre-drafts done, §3.3 not yet started.
+- Plan v3 still DRAFT.
+- **3 commits today** (all pushed): `9120754` (ADR-0021 + sandbox + descriptions); `4769831` (TODO + SESSION_REPORT hygiene); `97789f6` (session log); `d775efe` (six check skeletons + remediations); plus the imminent hygiene commit. **5 commits total** when hygiene lands.
+- **Per-commit review discipline:** 3 entries in `git log --grep='coder-critic'`: `e1cbc56` (94/100, settings.do+main.do); `9120754` (92/100, ADR-0021 work); `d775efe` (84/100, six check skeletons).
+
+**Tomorrow pickup pointers:**
+
+- Christina to pick from Option B (README skeleton) or Option C (Phase 1a §3.3 first relocation: siblingoutxwalk.do per ADR-0005). Option A complete.
+- Christina to mark plan v3 APPROVED when ready (still DRAFT; all open §8 questions resolved; ADR-0021 + Option A added on top are additive).
+- T1-5 OpenCage API key revocation: still pending manual action.
+- Open data-checks design memo §9 items unblock as Phase 1a §3.3 lands.

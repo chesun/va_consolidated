@@ -1,6 +1,6 @@
-# Session Log: 2026-04-29 — ADR-0021: main.do+settings.do under do/; self-contained sandbox; description convention
+# Session Log: 2026-04-29 — ADR-0021 + Option A six check_*.do skeletons
 
-**Status:** IN PROGRESS
+**Status:** COMPLETED — end of day 2026-04-29 (5 commits pushed: `9120754`, `4769831`, `97789f6`, `d775efe`, plus the imminent hygiene commit)
 
 ## Objective
 
@@ -113,7 +113,82 @@ Christina's request, three architectural refinements landed together:
 
 ## Next Steps
 
-- [ ] User picks A / B / C (or alternate direction).
-- [ ] If Option A: pre-draft six `do/check/check_*.do` skeletons per the data-checks design memo. Each gets a header per ADR-0021 + a one-liner in main.do at its invocation site (Phase 7 `run_data_checks` block, lines 247-252). Coder-critic dispatch required.
+- [x] ~~If Option A~~ — DONE 2026-04-29 (`d775efe`). Six skeletons; 84/100 PASS; all three coder-critic findings addressed in-commit.
 - [ ] If Option B: pre-draft README.md skeleton for Phase 1c §5.2 step 5. Audience: Stata-skilled, no git. Triggers writer-critic. Must mention `stata -b do do/main.do` invocation, sandbox principle, FileZilla-or-equivalent file transfer.
 - [ ] If Option C: begin Phase 1a §3.3 with `siblingoutxwalk.do` per ADR-0005. Single-file move with 2 caller updates (predecessor `do_all.do:142` + `master.do:103`). First real relocation, exercises full per-commit checklist + ADR-0021 description convention + ADR-0021 sandbox-write check on a Christina-owned production file.
+
+---
+
+## Continuation — 2026-04-29 afternoon: Option A executed (six check_*.do skeletons)
+
+### Objective (revised)
+
+Christina picked Option A. Pre-draft six `do/check/check_*.do` skeleton files per the data-checks design memo (`quality_reports/reviews/2026-04-28_data-checks-design.md` §2-§7). Apply ADR-0021 discipline (header description + main.do one-liner already in place + sandbox-write to CANONICAL only). First commit that exercises the phase-1-review.md hard gate on substantively new code under the new ADR-0021 conventions.
+
+### Changes Made (Option A continuation)
+
+| File | Change | Reason | Quality Score |
+|---|---|---|---|
+| `do/check/check_logs.do` | NEW (134→137 lines post-M1) — filelist ssc walks `do/` recursively; assert every `.do` (excl. `_archive/`) has matching `$logdir/<stem>.smcl` | Design memo §7 | coder-critic 84/100 PASS |
+| `do/check/check_samples.do` | NEW (184→187 lines post-M1) — verbatim invariants from design memo §2 (1,784,445; 402416/406084/450201/525744; 1,389 schools; race orthogonality; binary demographic ranges); soft signals on age + cohort_size | Design memo §2 | coder-critic 84/100 PASS |
+| `do/check/check_merges.do` | NEW (154→155 lines post-M1) — _merge flag values; k12_main N=5009; bridge match_level distribution flagged TBD-codebook | Design memo §3 | coder-critic 84/100 PASS |
+| `do/check/check_va_estimates.do` | NEW (181→185 lines post-M1) — VA centered (\|mean\|<0.05); paper SD bound [0.05, 0.30]; min N>=5; soft signals on cross-spec + peer-control correlations | Design memo §4 | coder-critic 84/100 PASS |
+| `do/check/check_survey_indices.do` | NEW (289→299 lines post-M1) — full item lists per ADR-0010 (9/15/4); source-Likert [-2.01, 2.01]; z-scored index moments; raw-index range as ADR-0011 sums→means fix detector | Design memo §5 | coder-critic 84/100 PASS |
+| `do/check/check_paper_outputs.do` | NEW (142→144 lines post-M1) — Table 1 N=1,784,445; Table 2 N=5,009; rest TBD-codebook per design memo §9 | Design memo §6 | coder-critic 84/100 PASS |
+| `.claude/rules/stata-code-conventions.md` | Added `filelist` to Required Packages list with one-line description | M3 fix (filelist documentation) | n/a |
+| `MEMORY.md` | Added 2 new [LEARN:stata] entries — filelist invocation; Stata `exit N` cleanup-required pattern | M3 + M1 lessons | n/a |
+| `.claude/state/verification-ledger.md` | Added 19 entries — 3 standard checks per file (no-hardcoded-paths / no-raw-data-overwrites / adr-0021-sandbox-write) plus 1 ASSUMED for check_paper_outputs design-memo-fidelity | M2 fix (ledger seeding) | n/a |
+
+### Design Decisions (Option A continuation)
+
+| Decision | Alternatives Considered | Rationale |
+|---|---|---|
+| Skeleton skip via `capture confirm file` + `exit 0` if input not yet produced | Hardcode LEGACY paths today + repoint later; OR define new globals in settings.do for post-Phase-1a paths | Skeleton today must be runnable but no-op when consolidated-pipeline outputs don't exist. `capture confirm file` shim is the cleanest implementation: clean exit (rc=0) when input missing, full assert pass when present. Allows main.do `run_data_checks=1` to run today (Phase 1a §3.3 not yet started) without crashing, AND becomes a real check post-relocation |
+| Inferred CANONICAL paths in TODO comments rather than parameterized via globals | Add `$check_score_b_dta` etc. globals to settings.do | Skeleton state — Phase 1a §3.3 hasn't decided final paths. TODO comments at each path are sufficient per the audit-marker pattern from yesterday's M2 finding. settings.do globals would proliferate before they're needed |
+| Exit-cleanup pattern: `cap log close` + `cap translate` + `exit N` at every early-exit site | Drop end-of-file `cap translate` entirely (SMCL is canonical); OR use `program define` helper; OR use `include do/check/_close_log.doh` helper | Inline pattern is most readable for a successor reading a single file. The `cap` prefix on log close + translate is defensive (log may already be closed; translate harmless on empty .smcl). Helper-doh would add a 7th file and indirection. Drop-translate would break the header docs' ".smcl + .log" promise |
+| Address all three coder-critic findings (M1 + M2 + M3) in-commit, mirroring yesterday's pattern | Defer M1/M2/M3 to TODO.md backlog and commit with the deferred-findings footer | Yesterday's same-commit-fix worked well for the relocation commit. The reviewer explicitly said "None of the three remediations is blocking" but should land before §5.4 acceptance run. Same-commit fix = clean precedent for new check files; ledger seeded at the right inflection point |
+
+### Incremental Work Log (Option A continuation)
+
+- **midday (2026-04-29):** Christina: "sounds good lets do A". Read design memo (~344 lines) to ground each check file in its source-of-truth spec.
+- **midday (briefing):** Sketched 6-line approach (header / log / globals / capture-confirm / verbatim asserts / coder-critic). No course-correction; proceeded.
+- **midday (file 1, check_logs.do):** Simplest — pure filesystem. filelist ssc + regexm filter for `_archive/` exclusion + per-file existence check. Halts on missing logs with listing.
+- **midday (files 2-3, check_samples.do + check_merges.do):** Both based on design memo §2 + §3 verbatim. Sample asserts + per-cohort counts + race orthogonality + binary demographics.
+- **afternoon (file 4, check_va_estimates.do):** Wildcard varlist iteration over `va_<subj>_*_ct` columns; centeredness + SD-band + min N asserts; cross-spec + peer-control correlation soft signals.
+- **afternoon (file 5, check_survey_indices.do):** Largest at 289 lines — encodes full item lists for climate/quality/support indices per ADR-0010 (9/15/4 items); both source-file and built-index checks; ADR-0011 sums→means fix detector via raw-index range bound.
+- **afternoon (file 6, check_paper_outputs.do):** Smallest hard-content section — most cells TBD-codebook per design memo §9.
+- **afternoon (syntax sanity):** Grepped for `capture { ... }` block usage that I'd written initially in 2 files — Stata's `capture` takes a single command, not a block. Refactored to `capture qui corr X Y` followed by `if _rc {} else {}` pattern. 3 sites fixed pre-dispatch.
+- **afternoon (sandbox-write check):** Greped for save/export/esttab/graph-export/outsheet/outreg2/texsave across all 6 files. All hits were comment-text matches; no actual writes outside `log using $logdir` + `cap translate $logdir`. PASS.
+- **afternoon (coder-critic dispatch):** Per phase-1-review.md §3, new check_*.do files = REQUIRED YES. Dispatched with 8 specific concerns including Stata syntax verification, capture-confirm semantics, post-relocation path assumptions, sandbox compliance, design-memo fidelity, per-do-file logging consistency, ledger compliance, scope creep.
+- **afternoon (coder-critic verdict):** **Score: 84/100 PASS.** Three findings:
+  - **M1 (Major, -5)**: orphan `.smcl` from early exits — every `exit N` needs `cap translate` before it, otherwise the end-of-file translate never fires.
+  - **M2 (Major, -2)**: verification ledger not seeded for the six new files.
+  - **M3 (Minor, -2)**: `filelist` ssc dependency undocumented in stata-code-conventions.md.
+- **afternoon (M1 fix):** Per-file `replace_all` of `    log close\n    exit` → `    cap log close\n    cap translate "$logdir/<file>.smcl" "$logdir/<file>.log", replace\n    exit`. Caught 18 of ~22 sites; remaining 4 had different indents (8-space inside `foreach`, plus check_logs.do:118 had a comment line between `log close` and `exit 9` blocking the pattern). Fixed manually. Final sweep with awk pattern confirmed every `exit` now preceded by `cap translate`.
+- **afternoon (M3 fix):** Added `filelist` to stata-code-conventions.md Required Packages list with description: walks directory tree, returns dataset with `dirname` + `filename` columns. Added 2 new [LEARN:stata] entries to MEMORY.md — filelist invocation pattern + Stata `exit N` cleanup-required-before-terminate pattern.
+- **afternoon (M2 fix):** Computed `shasum -a 256` head-12 for each of the 6 files post-M1 fix. Added 19 ledger entries (3 standard checks per file: no-hardcoded-paths / no-raw-data-overwrites / adr-0021-sandbox-write — all PASS; plus 1 ASSUMED for check_paper_outputs.do design-memo-fidelity, deferred until §3.3 share/ relocation supplies cell magnitudes).
+- **afternoon (commit + push):** `git status` confirmed 6 new files + 3 modifications. Crafted commit message per phase-1-review.md footer convention. Committed `d775efe` (9 files, 1,139+/2-). Pushed to origin/main. Workflow-sync commit `b64f671` from applied-micro had landed on origin between my pushes (parallel agent activity); integrated cleanly.
+
+### Learnings & Corrections (Option A continuation)
+
+- [LEARN:stata] **`filelist` (ssc) syntax for recursive directory walks.** Logged to MEMORY.md as `[LEARN:stata]` entry. Key invocation: `filelist, dir("path") pattern("*.do") norecur(0)`; `norecur(0)` reads as "don't suppress recursion" (the option is double-negated by name). Returns dataset with `dirname` (full path) + `filename` (basename). One-time `ssc install filelist`; verify on Scribe before §5.4 acceptance run.
+
+- [LEARN:stata] **Stata's `exit N` from a do-file does NOT run end-of-file cleanup.** Logged to MEMORY.md as `[LEARN:stata]` entry. The end-of-file `cap log close` + `cap translate` is only reached on the no-exit path. Every early-exit site needs explicit cleanup before `exit`. Convention applied to all six check files (~22 exit sites). Precedent for future Phase 1c §5.3 work.
+
+- [LEARN:stata] **`capture` takes a single command, not a `{ ... }` block.** Pattern that DOES work: `capture qui corr X Y` then `if _rc { ... } else { ... }`. Pattern that does NOT work: `capture { qui corr X Y; local r = r(rho) }`. Caught self-correction during sanity check before coder-critic dispatch.
+
+- [LEARN:phase-1-review] **Same-commit findings-fix is appropriate for in-scope-but-non-blocking items.** Coder-critic at 84/100 had option (defer to TODO.md backlog) or (fix in same commit). Same-commit fix is the clean choice for: (1) fixes that are mechanical / deterministic (M1 was 22 site replacements with consistent pattern); (2) fixes where the change is the natural inflection point (M2 ledger seeding for these specific files); (3) small documentation closure (M3). This mirrors yesterday's pattern (`9120754` fixed both Minors in same commit per reviewer recommendation option 1). Different from "deferred Major findings" — those would warrant a follow-up commit when the fix is broader-scope or involves substantial new work.
+
+### Verification Results (Option A continuation)
+
+| Check | Result | Status |
+|-------|--------|--------|
+| `git status` after commit + push | working tree clean, ahead 0 of origin | PASS |
+| `git push origin main` | pushed `d775efe` cleanly; integrated workflow-sync `b64f671` | PASS |
+| Coder-critic dispatch | 84/100 PASS, no Critical or Major bugs (M1+M2+M3 are improvements, not bugs) | PASS |
+| All `exit N` sites preceded by `cap translate` | awk-pattern sweep confirms every `exit` has matching cap-translate within 2 lines before | PASS |
+| Sandbox-write discipline (CANONICAL only) | grep -nE save/export/esttab/graph-export/outsheet/outreg2/texsave on all 6 files returns only comment-text matches; all `log using` and `translate` target $logdir | PASS |
+| Verification ledger entries match file hashes post-M1 fix | 19 entries with shasum-computed hashes captured after M1 edits | PASS |
+| Design-memo fidelity (every assert traces to memo line range OR carries TBD-codebook marker) | Verified by coder-critic spot-check across all 6 files | PASS |
+| Header description block present in every file | Verified by coder-critic visual inspection | PASS |
+| One-liner present in main.do Phase 7 block at each invocation site | Already in place from yesterday's work; verified to match file purposes | PASS |

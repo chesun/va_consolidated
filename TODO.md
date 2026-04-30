@@ -10,7 +10,7 @@ Last updated: 2026-04-29
 
 ### Options for next code work (Christina picks; in priority order)
 
-- [ ] **Option A — pre-draft `do/check/check_*.do` skeletons** per `quality_reports/reviews/2026-04-28_data-checks-design.md`. Six runnable files. **First commit that exercises the phase-1-review hard gate on substantively new code** — coder-critic dispatch required.
+- [x] ~~**Option A — pre-draft `do/check/check_*.do` skeletons**~~ — DONE 2026-04-29 (`d775efe`); 84/100 PASS.
 - [ ] **Option B — pre-draft README.md skeleton** for Phase 1c §5.2 step 5. Audience: Stata-skilled, no git. Triggers writer-critic, not coder-critic.
 - [ ] **Option C — begin Phase 1a §3.3 script relocation** starting with `siblingoutxwalk.do` per ADR-0005 (single-file move). Requires Christina go-ahead — changes repo state.
 
@@ -21,7 +21,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -114,3 +114,4 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **`.claude/rules/phase-1-review.md`** — hard-gate coder-critic on every Phase 1 code commit. 4-tier defense; 80/100 gate; commit-message-footer audit trail. (`51036f5`) — 2026-04-28
 - [x] **First coder-critic dispatch** — settings.do + main.do scored 94/100 PASS. M1+M2 findings + plan v3 §9 numbering bug addressed in followup. (`e1cbc56`) — 2026-04-28
 - [x] **ADR-0021 — main.do+settings.do relocated under do/; self-contained sandbox principle (CANONICAL=write, LEGACY=read-only); description convention (header + main.do one-liner) codified in stata-code-conventions.md and phase-1-review.md checklist.** Coder-critic 92/100 PASS; both Minor findings (M1: retroactive coverage of two diagnostic files; M2: audit-marker for placeholder one-liners) addressed in same commit per reviewer's option (1). 11 files, 278+/83-. (`9120754`) — 2026-04-29
+- [x] **Option A — six `do/check/check_*.do` skeletons** per data-checks design memo §2-§7. check_logs/check_samples/check_merges/check_va_estimates/check_survey_indices/check_paper_outputs. ~1,139 lines. Each has full ADR-0021 header (PURPOSE/INPUTS/OUTPUTS/ROLE IN SANDBOX/INVARIANTS/REFERENCES), per-do-file logging, capture-confirm-file skip-clean shim for unproduced inputs, design-memo-line citations on every assert. Coder-critic 84/100 PASS; all three findings (M1: ~22 early-exit log-close gaps; M2: ledger seeding for the six files; M3: `filelist` ssc package documentation in stata-code-conventions.md + 2 [LEARN:stata] entries) addressed in same commit. (`d775efe`) — 2026-04-29
