@@ -138,9 +138,14 @@ if `run_samples' {
     *   do do/samples/touse_va.do                          // tag the VA-eligible analysis sample
     *   do do/samples/create_score_samples.do              // build score-VA estimation sample
     *   do do/samples/create_out_samples.do                // build outcome-VA estimation sample (NSC/CCC/CSU)
-    *   do do/sibling_xwalk/siblingoutxwalk.do             // build sibling crosswalk (ADR-0005 relocation)
     *   do do/samples/create_va_sib_acs_restr_smp.do       // restrict to sibling-x-ACS analytic sample
     *   do do/samples/create_va_sib_acs_out_restr_smp.do   // same, for outcome-VA persistence regs
+
+    * RELOCATED 2026-04-30 per ADR-0005 — sibling enrollment-outcomes crosswalk
+    * (the only file from caschls/do/share/siblingvaregs/ that survives
+    * consolidation per ADR-0004).  First real Phase 1a §3.3 relocation; sets
+    * the precedent for subsequent moves.
+    do do/sibling_xwalk/siblingoutxwalk.do             // build sibling enrollment-outcomes crosswalk (transitive-closure family grouping; reads K12+postsec via Matt's merge_k12_postsecondary.doh; writes $datadir_clean/siblingxwalk/sibling_out_xwalk.dta)
 }
 
 
