@@ -3,10 +3,10 @@
 
 # Phase 1 Consolidation Plan v3
 
-**Status:** DRAFT — §8 questions all resolved 2026-04-27; ready for Christina to mark APPROVED and start Phase 1a §3.1.
-**Date:** 2026-04-27
+**Status:** APPROVED 2026-04-29 by Christina. Original DRAFT 2026-04-27; §8 questions resolved 2026-04-27; subsequent revisions (per-do-file logging, automated data checks, ADR-0020 sync simplification, ADR-0021 sandbox + description convention, six check_*.do skeletons landed `d775efe`) are additive — no §8 question reopened.
+**Date:** 2026-04-27 (drafted) / 2026-04-29 (approved)
 **Supersedes:** `2026-04-25_consolidation-plan-draft.md` (v2)
-**Inputs:** ADRs 0001-0018, audit `2026-04-26_deep-read-audit-FINAL.md`, T4 answers `2026-04-27_T4_answers_CS.md`, T1 empirical-test results.
+**Inputs:** ADRs 0001-0021, audit `2026-04-26_deep-read-audit-FINAL.md`, T4 answers `2026-04-27_T4_answers_CS.md`, T1 empirical-test results.
 
 ---
 
