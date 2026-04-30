@@ -736,3 +736,50 @@ Plus three convention-codifying changes:
 - The first relocation surfaced that other LEGACY .dohs likely use `$projdir` similarly. The alias pattern handles it; new phase-1-review.md §2 sub-item (d) catches any unbound globals at per-commit time.
 - Coder-critic dispatch timeout (~16 min on round 2) suggests breaking dispatches into smaller scope per-concern for future relocations.
 - T1-5 reminder block in `do/check/t1_empirical_tests.do` is now stale post-strip — defer to Phase 1c §5.4 polish.
+
+---
+
+## 2026-04-30 (continued) — Phase 1a §3.3 step 1 helpers/macros batch
+
+**Operations:**
+
+Continued straight from the first relocation. Plan v3 §3.3 step 1 (helpers/macros) batch — 3 .doh files relocated to `do/va/helpers/`:
+
+- `drift_limit.doh` (4-line body + ADR-0021 mini-header) — defines `score_drift_limit` + `out_drift_limit` for the `vam` ado package; depends on year-range locals from `macros_va.doh`.
+- `macros_va_all_samples_controls.doh` (143-line body + mini-header) — VA control × sample combinations for estimation + forecast-bias loops. Defines `va_controls` (16 specs), per-spec sample lists, FB leave-out var lists, scrhat (predicted-score) variants.
+- `macros_va.doh` (612-line body + mini-header) — canonical VA-pipeline locals: paths, dates, outcome strings, control groups, per-spec control combos, school-char + demographic-char + expenditure groupings. **3 `$projdir` references at L108-110 pre-emptively repointed to `$caschls_projdir` per the [LEARN:stata] explicit-rename pattern** — eliminates the alias-need for any future caller that includes this file.
+
+Step 1 active scope = 3 files. Excluded:
+- `vaestmacros.doh` + `vafilemacros.doh` (deprecated per ADR-0004; live in `caschls/do/share/siblingvaregs/`; relocate to `_archive/` in §3.3 step 6).
+- `out_drift_limit.doh` (dead code per chunk-3 audit; defer to Phase 1c §5.1 cosmetic dead-code archival).
+
+**Coder-critic dispatched** with tighter-scope prompt (5 focused concerns, vs. yesterday's 12-concern timeout). Returned cleanly in ~70s. **Score: 92/100 PASS.** Two Minor findings:
+- Finding 1 (no `assert` on `$vaprojdir`/`$caschls_projdir` defined before include-time use): deferred to Phase 1c §5.3 data-checks per reviewer recommendation.
+- Finding 2 (verbatim-preserved missing `;` on macros_va.doh L102): predecessor defect; Stata-tolerated; ADR-0021 verbatim rule wins; no action.
+
+**Decisions:** none new. The `$projdir` repoint approach (pre-emptive in the relocated file vs. alias-before-include in the calling script) is now an established convention — both work; for files being relocated TO consolidated/ the pre-emptive repoint is preferred (cleaner reads; no caller-burden).
+
+**Commits today (5+1 hygiene):**
+
+- `a5c3bea` (post-rewrite SHA) — TODO: T1-5 OpenCage RESOLVED.
+- `36a58d5` (post-rewrite HEAD) — `git filter-repo` rewrite of 94 commits; force-pushed.
+- `275efc0` — first relocation: siblingoutxwalk.do (round 1 BLOCK 67/100; round 2 PASS via `$projdir` alias).
+- `1f7c8d8` — hygiene #1 (TODO + SESSION_REPORT + new session log + README path fix).
+- `7983a8d` — helpers/macros batch (3 .doh files; coder-critic 92/100 PASS).
+- (imminent) — hygiene #2 (this entry + TODO + session log Continuation).
+
+**Status (end of 2026-04-30):**
+
+- **Phase 1a §3.3 progress:** Step 5 (sibling_xwalk) + Step 1 (helpers/macros) DONE. ~7 of ~150 files relocated. Step 2 (sample construction) is the next natural batch.
+- **Convention now refined** by the helpers batch experience:
+  - For .doh helpers being RELOCATED, pre-emptively repoint `$projdir` references to `$caschls_projdir` rather than relying on caller-side aliasing. Cleaner reads; no caller-burden.
+  - For .doh helpers `include`-d FROM CONSOLIDATED into a relocated script (like siblingoutxwalk.do does), use the alias-before-include pattern.
+  - Mini-header proportionate to file size: tiny 4-line files can carry header > body when each header section is load-bearing.
+  - Tighter coder-critic dispatch scope (5 concerns) avoided yesterday's 16-min timeout.
+- **ADR ledger: 21 Decided.** No new ADRs.
+- **Plan v3: APPROVED.** Step 1 + Step 5 of §3.3 done.
+
+**Tomorrow pickup pointers:**
+
+- Continue Phase 1a §3.3 — Step 2 (sample construction) is the natural next batch. Per plan v3 §3.3 step 2: `samples/` from `cde_va_project_fork/do_files/sbac/samples/` + `touse_va.do` + `create_*_samples.do` + `create_va_*.doh` → `do/samples/`. May be a larger batch; consider splitting if too many files.
+- T1-5 reminder block in `do/check/t1_empirical_tests.do` still stale post-strip — defer to Phase 1c §5.4 polish.

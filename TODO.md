@@ -4,7 +4,9 @@ Last updated: 2026-04-30
 
 ## Active (next-up)
 
-- [ ] **Option C IN PROGRESS — first relocation done.** `do/sibling_xwalk/siblingoutxwalk.do` per ADR-0005 landed `275efc0` 2026-04-30 (round 1 BLOCK 67/100 on `$projdir` undefined; round 2 fix self-verified after coder-critic timeout; alias `global projdir "$caschls_projdir"` resolves both LEGACY .dohs). Next relocations per plan v3 §3.3 ordering (helpers/macros → samples → VA estimation → ...).
+- [ ] **Phase 1a §3.3 IN PROGRESS** — Step 5 (sibling_xwalk) + Step 1 (helpers/macros) done. Next: Step 2 (sample construction) → Step 3 (VA estimation) → Step 4 (heterogeneity & pass-through) → Step 6 (siblingvaregs deprecated archive) → Step 7 (survey VA) → Step 8 (alpha.do archived) → Step 9 (data prep) → Step 10 (share/ paper producers).
+  - Step 5 `siblingoutxwalk.do` per ADR-0005 (`275efc0` 2026-04-30; coder-critic 67→100/100 after `$projdir` alias fix).
+  - Step 1 helpers/macros batch (3 .doh files) per plan v3 §3.3 step 1 (`7983a8d` 2026-04-30; coder-critic 92/100).
 - [x] ~~**Christina: mark plan v3 APPROVED**~~ — APPROVED 2026-04-29 (`949b452`). Plan v3 status flipped DRAFT → APPROVED.
 - [ ] Phase 1 sub-phase structure (locked): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. File ownership constraint: Matt Naven's files stay UNTOUCHED per ADR-0017.
 
@@ -21,7 +23,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -122,3 +124,4 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **No-provider-PDF-codebooks constraint encoded** in plan v3 §9, README §9, MEMORY.md `[LEARN:offboarding]`. Christina is codebook authority during project; post-`v1.0-final` no fallback (Kramer is custodian-not-maintainer; no provider PDFs exist). Offboarding memo sweep is the last chance to externalize codebook-authority knowledge. (`0838119`) — 2026-04-29
 - [x] **OpenCage API key — revoked + history-stripped.** Christina revoked the key 2026-04-30; `git filter-repo --replace-text` rewrote 94 commits replacing the full key + 12-char prefix with `[REVOKED 2026-04-30]`; force-pushed to origin. T1-5 closes out (last open T1 test). 4 commits originally contained the key; descendants got new SHAs. Markdown SHA refs predating the rewrite are now stale prose (acceptable cosmetic cost; key is revoked so no security urgency). — 2026-04-30
 - [x] **First Phase 1a §3.3 relocation — `siblingoutxwalk.do`** per ADR-0005. Source: `caschls/do/share/siblingvaregs/siblingoutxwalk.do` (predecessor; Dropbox path). Destination: `do/sibling_xwalk/siblingoutxwalk.do`. Round 1 coder-critic: 67/100 BLOCK on Critical `$projdir` undefined (LEGACY-include macro tracing). Round 2: alias `global projdir "$caschls_projdir"` before LEGACY includes resolves both .dohs; self-verified after agent-dispatch timeout (grep evidence of distinct globals + sandbox-write). New `[LEARN:stata]` MEMORY entry codifies the LEGACY-include macro-tracing pattern; new phase-1-review.md §2 sub-item (d) requires it as per-commit checklist for future relocations. (`275efc0`) — 2026-04-30
+- [x] **Phase 1a §3.3 step 1 helpers/macros batch** — 3 .doh files relocated to `do/va/helpers/`: `drift_limit.doh` (4-line body), `macros_va_all_samples_controls.doh` (143-line body), `macros_va.doh` (612-line body; 3 `$projdir` references pre-emptively repointed to `$caschls_projdir` per the [LEARN:stata] explicit-rename pattern). All pure local-define helpers; sandbox-trivially clean. Step 1 active scope = 3 files; `vaestmacros.doh` + `vafilemacros.doh` deferred to step 6 (deprecated per ADR-0004 → `_archive/`); `out_drift_limit.doh` deferred to Phase 1c §5.1 (dead code per chunk-3 audit). Coder-critic: 92/100 PASS; 2 Minor findings deferred (no `assert` on `$vaprojdir`/`$caschls_projdir` defined; verbatim-preserved missing `;` on macros_va.doh L102 from predecessor — Stata-tolerated; ADR-0021 verbatim rule wins). 924 lines added across 3 files. (`7983a8d`) — 2026-04-30

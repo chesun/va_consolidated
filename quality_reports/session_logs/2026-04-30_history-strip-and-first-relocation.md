@@ -1,6 +1,6 @@
-# Session Log: 2026-04-30 — OpenCage history-strip + first Phase 1a §3.3 relocation
+# Session Log: 2026-04-30 — OpenCage history-strip + Phase 1a §3.3 first relocation + helpers batch
 
-**Status:** COMPLETED — end of day 2026-04-30 (4 commits today: `a5c3bea` T1-5 status flip; filter-repo rewrite of 94 commits replacing key string; `275efc0` first relocation; plus this hygiene commit imminent)
+**Status:** COMPLETED — end of day 2026-04-30 (6 commits today: `a5c3bea` T1-5 status flip; filter-repo rewrite of 94 commits replacing key string; `275efc0` first relocation (siblingoutxwalk.do); `1f7c8d8` hygiene #1; `7983a8d` helpers/macros batch (3 .doh files); plus the imminent hygiene #2 commit)
 
 ## Objective
 
@@ -88,3 +88,75 @@ Two concrete goals sequenced over the day:
   - **Also important**: per ADR-0017, `merge_k12_postsecondary.doh` stays untouched (Matt's). Relocate only Christina-owned helpers.
 - [ ] When approaching Phase 1c §5.4 / offboarding memo, sweep for residual semantic codebook ambiguities per the no-provider-PDFs constraint (per `[LEARN:offboarding]` 2026-04-29).
 - [ ] T1-5 reminder block in `do/check/t1_empirical_tests.do` is now stale post-strip ("Revoke / rotate `[REVOKED 2026-04-30]`"). Cosmetic; defer to Phase 1c §5.4 polish.
+
+---
+
+## Continuation #1 — 2026-04-30 (continued): Phase 1a §3.3 step 1 helpers/macros batch
+
+### Objective (continued from above)
+
+Continued straight from the first relocation. User said "please proceed" with auto mode active. Step 1 of plan v3 §3.3 (helpers/macros) is the natural next batch — 3 .doh files relocated to `do/va/helpers/`.
+
+### Changes Made (Continuation #1)
+
+| File | Change | Reason | Quality Score |
+|---|---|---|---|
+| `do/va/helpers/drift_limit.doh` | NEW (~30-line ADR-0021 mini-header + 4-line body verbatim from predecessor) | Plan v3 §3.3 step 1; defines drift-limit constants for `vam` ado | covered by helpers-batch coder-critic |
+| `do/va/helpers/macros_va_all_samples_controls.doh` | NEW (~50-line mini-header + 143-line body verbatim) | Plan v3 §3.3 step 1; VA control × sample combinations + FB leave-out vars | covered by helpers-batch coder-critic |
+| `do/va/helpers/macros_va.doh` | NEW (~80-line mini-header + 612-line body verbatim except 3-line `$projdir` → `$caschls_projdir` repoint at L108-110 per ADR-0021 path-globals-only amendment) | Plan v3 §3.3 step 1; canonical VA-pipeline locals | coder-critic 92/100 PASS (batch) |
+| `TODO.md` | Active section: "Phase 1a §3.3 IN PROGRESS — Step 5 + Step 1 done"; Done section gains helpers-batch entry; audit trail updated to include `7983a8d` | Hygiene per todo-tracking.md | n/a |
+| `SESSION_REPORT.md` (+ .claude mirror) | 2026-04-30 (continued) entry covering helpers-batch operations + decisions + status update | logging.md §2 | n/a |
+| this session log | Continuation #1 section appended; status header updated to reflect 6 commits today | logging.md §1 | n/a |
+
+### Design Decisions (Continuation #1)
+
+| Decision | Alternatives Considered | Rationale |
+|---|---|---|
+| Pre-emptively repoint `$projdir` → `$caschls_projdir` in the relocated `macros_va.doh` rather than rely on caller-side aliasing | Use alias-before-include pattern (consistent with siblingoutxwalk.do precedent) | Different role: siblingoutxwalk.do INCLUDES LEGACY `.doh` files (its includes need their `$projdir` aliased at INCLUDE site). macros_va.doh IS the LEGACY-style helper being relocated TO consolidated/. Repointing in the relocated file means future calling scripts don't need the alias trick — cleaner reads; lower caller-burden. ADR-0021 path-globals-only amendment authorizes the repoint. **Convention going forward:** for files being relocated TO consolidated/, repoint LEGACY-`$global` references in-place; for LEGACY .dohs being `include`-d FROM consolidated/ (and not relocated), use the alias-before-include pattern |
+| Defer `vaestmacros.doh` + `vafilemacros.doh` to step 6 (deprecated archive) rather than step 1 | Relocate to `do/va/helpers/` like the active helpers | Both files live under `caschls/do/share/siblingvaregs/` whose contents are deprecated per ADR-0004 (the only file from that directory that survives consolidation is `siblingoutxwalk.do`, already moved in §3.3 step 5). They go to `do/_archive/siblingvaregs/` per step 6, not to the active helpers dir |
+| Defer `out_drift_limit.doh` to Phase 1c §5.1 (dead-code archival) | Relocate to `do/va/helpers/` as a parallel to `drift_limit.doh` | Per chunk-3 audit, `out_drift_limit.doh` is confirmed dead code (not referenced by any consumer; the actual `out_drift_limit` LOCAL gets defined inside `drift_limit.doh`). Phase 1c §5.1 sweeps dead code wholesale; relocating dead code first then archiving it is wasted motion |
+| Keep `vaprojdir` references in `macros_va.doh` body unchanged (only `$projdir` repointed) | Repoint `$vaprojdir` references too, for symmetry | `$vaprojdir` IS bound in `do/settings.do` (LEGACY but explicit-named; CDE_va_project_fork dir). The references are LEGACY-static reads (restricted-access K12 paths per ADR-0017). ADR-0021 LEGACY READS are allowed; only WRITES are forbidden. No need to repoint |
+| Mini-header sizing: header > body for 4-line `drift_limit.doh` is acceptable | Trim header to a 5-line summary | Coder-critic confirmed: every header section is load-bearing for an inheriting reader (PURPOSE, INCLUDED FROM with parent-scope dependency, ROLE IN ADR-0021 SANDBOX, RELOCATION HISTORY). Successor would otherwise have to spelunk to learn `drift_limit.doh` depends on year-locals from `macros_va.doh`. Header is doing the work, not decorating |
+| Tighter coder-critic dispatch scope (5 concerns vs. yesterday's 12) | Match yesterday's prompt structure | Yesterday's round-2 dispatch timed out at ~16 min. Tighter scope (single-file precedent already established → focus on this batch's diffs from precedent only) returned in ~70s. **Convention going forward:** for follow-on batches that mirror an established precedent, dispatch with focused concerns naming the precedent rather than re-exploring every dimension |
+
+### Incremental Work Log (Continuation #1)
+
+- **mid-afternoon (post-relocation #1):** User: "please proceed." Auto mode active. Decided to continue with plan v3 §3.3 step 1 (helpers/macros) — natural next batch.
+- **mid-afternoon (file enumeration):** Listed `~/github_repos/cde_va_project_fork/do_files/sbac/*.doh` — 18 .doh files. Plan v3 §3.3 step 1 names 5 specifically; matched against actual files: `macros_va.doh` ✓, `macros_va_all_samples_controls.doh` ✓, `drift_limit.doh` ✓, `vaestmacros.doh` (NOT in cde dir; lives in deprecated caschls siblingvaregs/), `vafilemacros.doh` (same). Active step-1 scope = 3 files; the other 2 belong to step 6 (deprecated archive). `out_drift_limit.doh` flagged separately (dead per chunk-3; defer to §5.1).
+- **mid-afternoon (file analysis):** Read all 3 active files to understand content + global references.
+  - `drift_limit.doh`: 4 lines; pure local-define depending on parent-scope year locals; no globals.
+  - `macros_va_all_samples_controls.doh`: 143 lines; pure local-define (control × sample combinations); no globals.
+  - `macros_va.doh`: 612 lines; pure local-define BUT references both `$vaprojdir` (LEGACY-bound; preserve) and `$projdir` (LEGACY-unbound in our settings.do; needs handling).
+- **mid-afternoon (`$projdir` decision):** Two options for `macros_va.doh`'s `$projdir` references:
+  - (a) Pre-emptively repoint `$projdir` → `$caschls_projdir` in the relocated file (per ADR-0021 path-globals-only amendment).
+  - (b) Use alias-before-include pattern at every future caller site (per the [LEARN:stata] precedent from siblingoutxwalk.do).
+  Chose (a) — cleaner; lower caller-burden; the relocated file becomes "ours" and shouldn't carry forward predecessor-only globals. Documented the convention split (a vs. b) in MEMORY [LEARN:stata] continuation.
+- **mid-afternoon (drafting):** Drafted all 3 files with ADR-0021 mini-headers (PURPOSE / INCLUDED FROM / ROLE IN SANDBOX / RELOCATION HISTORY / ORIGINAL CHANGE LOG / REFERENCES). Body verbatim from predecessor for the first two; macros_va.doh L108-110 repoint applied.
+- **mid-afternoon (self-verification grep):** 5 verification points:
+  1. Sandbox-write check — only match was the comment "no save / export / log" — PASS.
+  2. `$projdir` references in body — zero (all repointed); 5 in header comments (documenting the predecessor reference) — PASS.
+  3. `$caschls_projdir` references — 3 in body (the repointed locals at L108-110) + 3 in header docs — PASS.
+  4. `$vaprojdir` references — 3 in body (LEGACY-static reads at L101-107; preserved) + 4 in header — PASS.
+  5. Files staged in `do/va/helpers/` — 3 files, total 924 insertions — PASS.
+- **mid-afternoon (coder-critic dispatch):** Tighter-scope prompt (5 focused concerns vs. yesterday's 12). Returned cleanly in ~70s. **Score: 92/100 PASS.** Two Minor findings — both deferred per reviewer recommendation (Finding 1: no `assert` on `$vaprojdir`/`$caschls_projdir` defined → Phase 1c §5.3 data-checks; Finding 2: verbatim-preserved missing `;` on macros_va.doh L102 from predecessor → ADR-0021 verbatim rule wins, no action).
+- **mid-afternoon (commit + push):** `git add -A && git commit ...`. Footer per phase-1-review.md §5: `coder-critic: PASS (92/100); 2 Minor findings — (1) ... (2) ... Neither blocks; commit per reviewer recommendation.` Committed `7983a8d` (3 new files; 924+/0-). Pushed cleanly.
+
+### Learnings & Corrections (Continuation #1)
+
+- [LEARN:stata] **Two `$projdir` resolution patterns; choose by file role.** (a) For files being RELOCATED to consolidated/ (like macros_va.doh today): pre-emptively repoint `$projdir` → `$caschls_projdir` in the relocated file. ADR-0021 path-globals-only amendment authorizes; eliminates caller-burden. (b) For LEGACY .dohs being INCLUDE-d FROM consolidated/ but not yet relocated (like vafilemacros.doh + macros_va.doh AS-INCLUDED-FROM-the-predecessor-callable siblingoutxwalk.do yesterday): use alias-before-include `global projdir "$caschls_projdir"`. Both patterns coexist; the choice depends on whether the file is being CHANGED (relocated → repoint) or merely CONSUMED (include-only → alias). Logged as supplement to yesterday's MEMORY entry on LEGACY-include macro-tracing.
+
+- [LEARN:phase-1-review] **Tighter-scope coder-critic dispatch reduces timeout risk.** Yesterday's round-2 dispatch on siblingoutxwalk.do (12 concerns; first-relocation precedent) timed out at ~16 min. Today's helpers-batch dispatch (5 concerns; explicit "use prior precedent context" framing) returned in ~70s. **Convention:** for follow-on batches that mirror an established precedent, dispatch with focused concerns naming the precedent rather than re-exploring every dimension.
+
+- [LEARN:relocation-precedent] **Mini-header proportionality for tiny .doh files.** A 30-line header on a 4-line file (`drift_limit.doh`: header > body, ratio 8:1) is acceptable when each header section is load-bearing. Coder-critic 92/100 confirmed the convention. The PURPOSE / INCLUDED FROM / RELOCATION HISTORY / REFERENCES sections aren't decoration — they prevent future spelunking.
+
+### Verification Results (Continuation #1)
+
+| Check | Result | Status |
+|-------|--------|--------|
+| `git push origin main` (`7983a8d`) | pushed cleanly | PASS |
+| Sandbox-write grep on all 3 .doh files | only comment match (no actual writes) | PASS |
+| `$projdir` references in body of relocated files | zero (all 3 references in macros_va.doh repointed at L108-110) | PASS |
+| `$caschls_projdir` references in macros_va.doh | 3 in body (L108-110) — match the repoint plan | PASS |
+| `$vaprojdir` references preserved in body | L101-107 unchanged; LEGACY-static reads convention preserved | PASS |
+| Coder-critic round 1 (tight-scope dispatch) | 92/100 PASS in ~70s | PASS |
+| Body verbatim diff against predecessor (per coder-critic) | byte-equivalent except for the 3 documented repoint lines | PASS |
