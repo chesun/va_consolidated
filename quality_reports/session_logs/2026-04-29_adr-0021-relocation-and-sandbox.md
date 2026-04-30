@@ -1,6 +1,6 @@
-# Session Log: 2026-04-29 — ADR-0021 + Option A check skeletons + plan v3 APPROVED + Option B README pre-draft
+# Session Log: 2026-04-29 — ADR-0021 + Option A check skeletons + plan v3 APPROVED + Option B README + §9 codebook clarification + no-provider-PDFs constraint
 
-**Status:** COMPLETED — end of day 2026-04-29 (7 commits pushed today: `9120754` ADR-0021; `4769831` hygiene #1; `97789f6` session log; `d775efe` Option A; `768edfa` hygiene #2; `949b452` plan v3 APPROVED; `053871e` Option B README; plus the imminent hygiene #3 commit)
+**Status:** COMPLETED — end of day 2026-04-29 (10 commits pushed today: `9120754` ADR-0021; `4769831` hygiene #1; `97789f6` session log; `d775efe` Option A; `768edfa` hygiene #2; `949b452` plan v3 APPROVED; `053871e` Option B README; `916c76e` hygiene #3; `518a71a` §9 codebook clarification; `0838119` no-provider-PDFs constraint; plus the imminent hygiene #4 commit)
 
 ## Objective
 
@@ -252,3 +252,62 @@ Christina: "option B is good, please proceed. and plan is approved." Two follow-
 | MacDown literal-`$`-escape rule | Prose uses `\$consolidated_dir` etc.; code blocks leave `$` unescaped (correct) | PASS |
 | `git push origin main` (both commits) | both pushed cleanly; integrated `29fe3c1` workflow-sync | PASS |
 | Coder-critic vs writer-critic dispatch correctness | Per phase-1-review.md §3 README rewrite = writer-critic, NOT coder-critic — correct dispatch | PASS |
+
+---
+
+## Continuation #3 — 2026-04-29 evening: §9 codebook clarification + no-provider-PDFs constraint
+
+### Objective (revised again)
+
+Christina opened plan v3 in the IDE and noted: §9 says "Codebooks needed (Christina to supply when convenient)" but the codebook export already ran 2026-04-28 producing a sanitized log under `master_supporting_docs/codebooks/`. Two-step correction:
+
+1. Update §9 to reflect actual coverage state (PINNED / PARTIALLY PINNED per dataset, with TBD-codebook markers where empirical baselines aren't yet established).
+2. After step 1's initial draft framed provider PDFs as "additive but not blocking," Christina clarified: there are NO provider codebooks at all. Encode this constraint durably across plan / README / MEMORY so future sessions don't regress.
+
+### Changes Made (Continuation #3)
+
+| File | Change | Reason | Quality Score |
+|---|---|---|---|
+| `quality_reports/plans/2026-04-27_phase-1-consolidation-plan-v3.md` (§9) | Two passes: (1) `518a71a` — replaced "Codebooks needed (Christina to supply)" with per-dataset coverage status (PINNED / PARTIALLY PINNED / TBD-codebook); (2) `0838119` — dropped "additive but not blocking" framing for provider PDFs; replaced with explicit "no provider PDFs exist; Christina is codebook authority during project; post-`v1.0-final` no fallback" | Stale text → reflects actual state; constraint encoded | n/a (plan, not code) |
+| `README.md` (§9) | New "Codebook ambiguities — there is no provider PDF" subsection (`0838119`) — concrete example questions; during-project / post-`v1.0-final` routing; pointers to handoff/ memo for residuals | Cold-read audience needs to know who to ask + when there's no further authority | n/a (docs) |
+| `MEMORY.md` (`[LEARN:offboarding]`) | New entry (`0838119`) preserving the no-provider-PDFs constraint with explicit wrong→right framing | Future-session regression prevention | n/a |
+| `TODO.md` | Up Next Phase 1c §5.2 entry split: README polish (deferred Minors) + new §5.2 step 8 offboarding memo entry with Christina-specific "sweep residual semantic ambiguities" action item; Done section gained 2 entries (`518a71a`, `0838119`) | Hygiene + makes the offboarding-memo sweep durable | n/a |
+| `SESSION_REPORT.md` (+ .claude mirror) | Appended 2026-04-29 (evening) entry covering both `518a71a` + `0838119` | Hygiene per logging.md | n/a |
+| this session log | Appended Continuation #3 section | Hygiene per logging.md | n/a |
+
+### Design Decisions (Continuation #3)
+
+| Decision | Alternatives Considered | Rationale |
+|---|---|---|
+| Encode the no-provider-PDFs constraint in 3 places (plan + README + MEMORY) rather than 1 | One central place + cross-references | Each artifact serves a different audience (plan = my own implementation reference; README = cold-read successor; MEMORY = future Claude sessions). Single-place would risk reader-not-finding-it. The triple encoding is a small cost relative to the regression risk |
+| Edit plan v3 §9 in-place rather than appending a 2026-04-29 update sub-section (as I did when adding §9 itself on 2026-04-28) | Append a `### 2026-04-29 update` sub-block under §9 keeping the original text + correction visible | The 2026-04-28 framing was straight-up wrong (codebooks already supplied) and the 2026-04-29 second-pass framing was also wrong (provider PDFs don't exist at all). Keeping wrong text visible plus correction creates ambiguity for the cold-read successor. In-place edit is cleaner; the audit trail is in git history (`518a71a` + `0838119` diffs) for anyone who wants to see the evolution |
+| Add the "Christina sweeps residual semantic ambiguities" item to TODO.md `Up Next` Phase 1c §5.2 step 8 rather than as a standalone Backlog item | Add a separate top-level Backlog entry; OR leave as inline note in MEMORY only | The action belongs to a specific Phase 1c step (the offboarding memo write-up), so co-locating with that step in `Up Next` keeps the dependency clear. A separate Backlog entry would risk getting lost / duplicated |
+| Skip writer-critic on the README §9 addition (~7 lines) | Dispatch writer-critic | Writer-critic dispatch is for full README rewrites per phase-1-review.md §3 dispatch matrix. A 7-line targeted addition of a clearly-scoped constraint is below the dispatch threshold. The wording was tight (concrete examples, explicit routing) and reviewable inline |
+
+### Incremental Work Log (Continuation #3)
+
+- **evening:** Christina opened plan v3 in IDE; flagged §9's "we need codebooks" framing as stale because we already have them under master_supporting_docs.
+- **evening (verify):** Listed `master_supporting_docs/codebooks/` to confirm the codebook log exists. Found `codebook_export_28-Apr-2026_13-25-41.log` (post-PII-scrub; gitignored). Confirmed: §9's "needed-from-Christina" framing was stale because the codebook export had run on 2026-04-28 and the design memo encoded the bounds.
+- **evening (§9 step 1):** Rewrote §9 with per-dataset coverage status. Initial draft framed provider PDF codebooks as "additive but not blocking — useful for offboarding-era debugging if a code's semantics is ambiguous." Committed `518a71a`. Pushed.
+- **evening (Christina clarification):** "There are no provider codebooks. so anything you are uncertain about will have to go through me." This invalidated the "additive but not blocking" framing — there's no provider-PDF fallback at all.
+- **evening (§9 step 2 + propagation):** Reworked §9 to drop "additive" framing; replaced with explicit no-fallback language. Added new README §9 subsection ("Codebook ambiguities — there is no provider PDF") with concrete examples + during-project / post-`v1.0-final` routing. Added MEMORY.md `[LEARN:offboarding]` entry with explicit wrong→right framing. Committed `0838119`. Pushed.
+- **evening (closing implication):** Surfaced for Phase 1c §5.4: when Christina writes the offboarding memo, she should sweep for residual semantic codebook ambiguities — last chance to externalize codebook-authority knowledge before deposit. Added as a TODO.md `Up Next` Phase 1c §5.2 step 8 sub-action.
+
+### Learnings & Corrections (Continuation #3)
+
+- [LEARN:offboarding] **There are no provider PDF codebooks for this project. Christina is the codebook authority; post-`v1.0-final` no fallback exists.** Captured in MEMORY.md as the durable artifact. Wrong-framing-history: 2026-04-28 plan v3 §9 said "Christina to supply provider codebooks when convenient" (assumed they existed); 2026-04-29 §9 step-1 rewrite said "additive but not blocking — useful for ambiguous semantics" (still assumed they existed); 2026-04-29 step-2 corrected to current language. Future sessions should not regress.
+
+- [LEARN:plan-discipline] **In-place edit beats append-and-correct for a stale framing in an APPROVED plan.** When plan v3 §9 had wrong text, the choice was: (a) append a `### 2026-04-29 update` sub-block leaving the wrong text visible alongside the correction, or (b) in-place edit dropping the wrong text. Cold-read audience benefits from clean text; audit trail of the evolution lives in git history (`518a71a` + `0838119` diffs). The append-pattern (which I used for adding §9 in the first place on 2026-04-28) is the right choice when adding a NEW concept; the in-place pattern is the right choice when CORRECTING wrong content. Different protocols for different operations — both keep audit trail durable.
+
+- [LEARN:phase-1-review] **README small additions don't require writer-critic.** Phase-1-review.md §3 dispatch matrix says "Phase 1c §5.2 README rewrite | writer-critic | Wrong tool" — but a ~7-line targeted addition (the new "Codebook ambiguities" subsection) is below the rewrite threshold. The tight scope + clear-cut wording made inline review sufficient. Convention: writer-critic for full rewrites or substantive section restructures; inline review for targeted additions of clearly-scoped content.
+
+### Verification Results (Continuation #3)
+
+| Check | Result | Status |
+|-------|--------|--------|
+| `git push origin main` (both commits `518a71a` + `0838119`) | both pushed cleanly | PASS |
+| Constraint encoded in plan v3 §9 | Verified by re-reading post-edit | PASS |
+| Constraint encoded in README §9 (new subsection "Codebook ambiguities — there is no provider PDF") | Verified | PASS |
+| Constraint encoded in MEMORY.md [LEARN:offboarding] entry with wrong→right framing | Verified | PASS |
+| Plan v3 status remains APPROVED (clarification, not substantive change) | Header still says APPROVED 2026-04-29 | PASS |
+| TODO.md Up Next Phase 1c §5.2 step 8 entry includes the "sweep residual semantic ambiguities" action | Verified | PASS |

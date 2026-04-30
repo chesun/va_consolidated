@@ -641,3 +641,52 @@ Plus an upstream workflow-sync commit `29fe3c1` ("fix(hooks): require year separ
 - Option C (siblingoutxwalk.do relocation) is the natural next step. First real Phase 1a §3.3 relocation; exercises full ADR-0021 discipline (header description + main.do one-liner update + sandbox-write check + path-reference updates in 2 callers) on Christina-owned production code.
 - T1-5 OpenCage API key revocation: still pending manual action.
 - Open data-checks design memo §9 items unblock as Phase 1a §3.3 lands.
+
+---
+
+## 2026-04-29 (evening) — Plan v3 §9 codebook clarification + no-provider-PDFs constraint encoded
+
+**Operations:**
+
+Christina opened plan v3 in the IDE and observed: §9 mentions "we need codebooks. But we already have the codebooks under master supporting docs." Two-step correction landed:
+
+**Step 1 — §9 codebook status update (`518a71a`):** §9 originally read *"Codebooks needed (Christina to supply when convenient)"* — written 2026-04-28 in plan-revision-mode and assumed Christina would supply provider PDFs. The codebook-export pipeline had since run (2026-04-28) producing the sanitized log at `master_supporting_docs/codebooks/codebook_export_28-Apr-2026_13-25-41.log` (gitignored; 3.8 MB; PII-scrubbed; on Scribe + Christina's local; regeneratable via `do/explore/codebook_export.do`). The data-checks design memo encoded codebook-pinned bounds derived from that log. So the "needed-from-Christina" framing was stale.
+
+§9 rewritten with per-dataset coverage status:
+- CalSCHLS — PINNED (Likert range, item counts per ADR-0010, ADR-0011 sums→means detector)
+- SBAC — PINNED (`score_b` structure + per-cohort counts in `check_samples.do`)
+- CALPADS demographics — PINNED (binary + race-orthogonality)
+- NSC — PARTIALLY PINNED (merge-rate baselines TBD-codebook, resolves post-§3.5 golden-master)
+- CCC/CSU — PARTIALLY PINNED (`match_level` baselines TBD-codebook, same path)
+
+Initial framing of provider PDF codebooks as "additive but not blocking — useful for offboarding-era debugging if a code's semantics is ambiguous."
+
+**Step 2 — Constraint encoding (`0838119`):** Christina clarified: *"There are no provider codebooks. so anything you are uncertain about will have to go through me."* Step 1's "additive but not blocking" framing was wrong — there's no provider-PDF fallback at all, period. Christina IS the codebook authority during the project, with NO post-`v1.0-final` fallback (Kramer is custodian-not-maintainer per ADR-0018; no provider PDFs exist; no academic reference doc).
+
+Three load-bearing artifacts updated to encode the constraint durably:
+
+- **plan v3 §9** — dropped "additive" framing; replaced with explicit "no provider PDFs exist; Christina is codebook authority during project; post-`v1.0-final` no fallback — offboarding memo (`quality_reports/handoff/`) surfaces residual unknowns Christina identified but didn't resolve."
+- **README.md §9** — added new "Codebook ambiguities — there is no provider PDF" subsection with concrete example questions ("what does NSC sector code 5 mean?", "CalSCHLS skipped vs. truly-blank items?") and the during-project / post-`v1.0-final` routing.
+- **MEMORY.md** — new `[LEARN:offboarding]` entry with explicit wrong→right framing so future sessions don't regress to "codebook to be obtained later" language. Calls out: the framing in plan v3 §9 was corrected on 2026-04-29; do not regress.
+
+**Implication captured for Phase 1c §5.4:** when Christina writes the offboarding memo (per plan v3 §5.2 step 8), she should sweep for residual *semantic* codebook ambiguities — specific NSC sector codes she knows but never wrote down, etc. Last chance to externalize codebook-authority knowledge before deposit. Added to TODO.md `Up Next` Phase 1c §5.2 step 8 entry as a specific Christina action.
+
+**Decisions:** none (today's late-evening work refines existing ADRs / plans operationally; no new ADR needed).
+
+**Commits (2 today, late afternoon and evening):**
+
+- `518a71a` — plan(v3): §9 codebook status — clarify already-supplied via 2026-04-28 export pipeline. 1 file, 13+/7-.
+- `0838119` — docs: encode "no provider PDF codebooks" constraint across plan v3 §9, README §9, MEMORY. 3 files, 15+/2-.
+
+**Status (end of 2026-04-29 evening):**
+
+- **ADR ledger: 21 Decided.** No new ADRs.
+- **Plan v3 stays APPROVED.** §9 corrected in-place (clarification, not substantive change); plan v3 lifecycle status unchanged.
+- **Constraint thread:** "no provider PDF codebooks" is encoded in 3 places (plan, README, MEMORY) — robust against future-session regression.
+- **Phase 1c §5.2 step 8 (offboarding memo)** — TODO.md entry now lists the Christina-specific action of sweeping residual semantic ambiguities. Will be exercised when Phase 1c §5.4 prep starts.
+
+**Tomorrow pickup pointers:**
+
+- Same as before: Option C (siblingoutxwalk.do relocation) is the natural next step.
+- T1-5 OpenCage API key revocation: still pending manual action.
+- When approaching Phase 1c §5.4 / the offboarding memo, remember the codebook-authority sweep checklist item.
