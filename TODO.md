@@ -29,7 +29,7 @@ Consolidated as a single .do file at `do/check/t1_empirical_tests.do` (2026-04-2
 
 - [x] **T1-3** — `school_id == cdscode` 1:1 check — **VERDICT: 1:1 (N=5009).** Cosmetic rename only in Phase 1. Resolves P2-3, P2-11. — 2026-04-27
 - [x] **T1-4** — mtitles count test — **BUG FIRED** (49/33/33/33 cols vs 24 declared). Per Q-6, CSVs don't feed paper → cosmetic. — 2026-04-27
-- [ ] **T1-5** — Revoke OpenCage API key (manual external action; reminder in script)
+- [x] **T1-5** — Revoke OpenCage API key — **RESOLVED 2026-04-30 (Christina revoked the key + history-stripped from repo).**
 
 **Retired:**
 - ~~T1-1 — `crosswalk_nsc_outcomes.do:250` `id` macro~~ — file is Christina's (per ADR-0019, refining ADR-0017) but **out of scope by time-budget** in Phase 1: file not pipeline-active, paper blast radius for Bug 93 null, ½-day fix not justified vs. offboarding acceptance run.
