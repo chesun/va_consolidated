@@ -438,15 +438,21 @@ Two additions, both Phase 1c:
 
 Knock-on edits: §6.3 Phase 1c bumped 2 → 3 weeks; §6.4 milestones M8/M9/M10 added/renumbered; §7 risk register §5.3-step-10 reference updated to §5.4-step-14.
 
-**Codebooks needed** (Christina to supply when convenient — does not block Phase 1a start). Priority order:
+**Codebooks** — already supplied via the 2026-04-28 codebook-export pipeline (was originally listed here as needed-from-Christina; updated 2026-04-29 to reflect actual state):
 
-1. **CalSCHLS** — Likert scales, item counts per index, missing codes. Highest leverage: directly pins the survey-index checks per ADR-0010 / ADR-0011 (9 / 15 / 4 items + sums-vs-means).
-2. **SBAC** — score range, performance bands, missing/exempt codes. Pins prior-score deciles and outcome-score sanity.
-3. **CALPADS demographics** — race/ethnicity codes (esp. for ADR-0015 Filipino-into-Asian recoding), FRPM, EL, special-ed, sex coding. Pins categorical-level checks across samples.
-4. **NSC outcomes** — sector codes (UC / CSU / CCC / private / OOS), persistence-year flags, degree-level codes. Pins K12 ↔ NSC merge checks.
-5. **CCC / CSU outcomes** (Matt's pipeline; checks read the merged result, don't touch Matt's files per ADR-0017) — sector codes + transfer flags. Lower priority since downstream merges are Matt-owned.
+The Stata `codebook` command output for the 10 pipeline datasets lives at `master_supporting_docs/codebooks/codebook_export_28-Apr-2026_13-25-41.log` (gitignored per PII safety net; on Christina's local Mac + on Scribe; regeneratable by running `do/explore/codebook_export.do` on Scribe). This log captures variable types, value ranges, n-unique, n-missing, and label-to-numeric tabulations for labeled variables — which is the metadata the data-checks pipeline (§5.3) needs for codebook-pinned bounds. The data-checks design memo at `quality_reports/reviews/2026-04-28_data-checks-design.md` already encodes the bounds derived from this log, with line-citations into the log on every assertion.
 
-Where a codebook is not available before v1.0-final, the corresponding check carries a `// TBD-codebook` marker and asserts only against the current pipeline output. Audit trail is honest about what is and isn't pinned externally.
+Per-dataset coverage status:
+
+1. **CalSCHLS** — PINNED. Likert range [-2, 2] verified via `parentqoi9mean_pooled` codebook entry; item counts per index (9 / 15 / 4) verified against constructor scripts per ADR-0010; ADR-0011 sums→means fix detector encoded via the raw-index [-2.01, 2.01] bound. Source items: 28 of 45 source QOIs used across 3 indices.
+2. **SBAC** (`score_b.dta`) — PINNED. Score ranges, prior-score decile structure, cohort + grade + cdscode invariants all asserted in `do/check/check_samples.do`. 1.78M rows × 77 vars; per-cohort counts (402416/406084/450201/525744) hardcoded against codebook line 73020.
+3. **CALPADS demographics** — PINNED via `score_b` codebook (race/ethnicity/FRPM/EL/disabled/sex are columns inside score_b). Binary demographic ranges asserted in `check_samples.do`; race-orthogonality `rowtotal ∈ {0, 1}` asserted. ADR-0015 Filipino-into-Asian recoding is documented in code (per ADR's resolution); not a separate check.
+4. **NSC outcomes** (`nsc_outcomes_crosswalk_ssid.dta`) — PARTIALLY PINNED. 4.8M rows × 59 vars visible; merge-rate baselines TBD-codebook (need first production-run baseline post-Phase-1a §3.5 golden-master). Tagged in `check_merges.do` with `// TBD-codebook` markers.
+5. **CCC / CSU outcomes** — PARTIALLY PINNED via the K12↔CCC and K12↔CSU bridge codebooks. `match_level ∈ {1, 2, 3, 4}` distribution visible (codebook lines 77317-77321); historical match-level==1 share (~68.7%) tagged as TBD-codebook in `check_merges.do` until first production-run baseline.
+
+**What's NOT covered by this log** (additive, not blocking): provider PDF codebooks from CDE / CalSCHLS / NSC explaining the *meaning* of codes (vs. their empirical distributions). Useful for offboarding-era debugging if a code's semantics is ambiguous; not required for `v1.0-final` per ADR-0018 because the data-checks pipeline asserts on empirical distributions, not coded semantics.
+
+Where a check carries a `// TBD-codebook` marker, the audit trail is honest about what is and isn't pinned externally; those markers resolve as Phase 1a §3.5 golden-master + first production runs supply the baseline values.
 
 ---
 
