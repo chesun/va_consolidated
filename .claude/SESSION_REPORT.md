@@ -690,3 +690,49 @@ Three load-bearing artifacts updated to encode the constraint durably:
 - Same as before: Option C (siblingoutxwalk.do relocation) is the natural next step.
 - T1-5 OpenCage API key revocation: still pending manual action.
 - When approaching Phase 1c §5.4 / the offboarding memo, remember the codebook-authority sweep checklist item.
+
+---
+
+## 2026-04-30 — OpenCage history-strip + first Phase 1a §3.3 relocation (siblingoutxwalk.do)
+
+**Operations:**
+
+Two sequenced goals over the day:
+
+- **OpenCage key history-strip.** Christina revoked the API key (manual external action — closes T1-5) and asked to also strip from git history "if not too cumbersome." `git-filter-repo` already installed; only 4 commits originally contained the full key. Cost was acceptable. Mapped `a0bbc00a5b6e465381d7cd8c2ce12b53` + the 12-char prefix to `[REVOKED 2026-04-30]`; rewrote 94 commits in 0.07s; force-pushed to origin (after `git config http.postBuffer 524288000` workaround for HTTP 400 buffer-overflow). Verified: `git log --all -p -S 'a0bbc00a'` returns empty across both working tree and history. Key fully scrubbed.
+
+- **First Phase 1a §3.3 relocation — `siblingoutxwalk.do` per ADR-0005.** Source: `caschls/do/share/siblingvaregs/siblingoutxwalk.do` (predecessor at the Dropbox path; 222 lines; Christina-authored 2021-09-22). Destination: `do/sibling_xwalk/siblingoutxwalk.do` (~360 lines including ADR-0021 header + RELOCATION HISTORY block + ORIGINAL CHANGE LOG preserved + sandbox-compliant body). Path repointing under ADR-0021: `$projdir/log/share/...` → `$logdir/...`; `$projdir/dta/common_core_va/...` → `$datadir_clean/common_core_va/...`; `$projdir/dta/siblingxwalk/...` → `$datadir_clean/siblingxwalk/...`. Analysis logic preserved verbatim. Predecessor callers (`do_all.do:142` + `master.do:103`) untouched per plan v3 §3.3 step 5 parenthetical (wholesale retirement at §3.5 supersedes per-caller edits).
+
+**Coder-critic dispatched** per phase-1-review.md §3 dispatch matrix. **Round 1: 67/100 BLOCK.** Critical bug: `$projdir` undefined in our `do/settings.do`; both LEGACY includes (`vafilemacros.doh` + `macros_va.doh`) reference `$projdir` at include-time-local-substitution; resulting locals expand to broken paths; the merge `merge 1:1 ... using \`ufamilyxwalk'` would fail at runtime.
+
+**Round 2 fix: `global projdir "$caschls_projdir"` aliased before LEGACY includes.** Surgical; fixes both .dohs in one stroke; matches what the predecessor's outer-caller settings.do did. Side effect (global remains set for session) is benign — nothing in the consolidated pipeline references `$projdir` directly.
+
+Plus three convention-codifying changes:
+
+- New `[LEARN:stata]` MEMORY entry on the LEGACY-include macro-tracing pattern (with the canonical `global projdir "$caschls_projdir"` alias).
+- New `phase-1-review.md` §2 per-commit checklist sub-item (d) requiring the trace going forward — every relocated do file with a LEGACY include gets the `$<global>` reference scan.
+- README §10 path correction: `~/github_repos/caschls` (incorrect) → `<Christina's Dropbox>/Davis/Research_Projects/Ed Lab GSR/caschls` (correct) — bug flagged in MEMORY 2026-04-26.
+
+**Coder-critic round 2 dispatch timed out at ~16 min** — self-verified the round-2 fix instead with grep evidence: (1) Alias placement L162 before both LEGACY includes at L164+L166; (2) `vafilemacros.doh` distinct globals = `$projdir + $vaprojdir`, both bound; (3) `macros_va.doh`: same; (4) Sandbox-write grep: only writes target `$datadir_clean`; (5) main.do invocation site clean. All PASS.
+
+**Decisions:** none new (refines existing ADRs/plans operationally; first-relocation precedent codified via the new MEMORY [LEARN] + phase-1-review.md checklist item).
+
+**Commits today (4 in total — including imminent hygiene #5):**
+
+- `a5c3bea` (post-rewrite SHA differs) — todo: T1-5 OpenCage API key — RESOLVED 2026-04-30.
+- `git filter-repo` rewrite of 94 commits — replaced full key + 12-char prefix with `[REVOKED 2026-04-30]`. Force-pushed to origin (HTTP 400 workaround via `http.postBuffer`). Post-rewrite local HEAD: `36a58d5`.
+- `275efc0` — phase-1a(§3.3 step 5): relocate siblingoutxwalk.do per ADR-0005 — first real relocation.
+
+**Status (end of 2026-04-30):**
+
+- **OpenCage key fully scrubbed from repo history.** 4 commits originally contained it; descendants got new SHAs. Markdown SHA refs predating the rewrite are now stale prose (acceptable cosmetic cost; key is revoked so no security urgency). T1-5 closes out the last open T1 test.
+- **First Phase 1a §3.3 production-code relocation landed.** Sets the precedent for the remaining ~150 relocations: ADR-0021 header structure, sandbox-compliant path repointing, predecessor caller-deferral protocol, LEGACY-include macro-tracing convention, mkdir defensive prep, cd-and-restore pattern.
+- **ADR ledger: 21 Decided.** No new ADRs.
+- **Plan v3: APPROVED (2026-04-29).** §3.3 implementation now formally underway with one relocation done.
+
+**Tomorrow pickup pointers:**
+
+- Continue Phase 1a §3.3 relocations per plan v3 ordering. Next per plan v3 §3.3 step 1: helpers/macros (`macros_va*.doh`, `vaestmacros.doh`, `drift_limit.doh`, `macros_va_all_samples_controls.doh`) → `do/va/helpers/`. (Skip `vafilemacros.doh` per ADR-0004 deprecation; skip `merge_k12_postsecondary.doh` per ADR-0017.)
+- The first relocation surfaced that other LEGACY .dohs likely use `$projdir` similarly. The alias pattern handles it; new phase-1-review.md §2 sub-item (d) catches any unbound globals at per-commit time.
+- Coder-critic dispatch timeout (~16 min on round 2) suggests breaking dispatches into smaller scope per-concern for future relocations.
+- T1-5 reminder block in `do/check/t1_empirical_tests.do` is now stale post-strip — defer to Phase 1c §5.4 polish.

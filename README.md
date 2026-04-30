@@ -281,7 +281,7 @@ There are no provider PDF codebooks for this project. The Stata-generated codebo
 This repo merges two previously-separate codebases (both on `~/github_repos/` on Christina's local machine; archived at `v1.0-archive` tag of each):
 
 - `~/github_repos/cde_va_project_fork` — VA estimation. Originally Matt Naven's; subsequently extended and refactored by Christina Sun (2022 onward). Master file was `do_files/do_all.do`; replaced by `do/main.do` here.
-- `~/github_repos/caschls` — CalSCHLS survey processing + sibling-link construction. Master file was `do/master.do`; integrated into Phase 5 (survey_va) + Phase 2 (sibling_xwalk) here.
+- `<Christina's Dropbox>/Davis/Research_Projects/Ed Lab GSR/caschls` — CalSCHLS survey processing + sibling-link construction. Master file was `do/master.do`; integrated into Phase 5 (survey_va) + Phase 2 (sibling_xwalk) here. *(Lives outside `~/github_repos/` — Christina's local working copy is on Dropbox; on Scribe the predecessor is at `/home/research/ca_ed_lab/users/chesun/gsr/caschls` per `do/settings.do` `$caschls_projdir`.)*
 
 A third historical predecessor — `ca_ed_lab-common_core_va` (workflow merge attempt 2022) — is **out of scope** per ADR-0001; it was abandoned before completion.
 

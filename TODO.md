@@ -1,10 +1,10 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-04-29
+Last updated: 2026-04-30
 
 ## Active (next-up)
 
-- [ ] **Christina decision: pick next code work** (Options B+A done; Option C remains — see below).
+- [ ] **Option C IN PROGRESS — first relocation done.** `do/sibling_xwalk/siblingoutxwalk.do` per ADR-0005 landed `275efc0` 2026-04-30 (round 1 BLOCK 67/100 on `$projdir` undefined; round 2 fix self-verified after coder-critic timeout; alias `global projdir "$caschls_projdir"` resolves both LEGACY .dohs). Next relocations per plan v3 §3.3 ordering (helpers/macros → samples → VA estimation → ...).
 - [x] ~~**Christina: mark plan v3 APPROVED**~~ — APPROVED 2026-04-29 (`949b452`). Plan v3 status flipped DRAFT → APPROVED.
 - [ ] Phase 1 sub-phase structure (locked): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. File ownership constraint: Matt Naven's files stay UNTOUCHED per ADR-0017.
 
@@ -12,7 +12,7 @@ Last updated: 2026-04-29
 
 - [x] ~~**Option A — pre-draft `do/check/check_*.do` skeletons**~~ — DONE 2026-04-29 (`d775efe`); 84/100 PASS.
 - [x] ~~**Option B — pre-draft README.md skeleton**~~ — DONE 2026-04-29 (`053871e`); 86/100 PASS.
-- [ ] **Option C — begin Phase 1a §3.3 script relocation** starting with `siblingoutxwalk.do` per ADR-0005 (single-file move). Requires Christina go-ahead — changes repo state.
+- [x] ~~**Option C — begin Phase 1a §3.3 with `siblingoutxwalk.do`**~~ — STARTED 2026-04-30 (`275efc0`); first real production relocation landed; precedent established for the remaining ~150 relocations.
 
 ### Per-commit review discipline (active)
 
@@ -21,7 +21,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`. (Plus writer-critic dispatches for doc commits: `053871e`.)
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -67,7 +67,7 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 
 ## Waiting On
 
-- [ ] Christina T1-5 (revoke OpenCage API key — manual action). T1-3 and T1-4 RESOLVED 2026-04-27.
+- [x] ~~Christina T1-5 (revoke OpenCage API key — manual action)~~ — RESOLVED 2026-04-30 (key revoked + history-stripped from repo via git-filter-repo). T1-3 and T1-4 RESOLVED 2026-04-27.
 - [ ] Christina codebook-export run on Scribe (above section). Not blocking Phase 1a start; needed before Phase 1c §5.3 finalizes.
 
 ## Backlog
@@ -120,3 +120,5 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **Option B — README.md pre-draft** (Phase 1c §5.2 step 5) for offboarding-era operator. ~250 lines, ten sections per spec (Quick overview / How to run / Folder map / Data flow / Where outputs go / How to make changes / What NOT to touch / Where things are documented / When something breaks / Project history). Audience: Stata-skilled, no git, no data management. Plus `quality_reports/handoff/README.md` stub so the §9 forward-reference resolves at cold-read time. Writer-critic 86/100 PASS; M1 (SSH host casing parenthetical) + M2 (handoff/ folder + reworded §9 reference) + 2 small Minors (m2 hedging filler + m3 redundant footer) addressed in same commit; 2 Minors (m1 em-dash density + m7 status-note jargon) deferred to §5.4 polish per reviewer's recommendation. Final polish + cold-read test happen at Phase 1c §5.4. (`053871e`) — 2026-04-29
 - [x] **Plan v3 §9 codebook status correction** — clarified that the 2026-04-28 codebook export already supplied empirical metadata (CalSCHLS PINNED, SBAC PINNED, CALPADS PINNED, NSC + CCC/CSU PARTIALLY PINNED with TBD-codebook markers for merge-rate baselines). Removed stale "Codebooks needed (Christina to supply)" framing. (`518a71a`) — 2026-04-29
 - [x] **No-provider-PDF-codebooks constraint encoded** in plan v3 §9, README §9, MEMORY.md `[LEARN:offboarding]`. Christina is codebook authority during project; post-`v1.0-final` no fallback (Kramer is custodian-not-maintainer; no provider PDFs exist). Offboarding memo sweep is the last chance to externalize codebook-authority knowledge. (`0838119`) — 2026-04-29
+- [x] **OpenCage API key — revoked + history-stripped.** Christina revoked the key 2026-04-30; `git filter-repo --replace-text` rewrote 94 commits replacing the full key + 12-char prefix with `[REVOKED 2026-04-30]`; force-pushed to origin. T1-5 closes out (last open T1 test). 4 commits originally contained the key; descendants got new SHAs. Markdown SHA refs predating the rewrite are now stale prose (acceptable cosmetic cost; key is revoked so no security urgency). — 2026-04-30
+- [x] **First Phase 1a §3.3 relocation — `siblingoutxwalk.do`** per ADR-0005. Source: `caschls/do/share/siblingvaregs/siblingoutxwalk.do` (predecessor; Dropbox path). Destination: `do/sibling_xwalk/siblingoutxwalk.do`. Round 1 coder-critic: 67/100 BLOCK on Critical `$projdir` undefined (LEGACY-include macro tracing). Round 2: alias `global projdir "$caschls_projdir"` before LEGACY includes resolves both .dohs; self-verified after agent-dispatch timeout (grep evidence of distinct globals + sandbox-write). New `[LEARN:stata]` MEMORY entry codifies the LEGACY-include macro-tracing pattern; new phase-1-review.md §2 sub-item (d) requires it as per-commit checklist for future relocations. (`275efc0`) — 2026-04-30
