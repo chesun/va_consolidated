@@ -594,3 +594,50 @@ Coder-critic dispatched per phase-1-review.md §3 ("§5.3 new check_*.do file" =
 - Christina to mark plan v3 APPROVED when ready (still DRAFT; all open §8 questions resolved; ADR-0021 + Option A added on top are additive).
 - T1-5 OpenCage API key revocation: still pending manual action.
 - Open data-checks design memo §9 items unblock as Phase 1a §3.3 lands.
+
+---
+
+## 2026-04-29 (late afternoon) — Plan v3 APPROVED + Option B: README pre-draft
+
+**Operations:**
+
+Christina: "option B is good, please proceed. and plan is approved." Two follow-ups landed in sequence:
+
+- **Plan v3 APPROVED.** Single-line status flip in `quality_reports/plans/2026-04-27_phase-1-consolidation-plan-v3.md`: DRAFT → APPROVED 2026-04-29. Inputs line bumped from "ADRs 0001-0018" to "ADRs 0001-0021" since today's work added ADR-0021 + the design-memo-driven check skeletons. All §8 questions resolved 2026-04-27; subsequent revisions (per-do-file logging, automated data checks, ADR-0020 sync simplification, ADR-0021 sandbox + description convention, six check_*.do skeletons in `d775efe`) are additive — no §8 question reopened.
+
+- **Option B — README pre-draft.** Phase 1c §5.2 step 5 README rewrite. Replaces the prior 37-line getting-started README with a ~250-line offboarding-deliverable README structured for a Stata-skilled, no-git, no-data-management successor. Ten sections per spec: Quick overview / How to run the pipeline / Folder map / Data flow / Where outputs go (sandbox principle) / How to make changes (3 cases: data refresh, spec tweak, new analysis) / What NOT to touch / Where things are documented / When something breaks / Project history. Plus `quality_reports/handoff/README.md` stub so the §9 forward-reference (offboarding memo location per ADR-0018) resolves at cold-read time.
+
+**Writer-critic dispatched** per phase-1-review.md §3 dispatch matrix (README rewrite = writer-critic, NOT coder-critic). Verified ADR ledger (0001-0021 all present), `do/main.do` invocation block, `do/settings.do` path globals, Required Stata Packages list, plan v3 file, all referenced quality_reports files, Christina's email. **Score: 86/100 PASS.** Findings:
+
+- **M1 (Major, -3):** SSH host casing — `Scribe.ssds.ucdavis.edu` capital S used 3 times. Cold-read audience might type lowercase first. **Fixed in same commit:** added parenthetical at first mention noting the canonical lab-IT-issued form uses capital S; DNS resolution is case-insensitive in practice.
+- **M2 (Major, -4):** `quality_reports/handoff/<offboarding-memo>.md` was a forward-reference to a path that didn't exist. Cold-read audience trying `ls quality_reports/handoff/` would fail and lose trust. **Fixed in same commit:** created `quality_reports/handoff/README.md` stub explaining what gets filled in there at offboarding (per ADR-0018 + plan v3 §5.2 step 8). README §9 reference reworded to point at the now-existing folder.
+- **m2 (Minor, -3):** Hedging filler — "Order of magnitude" + "to spot anomalies." **Fixed in same commit:** dropped both.
+- **m3 (Minor, -1):** Trailing footer redundant with top status note. **Fixed in same commit:** dropped footer.
+- **m1 (Minor, -2):** Em-dash density (27 across 250 lines). **Deferred** to §5.4 polish per reviewer's own recommendation.
+- **m7 (Minor, -1):** Status-note phrasing assumes Phase-1c jargon ("Phase 1c §5.2 PRE-DRAFT"). **Deferred** to §5.4 polish per reviewer's own recommendation (will be rewritten as plain English when no-longer-pre-draft anyway).
+
+Both deferred Minors are stylistic polish that the §5.4 final-polish-pass + cold-read test naturally absorb. Same pattern as yesterday's 92/100 + today's 84/100: address structurally-load-bearing findings in the same commit; defer pure polish.
+
+**Decisions:** none (today's work refines existing ADRs; no new ADR needed).
+
+**Commits (2 today):**
+
+- `949b452` — plan(v3): mark APPROVED 2026-04-29 (Christina). 1 file, 3+/3-.
+- `053871e` — phase-1c(§5.2): pre-draft README skeleton for offboarding-era operator. 2 files (README.md rewrite + new handoff/README.md stub), 326+/26-.
+
+Plus an upstream workflow-sync commit `29fe3c1` ("fix(hooks): require year separator + strip trailing surname punctuation") that landed between my pushes; integrated cleanly.
+
+**Status (end of 2026-04-29 late afternoon):**
+
+- **ADR ledger: 21 Decided.** No new ADRs.
+- **Plan v3: APPROVED** (was DRAFT). Phase 1 implementation now formally underway.
+- **Phase 1c §5.2 step 5 (README rewrite):** PRE-DRAFT done. Final polish + cold-read test occur at Phase 1c §5.4 step 14 per ADR-0018.
+- **Phase 1c §5.3 (data-checks pipeline):** six skeleton check files landed earlier today (`d775efe`); each runnable today as a no-op via capture-confirm-file shim, becomes a real check post-Phase-1a-§3.3.
+- **Open ahead:** Option C (Phase 1a §3.3 first relocation: `siblingoutxwalk.do` per ADR-0005) awaits Christina go-ahead. Plan v3 APPROVED removes any plan-status blocker.
+- **Per-commit review discipline holding:** 3 coder-critic entries (`e1cbc56`, `9120754`, `d775efe`) + 1 writer-critic dispatch (README pre-draft on `053871e`).
+
+**Tomorrow pickup pointers:**
+
+- Option C (siblingoutxwalk.do relocation) is the natural next step. First real Phase 1a §3.3 relocation; exercises full ADR-0021 discipline (header description + main.do one-liner update + sandbox-write check + path-reference updates in 2 callers) on Christina-owned production code.
+- T1-5 OpenCage API key revocation: still pending manual action.
+- Open data-checks design memo §9 items unblock as Phase 1a §3.3 lands.

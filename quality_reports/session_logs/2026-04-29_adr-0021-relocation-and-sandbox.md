@@ -1,6 +1,6 @@
-# Session Log: 2026-04-29 — ADR-0021 + Option A six check_*.do skeletons
+# Session Log: 2026-04-29 — ADR-0021 + Option A check skeletons + plan v3 APPROVED + Option B README pre-draft
 
-**Status:** COMPLETED — end of day 2026-04-29 (5 commits pushed: `9120754`, `4769831`, `97789f6`, `d775efe`, plus the imminent hygiene commit)
+**Status:** COMPLETED — end of day 2026-04-29 (7 commits pushed today: `9120754` ADR-0021; `4769831` hygiene #1; `97789f6` session log; `d775efe` Option A; `768edfa` hygiene #2; `949b452` plan v3 APPROVED; `053871e` Option B README; plus the imminent hygiene #3 commit)
 
 ## Objective
 
@@ -192,3 +192,63 @@ Christina picked Option A. Pre-draft six `do/check/check_*.do` skeleton files pe
 | Design-memo fidelity (every assert traces to memo line range OR carries TBD-codebook marker) | Verified by coder-critic spot-check across all 6 files | PASS |
 | Header description block present in every file | Verified by coder-critic visual inspection | PASS |
 | One-liner present in main.do Phase 7 block at each invocation site | Already in place from yesterday's work; verified to match file purposes | PASS |
+
+---
+
+## Continuation — 2026-04-29 late afternoon: plan v3 APPROVED + Option B (README pre-draft)
+
+### Objective (revised again)
+
+Christina: "option B is good, please proceed. and plan is approved." Two follow-ups:
+1. Flip plan v3 status DRAFT → APPROVED.
+2. Pre-draft README.md per Phase 1c §5.2 step 5 spec for the offboarding-era operator.
+
+### Changes Made (Option B continuation)
+
+| File | Change | Reason | Quality Score |
+|---|---|---|---|
+| `quality_reports/plans/2026-04-27_phase-1-consolidation-plan-v3.md` | Single-line status flip: DRAFT → APPROVED 2026-04-29; date subline updated; Inputs line bumped to "ADRs 0001-0021" | Christina approval on `949b452` | n/a (status flip) |
+| `README.md` | Full rewrite: 37 lines → 250 lines. 10 sections per plan v3 §5.2 step 5 spec. Audience: Stata-skilled, no git, no data management; never seen this repo. SSH access to Scribe. Replaces template-y getting-started prose with offboarding-deliverable content. | Phase 1c §5.2 step 5 PRE-DRAFT per Option B | writer-critic 86/100 PASS |
+| `quality_reports/handoff/README.md` | NEW (50 lines) — stub explaining what offboarding memo lands here per ADR-0018 + plan v3 §5.2 step 8. Created so the README §9 reference resolves at cold-read time | M2 fix from writer-critic (forward-reference path made navigable) | n/a |
+| (TODO + SESSION_REPORT + this session log) | Hygiene updates capturing plan APPROVED + Option B done | Standard end-of-task hygiene per logging.md | n/a |
+
+### Design Decisions (Option B continuation)
+
+| Decision | Alternatives Considered | Rationale |
+|---|---|---|
+| Replace the entire prior README rather than append | Keep prior content + add offboarding section | Prior README was template-y getting-started content from the workflow fork — not project-specific. Per ADR-0018 the README is the SOLE orientation for the successor; a Stata-skilled reader doesn't need the workflow's setup steps. Total replacement is cleaner for cold-read |
+| §6 "How to make changes" structured as 3 sub-cases (6.1 / 6.2 / 6.3) rather than monolithic prose | Single prose section; OR more sub-cases (4-5) | Plan v3 §5.2 step 5 spec calls out "3 common cases" specifically. Pre-draft chose: (6.1) re-run after data refresh; (6.2) tweak a specification; (6.3) add a new analysis. Writer-critic confirmed these are the right 3 — covers the realistic range without bloat |
+| Address writer-critic findings M1+M2+m2+m3 in same commit; defer m1+m7 to §5.4 polish | Fix all in same commit; OR defer all to §5.4 polish | M1 (host casing) + M2 (forward-reference path) are structurally load-bearing — affect cold-read viability, not just style. Same-commit fix is the precedent (yesterday's 92/100, today's 84/100). m1 (em-dash density) + m7 (status-note jargon) are pure polish that the §5.4 final-polish-pass naturally absorbs and the reviewer specifically flagged as §5.4 polish-pass material |
+| Create `quality_reports/handoff/README.md` stub rather than reword §9 placeholder | Reword §9 to be explicitly placeholder-only | Stub is more concrete + matches the convention of having structure ready by `v1.0-final`. The handoff/ README explains what the offboarding memo will contain (per ADR-0018), so a successor encountering the §9 reference at cold-read time can navigate to the folder and see what's expected, even before the dated memo is written |
+
+### Incremental Work Log (Option B continuation)
+
+- **late afternoon:** Christina approved plan + picked Option B. Read plan v3 §5.2 step 5 spec to ground the README structure: 10 sections in a specific order, audience explicitly stated.
+- **late afternoon (plan v3 approval):** Single-line edit to plan v3 header. DRAFT → APPROVED with today's date; Inputs line bumped to ADRs 0001-0021. Committed `949b452`. Pushed.
+- **late afternoon (README draft):** ~250 lines covering all 10 spec sections. Verified all referenced paths (ADR ledger, do/main.do invocation, do/settings.do globals, Required Stata Packages list, plan v3 file, paper-map review, data-checks design memo, Christina's email) against actual repo state before writing.
+- **late afternoon (writer-critic dispatch):** Per phase-1-review.md §3 dispatch matrix, README rewrite triggers writer-critic. 12 specific concerns covering cold-read viability, all 10 spec sections present, path/ADR consistency, sandbox principle clarity, the 3 common cases, what-NOT-to-touch completeness, failure-mode cherry-picking check, AI-prose / hedging / style, length + scannability, MacDown markdown compat, status-note placement, tone calibration.
+- **late afternoon (writer-critic verdict):** **Score: 86/100 PASS.** Findings: M1 (host casing), M2 (forward-reference path), m1 (em-dash density), m2 (hedging filler), m3 (redundant footer), m7 (status-note jargon).
+- **late afternoon (M1 fix):** Added parenthetical at first SSH host mention noting case-insensitivity.
+- **late afternoon (M2 fix):** Created `quality_reports/handoff/README.md` stub (~50 lines) explaining what the offboarding memo contains. Reworded README §9 to point at the now-existing folder.
+- **late afternoon (m2 fix):** Dropped "Order of magnitude" + "to spot anomalies" filler phrases.
+- **late afternoon (m3 fix):** Dropped redundant trailing footer line.
+- **late afternoon (defer m1 + m7):** Per writer-critic's own recommendation, em-dash density + status-note jargon are pure polish that the §5.4 final-polish-pass + cold-read test naturally absorb.
+- **late afternoon (commit + push):** `git status` confirmed 1 README rewrite + 1 new handoff/README.md stub. Crafted commit message documenting all 4 in-commit fixes + 2 deferred Minors. Footer: `writer-critic: PASS (86/100); 2 Major findings addressed in this commit; 2 Minor findings deferred to §5.4 polish per reviewer's recommendation.` Plus `coder-critic: skipped (rationale: docs-only — README + handoff/README.md stub; no Stata code changes per phase-1-review.md §3 dispatch matrix which routes README rewrites to writer-critic).` Committed `053871e` (2 files, 326+/26-). Pushed; integrated workflow-sync `29fe3c1` (hooks fix from upstream) cleanly.
+
+### Learnings & Corrections (Option B continuation)
+
+- [LEARN:phase-1-review] **Writer-critic dispatch convention.** When phase-1-review.md §3 dispatch matrix routes a target to writer-critic (rather than coder-critic), the commit-message footer pattern is `writer-critic: PASS (XX/100); ...` (analogous to coder-critic) AND `coder-critic: skipped (rationale: docs-only — routes to writer-critic per dispatch matrix)` so the `git log --grep='coder-critic'` audit trail still has a discipline marker. README rewrites are the canonical writer-critic case during Phase 1.
+
+- [LEARN:offboarding] **Stub forward-references at draft time, fill at commit time.** Pattern surfaced in writer-critic review: a README that points at a path that doesn't exist yet (`quality_reports/handoff/<offboarding-memo>.md`) erodes cold-read trust. The successor tries `ls`, fails, and loses faith in the rest of the doc. Resolution: create the stub folder + a README explaining what eventually goes there. The cold-read audience hits a navigable destination instead of a 404. Convention applies to any forward-reference in offboarding-deliverable docs.
+
+### Verification Results (Option B continuation)
+
+| Check | Result | Status |
+|-------|--------|--------|
+| Plan v3 status flip from DRAFT → APPROVED | header line edited; commit `949b452` pushed | PASS |
+| README path/ADR cross-references all resolve | Writer-critic verified ADRs 0001-0021 present, do/main.do invocation, do/settings.do globals, Required Stata Packages list, plan v3 file, all referenced quality_reports files, Christina's email | PASS |
+| All 10 spec sections present and in order | Writer-critic verified structure compliance | PASS |
+| MacDown blank-line-before-list rule | Spot-checked across §1, §2, §3, §6, §7 — all lists have preceding blank line | PASS |
+| MacDown literal-`$`-escape rule | Prose uses `\$consolidated_dir` etc.; code blocks leave `$` unescaped (correct) | PASS |
+| `git push origin main` (both commits) | both pushed cleanly; integrated `29fe3c1` workflow-sync | PASS |
+| Coder-critic vs writer-critic dispatch correctness | Per phase-1-review.md §3 README rewrite = writer-critic, NOT coder-critic — correct dispatch | PASS |

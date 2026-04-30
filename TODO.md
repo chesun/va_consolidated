@@ -4,14 +4,14 @@ Last updated: 2026-04-29
 
 ## Active (next-up)
 
-- [ ] **Christina decision: pick next code work** (see options A/B/C below).
-- [ ] **Christina: mark plan v3 APPROVED** when ready — all §8 questions resolved 2026-04-27; subsequent revisions are additive (per-do-file logging, automated data checks, ADR-0020 simplification, per-commit review discipline, ADR-0021 sandbox + description convention).
+- [ ] **Christina decision: pick next code work** (Options B+A done; Option C remains — see below).
+- [x] ~~**Christina: mark plan v3 APPROVED**~~ — APPROVED 2026-04-29 (`949b452`). Plan v3 status flipped DRAFT → APPROVED.
 - [ ] Phase 1 sub-phase structure (locked): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. File ownership constraint: Matt Naven's files stay UNTOUCHED per ADR-0017.
 
 ### Options for next code work (Christina picks; in priority order)
 
 - [x] ~~**Option A — pre-draft `do/check/check_*.do` skeletons**~~ — DONE 2026-04-29 (`d775efe`); 84/100 PASS.
-- [ ] **Option B — pre-draft README.md skeleton** for Phase 1c §5.2 step 5. Audience: Stata-skilled, no git. Triggers writer-critic, not coder-critic.
+- [x] ~~**Option B — pre-draft README.md skeleton**~~ — DONE 2026-04-29 (`053871e`); 86/100 PASS.
 - [ ] **Option C — begin Phase 1a §3.3 script relocation** starting with `siblingoutxwalk.do` per ADR-0005 (single-file move). Requires Christina go-ahead — changes repo state.
 
 ### Per-commit review discipline (active)
@@ -21,7 +21,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`. (Plus writer-critic dispatches for doc commits: `053871e`.)
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -115,3 +115,5 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **First coder-critic dispatch** — settings.do + main.do scored 94/100 PASS. M1+M2 findings + plan v3 §9 numbering bug addressed in followup. (`e1cbc56`) — 2026-04-28
 - [x] **ADR-0021 — main.do+settings.do relocated under do/; self-contained sandbox principle (CANONICAL=write, LEGACY=read-only); description convention (header + main.do one-liner) codified in stata-code-conventions.md and phase-1-review.md checklist.** Coder-critic 92/100 PASS; both Minor findings (M1: retroactive coverage of two diagnostic files; M2: audit-marker for placeholder one-liners) addressed in same commit per reviewer's option (1). 11 files, 278+/83-. (`9120754`) — 2026-04-29
 - [x] **Option A — six `do/check/check_*.do` skeletons** per data-checks design memo §2-§7. check_logs/check_samples/check_merges/check_va_estimates/check_survey_indices/check_paper_outputs. ~1,139 lines. Each has full ADR-0021 header (PURPOSE/INPUTS/OUTPUTS/ROLE IN SANDBOX/INVARIANTS/REFERENCES), per-do-file logging, capture-confirm-file skip-clean shim for unproduced inputs, design-memo-line citations on every assert. Coder-critic 84/100 PASS; all three findings (M1: ~22 early-exit log-close gaps; M2: ledger seeding for the six files; M3: `filelist` ssc package documentation in stata-code-conventions.md + 2 [LEARN:stata] entries) addressed in same commit. (`d775efe`) — 2026-04-29
+- [x] **Plan v3 APPROVED.** Status flipped DRAFT → APPROVED 2026-04-29 (`949b452`). All §8 questions resolved 2026-04-27; subsequent revisions are additive (per-do-file logging, automated data checks, ADR-0020 sync simplification, ADR-0021 sandbox + description convention, six check_*.do skeletons). — 2026-04-29
+- [x] **Option B — README.md pre-draft** (Phase 1c §5.2 step 5) for offboarding-era operator. ~250 lines, ten sections per spec (Quick overview / How to run / Folder map / Data flow / Where outputs go / How to make changes / What NOT to touch / Where things are documented / When something breaks / Project history). Audience: Stata-skilled, no git, no data management. Plus `quality_reports/handoff/README.md` stub so the §9 forward-reference resolves at cold-read time. Writer-critic 86/100 PASS; M1 (SSH host casing parenthetical) + M2 (handoff/ folder + reworded §9 reference) + 2 small Minors (m2 hedging filler + m3 redundant footer) addressed in same commit; 2 Minors (m1 em-dash density + m7 status-note jargon) deferred to §5.4 polish per reviewer's recommendation. Final polish + cold-read test happen at Phase 1c §5.4. (`053871e`) — 2026-04-29
