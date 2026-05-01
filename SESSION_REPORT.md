@@ -839,3 +839,105 @@ LEGACY-include macro-trace per phase-1-review.md §2 sub-item (d): N/A — none 
 - Step 2 batch 2b is the natural next batch — 7 files (1 .doh fragment + 6 .do scripts). Needs careful output-path coordination because `touse_va.do` produces `va_samples.dta` consumed by `create_va_sample.doh`; both must land at the SAME `$datadir_clean/...` path. Plan to read all 7 files first, identify path interdependencies, then commit as one atomic batch.
 - Coder-critic dispatch lessons holding: tight scope (5 concerns max referencing established precedents) returns in 70-110s; vs. yesterday's 12-concern timeout.
 - T1-5 reminder block in `do/check/t1_empirical_tests.do` still stale post-strip — defer to Phase 1c §5.4 polish.
+
+---
+
+## 2026-04-30 (end of session) — context-saturation closeout; comprehensive next-session pickup
+
+**Status:** Session ending at ~72% context. Christina requested detailed housekeeping for fresh-session resume. Tree clean; in sync with origin.
+
+### Today's totals — 8 commits
+
+| # | Commit | What | Reviewer | Score |
+|---|---|---|---|---|
+| 1 | `a5c3bea` (rewritten) | TODO: T1-5 OpenCage RESOLVED | — | — |
+| 2 | (filter-repo) | History rewrite — 94 commits scrubbed of OpenCage key | — | — |
+| 3 | `275efc0` | First Phase 1a §3.3 relocation: `siblingoutxwalk.do` per ADR-0005 | coder-critic | 67→100/100 (round 1 BLOCK + round 2 PASS) |
+| 4 | `1f7c8d8` | Hygiene #1 (TODO + SESSION_REPORT + new session log + README path fix) | — | — |
+| 5 | `7983a8d` | Phase 1a §3.3 step 1: helpers/macros (3 .doh) | coder-critic | 92/100 |
+| 6 | `c7a79e9` | Hygiene #2 (helpers-batch logged) | — | — |
+| 7 | `94fd2b8` | Phase 1a §3.3 step 2 batch 2a: samples .doh fragments (9 files) | coder-critic | 92/100 |
+| 8 | `440cc0a` | Hygiene #3 (Step 2 batch 2a logged) | — | — |
+
+**Phase 1a §3.3 progress: 13 of ~150 production files relocated.** All committed, pushed, tree clean.
+
+### Conventions established / refined today (LOAD-BEARING for future relocations)
+
+These are the conventions a fresh session needs to know upfront. Codified in MEMORY.md `[LEARN]` entries + `phase-1-review.md` §2 checklist.
+
+**Per relocated file (ADR-0021):**
+
+1. **Header structure** — PURPOSE / INVOKED FROM (or INCLUDED FROM for .doh fragments) / INPUTS (LEGACY/CANONICAL classified) / OUTPUTS (CANONICAL only) / ROLE IN ADR-0021 SANDBOX / RELOCATION HISTORY / ORIGINAL CHANGE LOG (preserved from predecessor) / REFERENCES.
+2. **Sandbox principle** — every persistent-disk WRITE targets a CANONICAL global (`$datadir_clean`, `$logdir`, `$estimates_dir`, etc.). LEGACY READS allowed for static predecessor inputs (e.g., restricted-access K12 data per ADR-0017). LEGACY WRITES forbidden.
+3. **`$projdir` resolution — TWO patterns by file role:**
+   - **(a) Pre-emptive repoint** for files being RELOCATED to consolidated/: change `$projdir/...` → `$caschls_projdir/...` directly in the relocated file. Used in `do/va/helpers/macros_va.doh`.
+   - **(b) Alias-before-include** for LEGACY .dohs being CONSUMED but not relocated: `global projdir "$caschls_projdir"` before the LEGACY `include`. Used in `do/sibling_xwalk/siblingoutxwalk.do`.
+4. **Predecessor caller-update protocol** — predecessor callers (in `cde_va_project_fork/do_files/do_all.do` + `caschls/do/master.do`) UNTOUCHED in relocation commits per plan v3 §3.3 step 5 parenthetical. Wholesale predecessor retirement at Phase 1a §3.5 golden-master verification supersedes per-caller edits.
+5. **Tempfile saves (`tempfile name` + `save \`name'`) are NOT sandbox-write violations.** Stata session-scoped temp paths; auto-cleaned. Sandbox rule governs persistent on-disk artifacts whose path is determined by a path-global.
+6. **Base + version-suffixed byte-identical pairs** preserved per ADR-0021 verbatim rule. Headers transparently flag the duplication + Phase 1c §5.1 archival intent. Don't mix Phase 1a relocation with Phase 1c dead-code archival.
+7. **One-liner in `do/main.do`** at each invocation site per ADR-0021 description convention. First-relocation precedent has a 4-line "RELOCATED ..." context block; subsequent relocations drop it (one-liner only).
+8. **`mkdir` defensive prep** before save targets (`cap mkdir "$datadir_clean/<subdir>"`). Idempotent.
+9. **`cd "$consolidated_dir"` restore** at end-of-file when the script does `cd $vaprojdir` mid-execution (preserves CWD discipline for subsequent main.do invocations).
+10. **Per-do-file logging** via `log using $logdir/<basename>.smcl, replace text` near top + `cap log close` + `cap translate $logdir/<basename>.smcl $logdir/<basename>.log, replace` at every exit path (early-exit AND end-of-file). For .doh fragments (no standalone execution): no own log; runs inside parent's log scope.
+
+**Per coder-critic dispatch:**
+
+11. **Tight-scope dispatch** — 5 concerns max, referencing established precedents by name (e.g., "use the prior-precedent context from siblingoutxwalk.do"). Returns in 70-110s. Yesterday's 12-concern dispatch timed out at ~16 min. Convention: bundle commit-specific concerns + delegate "redo all framework checks" to the precedent.
+12. **Verify deferred-Minor findings immediately when grep cost is small.** Closes loop in same commit; eliminates forward-reference dependencies; demonstrates derive-dont-guess discipline at per-commit granularity.
+13. **`coder-critic: skipped`** is acceptable for docs-only commits (TODO + SESSION_REPORT + session log captures of already-reviewed work). Footer rationale required.
+
+**Per phase-1-review.md §2 per-commit checklist (now codified):**
+
+- [ ] Source identified (predecessor path)
+- [ ] Destination matches plan v3 §3.3 step ordering
+- [ ] Path references updated (predecessor callers untouched per protocol)
+- [ ] Scope minimal (one logical batch per commit)
+- [ ] ADR cited (relevant ADR numbers in commit message + RELOCATION HISTORY)
+- [ ] For relocated/new do files (per ADR-0021):
+  - (a) Header description block present
+  - (b) One-liner in `do/main.do` at invocation site
+  - (c) Sandbox-write grep: `grep -nE 'save|export|outsheet|esttab using|graph export|outreg2 using|texsave'` returns only CANONICAL targets
+  - (d) LEGACY-include macro-trace: for each `include $<legacy_path>/...doh`, scan `$<global>` references; alias-before-include if any unbound
+
+### Done today (chronological)
+
+- OpenCage T1-5 closed (manual revoke + history strip; scrubs key from 94 commits' git history; force-push to public origin succeeded after `http.postBuffer 524288000` workaround for HTTP 400).
+- `do/sibling_xwalk/siblingoutxwalk.do` — first real production relocation; round-1 BLOCK on `$projdir` undefined; round-2 fix (alias-before-include pattern); precedent for the LEGACY-include macro-trace convention.
+- `do/va/helpers/{drift_limit, macros_va_all_samples_controls, macros_va}.doh` — 3 helpers; pre-emptive `$projdir` → `$caschls_projdir` repoint pattern surfaced as the second `$projdir` resolution convention.
+- `do/samples/{create_diff_school_prop, create_prior_scores_v[1/2], create_va_g11_sample[/_v1/_v2], create_va_g11_out_sample[/_v1/_v2]}.doh` — 9 sample-construction fragments; tempfile-not-sandbox-violation convention surfaced; base + v1 byte-identical pair preservation pattern surfaced.
+- README.md §10 path correction (caschls Dropbox path).
+- 3 hygiene commits (TODO + SESSION_REPORT + session log syncs).
+
+### Pickup for next session — Step 2 batch 2b (7 files, 1124 lines)
+
+**See TODO.md "Active (next-up)" section for the full pre-batch checklist.**
+
+Quick orientation:
+
+| File | Source predecessor | Lines | Critical concerns |
+|---|---|---:|---|
+| `touse_va.do` | `cde_va_project_fork/do_files/sbac/` | 200 | WRITES `va_samples.dta` — source-of-truth for the path coordination |
+| `create_score_samples.do` | same | 279 | Full score-VA sample pipeline; includes `macros_va.doh` + sample-wrapper chain; WRITES sample dta |
+| `create_out_samples.do` | same | 244 | Full outcome-VA sample pipeline; analogous |
+| `create_va_sample.doh` | same | 57 | Has relative-path ref `data/sbac/va_samples.dta` (predecessor CWD-dependent); needs repoint to match `touse_va.do` output path |
+| `createvasample.do` | `caschls/do/share/siblingvaregs/` | 128 | **Verify caschls-side disposition first** — per ADR-0004 `siblingvaregs/` mostly deprecated; only `siblingoutxwalk.do` survived. May belong to Step 6 archive rather than Step 2 active. |
+| `create_va_sib_acs_restr_smp.do` | same | 97 | Same caschls-deprecation verification needed |
+| `create_va_sib_acs_out_restr_smp.do` | same | 119 | Same |
+
+**Output-path coordination:** `touse_va.do` produces `va_samples.dta`; `create_va_sample.doh` consumes it via `merge ... using data/sbac/va_samples.dta` (relative path). Both must land at the same CANONICAL path. Recommended: `$datadir_clean/sbac/va_samples.dta` (matches predecessor's `data/sbac/` subdir convention). Verify by reading `touse_va.do` for its actual save target before locking the path.
+
+### Status (end of 2026-04-30)
+
+- **ADR ledger: 21 Decided.** No new ADRs.
+- **Plan v3: APPROVED 2026-04-29.**
+- **OpenCage T1-5: CLOSED** (last open T1 test).
+- **Phase 1a §3.3: 13 of ~150 files relocated** (Step 5 + Step 1 + Step 2 batch 2a).
+- **Coder-critic audit trail:** `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`. All PASS at >= 92/100.
+- **Tree clean; origin in sync.** `git status` returns nothing to commit.
+
+**Tomorrow first actions when starting fresh session:**
+
+1. Read `CLAUDE.md` + this SESSION_REPORT entry + TODO.md `Active` section + `quality_reports/plans/2026-04-27_phase-1-consolidation-plan-v3.md` §3.3 step 2.
+2. Read MEMORY.md `[LEARN:stata]` entries (LEGACY-include macro-tracing pattern + tempfile-not-sandbox + verify-deferred-Minor).
+3. Decide caschls-side disposition for `createvasample.do` + `create_va_sib_acs_*.do` per ADR-0004 (active relocation vs Step 6 archive).
+4. Begin Step 2 batch 2b drafting per the per-batch checklist in TODO.md.

@@ -1,6 +1,6 @@
-# Session Log: 2026-04-30 — history-strip + first relocation + helpers batch + samples .doh batch
+# Session Log: 2026-04-30 — history-strip + 3 Phase 1a §3.3 batches (Step 5 + Step 1 + Step 2a)
 
-**Status:** COMPLETED — end of 2026-04-30 afternoon (8 commits today: `a5c3bea` T1-5; filter-repo rewrite; `275efc0` siblingoutxwalk.do; `1f7c8d8` hygiene #1; `7983a8d` helpers/macros; `c7a79e9` hygiene #2; `94fd2b8` Step 2 batch 2a samples .doh; plus the imminent hygiene #3 commit)
+**Status:** SESSION CLOSED at ~72% context. 8 commits pushed today; 13 of ~150 files relocated; tree clean; in sync with origin. Christina paused to start a fresh session — comprehensive next-session pickup info captured in TODO.md "Next session — start with Step 2 batch 2b" + SESSION_REPORT.md "2026-04-30 (end of session)" entry. This session log marks COMPLETED; next session opens a fresh log per logging.md convention.
 
 ## Objective
 
@@ -227,3 +227,43 @@ Continued straight from helpers batch. User: "yes please proceed." Step 2 (sampl
 | Body verbatim against predecessor (per coder-critic) | byte-equivalent except for documented repoints | PASS |
 | `$datadir_clean` claim verification (deferred-Minor) | `do/settings.do:102` defines `global datadir_clean "$datadir/cleaned"`; claim consistent | PASS |
 | Coder-critic dispatch (tight-scope, 5 concerns) | 92/100 PASS in ~110s | PASS |
+
+---
+
+## Session Closeout — 2026-04-30 end-of-session
+
+**Reason for stopping:** Context at ~72%. Christina requested detailed housekeeping for fresh-session resume rather than starting batch 2b within tight remaining context. Step 2 batch 2b (7 files, 1124 lines) is materially larger than today's batches (1-9 files each); needs ~30-40 min of focused work + dispatches. Better to start fresh than push close to auto-compact.
+
+### Final session totals
+
+- **8 commits pushed** today (3 production relocations + 1 history rewrite + 1 T1 closeout + 3 hygiene commits).
+- **13 production files relocated** of ~150 total in Phase 1a §3.3 (Step 5: 1; Step 1: 3; Step 2 batch 2a: 9).
+- **3 coder-critic dispatches** (`275efc0`, `7983a8d`, `94fd2b8`) — all PASS at 92-100/100.
+- **OpenCage T1-5: CLOSED** (revoked + history-stripped via filter-repo; force-pushed to origin).
+- **5 new MEMORY [LEARN] entries** (offboarding, stata × 3, phase-1-review).
+- **2 new conventions surfaced and documented:**
+  - LEGACY-include macro-tracing (sub-item d added to phase-1-review.md §2 checklist).
+  - Tempfile saves NOT sandbox violations.
+- **2 path-resolution patterns established:**
+  - Pre-emptive `$projdir` repoint for relocated files.
+  - Alias-before-include for consumed-but-not-relocated LEGACY .dohs.
+
+### Next-session pickup — see two anchor docs
+
+1. **`TODO.md`** "Active (next-up)" section: detailed Step 2 batch 2b plan including 7-file inventory + pre-batch checklist + cross-batch path-coordination requirement (`touse_va.do` produces `va_samples.dta` consumed by `create_va_sample.doh`).
+2. **`SESSION_REPORT.md`** "2026-04-30 (end of session)" entry: full convention enumeration (13 conventions established/refined today + per-commit checklist codification + chronological work summary).
+
+The next session should be able to resume cold by reading those two anchors plus `CLAUDE.md` + plan v3 §3.3 step 2.
+
+### Status (final)
+
+| Metric | Value |
+|---|---|
+| ADR ledger | 21 Decided |
+| Plan v3 | APPROVED 2026-04-29 |
+| Phase 1a §3.3 progress | 13 of ~150 files relocated |
+| Coder-critic audit trail | `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8` (all >= 92/100) |
+| Tree state | Clean; in sync with origin |
+| OpenCage T1-5 | CLOSED |
+| Open T1 tests | None |
+| Context at session end | ~72% |
