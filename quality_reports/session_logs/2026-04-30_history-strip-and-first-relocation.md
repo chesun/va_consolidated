@@ -1,6 +1,6 @@
-# Session Log: 2026-04-30 — OpenCage history-strip + Phase 1a §3.3 first relocation + helpers batch
+# Session Log: 2026-04-30 — history-strip + first relocation + helpers batch + samples .doh batch
 
-**Status:** COMPLETED — end of day 2026-04-30 (6 commits today: `a5c3bea` T1-5 status flip; filter-repo rewrite of 94 commits replacing key string; `275efc0` first relocation (siblingoutxwalk.do); `1f7c8d8` hygiene #1; `7983a8d` helpers/macros batch (3 .doh files); plus the imminent hygiene #2 commit)
+**Status:** COMPLETED — end of 2026-04-30 afternoon (8 commits today: `a5c3bea` T1-5; filter-repo rewrite; `275efc0` siblingoutxwalk.do; `1f7c8d8` hygiene #1; `7983a8d` helpers/macros; `c7a79e9` hygiene #2; `94fd2b8` Step 2 batch 2a samples .doh; plus the imminent hygiene #3 commit)
 
 ## Objective
 
@@ -160,3 +160,70 @@ Continued straight from the first relocation. User said "please proceed" with au
 | `$vaprojdir` references preserved in body | L101-107 unchanged; LEGACY-static reads convention preserved | PASS |
 | Coder-critic round 1 (tight-scope dispatch) | 92/100 PASS in ~70s | PASS |
 | Body verbatim diff against predecessor (per coder-critic) | byte-equivalent except for the 3 documented repoint lines | PASS |
+
+---
+
+## Continuation #2 — 2026-04-30 afternoon: Step 2 batch 2a (samples .doh fragments)
+
+### Objective (continued from above)
+
+Continued straight from helpers batch. User: "yes please proceed." Step 2 (sample construction) is the natural next plan v3 §3.3 step. Split into 2 sub-batches:
+
+- **2a (today):** 9 .doh fragments (parent-context fragments; no standalone execution; analogous-but-larger than helpers batch).
+- **2b (deferred):** 1 fragment + 6 .do scripts. Has output-path interdependencies (touse_va.do produces va_samples.dta consumed by create_va_sample.doh) — needs coordinated commit.
+
+### Changes Made (Continuation #2)
+
+| File | Change | Reason | Quality Score |
+|---|---|---|---|
+| `do/samples/create_diff_school_prop.doh` | NEW (2-line body verbatim + ~25-line ADR-0021 header) | diff-school-prop indicator; year-conditional L3-vs-L4 lag | covered by samples-batch coder-critic |
+| `do/samples/create_prior_scores_v1.doh` | NEW (27-line body verbatim + ~50-line header) | CANONICAL prior-score wiring per ADR-0009 | covered |
+| `do/samples/create_prior_scores_v2.doh` | NEW (32-line body verbatim + ~45-line header) | EXPLORATORY per ADR-0009 | covered |
+| `do/samples/create_va_g11_sample[/_v1/_v2].doh` (3 files) | NEW (16-line body each; 12 include-path repoints across 6 sample-wrappers) | g11 SCORE-VA sample construction | coder-critic 92/100 PASS (batch) |
+| `do/samples/create_va_g11_out_sample[/_v1/_v2].doh` (3 files) | NEW (16-line body each; same repoint pattern) | g11 OUTCOME-VA sample construction | covered |
+| `TODO.md` | Active section: "Phase 1a §3.3 IN PROGRESS — Step 5 + Step 1 + Step 2 batch 2a done"; Done section gains samples-batch entry; audit trail to `94fd2b8`; "Last updated: 2026-04-30 (afternoon)" | logging.md hygiene | n/a |
+| `SESSION_REPORT.md` (+ .claude mirror) | 2026-04-30 (afternoon) entry covering samples-batch operations + decisions + status | logging.md §2 | n/a |
+| this session log | Continuation #2 section appended; status header updated to 8 commits today | logging.md §1 | n/a |
+
+### Design Decisions (Continuation #2)
+
+| Decision | Alternatives Considered | Rationale |
+|---|---|---|
+| Split Step 2 into batches 2a (.doh fragments) + 2b (.do scripts + create_va_sample.doh) | Do all 16 step-2 files in one mega-commit | Output-path coordination: touse_va.do produces va_samples.dta consumed by create_va_sample.doh; both must land at the SAME `$datadir_clean/...` path. Bundling .doh fragments (low-risk; only include-path repoints needed) with .do scripts (higher-risk; production saves) creates a large coupled commit. Splitting respects "Each move = one git commit so the diff stays readable" (plan v3 §3.3) at logical boundaries |
+| Preserve byte-identical base + v1 pairs (`create_va_g11_sample.doh` ≡ `_v1.doh`) rather than archive base now | Archive `create_va_g11_sample.doh` and `create_va_g11_out_sample.doh` as duplicates; rely on `_v1` only | ADR-0021 verbatim rule prescribes "relocate as-is, repointing only documented path/global references." Archival is Phase 1c §5.1 dead-code sweep, not Phase 1a §3.3 relocation. Mixing scopes violates Tier 1 self-check "scope minimal." Headers transparently flag the duplication + §5.1 archival intent so future-Claude has the context |
+| Tempfile saves are NOT sandbox-write violations | Treat `save \`tempfile'` as a sandbox concern requiring CANONICAL-path resolution | Stata `tempfile` locals bind to a session-scoped path under Stata's tmpdir; auto-cleaned on `clear all` / session exit. ADR-0021 sandbox rule (CANONICAL vs LEGACY) governs *persistent on-disk artifacts whose path is determined by a path-global*. Tempfiles satisfy neither criterion — ephemeral + Stata-generated path. Confirmed by reviewer; convention captured in commit message + session log |
+| Verify deferred-Minor (`$datadir_clean` claim) immediately rather than in batch 2b | Defer to batch 2b as flagged by reviewer | One grep against `do/settings.do` (5-second cost). Confirms claim is consistent with established pattern (`global datadir_clean "$datadir/cleaned"` at L102). Worth doing now to close the loop on this commit; eliminates a forward-reference dependency for batch 2b |
+
+### Incremental Work Log (Continuation #2)
+
+- **mid-afternoon (post-helpers):** User: "yes please proceed." Step 2 enumeration: read predecessor `cde_va_project_fork/do_files/sbac/` for create_*.doh + create_*_samples.do + touse_va.do; read caschls predecessor for createvasample.do + create_va_sib_acs_*.do.
+- **mid-afternoon (scope decision):** Identified Step 2 as 16 files (10 .doh + 6 .do). Too large for one commit. Split into 2a (.doh fragments; today) + 2b (.do scripts + 1 complex .doh; next session).
+- **mid-afternoon (file analysis):** Read 7 of 10 .doh fragments to understand body structure.
+  - 3 standalone fragments: pure `gen`/`replace` operations on parent-scope dataset (no `use`, no `include`, no save).
+  - 6 sample-wrappers: similar structure (16 lines each); includes 2 fragments + does `use \`va_dataset'` + `tempfile`+`save`.
+  - 1 complex fragment (`create_va_sample.doh`): 57 lines, has relative-path reference to producer-output. Defer to 2b.
+  - Discovered: `create_va_g11_sample.doh` ≡ `_v1.doh` byte-identical (and same for out_sample pair). Decision: preserve both per ADR-0021 verbatim; flag for §5.1.
+- **mid-afternoon (drafting 9 files):** Wrote each with ADR-0021 mini-header + body verbatim from predecessor. 12 include-path repoints landed in the 6 sample-wrappers (`do_files/sbac/` → `do/samples/`). Bodies preserved exactly otherwise.
+- **mid-afternoon (self-verification grep):** 5 verification points — sandbox-write check (only tempfile saves PASS), `$projdir` body check (zero PASS), `do_files/sbac/` body check (zero PASS; 12 in headers as RELOCATION HISTORY documentation), `include do/samples/` repoint check (12 matches PASS), file count (9 PASS).
+- **mid-afternoon (coder-critic dispatch):** Tight-scope prompt (5 focused concerns referencing established precedents). Returned in ~110s. **Score: 92/100 PASS.** One deferred-Minor (`$datadir_clean` claim verification).
+- **mid-afternoon (deferred-Minor closure):** Verified `$datadir_clean` against `do/settings.do:102` `global datadir_clean "$datadir/cleaned"`. Claim consistent. Closed in commit message.
+- **mid-afternoon (commit + push):** Footer per phase-1-review.md §5: `coder-critic: PASS (92/100); 1 deferred-Minor finding ... verified now against do/settings.do:102`. Committed `94fd2b8` (9 new files; 539 insertions). Pushed cleanly.
+
+### Learnings & Corrections (Continuation #2)
+
+- [LEARN:stata] **Stata `tempfile` saves are NOT sandbox-write violations under ADR-0021.** Locals declared via `tempfile name` bind to a Stata session-scoped path under tmpdir (auto-cleaned on session exit / `clear all`). The subsequent `save \`name'` writes to that ephemeral path, not to a tracked location under any path-global. ADR-0021's CANONICAL vs LEGACY sandbox rule governs *persistent on-disk artifacts whose path is determined by a path-global*; tempfiles satisfy neither criterion. Convention going forward: sandbox-write grep PASS even when matches include `save \`tempfile'`; only flag matches that target persistent paths.
+
+- [LEARN:relocation-precedent] **Byte-identical base + version-suffixed pairs: preserve in Phase 1a, defer archival to Phase 1c §5.1.** Discovered today: `create_va_g11_sample.doh` ≡ `create_va_g11_sample_v1.doh` byte-identical bodies in predecessor (likely a pre-v1/v2-split historical alias retained when explicit `_v1` was added). Both relocated per ADR-0021 verbatim rule. Headers transparently flag the duplication + §5.1 archival intent. Convention: don't mix Phase 1a relocation scope with Phase 1c dead-code archival; let each phase do its job; document the cross-phase handoff in headers.
+
+- [LEARN:phase-1-review] **Verify deferred-Minor findings immediately when cheap.** Coder-critic flagged a `$datadir_clean` prescriptive-claim concern (per derive-dont-guess: shouldn't assert a claim without verifying). One grep against `do/settings.do` confirmed the claim. Closed in same commit message. Saves a forward-reference dependency for the next batch and demonstrates derive-dont-guess discipline at per-commit granularity.
+
+### Verification Results (Continuation #2)
+
+| Check | Result | Status |
+|-------|--------|--------|
+| `git push origin main` (`94fd2b8`) | pushed cleanly | PASS |
+| Sandbox-write grep on all 9 .doh files | only tempfile saves (auto-cleaned) | PASS |
+| Include-path repoints (12 total across 6 sample-wrappers) | all landed correctly per grep | PASS |
+| Body verbatim against predecessor (per coder-critic) | byte-equivalent except for documented repoints | PASS |
+| `$datadir_clean` claim verification (deferred-Minor) | `do/settings.do:102` defines `global datadir_clean "$datadir/cleaned"`; claim consistent | PASS |
+| Coder-critic dispatch (tight-scope, 5 concerns) | 92/100 PASS in ~110s | PASS |

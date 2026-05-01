@@ -783,3 +783,59 @@ Step 1 active scope = 3 files. Excluded:
 
 - Continue Phase 1a §3.3 — Step 2 (sample construction) is the natural next batch. Per plan v3 §3.3 step 2: `samples/` from `cde_va_project_fork/do_files/sbac/samples/` + `touse_va.do` + `create_*_samples.do` + `create_va_*.doh` → `do/samples/`. May be a larger batch; consider splitting if too many files.
 - T1-5 reminder block in `do/check/t1_empirical_tests.do` still stale post-strip — defer to Phase 1c §5.4 polish.
+
+---
+
+## 2026-04-30 (afternoon) — Step 2 batch 2a: sample-construction .doh fragments
+
+**Operations:**
+
+Continued straight from helpers/macros batch. Step 2 (sample construction) — split into 2 sub-batches:
+
+- **Batch 2a (today):** 9 .doh fragments relocated to `do/samples/`. Pure parent-context fragments (don't run standalone; included by Phase 2 .do scripts). Each does some combination of `gen`/`replace`/`label var` on in-memory dataset, plus the sample-wrappers do `use ... using \`va_dataset'` + `tempfile`+`save` + 2 chained `include` calls.
+
+- **Batch 2b (deferred to next session):** `create_va_sample.doh` (57-line fragment with relative-path reference to `data/sbac/va_samples.dta`) + 6 .do scripts (touse_va, create_score_samples, create_out_samples in cde; createvasample, create_va_sib_acs_restr_smp, create_va_sib_acs_out_restr_smp in caschls). Needs coordinated output-path repointing — touse_va.do produces `va_samples.dta` consumed by `create_va_sample.doh`; both have to land in the same commit at the same CANONICAL path.
+
+Step 2 batch 2a files (9):
+- `create_diff_school_prop.doh` (2-line body) — diff-school-prop indicator
+- `create_prior_scores_v1.doh` (27-line body) — CANONICAL per ADR-0009
+- `create_prior_scores_v2.doh` (32-line body) — EXPLORATORY per ADR-0009
+- `create_va_g11_sample.doh` (16-line body; byte-identical to v1; Phase 1c §5.1 archival flag)
+- `create_va_g11_sample_v1.doh` — CANONICAL
+- `create_va_g11_sample_v2.doh` — EXPLORATORY
+- `create_va_g11_out_sample.doh` (byte-identical to _v1; same flag)
+- `create_va_g11_out_sample_v1.doh` — CANONICAL
+- `create_va_g11_out_sample_v2.doh` — EXPLORATORY
+
+12 include-path repoints landed across the 6 sample-wrappers (`do_files/sbac/<x>.doh` → `do/samples/<x>.doh`). Bodies otherwise verbatim from predecessor. Sandbox-write check: only `tempfile`+`save \`tempfile'` operations — Stata session-scoped, auto-cleaned, NOT subject to ADR-0021 sandbox CANONICAL/LEGACY rule (which governs persistent on-disk artifacts whose path is determined by a path-global). Reviewer confirmed.
+
+LEGACY-include macro-trace per phase-1-review.md §2 sub-item (d): N/A — none of the 9 files INCLUDE any LEGACY .doh; only include other CONSOLIDATED files (the repointed `do/samples/<x>.doh`).
+
+**Coder-critic dispatched** with tight scope (5 focused concerns referencing established precedents). Returned in ~110s. **Score: 92/100 PASS.** One deferred-Minor finding (header in `create_va_g11_sample_v1.doh` L24-L26 carried prescriptive `$datadir_clean/...` claim that derive-dont-guess says should be verified) — verified now against `do/settings.do:102` `global datadir_clean "$datadir/cleaned"`; consistent with established pattern.
+
+**Decisions:** none new. Two precedent-refining choices in this batch:
+- Base + v1 byte-identical pairs preserved (don't archive in Phase 1a; defer to Phase 1c §5.1 dead-code sweep). Headers transparently flag the duplication.
+- Tempfile saves are NOT sandbox-write violations — clarified for the convention going forward (only persistent-disk save/export paths governed by path-globals are subject to the rule).
+
+**Commits today (8 in total — including 2 hygiene + this imminent #3):**
+
+- `a5c3bea` (post-rewrite SHA) — TODO: T1-5 OpenCage RESOLVED.
+- `36a58d5` (post-rewrite HEAD) — `git filter-repo` rewrite of 94 commits.
+- `275efc0` — first relocation (siblingoutxwalk.do).
+- `1f7c8d8` — hygiene #1.
+- `7983a8d` — Step 1 helpers/macros batch.
+- `c7a79e9` — hygiene #2.
+- `94fd2b8` — Step 2 batch 2a (9 sample .doh fragments).
+
+**Status (end of 2026-04-30 afternoon):**
+
+- **Phase 1a §3.3 progress:** 13 of ~150 files relocated. Step 5 (sibling_xwalk: 1 file) + Step 1 (helpers/macros: 3 files) + Step 2 batch 2a (samples .doh: 9 files) DONE.
+- **Convention refined this batch:** tempfile saves NOT sandbox-violations; base + v1 byte-identical pairs preserved per ADR-0021 verbatim with §5.1 archival flag.
+- **ADR ledger: 21 Decided.** No new ADRs.
+- **Plan v3: APPROVED.**
+
+**Tomorrow pickup pointers:**
+
+- Step 2 batch 2b is the natural next batch — 7 files (1 .doh fragment + 6 .do scripts). Needs careful output-path coordination because `touse_va.do` produces `va_samples.dta` consumed by `create_va_sample.doh`; both must land at the SAME `$datadir_clean/...` path. Plan to read all 7 files first, identify path interdependencies, then commit as one atomic batch.
+- Coder-critic dispatch lessons holding: tight scope (5 concerns max referencing established precedents) returns in 70-110s; vs. yesterday's 12-concern timeout.
+- T1-5 reminder block in `do/check/t1_empirical_tests.do` still stale post-strip — defer to Phase 1c §5.4 polish.
