@@ -136,6 +136,14 @@ global nscdtadir_oldformat  "$nscdtadir/oldformat"
 * Matt's separate crosswalks dir (distinct from $vaprojxwalks).
 global mattxwalks       "/home/research/ca_ed_lab/users/msnaven/data/restricted_access/clean/crosswalks"
 
+* Christina-owned k12-to-postsecondary distance data (LEGACY: predecessor at
+* cde_va_project_fork/data/k12_postsec_distance/, scheduled to relocate in
+* Phase 1a §3.3 step 9 data-prep batch).  Read by sample-construction scripts
+* via the LEGACY `merge_k12_postsec_dist.doh' helper, which expands
+* $distance_dtadir at line 23 (`merge m:1 cdscode using $distance_dtadir/clean/...').
+* Predecessor settings.do (do_files/settings.do:52) bound this to the same path.
+global distance_dtadir  "$vaprojdir/data/k12_postsec_distance"
+
 
 /*==============================================================================
 STATA DEFAULTS

@@ -131,21 +131,45 @@ if `run_samples' {
     di as text "PHASE 2: SAMPLE CONSTRUCTION"
     di as text "{hline 80}"
 
-    * TODO Phase 1a §3.3 step 2: invoke sample-construction scripts
-    * (relocated under do/samples/).  Each invocation carries a one-liner
-    * per the ADR-0021 description convention.  Example shape:
-    *
-    *   do do/samples/touse_va.do                          // tag the VA-eligible analysis sample
-    *   do do/samples/create_score_samples.do              // build score-VA estimation sample
-    *   do do/samples/create_out_samples.do                // build outcome-VA estimation sample (NSC/CCC/CSU)
-    *   do do/samples/create_va_sib_acs_restr_smp.do       // restrict to sibling-x-ACS analytic sample
-    *   do do/samples/create_va_sib_acs_out_restr_smp.do   // same, for outcome-VA persistence regs
+    * Sample-construction sub-toggles (mirror predecessor `do_all.do' gates
+    * for behavior parity).  Both touse_va and create_*_samples are
+    * run-once-cached: their outputs persist in $datadir_clean and are
+    * re-read by every VA-estimation step.  Default 0 mirrors `do_all.do:110'
+    * (`local do_touse_va = 0') and `do_all.do:148' (`local do_create_samples = 0').
+    * Flip to 1 only when re-seeding the sample crosswalks (e.g., after a CDE
+    * data refresh).
+    local do_touse_va        0
+    local do_create_samples  0
 
     * RELOCATED 2026-04-30 per ADR-0005 — sibling enrollment-outcomes crosswalk
     * (the only file from caschls/do/share/siblingvaregs/ that survives
     * consolidation per ADR-0004).  First real Phase 1a §3.3 relocation; sets
     * the precedent for subsequent moves.
     do do/sibling_xwalk/siblingoutxwalk.do             // build sibling enrollment-outcomes crosswalk (transitive-closure family grouping; reads K12+postsec via Matt's merge_k12_postsecondary.doh; writes $datadir_clean/siblingxwalk/sibling_out_xwalk.dta)
+
+    * RELOCATED 2026-05-07 per plan v3 §3.3 step 2 batch 2b — sample-tag
+    * crosswalk + score/outcome VA estimation samples.  Both gated 0 by
+    * default (run-once-cached pattern).  Relocation preserves predecessor
+    * verbatim except for path repointing to CANONICAL `$datadir_clean'.
+    if `do_touse_va' {
+        do do/samples/touse_va.do                      // tag the VA-eligible analysis sample (touse_g11_<subject>/<outcome> markers; writes $datadir_clean/sbac/va_samples.dta)
+    }
+    if `do_create_samples' {
+        do do/samples/create_score_samples.do          // build 7 test-score VA samples × 2 prior-score versions (v1/v2 per ADR-0009); writes $datadir_clean/va_samples_v[12]/score_*.dta
+        do do/samples/create_out_samples.do            // build 7 outcome VA samples × 2 prior-score versions; writes $datadir_clean/va_samples_v[12]/out_*.dta
+    }
+
+    * NOTE: plan v3 main.do template (lines 175-176) listed
+    * create_va_sib_acs_restr_smp.do + create_va_sib_acs_out_restr_smp.do at
+    * this site, but per ADR-0004 those files are deprecated (caschls
+    * siblingvaregs subtree) and belong in the Step 6 archive batch, not
+    * Step 2 active relocation.  The plan v3 template will be corrected when
+    * Step 6 lands.
+
+    * TODO Phase 1a §3.3 step 2 batch 2c: relocate sample-construction merge
+    * helpers (merge_loscore.doh, merge_sib.doh, merge_va_smp_acs.doh,
+    * merge_lag2_ela.doh from cde sbac).  Until then, create_score_samples.do
+    * and create_out_samples.do call them via LEGACY $vaprojdir paths.
 }
 
 
