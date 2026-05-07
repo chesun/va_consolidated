@@ -84,9 +84,9 @@ RELOCATION HISTORY (per plan v3 §3.3 step 2 batch 2b, applied 2026-05-07)
       - L42 log target: $vaprojdir/log_files/sbac/create_score_samples.smcl
                      -> CANONICAL `$logdir/create_score_samples.smcl'
       - L52 `include $vaprojdir/do_files/sbac/macros_va.doh'
-         -> `include do/va/helpers/macros_va.doh' (relocated 2026-04-30)
+         -> `include $consolidated_dir/do/va/helpers/macros_va.doh' (relocated 2026-04-30)
       - L63 `include $vaprojdir/do_files/sbac/create_va_sample.doh'
-         -> `include do/samples/create_va_sample.doh' (this batch)
+         -> `include $consolidated_dir/do/samples/create_va_sample.doh' (this batch)
       - L70 `include do_files/sbac/create_va_g11_sample_`version'.doh'
          -> `include do/samples/create_va_g11_sample_`version'.doh' (relocated 2026-04-30 batch 2a)
       - L73 `include $vaprojdir/do_files/k12_postsec_distance/merge_k12_postsec_dist.doh'
@@ -185,7 +185,7 @@ cap mkdir "$logdir"
  set seed 1984
 
 // include the macros
- include do/va/helpers/macros_va.doh
+ include $consolidated_dir/do/va/helpers/macros_va.doh
 
 timer on 1
 
@@ -196,20 +196,20 @@ foreach version in v1 v2 {
   *******************************************
   local create_b = 1
   if `create_b' == 1 {
-    include do/samples/create_va_sample.doh
+    include $consolidated_dir/do/samples/create_va_sample.doh
 
     compress
     tempfile va_dataset
     save `va_dataset'
 
     // 11th grade sample
-    include do/samples/create_va_g11_sample_`version'.doh
+    include $consolidated_dir/do/samples/create_va_g11_sample_`version'.doh
 
     // merge on k12 postsecondary distances
     include $vaprojdir/do_files/k12_postsec_distance/merge_k12_postsec_dist.doh
 
     // merge on lag 2 ELA scores without dropping obs, to predict lag 1 ELA score
-    include $vaprojdir/do_files/sbac/merge_lag2_ela.doh
+    include $consolidated_dir/do/samples/merge_lag2_ela.doh
 
 
 
@@ -240,7 +240,7 @@ foreach version in v1 v2 {
     use "$datadir_clean/va_samples_`version'/score_b.dta", clear
 
     // do helper file to merge leave out scores
-    include $vaprojdir/do_files/sbac/merge_loscore.doh
+    include $consolidated_dir/do/samples/merge_loscore.doh
 
     label data "Test Score VA Sample with Leave Out Scores"
 
@@ -257,7 +257,7 @@ foreach version in v1 v2 {
   if `create_a' == 1 {
 
     // call do helper file to merge onto ACS controls. Be sure to specify correct arguments. 5 args in total
-    do $vaprojdir/do_files/sbac/merge_va_smp_acs.doh ///
+    do $consolidated_dir/do/samples/merge_va_smp_acs.doh ///
       test_score ///
       "$datadir_clean/va_samples_`version'/score_b.dta" ///
       score_b.dta ///
@@ -282,7 +282,7 @@ foreach version in v1 v2 {
     use "$datadir_clean/va_samples_`version'/score_b.dta", clear
 
     //subroutine that merges on sibling college going controls
-    include $vaprojdir/do_files/sbac/merge_sib.doh
+    include $consolidated_dir/do/samples/merge_sib.doh
 
     label data "Test Score VA Sample with Sibling Controls"
 
@@ -299,7 +299,7 @@ foreach version in v1 v2 {
   if `create_la' == 1 {
 
     // call do helper file to merge onto ACS controls. Be sure to specify correct arguments. 5 args in total
-    do $vaprojdir/do_files/sbac/merge_va_smp_acs.doh ///
+    do $consolidated_dir/do/samples/merge_va_smp_acs.doh ///
       test_score ///
       "$datadir_clean/va_samples_`version'/score_l.dta" ///
       score_l.dta ///
@@ -323,7 +323,7 @@ foreach version in v1 v2 {
     use "$datadir_clean/va_samples_`version'/score_l.dta", clear
 
     //subroutine that merges on sibling college going controls
-    include $vaprojdir/do_files/sbac/merge_sib.doh
+    include $consolidated_dir/do/samples/merge_sib.doh
 
     label data "Test Score VA Sample with Leave Out Scores and Sibling Controls"
 
@@ -342,7 +342,7 @@ foreach version in v1 v2 {
     use "$datadir_clean/va_samples_`version'/score_a.dta", clear
 
     //subroutine that merges on sibling college going controls
-    include $vaprojdir/do_files/sbac/merge_sib.doh
+    include $consolidated_dir/do/samples/merge_sib.doh
 
     label data "Test Score VA Sample with ACS and Sibling Controls"
 
@@ -363,7 +363,7 @@ foreach version in v1 v2 {
     use "$datadir_clean/va_samples_`version'/score_la.dta", clear
 
     //subroutine that merges on sibling college going controls
-    include $vaprojdir/do_files/sbac/merge_sib.doh
+    include $consolidated_dir/do/samples/merge_sib.doh
 
     label data "Test Score VA Sample with Leave Out Scores, ACS, and Siblig Controls"
 

@@ -74,11 +74,11 @@ RELOCATION HISTORY (per plan v3 §3.3 step 2 batch 2b, applied 2026-05-07)
       - L30 log target: relative `log_files/sbac/touse_va.smcl'
                      -> CANONICAL `$logdir/touse_va.smcl' (per plan v3 §5.1 step 2)
       - L45 `include do_files/sbac/macros_va.doh'
-         -> `include do/va/helpers/macros_va.doh' (relocated 2026-04-30 helpers batch)
+         -> `include $consolidated_dir/do/va/helpers/macros_va.doh' (relocated 2026-04-30 helpers batch)
       - L115 `do do_files/merge_k12_postsecondary.doh'
           -> `do "$matt_files_dir/merge_k12_postsecondary.doh"' (Matt's, untouched per ADR-0017)
       - L129 `include do_files/sbac/create_diff_school_prop.doh'
-            -> `include do/samples/create_diff_school_prop.doh' (relocated 2026-04-30 batch 2a)
+            -> `include $consolidated_dir/do/samples/create_diff_school_prop.doh' (relocated 2026-04-30 batch 2a)
       - L131 `include do_files/sbac/create_prior_scores.doh' — VERBATIM (see DEAD INCLUDE)
       - L194 save target: relative `data/sbac/va_samples.dta'
                        -> CANONICAL `$datadir_clean/sbac/va_samples.dta'
@@ -87,7 +87,7 @@ RELOCATION HISTORY (per plan v3 §3.3 step 2 batch 2b, applied 2026-05-07)
                      -> `$logdir/touse_va.{smcl,log}'
 
 CONVENTION DEVIATIONS (verbatim preservation per ADR-0021)
-    DEAD INCLUDE at L131: `include do/samples/create_prior_scores.doh' refers to
+    DEAD INCLUDE at L131: `include $consolidated_dir/do/samples/create_prior_scores.doh' refers to
     a file that was DELETED 2022-12-29 in the v1/v2 prior-score refactor (commit
     f8764bf in cde_va_project_fork; see also ADR-0009 declaring v1 canonical).
     The unsuffixed `create_prior_scores.doh' has not existed since.  This dead
@@ -170,7 +170,7 @@ set seed 1984
 **********
 * Macros *
 **********
-include do/va/helpers/macros_va.doh
+include $consolidated_dir/do/va/helpers/macros_va.doh
 
 #delimit ;
 
@@ -253,12 +253,12 @@ rename enr_ontime_4year enr_4year
 
 
 ******************************** 11th Grade (8th Grade ELA Controls, 6th Grade Math Controls)
-include do/samples/create_diff_school_prop.doh
+include $consolidated_dir/do/samples/create_diff_school_prop.doh
 
 * DEAD INCLUDE — see CONVENTION DEVIATIONS in header.  File deleted 2022-12-29
 * in v1/v2 prior-score refactor; touse_va.do gated OFF in predecessor and in
 * main.do, so this never executes in production.  Phase 1b §4.3 resolves.
-include do/samples/create_prior_scores.doh
+include $consolidated_dir/do/samples/create_prior_scores.doh
 
 **** Test Score Sample
 foreach subject in ela math {
