@@ -941,3 +941,81 @@ Quick orientation:
 2. Read MEMORY.md `[LEARN:stata]` entries (LEGACY-include macro-tracing pattern + tempfile-not-sandbox + verify-deferred-Minor).
 3. Decide caschls-side disposition for `createvasample.do` + `create_va_sib_acs_*.do` per ADR-0004 (active relocation vs Step 6 archive).
 4. Begin Step 2 batch 2b drafting per the per-batch checklist in TODO.md.
+
+---
+
+## 2026-05-07 — Phase 1a §3.3 step 2 batch 2b: sample-construction entry points
+
+**Status:** Tree clean; pushed to origin (`5de34a7`).
+
+### Summary
+
+Step 2 batch 2b landed: 4 sample-construction entry-point scripts relocated from `cde_va_project_fork/do_files/sbac/` to `do/samples/` per plan v3 §3.3 step 2. All 4 are GATED OFF in predecessor `do_all.do` (run-once-cached pattern); main.do mirrors the gates verbatim (`do_touse_va = 0`, `do_create_samples = 0`).
+
+### Files relocated (4; 3 caschls files deferred to Step 6)
+
+| File | Lines | Output |
+|---|---:|---|
+| `do/samples/touse_va.do` | 200 | `$datadir_clean/sbac/va_samples.dta` |
+| `do/samples/create_score_samples.do` | 279 | `$datadir_clean/va_samples_v[12]/score_*.dta` (16 files) |
+| `do/samples/create_out_samples.do` | 244 | `$datadir_clean/va_samples_v[12]/out_*.dta` (16 files) |
+| `do/samples/create_va_sample.doh` | 57 | (in-memory; reads `$datadir_clean/sbac/va_samples.dta`) |
+
+### Caschls-side disposition decided 2026-05-07
+
+The 3 caschls files originally tagged for batch 2b were re-routed to **Step 6 archive** per ADR-0004 (siblingvaregs deprecated; verified no cde-side caller via `grep -rn "createvasample\|create_va_sib_acs" cde_va_project_fork/do_files/`):
+
+- `caschls/do/share/siblingvaregs/createvasample.do` → Step 6 archive (deferred)
+- `caschls/do/share/siblingvaregs/create_va_sib_acs_restr_smp.do` → Step 6 archive
+- `caschls/do/share/siblingvaregs/create_va_sib_acs_out_restr_smp.do` → Step 6 archive
+
+Plan v3 main.do template lines 175-176 listed these at this site — flag-comment added at `do/main.do:162-167` documenting the inconsistency and resolution.
+
+### Findings & conventions surfaced this batch
+
+1. **Dead include in `touse_va.do`** at relocated L261 (`include do/samples/create_prior_scores.doh`). The unsuffixed `create_prior_scores.doh` was DELETED 2022-12-29 in cde_va_project_fork commit `f8764bf` during the v1/v2 refactor; reference latent for 3+ years because `do_touse_va` gated 0 in production. Preserved verbatim per ADR-0021 with header flag; Phase 1b §4.3 will resolve by repointing to `create_prior_scores_v1.doh` per ADR-0009 v1-canonical.
+
+2. **`$distance_dtadir` was unbound** in `do/settings.do`. Referenced at L23 of `merge_k12_postsec_dist.doh` (LEGACY include). Caught by Tier 1 self-check (LEGACY-include macro-trace per phase-1-review.md §2(d)). Added to settings.do LEGACY block as prereq edit in same commit:
+   ```
+   global distance_dtadir  "$vaprojdir/data/k12_postsec_distance"
+   ```
+   Matches predecessor `do_files/settings.do:52` binding.
+
+3. **Output-path coordination**: `touse_va.do:324` writes `$datadir_clean/sbac/va_samples.dta`; `create_va_sample.doh:78` reads same path. Atomic commit was the entire reason batch 2b had to commit together. Verified exact-match via grep.
+
+4. **Gate parity**: `do/main.do` Phase 2 introduces `local do_touse_va = 0` and `local do_create_samples = 0` mirroring predecessor `do_all.do:110, 148`. Conditional blocks wired with `if \`do_touse_va'` / `if \`do_create_samples'`. Sets the gate-mirror precedent for future relocations of run-once-cached scripts.
+
+5. **Verbatim preservation under ADR-0021**: predecessor analysis logic intact (the dead include, the leading-space style, the typo "naming onvention" in CHANGE LOG). Path-only repointing per ADR-0021's "behavior-preserving" mandate.
+
+### Coder-critic dispatch
+
+Tight-scope dispatch (5 concerns referencing established precedents: siblingoutxwalk.do header structure, batch 2a tempfile-not-sandbox convention). Returned in ~2 minutes.
+
+**Verdict: PASS 96/100.** Two Minor findings, both closed in-commit per the verify-deferred-Minor convention:
+
+- M1 (-3): verification-ledger rows for 4 new files not appended → **FIXED** in same commit. 10 ledger rows added to `.claude/state/verification-ledger.md` (8 PASS rows for `no-hardcoded-paths` + `adr-0021-sandbox-write` across all 4 files; 2 ASSUMED rows for `legacy-include-macro-trace` of out-of-repo merge helpers).
+- M2 (-1): out-of-repo merge helper macro-trace asserted but not documented → **FIXED** as the 2 ASSUMED rows in M1.
+
+### Commits today (1)
+
+- `5de34a7` — Phase 1a §3.3 step 2 batch 2b: relocate touse_va + create_*_samples + create_va_sample.doh. Includes prereq settings.do edit and main.do Phase 2 wiring. coder-critic: PASS (96/100).
+
+### Phase 1a §3.3 progress: 17 of ~150 files relocated
+
+- Step 5 (sibling_xwalk: 1 file) DONE — `275efc0`
+- Step 1 (helpers/macros: 3 files) DONE — `7983a8d`
+- Step 2 batch 2a (samples .doh: 9 files) DONE — `94fd2b8`
+- **Step 2 batch 2b (sample entry points: 4 files) DONE — `5de34a7`**
+- Step 2 batch 2c (merge helpers: ~4 files) NEXT
+- Steps 3-10 remaining
+
+### Status (end of 2026-05-07 session)
+
+- **ADR ledger:** 21 Decided. No new ADRs.
+- **Plan v3:** APPROVED (no changes).
+- **Tree:** clean; in sync with origin.
+- **Coder-critic audit trail:** `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`. All PASS at >= 92/100.
+
+### Next-session pickup
+
+Step 2 batch 2c: relocate the 4 LEGACY merge helpers (`merge_loscore.doh`, `merge_sib.doh`, `merge_va_smp_acs.doh`, `merge_lag2_ela.doh`) from `cde_va_project_fork/do_files/sbac/` to `do/samples/`. Update LEGACY include references in the now-relocated `create_score_samples.do` + `create_out_samples.do` to consolidated paths in same atomic commit. Predecessor grep showed no top-level `$<global>` references — should be a quick batch.

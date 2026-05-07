@@ -1,43 +1,39 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-04-30 (end of session — context saturation, fresh session needed)
+Last updated: 2026-05-07 (after Step 2 batch 2b commit `5de34a7`)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.3 IN PROGRESS — 13 of ~150 files relocated.** Step 5 (sibling_xwalk: 1 file) + Step 1 (helpers/macros: 3 files) + Step 2 batch 2a (samples .doh fragments: 9 files) DONE.
+- [ ] **Phase 1a §3.3 IN PROGRESS — 17 of ~150 files relocated.** Step 5 (sibling_xwalk: 1 file) + Step 1 (helpers/macros: 3 files) + Step 2 batch 2a (samples .doh fragments: 9 files) + Step 2 batch 2b (sample-construction entry points: 4 files) DONE.
 
-### Next session — start with Step 2 batch 2b (7 files, 1124 lines total)
+### Next session — Step 2 batch 2c (sample-construction merge helpers, ~4 files)
 
-Per plan v3 §3.3 step 2; remainder after batch 2a. **Critical:** these files need OUTPUT-PATH COORDINATION because `touse_va.do` produces `va_samples.dta` consumed by `create_va_sample.doh`; both must land at the SAME `$datadir_clean/...` path. Recommend reading all 7 first, mapping inputs/outputs, defining the `local va_dataset` and `va_samples.dta` paths upfront, THEN drafting + committing as one atomic batch. Files (with predecessor paths + line counts):
+Per plan v3 §3.3 step 2 + flag-comment in `do/main.do:169-172`. The merge helpers consumed by the now-relocated `create_score_samples.do` and `create_out_samples.do` are still LEGACY (referenced via `$vaprojdir/do_files/sbac/...`). Until they relocate, the consolidated entry points cannot run end-to-end on their own — but per the run-once-cached pattern (gates default 0), this is dormant.
 
 | File | Predecessor location | Lines | Notes |
 |---|---|---:|---|
-| `touse_va.do` | `cde_va_project_fork/do_files/sbac/` | 200 | Sample-tag script; **WRITES** `va_samples.dta`. Source-of-truth for the path coordination. |
-| `create_score_samples.do` | `cde_va_project_fork/do_files/sbac/` | 279 | Full score-VA sample pipeline; includes `macros_va.doh` + `create_va_g11_sample[_v1].doh` chain; **WRITES** sample dta. |
-| `create_out_samples.do` | `cde_va_project_fork/do_files/sbac/` | 244 | Full outcome-VA sample pipeline; analogous structure. |
-| `create_va_sample.doh` | `cde_va_project_fork/do_files/sbac/` | 57 | 57-line fragment with relative-path ref `data/sbac/va_samples.dta` (predecessor CWD-dependent); needs repoint to `$datadir_clean/sbac/va_samples.dta`. |
-| `createvasample.do` | `caschls/do/share/siblingvaregs/` | 128 | caschls-side sample creation; cross-repo. Must verify it's NOT deprecated per ADR-0004 (per chunk-5 audit, `siblingvaregs/` mostly deprecated except `siblingoutxwalk.do`; this file may belong to `_archive/` rather than active relocation). |
-| `create_va_sib_acs_restr_smp.do` | `caschls/do/share/siblingvaregs/` | 97 | Sibling × ACS restriction; same caschls-deprecation concern. |
-| `create_va_sib_acs_out_restr_smp.do` | `caschls/do/share/siblingvaregs/` | 119 | Outcome variant; same. |
+| `merge_loscore.doh` | `cde_va_project_fork/do_files/sbac/` | TBD | Leave-out prior-score merger. No top-level `$<global>` references at predecessor; uses parent-scope locals from macros_va.doh. |
+| `merge_sib.doh` | same | TBD | Sibling-controls merger. Consumed at 4 sites in each create_*_samples.do (sample blocks `s`, `ls`, `as`, `las`). |
+| `merge_va_smp_acs.doh` | same | TBD | ACS-controls merger. Called via `do` with 5 args. References `$vaprojdir` (defined). |
+| `merge_lag2_ela.doh` | same | TBD | Lag-2 ELA-score merger. Empty `$<global>` grep at predecessor. |
 
-**Pre-batch checklist before drafting:**
+Subsequent: `merge_k12_postsec_dist.doh` from `cde_va_project_fork/do_files/k12_postsec_distance/` belongs in Step 9 (Christina-owned data-prep batch) per plan v3, not Step 2. Until Step 9, it's referenced LEGACY (the prereq `$distance_dtadir` global was added to do/settings.do in batch 2b commit `5de34a7`).
 
-1. Read all 7 files (efficient: do in parallel where possible).
-2. Decide caschls-side disposition: per ADR-0004, `siblingvaregs/` contents are mostly deprecated — only `siblingoutxwalk.do` survives. The 3 caschls files above MAY belong to `_archive/` per Step 6 (deprecated-archive) rather than `do/samples/` per Step 2. Verify by checking whether they're still consumed by the canonical pipeline (grep for callers in `cde_va_project_fork/do_files/do_all.do` + `caschls/do/master.do`). If they're orphaned/deprecated → move to Step 6 batch.
-3. Map output paths: where does each .do file write? Map predecessor paths → CANONICAL `$datadir_clean/...` paths. Document in commit message.
-4. Determine `local va_dataset` definition site: probably in `touse_va.do` or `create_score_samples.do` (the entry-point .do scripts). Header in `do/samples/create_va_g11_sample_v1.doh` already prescribes `$datadir_clean/common_core_va/va_dataset` — verify against actual touse_va.do logic and align.
-5. Apply ADR-0021 conventions established to date:
-   - Header structure (PURPOSE / INVOKED FROM / INPUTS (LEGACY/CANONICAL) / OUTPUTS (CANONICAL) / ROLE IN ADR-0021 SANDBOX / RELOCATION HISTORY / ORIGINAL CHANGE LOG / REFERENCES).
-   - One-liner in `do/main.do` Phase 2 at each .do invocation site.
-   - Sandbox-write check: every save to `$datadir_clean/...`.
-   - LEGACY-include macro-trace per phase-1-review.md §2(d): each LEGACY .doh include needs `$global` reference scan + alias-before-include if any unbound.
-   - Pre-emptive `$projdir` repoint pattern for relocated files (avoid alias-need for callers).
-   - Per-do-file logging via `log using $logdir/<name>.smcl`.
-   - mkdir defensive prep for output dirs.
-   - cd "$consolidated_dir" restore at end if `cd $vaprojdir` was used.
-6. Update `do/main.do` Phase 2 block: replace placeholder TODO comments for the relocated scripts with active invocations + one-liners.
+**Pre-batch checklist (carry forward from batch 2b):**
 
-Then: Steps 3 → 4 → 6 → 7 → 8 → 9 → 10 per plan v3 §3.3 ordering.
+1. Read all 4 files; confirm they're pure parent-context fragments (no own `cd`, log, or save to disk; tempfile saves only).
+2. Apply ADR-0021 conventions: header block, sandbox-write check, LEGACY-include macro-trace.
+3. Update LEGACY include references in `do/samples/create_score_samples.do` + `do/samples/create_out_samples.do` to consolidated paths in same atomic commit.
+
+### Remaining Phase 1a §3.3 steps after Step 2 batch 2c
+
+| Step | Description | Source | Destination | Approx files |
+|---|---|---|---|---:|
+| 3 | VA estimation (`va_score_all.do`, `va_out_all.do` + `va_*_tab.do` + `va_*_fig.do`) | `cde_va_project_fork/do_files/sbac/` | `do/va/` | ~15 |
+| 4 | Heterogeneity + pass-through (`va_het.do`, `pass_through/`, `reg_out_va_*.do`) | same | `do/va/heterogeneity/` + `do/va/pass_through/` | ~12 |
+| 6 | siblingvaregs deprecated archive (~30 files; minus `siblingoutxwalk.do` already moved). **INCLUDES the 3 caschls files originally tagged for batch 2b** (`createvasample.do`, `create_va_sib_acs_restr_smp.do`, `create_va_sib_acs_out_restr_smp.do`) — disposition decided 2026-05-07 per ADR-0004 (siblingvaregs deprecated; no cde-side caller). | `caschls/do/share/siblingvaregs/` | `do/_archive/siblingvaregs/` | ~30 |
+| 7 | Survey VA (`imputedcategoryindex.do`, `compcasecategoryindex.do`, `indexalpha.do`, `indexhorserace*`, `indexregwithdemo.do`, `imputation.do`, `factor.do`, `pcascore.do`, `mvpatterns.do`) | `caschls/do/share/factoranalysis/` | `do/survey_va/` | ~10 |
+| 8 | `alpha.do` archived per ADR-0010 | `caschls/do/share/factoranalysis/` | `do/_archive/exploratory/` | 1 |
 
 ### Remaining Phase 1a §3.3 steps after Step 2 batch 2b
 
@@ -66,7 +62,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
