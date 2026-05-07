@@ -1019,3 +1019,88 @@ Tight-scope dispatch (5 concerns referencing established precedents: siblingoutx
 ### Next-session pickup
 
 Step 2 batch 2c: relocate the 4 LEGACY merge helpers (`merge_loscore.doh`, `merge_sib.doh`, `merge_va_smp_acs.doh`, `merge_lag2_ela.doh`) from `cde_va_project_fork/do_files/sbac/` to `do/samples/`. Update LEGACY include references in the now-relocated `create_score_samples.do` + `create_out_samples.do` to consolidated paths in same atomic commit. Predecessor grep showed no top-level `$<global>` references — should be a quick batch.
+
+---
+
+## 2026-05-07 (continued) — Phase 1a §3.3 step 2 batch 2c: merge helpers + batch 2b bugfix
+
+**Status:** Tree clean; pushed to origin (`90700c2`). **Step 2 (sample construction) COMPLETE.**
+
+### Summary
+
+Step 2 batch 2c landed: 4 sample-construction merge helpers relocated from `cde_va_project_fork/do_files/sbac/` to `do/samples/`. Bundled with a Critical bugfix in batch 2b (`5de34a7`) — 9 broken consolidated relative includes (`include do/...` after `cd $vaprojdir`) — plus the 16 LEGACY ref repointings in `create_score_samples.do` / `create_out_samples.do`.
+
+### Files relocated (4)
+
+| File | Lines | Type |
+|---|---:|---|
+| `do/samples/merge_loscore.doh` | 34 | Pure parent-context fragment (leave-out prior-score merger) |
+| `do/samples/merge_sib.doh` | 19 | Pure fragment (sibling-controls merger) |
+| `do/samples/merge_lag2_ela.doh` | 30 | Pure fragment (lag-2 ELA merger; no-drop variant of merge_loscore) |
+| `do/samples/merge_va_smp_acs.doh` | 124 | `do`-script (own scope; 5 positional args; ACS census-tract controls) |
+
+Only `merge_va_smp_acs.doh` had internal path repointing (`include $vaprojdir/do_files/sbac/macros_va.doh` → `include $consolidated_dir/do/va/helpers/macros_va.doh`). The 3 pure fragments are byte-identical bodies to predecessor; rely on parent-scope locals.
+
+### Bugfix in batch 2b (Critical, surfaced this session)
+
+**Pattern:** 9 sites across 3 batch 2b files used `include do/...` *after* the predecessor `cd $vaprojdir`. After cd, relative paths resolve to `$vaprojdir/do/...` — a path that doesn't exist. Would have failed at runtime when `do_touse_va = 1` or `do_create_samples = 1`.
+
+**Fix:** Convert all consolidated includes to absolute `$consolidated_dir/do/...` form. New convention codified in TODO.md "Pre-batch checklist" item 3 for Step 3+.
+
+**Sites fixed:**
+- `touse_va.do`: 3 sites (`macros_va.doh`, `create_diff_school_prop.doh`, `create_prior_scores.doh` — the dead one)
+- `create_score_samples.do`: 3 sites (`macros_va.doh`, `create_va_sample.doh`, `create_va_g11_sample_\`version'.doh`)
+- `create_out_samples.do`: 3 sites (`macros_va.doh`, `create_va_sample.doh`, `create_va_g11_out_sample_\`version'.doh`)
+
+**Why coder-critic round-1 missed it on batch 2b:** the dispatch focused on sandbox-write + LEGACY-include macro-trace + DEAD INCLUDE preservation; it didn't run `cd $vaprojdir` + relative-path simulation. Lesson: future relocations of files with `cd` need explicit "relative-path-after-cd" check in the Tier 1 self-check or coder-critic concern list.
+
+### LEGACY repointing in batch 2b create_*_samples.do (16 sites)
+
+| Helper | create_score_samples sites | create_out_samples sites |
+|---|---:|---:|
+| `merge_lag2_ela.doh` | 1 | 1 |
+| `merge_loscore.doh` | 1 | 1 |
+| `merge_sib.doh` | 4 | 4 |
+| `merge_va_smp_acs.doh` (via `do`) | 2 | 2 |
+| **Total** | **8** | **8** |
+
+KEPT LEGACY: `$vaprojdir/do_files/k12_postsec_distance/merge_k12_postsec_dist.doh` — Christina-owned distance merger; relocates to `do/data_prep/k12_postsec_distance/` in Step 9.
+
+### Scope rule decision (Christina 2026-05-07)
+
+Paper-text edits (ADR-0010 footnote, ADR-0014 old-draft note) **DEFERRED post-handoff**; out of scope for consolidation. **Phase 1b §4.1 effectively retired** — Phase 1b reduces to code corrections + naming/clarity. Captured as `[LEARN:project]` in MEMORY.md and reflected in TODO.md Phase 1b line.
+
+### Coder-critic dispatch
+
+Tight-scope dispatch (5 concerns: bugfix completeness, macros_va trace, sandbox-write, pure-fragment-vs-do-script header distinction, repointing completeness). **Verdict: PASS 95/100.**
+
+Two non-blocking Minor findings (header-attribution stylistic uniformity; sibling_out_xwalk LEGACY/CANONICAL labeling tension inherited from earlier macros_va relocation — not introduced here). Per verify-deferred-Minor convention, also closed in-commit:
+- 8 new ledger rows for the 4 merge helpers (`no-hardcoded-paths` + `adr-0021-sandbox-write`).
+- Ledger rows for `create_score_samples.do` + `create_out_samples.do` `legacy-include-macro-trace` upgraded from ASSUMED → PASS (helpers now in-repo and auditable).
+- File hashes refreshed for 3 batch 2b files modified this commit.
+
+### Commits today (2)
+
+- `5de34a7` (earlier in session) — Phase 1a §3.3 step 2 batch 2b: 4 sample entry-point relocations + prereq settings.do edit + main.do Phase 2 wiring. PASS 96/100.
+- `90700c2` — Phase 1a §3.3 step 2 batch 2c: 4 merge helpers + batch 2b bugfix + 16 LEGACY repoints + scope-rule LEARN entry. PASS 95/100.
+
+### Phase 1a §3.3 progress: 21 of ~150 files relocated. Step 2 (samples) COMPLETE.
+
+- Step 5 (sibling_xwalk: 1 file) DONE — `275efc0`
+- Step 1 (helpers/macros: 3 files) DONE — `7983a8d`
+- Step 2 batch 2a (samples .doh: 9 files) DONE — `94fd2b8`
+- Step 2 batch 2b (sample entry points: 4 files) DONE — `5de34a7`
+- **Step 2 batch 2c (merge helpers: 4 files + bugfix) DONE — `90700c2`**
+- Step 3 (VA estimation: ~15 files) NEXT
+- Steps 4-10 remaining
+
+### Status (end of 2026-05-07 session)
+
+- **ADR ledger:** 21 Decided. No new ADRs.
+- **Plan v3:** APPROVED. Phase 1b §4.1 (paper-text) retired by Christina 2026-05-07; will need a flag-comment update on next plan v3 maintenance pass.
+- **Tree:** clean; in sync with origin.
+- **Coder-critic audit trail:** `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`. All PASS at ≥ 92/100.
+
+### Next-session pickup
+
+Step 3: VA estimation entry points (`va_score_all.do`, `va_out_all.do`, plus `va_*_tab.do` and `va_*_fig.do` paper-shipping artifacts). ~15 files. **Convention reminder from batch 2c bugfix:** any consolidated `include`/`do` in a script that does `cd $vaprojdir` MUST use absolute `$consolidated_dir/do/...` prefix. Verify every consolidated reference is absolute before commit.
