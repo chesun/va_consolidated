@@ -128,4 +128,4 @@ since factors are explaining the variance */
 
 
 cap log close
-translate $consolidated_dir/do/survey_va/factor.smcl $consolidated_dir/do/survey_va/factor.log, replace 
+translate $logdir/factor.smcl $logdir/factor.log, replace

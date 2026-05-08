@@ -11,6 +11,7 @@ When writing a new review, consult this index first. If an `Active` entry exists
 - [2026-04-25_master-file-audit.md](2026-04-25_master-file-audit.md)
 - [2026-04-28_data-checks-design.md](2026-04-28_data-checks-design.md)
 - [2026-05-07_siblingvaregs-archive_coder_review.md](2026-05-07_siblingvaregs-archive_coder_review.md) — `do/_archive/siblingvaregs/` (Phase 1a §3.3 step 6), score 96, Active
+- [2026-05-08_step-7-survey-va_coder_review.md](2026-05-08_step-7-survey-va_coder_review.md) — Phase 1a §3.3 step 7 (9 Survey VA files + main.do Phase 5 wiring), round 1 75/100 BLOCK → round 2 94/100 PASS, Active
 
 ---
 
