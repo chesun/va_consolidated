@@ -237,14 +237,23 @@ if `run_va_estimation' {
         do do/va/va_score_sib_lag.do                   // sibling-lag FB diagnostic for score VA; lag-1 older-sibling controls + lag-2 FB leave-out; writes $estimates_dir/.../{vam,spec_test,fb_test,va_est_dta}/
         do do/va/va_out_sib_lag.do                     // sibling-lag FB diagnostic for outcome VA (mirror of score variant)
         do do/va/va_sib_lag_spec_fb_tab.do             // combined spec+FB summary CSV for sibling-lag diagnostic specs; writes $tables_dir/.../combined/sib_lag_fb_spec_<outcome>.csv
+
+        * RELOCATED 2026-05-08 per plan v3 §3.3 step 4 — heterogeneity.
+        * Reads merged VA estimates (from merge_va_est.do, batch 3c1) +
+        * sch_char.dta (LEGACY, Step 9 deferred); produces VA-by-school-char
+        * regressions + paper Table 8 panel + figures.
+        * NOTE: plan v3 mentioned `pass_through/` as a Step 4 destination, but
+        * the predecessor has no pass_through/ directory.  Step 4 = 4 va_het files only.
+        do do/va/heterogeneity/va_het.do               // VA heterogeneity by district + school chars; produces va_all_schl_char.dta + paper Table 8 panel LaTeX (var_across_district + corr_char)
+        do do/va/heterogeneity/va_corr_schl_char.do    // VA-by-school-char regressions per (sample × control × peer × het_char) cell; writes $estimates_dir/.../va_het/<...>.ster
+        do do/va/heterogeneity/va_corr_schl_char_fig.do // paper figures: VA distribution by school chars (scatter + density); writes $figures_dir/.../va_het/<...>.pdf
+        do do/va/heterogeneity/persist_het_student_char_fig.do // combined-panel figures for outcome-VA persistence by student chars; reads .gph from batch 3c2 reg_out_va_all_fig.do
     }
 
     * NOTE: predecessor `out_drift_limit.doh' is DEAD CODE (never included by any
     * active script — all 4 entry points include `drift_limit.doh' which already
     * defines both score_drift_limit and out_drift_limit).  Defer to Phase 1c §5.1
     * archival.
-
-    * TODO Phase 1a §3.3 step 4: heterogeneity + pass-through (do/va/heterogeneity/, do/va/pass_through/)
 }
 
 

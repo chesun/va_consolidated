@@ -127,6 +127,19 @@ Cache of verification results for the adversarial-default rule (`.claude/rules/a
 | do/va/va_sib_lag_spec_fb_tab.do | adr-0021-sandbox-write | 2026-05-08T03:00Z | 03a86ea32a40 | PASS | 4 regsave/save calls all -> CANONICAL `$tables_dir/va_cfr_all_*/{spec_test,fb_test}/spec_sib_lag.dta` + `fb_sib_lag.dta`; log/translate -> `$logdir/` |
 | do/va/va_sib_lag_spec_fb_tab.do | helper-include-absolute | 2026-05-08T03:00Z | 03a86ea32a40 | PASS | 1/1 absolute |
 | do/main.do | brace-balance-batch-3d | 2026-05-08T03:00Z | 02149ecb668c | PASS | run_va_estimation L180/L248 + do_va L197/L240; batch 3d invocations L237-239 inside do_va block; nesting correct (initial draft had brace-misplacement bug — fixed before commit) |
+| do/va/heterogeneity/va_het.do | no-hardcoded-paths | 2026-05-08T04:00Z | c1f59511bfd8 | PASS | grep returned 0 matches |
+| do/va/heterogeneity/va_het.do | adr-0021-sandbox-write | 2026-05-08T04:00Z | c1f59511bfd8 | PASS | save -> $estimates_dir/.../va_est_dta/va_all_schl_char.dta + $estimates_dir/.../va_het/<...>.dta; 4 texsave -> $tables_dir/share/va/{check,pub}/va_het/{var_across_district,corr_char}_*.tex; LEGACY reads of sch_char.dta KEPT (Step 9 deferred CDE data) |
+| do/va/heterogeneity/va_het.do | helper-include-absolute | 2026-05-08T04:00Z | c1f59511bfd8 | PASS | 1/1 absolute (macros_va) |
+| do/va/heterogeneity/va_corr_schl_char.do | no-hardcoded-paths | 2026-05-08T04:00Z | acd8dc1e7160 | PASS | grep returned 0 matches |
+| do/va/heterogeneity/va_corr_schl_char.do | adr-0021-sandbox-write | 2026-05-08T04:00Z | acd8dc1e7160 | PASS | 2 estimates_save -> $estimates_dir/.../va_het/<...>.ster; sch_char_2018.dta KEPT LEGACY |
+| do/va/heterogeneity/va_corr_schl_char.do | helper-include-absolute | 2026-05-08T04:00Z | acd8dc1e7160 | PASS | 2/2 absolute |
+| do/va/heterogeneity/va_corr_schl_char_fig.do | no-hardcoded-paths | 2026-05-08T04:00Z | 930739d1361e | PASS | grep returned 0 matches |
+| do/va/heterogeneity/va_corr_schl_char_fig.do | adr-0021-sandbox-write | 2026-05-08T04:00Z | 930739d1361e | PASS | 3 graph export -> $figures_dir/.../va_het/<...>.pdf; sch_char_2018.dta KEPT LEGACY |
+| do/va/heterogeneity/va_corr_schl_char_fig.do | helper-include-absolute | 2026-05-08T04:00Z | 930739d1361e | PASS | 1/1 absolute |
+| do/va/heterogeneity/persist_het_student_char_fig.do | no-hardcoded-paths | 2026-05-08T04:00Z | 392bee2cd18e | PASS | grep returned 0 matches |
+| do/va/heterogeneity/persist_het_student_char_fig.do | adr-0021-sandbox-write | 2026-05-08T04:00Z | 392bee2cd18e | PASS | 1 graph export -> $figures_dir/.../het_reg_combined_panels/student_char/<...>.pdf; reads .gph files from $output_dir/gph_files (batch 3c2 outputs) — combined-panel PDF only |
+| do/va/heterogeneity/persist_het_student_char_fig.do | helper-include-absolute | 2026-05-08T04:00Z | 392bee2cd18e | PASS | 1/1 absolute |
+| do/va/heterogeneity/persist_het_student_char_fig.do | header-input-fidelity | 2026-05-08T04:00Z | 392bee2cd18e | PASS | INPUTS section corrected pre-commit per coder-critic M2 finding (had boilerplate sch_char/va_all references; body only reads .gph from $output_dir/gph_files); now matches body grep at L97-101 |
 
 <!-- Real entries replace the _example_ rows above. Keep one row per (path, check). When a file changes, its rows become stale and are re-evaluated on next access.
 
