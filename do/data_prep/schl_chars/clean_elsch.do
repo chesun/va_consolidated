@@ -3,7 +3,7 @@ do/data_prep/schl_chars/clean_elsch.do — Phase 1a §3.3 step 9 batch 9b reloca
 ================================================================================
 
 PURPOSE
-    clean CDE English-learner school-level data per year; produces yearly elsch dtas + tempfile elsch consumed by clean_sch_char.
+    clean CDE English-learner school-level data per year; produces $datadir_clean/cde/elsch/elsch_<year>_clean.dta (consumed by clean_sch_char via append).
 
 INVOKED FROM
     `do/main.do' Phase 1 (DATA PREP) under flag `do_data_prep'.

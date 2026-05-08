@@ -3,7 +3,7 @@ do/data_prep/schl_chars/clean_frpm.do — Phase 1a §3.3 step 9 batch 9b relocat
 ================================================================================
 
 PURPOSE
-    clean CDE Free/Reduced Price Meals school-level data per year; produces yearly frpm dtas + tempfile consumed by clean_sch_char.
+    clean CDE Free/Reduced Price Meals school-level data per year; produces $datadir_clean/cde/frpm/frpm_<year>_clean.dta (consumed by clean_sch_char via append).
 
 INVOKED FROM
     `do/main.do' Phase 1 (DATA PREP) under flag `do_data_prep'.

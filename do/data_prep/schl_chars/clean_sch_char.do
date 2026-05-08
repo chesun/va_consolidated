@@ -19,27 +19,19 @@ INPUTS (verified via grep on file body)
     $datadir_clean/cde/staffdemo/staffdemo_`spring_year'_clean.dta  (CHAIN read; from this batch)
     $datadir_clean/cde/staffschoolfte/staffschoolfte_`spring_year'_clean.dta  (CHAIN read; from this batch)
     $datadir_clean/nces/pubschls_locale.dta  (CHAIN read; from this batch)
-    `elsch'  (tempfile from sister cleaner)
-    `enr_race'  (tempfile from sister cleaner)
-    `enr_sex'  (tempfile from sister cleaner)
-    `enr_total'  (tempfile from sister cleaner)
-    `frpm'  (tempfile from sister cleaner)
-    `staffcred'  (tempfile from sister cleaner)
-    `staffdemo'  (tempfile from sister cleaner)
-    `staffschoolfte'  (tempfile from sister cleaner)
+    `elsch', `enr_race', `enr_sex', `enr_total', `frpm', `staffcred',
+        `staffdemo', `staffschoolfte'  (8 in-file tempfiles defined and
+        consumed within this script; built by appending the per-year .dta
+        files listed above into year-pooled tempfiles before the merges)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
-    $datadir_clean/sch_char.dta
+    $datadir_clean/sch_char.dta              (master combined panel)
+    $datadir_clean/sch_char_`spring_year'.dta (per-year snapshots; ~9 files)
     $logdir/clean_sch_char.smcl (via log using)
     $logdir/clean_sch_char.smcl + $logdir/clean_sch_char.log
-    `elsch'  (tempfile)
-    `enr_race'  (tempfile)
-    `enr_sex'  (tempfile)
-    `enr_total'  (tempfile)
-    `frpm'  (tempfile)
-    `staffcred'  (tempfile)
-    `staffdemo'  (tempfile)
-    `staffschoolfte'  (tempfile)
+    + 8 in-file tempfiles (`elsch', `enr_race', `enr_sex', `enr_total',
+      `frpm', `staffcred', `staffdemo', `staffschoolfte') — temporary
+      scratch saves during the assembly; not persistent.
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9b, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/schl_chars/clean_sch_char.do
@@ -606,7 +598,7 @@ snapshot save
 
 forvalues spring_year = `test_score_min_year' (1) `test_score_max_year' {
 	keep if year == `spring_year'
-	save data/sch_char_`spring_year'.dta, replace 
+	save $datadir_clean/sch_char_`spring_year'.dta, replace
 	snapshot restore 1
 }
 
