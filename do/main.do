@@ -109,8 +109,21 @@ if `run_data_prep' {
     do do/data_prep/acs/acs_2017_gen_dict.do        // build 2017 ACS subject-table data dictionaries (descsave .dta+.csv)
     do do/data_prep/acs/clean_acs_census_tract.do   // clean 2010-2013 ACS census-tract subject tables S0601/S1501/S1702/S1901; produces $datadir_clean/acs/acs_ca_census_tract_clean.dta
 
-    * Step 9 batches 9b-9e PENDING (relocations land in subsequent commits):
-    *   9b — schl_chars/  (~11 files; cde-side)
+    * Step 9 batch 9b — school-characteristics (11 files): LANDED 2026-05-08
+    * Chain order from predecessor do_all.do:75-97; tempfile-based assembly in clean_sch_char (master)
+    do do/data_prep/schl_chars/cds_nces_xwalk.do        // build CDS<->NCES school-id crosswalk; writes $datadir_clean/cde/cds_nces_id_xwalk.dta
+    do do/data_prep/schl_chars/clean_locale.do           // clean NCES urban-rural locale codes; writes $datadir_clean/nces/pubschls_locale.dta (reads cds_nces xwalk)
+    do do/data_prep/schl_chars/clean_elsch.do            // clean CDE EL-school yearly data; tempfile elsch + per-year dtas
+    do do/data_prep/schl_chars/clean_enr.do              // clean CDE enrollment by race/sex/total yearly; tempfiles enr_total/race/sex + per-year dtas
+    do do/data_prep/schl_chars/clean_frpm.do             // clean CDE Free/Reduced Price Meals yearly; tempfile frpm + per-year dtas
+    do do/data_prep/schl_chars/clean_staffcred.do        // clean CDE staff credentials yearly; tempfile staffcred + per-year dtas
+    do do/data_prep/schl_chars/clean_staffdemo.do        // clean CDE staff demographics yearly; tempfile staffdemo + per-year dtas
+    do do/data_prep/schl_chars/clean_staffschoolfte.do   // clean CDE staff-school FTE yearly; tempfile staffschoolfte + per-year dtas
+    do do/data_prep/schl_chars/clean_charter.do          // clean CDE charter status; writes $datadir_clean/cde/charter_status.dta
+    do do/data_prep/schl_chars/clean_ecn_disadv.do       // clean CDE economic-disadvantage; writes $datadir_clean/cde/ecn_disadv.dta
+    do do/data_prep/schl_chars/clean_sch_char.do         // MASTER: merges 6 sister tempfiles + 4 chain dtas; writes $datadir_clean/sch_char.dta
+
+    * Step 9 batches 9c-9e PENDING (relocations land in subsequent commits):
     *   9c — k12_postsec_distance/ (~5 files; cde-side)
     *   9d — prepare/ (~4 files including enrollmentclean; caschls-side)
     *   9e — qoiclean/ (~11 files; caschls-side, year-by-year QOI cleaning)
