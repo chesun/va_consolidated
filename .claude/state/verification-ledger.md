@@ -140,6 +140,8 @@ Cache of verification results for the adversarial-default rule (`.claude/rules/a
 | do/va/heterogeneity/persist_het_student_char_fig.do | adr-0021-sandbox-write | 2026-05-08T04:00Z | 392bee2cd18e | PASS | 1 graph export -> $figures_dir/.../het_reg_combined_panels/student_char/<...>.pdf; reads .gph files from $output_dir/gph_files (batch 3c2 outputs) — combined-panel PDF only |
 | do/va/heterogeneity/persist_het_student_char_fig.do | helper-include-absolute | 2026-05-08T04:00Z | 392bee2cd18e | PASS | 1/1 absolute |
 | do/va/heterogeneity/persist_het_student_char_fig.do | header-input-fidelity | 2026-05-08T04:00Z | 392bee2cd18e | PASS | INPUTS section corrected pre-commit per coder-critic M2 finding (had boilerplate sch_char/va_all references; body only reads .gph from $output_dir/gph_files); now matches body grep at L97-101 |
+| do/_archive/siblingvaregs/ | archive-convention | 2026-05-08T05:00Z | (27 files) | PASS | 27 .do/.doh files copied verbatim from caschls/do/share/siblingvaregs/ per ADR-0004 + ADR-0021 archive convention; bodies untouched (no path repointing); siblingoutxwalk.do excluded (relocated 2026-04-30 to do/sibling_xwalk/); vafilemacros.doh excluded (consumed by ACTIVE relocated code; per ADR-0004 verify-before-archive caveat) |
+| do/_archive/siblingvaregs/README.md | archive-readme | 2026-05-08T05:00Z | c3a383dc481e | PASS | ARCHIVED status note + ADR-0004/0005/0017/0021 cross-refs + 27-file enumeration + exclusion rationale for siblingoutxwalk.do + vafilemacros.doh |
 
 <!-- Real entries replace the _example_ rows above. Keep one row per (path, check). When a file changes, its rows become stale and are re-evaluated on next access.
 
