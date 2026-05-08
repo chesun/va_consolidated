@@ -15,6 +15,7 @@ When writing a new review, consult this index first. If an `Active` entry exists
 - [2026-05-08_step-8-alpha-archive_coder_review.md](2026-05-08_step-8-alpha-archive_coder_review.md) — Phase 1a §3.3 step 8 (`alpha.do` single-file archive + README + main.do flag-comment update; commit `8fe1f28`), score 97, Active
 - [2026-05-08_step-9-batch-9a_coder_review.md](2026-05-08_step-9-batch-9a_coder_review.md) — Phase 1a §3.3 step 9 batch 9a (2 ACS census-tract files + main.do Phase 1 wiring; commit `4a88874`), score 95, Active
 - [2026-05-08_step-9-batch-9b_coder_review.md](2026-05-08_step-9-batch-9b_coder_review.md) — Phase 1a §3.3 step 9 batch 9b (11 schl_chars files + main.do Phase 1 wiring; commit `40cb161`), score 92, Active
+- [2026-05-08_step-9-batch-9c_coder_review.md](2026-05-08_step-9-batch-9c_coder_review.md) — Phase 1a §3.3 step 9 batch 9c (5 k12_postsec_distance files + main.do Phase 1 wiring; commit `4403758`), score 84, Active
 
 ---
 

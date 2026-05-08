@@ -205,8 +205,8 @@ foreach version in v1 v2 {
     // 11th grade sample
     include $consolidated_dir/do/samples/create_va_g11_sample_`version'.doh
 
-    // merge on k12 postsecondary distances
-    include $vaprojdir/do_files/k12_postsec_distance/merge_k12_postsec_dist.doh
+    // merge on k12 postsecondary distances (helper relocated 2026-05-08 batch 9c)
+    include $consolidated_dir/do/data_prep/k12_postsec_distance/merge_k12_postsec_dist.doh
 
     // merge on lag 2 ELA scores without dropping obs, to predict lag 1 ELA score
     include $consolidated_dir/do/samples/merge_lag2_ela.doh

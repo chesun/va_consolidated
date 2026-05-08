@@ -7,13 +7,16 @@ PURPOSE
 
 INVOKED FROM
     `do/main.do' Phase 1 (DATA PREP) under flag `do_data_prep'.
-    MAIN entry for batch 9c; calls `run hd2021.do' + `do reconcile_cdscodes.do' as sub-scripts.
+    MAIN entry for batch 9c; calls `run hd2021.do' as sub-script (loads
+    IPEDS HD 2021 into memory).  Does NOT call reconcile_cdscodes.do;
+    that file is orphan in BOTH predecessor and consolidated pipelines
+    (preserved per ADR-0021 verbatim; not invoked by anyone).
 
 INPUTS (verified via grep on file body)
-    $consolidated_dir/do/data_prep/k12_postsec_distance/hd2021  (helper / sister script)
-    $consolidated_dir/do/data_prep/k12_postsec_distance/k12_postsec_distances.do  (helper / sister script)
-    $distance_dtadir/raw/CDESchoolDirectoryExport.txt  (LEGACY raw)
-    $distance_dtadir/raw/pubschls.txt  (LEGACY raw)
+    $consolidated_dir/do/data_prep/k12_postsec_distance/hd2021.do  (sub-script via `run')
+    $datadir_clean/k12_postsec_distance/clean/k12_postsec_distance  (CHAIN read; from k12_postsec_distance.dta save earlier in this same script)
+    $distance_dtadir/raw/pubschls.txt  (LEGACY raw — fallback if URL fetch fails)
+    https://www.cde.ca.gov/schooldirectory/report  (LEGACY external URL — primary K12 directory source)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/k12_postsec_distance/clean/k12_postsec_distance

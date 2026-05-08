@@ -10,9 +10,17 @@ INVOKED FROM
     Sub-script invoked from `k12_postsec_distances.do'.
 
 INPUTS (verified via grep on file body)
-    $consolidated_dir/do/data_prep/k12_postsec_distance/reconcile_cdscodes.do  (helper / sister script)
-    $vaprojdir/data/k12_postsec_distance/raw/cdscode_changes.csv  (LEGACY raw)
-    $vaprojdir/data/k12_postsec_distance/raw/cdscode_changes.csv  (LEGACY read)
+    $vaprojdir/data/k12_postsec_distance/raw/cdscode_changes.csv  (LEGACY raw — CDS code changes lookup)
+    $datadir_clean/k12_postsec_distance/clean/k12_postsec_mindistance  (CHAIN read; loaded via `use', updated in-place)
+
+ORPHAN STATUS
+    Per coder-critic round-1 finding on commit `4403758': this script is
+    NOT invoked from `k12_postsec_distances.do' (the predecessor MAIN
+    never called `do reconcile_cdscodes.do'); it is also NOT invoked
+    from `do/main.do' Phase 1.  The script is preserved per ADR-0021
+    verbatim but is currently orphan in both predecessor and consolidated
+    pipelines.  Phase 1c §5.1 dead-code review will decide whether to
+    archive (per ADR-0010 archive-convention) or wire into main.do.
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/k12_postsec_distance/clean/k12_postsec_mindistance.dta

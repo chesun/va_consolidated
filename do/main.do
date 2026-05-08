@@ -124,9 +124,11 @@ if `run_data_prep' {
     do do/data_prep/schl_chars/clean_sch_char.do         // MASTER: appends 6 sister cleaners' per-year dtas into 8 in-file tempfiles + merges with 3 chain dtas; writes $datadir_clean/sch_char.dta + per-year snapshots
 
     * Step 9 batch 9c — k12_postsec_distance (5 files): LANDED 2026-05-08
-    * MAIN entry-point sub-calls hd2021 (run) + reconcile_cdscodes (do); helpers are merge_k12_postsec_dist.doh + check_merge.do.
-    do do/data_prep/k12_postsec_distance/k12_postsec_distances.do  // MAIN: build K12-postsec distance file (IPEDS HD2021 + CDE pubschls + geodist); writes $datadir_clean/k12_postsec_distance/clean/k12_postsec_{distance,mindistance}.dta; calls run hd2021.do + do reconcile_cdscodes.do as sub-scripts
-    do do/data_prep/k12_postsec_distance/check_merge.do            // diagnostic: verify mindistance merges cleanly with score_b VA sample (sanity check; LEGACY read of $vaprojdir/data/va_samples_v1/score_b.dta)
+    * MAIN entry-point sub-calls hd2021 (run); reconcile_cdscodes.do + merge_k12_postsec_dist.doh + check_merge.do are not directly invoked from main.do.
+    * - reconcile_cdscodes.do is ORPHAN in both predecessor and consolidated (not called by anyone); preserved per ADR-0021.  Phase 1c §5.1 dead-code review will decide its fate.
+    * - merge_k12_postsec_dist.doh is a helper `include'd by relocated batch-2b sample-construction files (do/samples/create_score_samples.do + create_out_samples.do; consolidated callsites updated 2026-05-08).
+    do do/data_prep/k12_postsec_distance/k12_postsec_distances.do  // MAIN: build K12-postsec distance file (IPEDS HD2021 + CDE pubschls + geodist); writes $datadir_clean/k12_postsec_distance/clean/k12_postsec_{distance,mindistance}.dta; calls `run hd2021.do' as sub-script
+    do do/data_prep/k12_postsec_distance/check_merge.do            // diagnostic: verify mindistance merges cleanly with score_b VA sample (sanity check; LEGACY read of $vaprojdir/data/va_samples_v1/score_b.dta + include of merge_k12_postsec_dist.doh)
 
     * Step 9 batches 9d-9e PENDING (relocations land in subsequent commits):
     *   9d — prepare/ (~4 files including enrollmentclean; caschls-side)

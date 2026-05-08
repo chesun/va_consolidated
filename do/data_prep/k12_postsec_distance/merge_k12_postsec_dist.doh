@@ -10,8 +10,8 @@ INVOKED FROM
     Helper / diagnostic file.
 
 INPUTS (verified via grep on file body)
-    $consolidated_dir/do/data_prep/k12_postsec_distance/merge_k12_postsec_dist.doh  (helper / sister script)
-    $consolidated_dir/do/va/helpers/macros_va.doh  (helper / sister script)
+    $consolidated_dir/do/va/helpers/macros_va.doh  (consolidated helper; via include)
+    $datadir_clean/k12_postsec_distance/clean/k12_postsec_mindistance.dta  (CHAIN read; merge using)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     (none persistent — diagnostic / labels-in-memory only)
