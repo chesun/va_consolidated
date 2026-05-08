@@ -1183,3 +1183,72 @@ Per verify-deferred-Minor convention, also closed in-commit:
 ### Next-session pickup
 
 Step 3 batch 3b: 5 spec/FB test table .do files. Read .ster outputs from batch 3a (CANONICAL `$estimates_dir/...`), produce paper-shipping summary tables. Convention reminder from batch 2c remains binding: absolute `$consolidated_dir/do/...` for any consolidated include after `cd $vaprojdir`.
+
+---
+
+## 2026-05-07 (continued) — Phase 1a §3.3 step 3 batch 3b: spec/FB test summary tables
+
+**Status:** Tree clean; pushed to origin (`4ee0b58`).
+
+### Summary
+
+Step 3 batch 3b landed: 5 paper-shipping spec/FB test summary table .do files relocated from `cde_va_project_fork/do_files/sbac/` to `do/va/`. Reads CFR .ster outputs from batch 3a; produces summary .dta files (regsave-appended) and per-outcome CSVs (esttab) for paper Tables 2/3 spec-test rows + FB-test rows.
+
+### Files relocated (5)
+
+| File | Body lines | Outputs |
+|---|---:|---|
+| `do/va/va_score_spec_test_tab.do` | 206 | `$tables_dir/va_cfr_all_v[12]/spec_test/spec_<subject>_all.dta` |
+| `do/va/va_out_spec_test_tab.do` | 206 | `$tables_dir/va_cfr_all_v[12]/spec_test/spec_<outcome>_all.dta` |
+| `do/va/va_score_fb_test_tab.do` | 189 | `$tables_dir/va_cfr_all_v[12]/fb_test/fb_<subject>_all.dta` |
+| `do/va/va_out_fb_test_tab.do` | 174 | `$tables_dir/va_cfr_all_v[12]/fb_test/fb_<outcome>_all.dta` |
+| `do/va/va_spec_fb_tab.do` | 275 | `$tables_dir/va_cfr_all_v[12]/combined/fb_spec_<outcome>.csv` |
+
+### Prereq settings.do edit
+
+Added `$tables_dir = "$consolidated_dir/tables"` and `$figures_dir = "$consolidated_dir/figures"` to the CANONICAL block. Match CLAUDE.md folder-map convention. `$figures_dir` defined now to support batch 3c (reg_out_va_*_fig.do) without a second prereq.
+
+### Predicted-prior-score routing (LEGACY KEPT)
+
+14 LEGACY-read sites across 4 files preserve `$vaprojdir/.../predicted_prior_score/...` routes. These are exploratory variants per [LEARN:domain] _scrhat_ (paper uses v1, not _scrhat_); produced by `do_files/explore/va_predicted_score.do` which is Step 11 deferred. All explicitly commented as Step 11 deferred.
+
+### Coder-critic round-1 found 2 issues; both fixed before commit
+
+**M1 (-10): Fabricated "undefined locals" claim** in `va_spec_fb_tab.do` header. I had written that `b_str`/`las_str`/`ls_str` locals "are NOT defined anywhere in the predecessor file or in macros_va.doh". Coder-critic ran one grep and found them at `do/va/helpers/macros_va.doh:560/600/616`. They propagate correctly via `include`. Per derive-don't-guess.md, this was a fabrication — repo-state knowledge that should have been verified by grep before being written. **Fixed:** rewrote the header note to accurately describe the include-time propagation.
+
+**M2 (-3): Real undocumented predecessor latent bug** in `va_out_spec_test_tab.do:245` — predicted-prior-score with-peer row uses `sd_va` not `sd_va_peer`, asymmetric to score variant. **Fixed:** added PREDECESSOR LATENT BUG block to relocation history with explicit Phase 1b deferral.
+
+**Verdict: PASS 84/100.** Both findings closed before commit; ledger rows added (16 new rows for the 5 batch-3b files + settings.do tables-figures-globals row).
+
+### Lesson (codified for batch 3c+)
+
+**Always grep before claiming a local/macro is undefined.** Predecessor-state claims about repo content must be derived (per derive-don't-guess.md), not asserted from imperfect mental models. Added to TODO.md "Pre-batch checklist" as item 4 for all subsequent batches.
+
+### Commits today (5)
+
+- `5de34a7` — Step 2 batch 2b (4 sample entry points). PASS 96/100.
+- `90700c2` — Step 2 batch 2c (4 merge helpers + bugfix). PASS 95/100.
+- `223e9b2` — Step 3 batch 3a (4 VA estimation entry points). PASS 92/100.
+- `4ee0b58` — **Step 3 batch 3b (5 spec/FB tables + 2 in-commit fixes). PASS 84/100.**
+- (3 hygiene commits docs-only)
+
+### Phase 1a §3.3 progress: 30 of ~150 files relocated
+
+- Step 5 (sibling_xwalk: 1 file) DONE — `275efc0`
+- Step 1 (helpers/macros: 3 files) DONE — `7983a8d`
+- Step 2 (sample construction: 17 files) DONE — `94fd2b8`, `5de34a7`, `90700c2`
+- Step 3 batch 3a (VA estimation entry points: 4 files) DONE — `223e9b2`
+- **Step 3 batch 3b (spec/FB tables: 5 files) DONE — `4ee0b58`**
+- Step 3 batch 3c (utilities + outcome regs: ~9 files) NEXT
+- Step 3 batch 3d + Steps 4-10 remaining
+
+### Status (end of 2026-05-07 session)
+
+- **ADR ledger:** 21 Decided. No new ADRs.
+- **Plan v3:** APPROVED. Phase 1b §4.1 retired.
+- **Tree:** clean; in sync with origin.
+- **Coder-critic audit trail:** 10 entries, all PASS ≥ 84/100.
+
+### Next-session pickup
+
+Step 3 batch 3c — 9 files (3 utilities + 3 outcome regression .do + 3 outcome regression _tab/_fig). `merge_va_est.do`, `va_corr.do`, `prior_decile_original_sample.do`, `reg_out_va_all.do` + `_tab.do` + `_fig.do`, `reg_out_va_dk_all.do` + `_tab.do` + `_fig.do`. **Convention reminders:** absolute `$consolidated_dir/do/...` after `cd $vaprojdir`; **always grep** before claiming a local/macro is undefined (batch 3b lesson).

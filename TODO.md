@@ -1,32 +1,33 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-07 (after Step 3 batch 3a commit `223e9b2`)
+Last updated: 2026-05-07 (after Step 3 batch 3b commit `4ee0b58`)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.3 IN PROGRESS — 25 of ~150 files relocated.** Step 5 (sibling_xwalk: 1 file) + Step 1 (helpers/macros: 3 files) + Step 2 batches 2a/2b/2c (samples: 17 files) + Step 3 batch 3a (VA estimation entry points: 4 files) DONE.
+- [ ] **Phase 1a §3.3 IN PROGRESS — 30 of ~150 files relocated.** Step 5 (sibling_xwalk: 1 file) + Step 1 (helpers/macros: 3 files) + Step 2 batches 2a/2b/2c (samples: 17 files) + Step 3 batches 3a/3b (VA estimation: 9 files) DONE.
 
-### Next session — Step 3 batch 3b (spec/FB test tables, 5 files)
+### Next session — Step 3 batch 3c (utilities + outcome regressions, ~9 files)
 
-Per plan v3 §3.3 step 3. The 4 entry points produce .ster files; batch 3b reads them and produces paper-shipping spec-test and FB-test tables.
+Per plan v3 §3.3 step 3 + flag-comment in `do/main.do`. Utilities (`merge_va_est.do`, `va_corr.do`, `prior_decile_original_sample.do`) consume CFR estimates from batch 3a; outcome regressions (`reg_out_va_all.do` + `_tab.do` + `_fig.do` + `reg_out_va_dk_all.do` + `_tab.do` + `_fig.do`) produce paper-shipping pass-through tables and figures.
 
-| File | Predecessor location | Reads | Writes |
-|---|---|---|---|
-| `va_score_spec_test_tab.do` | `cde_va_project_fork/do_files/sbac/` | `$estimates_dir/.../spec_test/spec_<subject>...ster` | spec-test summary table |
-| `va_out_spec_test_tab.do` | same | `$estimates_dir/.../spec_test/spec_<outcome>...ster` (incl. dk_spec_*) | outcome spec-test table |
-| `va_score_fb_test_tab.do` | same | `$estimates_dir/.../fb_test/fb_<subject>...ster` | FB-test summary table |
-| `va_out_fb_test_tab.do` | same | `$estimates_dir/.../fb_test/fb_<outcome>...ster` (incl. dk_fb_*) | outcome FB-test table |
-| `va_spec_fb_tab.do` | same | combined .ster across both | combined spec/FB table |
+| File | Predecessor location | Type | Reads | Writes |
+|---|---|---|---|---|
+| `merge_va_est.do` | `cde_va_project_fork/do_files/sbac/` | utility | CFR estimates from `$estimates_dir/.../va_est_dta/` | merged single-dataset of all VA estimates |
+| `va_corr.do` | same | utility | merged VA estimates | correlation tables |
+| `prior_decile_original_sample.do` | same | utility | sample dtas | prior_decile_original_sample.dta (consumed by reg_out_va_all + dk) |
+| `reg_out_va_all.do` | same | regression | merged VA estimates + decile dta | regression .ster files |
+| `reg_out_va_all_tab.do` | same | producer | reg .ster | paper Tables 4-7 |
+| `reg_out_va_all_fig.do` | same | producer | reg .ster | paper figures |
+| `reg_out_va_dk_all.do` | same | regression | DK VA estimates | DK regression .ster |
+| `reg_out_va_dk_all_tab.do` | same | producer | DK reg .ster | DK paper tables |
+| `reg_out_va_dk_all_fig.do` | same | producer | DK reg .ster | DK paper figures |
 
 **Pre-batch checklist (carry forward + convention reminder):**
 
-1. Read all 5 files; confirm reads are from `$estimates_dir/...` (CANONICAL — produced by batch 3a).
+1. Read all 9 files; map I/O. Identify writes targeting `$consolidated_dir/figures/...` for the `_fig.do` files (figures_dir global already added in batch 3b).
 2. **Absolute paths after `cd $vaprojdir`** — convention from batch 2c bugfix.
-3. ADR-0021 conventions: header, sandbox-write (table outputs land in `$consolidated_dir/tables/share/va/...`), LEGACY-include macro-trace.
-
-### Step 3 batch 3c (utilities + outcome regressions, ~9 files; after 3b)
-
-`merge_va_est.do`, `va_corr.do`, `prior_decile_original_sample.do` (utilities) + `reg_out_va_all.do` + `_tab.do` + `_fig.do` + `reg_out_va_dk_all.do` + `_tab.do` + `_fig.do` (outcome regressions).
+3. ADR-0021 conventions: header, sandbox-write check, LEGACY-include macro-trace.
+4. **Watch for predecessor-state fabrication:** before claiming any local/macro is undefined in macros_va.doh, GREP it first (per derive-don't-guess.md). Batch 3b round-1 had a fabricated "undefined locals" claim that wasted critic cycles.
 
 ### Step 3 batch 3d (sibling lag diagnostic, 3 files; or roll into Step 4)
 
@@ -58,7 +59,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
