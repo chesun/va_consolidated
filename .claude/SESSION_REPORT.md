@@ -1624,3 +1624,24 @@ ADR-0010 (2026-04-27) wrote "header note documenting purpose"; ADR-0021 (later) 
 ### Coder-critic audit trail
 
 - 17 PASS verdicts. `8fe1f28` Step 8 archive PASS 97/100 closes the second archive batch (after Step 6 siblingvaregs `b8b4ce8` PASS 96/100).
+
+---
+
+## 2026-05-08 — Step 9 inventory + batch 9a — PASS 95/100
+
+**Status:** Step 9 5-batch plan committed (`a6cd5f2`); batch 9a (2 ACS files) committed (`4a88874`) + Tier-2 PASS 95/100.
+
+### Operations
+
+- Inventory across both predecessor trees identified 33 files in 5 sub-batches (acs/2, schl_chars/11, k12_postsec_distance/5, prepare/4, qoiclean/11). Out-of-scope discovery: `buildanalysisdata/poolingdata/` (5) + `responserate/` (4) — Christina decision deferred to end-of-step-9.
+- Batch 9a: relocated `acs_2017_gen_dict.do` + `clean_acs_census_tract.do` from `cde/do_files/acs/` to `do/data_prep/acs/`. Methodology: hand-write small file + cp+sed+Edit for large file; ADR-0021 headers; path repointings to CANONICAL `$datadir_clean/acs/`, `$output_dir/csv/acs/`, `$logdir/`; LEGACY raw stays at `$vaprojdir/data/public_access/raw/acs/`.
+- Tier 1 PASS (extended grep clean); Tier 2 PASS 95/100 with 2 Minors deferred (tempfile-disclosure precision + mkdir verbosity).
+
+### Phase 1a §3.3 progress: 85 of ~150 — Steps 1-8 + Step 9 batch 9a COMPLETE
+
+- Batches 9b-9e (~31 files) NEXT
+- Step 10 (~50 share/ paper producers) after Step 9
+
+### Coder-critic audit trail
+
+- 18 PASS verdicts. `4a88874` Step 9 batch 9a PASS 95/100.
