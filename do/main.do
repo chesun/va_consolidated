@@ -136,8 +136,20 @@ if `run_data_prep' {
     do do/data_prep/prepare/renamedata.do               // rename + standardize raw CalSCHLS surveys (elementary/parent/secondary/staff across years); writes $datadir_clean/calschls/{elementary,parent,secondary,staff}/<x><year>.dta — incl. pooled staff0414 consumed by splitstaff0414
     do do/data_prep/prepare/splitstaff0414.do           // split pre-existing $clndtadir/staff/staff0414 by year; writes $datadir_clean/calschls/staff/staff<year>.dta
 
-    * Step 9 batch 9e PENDING (relocations land in subsequent commit):
-    *   9e — qoiclean/ (~11 files; caschls-side, year-by-year QOI cleaning)
+    * Step 9 batch 9e — caschls/qoiclean/ (10 files): LANDED 2026-05-08 (final batch of Step 9)
+    * Year-by-year QOI cleaning per CalSCHLS subgroup (parent/secondary/staff).
+    * Reads CHAIN $datadir_clean/calschls/<sub>/<x><year>.dta (from renamedata batch 9d).
+    * Writes CHAIN $datadir_clean/calschls/qoiclean/<sub>/<x>qoiclean<year>.dta.
+    do do/data_prep/qoiclean/parent/parentqoiclean1415.do            // QOI clean parent CalSCHLS 1415
+    do do/data_prep/qoiclean/parent/parentqoiclean1516.do            // QOI clean parent CalSCHLS 1516
+    do do/data_prep/qoiclean/parent/parentqoiclean1617.do            // QOI clean parent CalSCHLS 1617
+    do do/data_prep/qoiclean/parent/parentqoiclean1819_1718.do       // QOI clean parent CalSCHLS 1718+1819 (loop)
+    do do/data_prep/qoiclean/secondary/secqoiclean1415.do            // QOI clean secondary CalSCHLS 1415
+    do do/data_prep/qoiclean/secondary/secqoiclean1617.do            // QOI clean secondary CalSCHLS 1617
+    do do/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.do  // QOI clean secondary CalSCHLS 1516+1718+1819 (loop)
+    do do/data_prep/qoiclean/staff/staffqoiclean1415.do              // QOI clean staff CalSCHLS 1415
+    do do/data_prep/qoiclean/staff/staffqoiclean1617_1516.do         // QOI clean staff CalSCHLS 1516+1617 (loop)
+    do do/data_prep/qoiclean/staff/staffqoiclean1819_1718.do         // QOI clean staff CalSCHLS 1718+1819 (loop)
     *
     * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
     * + plan v3 §8 Q1 (verified by grep — ZERO production invocations of
