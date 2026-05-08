@@ -209,9 +209,18 @@ if `run_va_estimation' {
         do do/va/va_score_fb_test_tab.do               // score-VA FB-test summary table (excludes lasd per ADR-0004); appends rows to $tables_dir/.../fb_test/fb_<subject>_all.dta
         do do/va/va_out_fb_test_tab.do                 // outcome-VA FB-test summary table; appends rows to $tables_dir/.../fb_test/fb_<outcome>_all.dta
         do do/va/va_spec_fb_tab.do                     // combined spec+FB CSV per (outcome × version); writes $tables_dir/.../combined/fb_spec_<outcome>.csv
+
+        * RELOCATED 2026-05-08 per plan v3 §3.3 step 3 batch 3c1 — utilities
+        * (merge per-cell estimates into master VA dataset; correlation
+        * diagnostic; prior-decile + census-income-decile dtas for outcome
+        * regressions).  These produce inputs consumed by reg_out_va_*.do
+        * (batch 3c2).
+        do do/va/merge_va_est.do                       // merge per-cell VA estimate dtas into va_<outcome>_all.dta + super-master va_all.dta; writes $estimates_dir/va_cfr_all_v[12]/va_est_dta/
+        do do/va/va_corr.do                            // diagnostic: print correlation matrix of VA estimates across 8 spec combinations; output to log only (no .dta/.csv)
+        do do/va/prior_decile_original_sample.do       // build student-level prior-score deciles + race/sex/econ from out_b sample; census income deciles from out_a; writes $datadir_clean/sbac/{prior_decile_original_sample,census_income_decile_a_sample}.dta
     }
 
-    * TODO Phase 1a §3.3 step 3 batch 3c: utilities + outcome regressions
+    * TODO Phase 1a §3.3 step 3 batch 3c2: outcome regressions + tables/figures
     *   do do/va/merge_va_est.do
     *   do do/va/va_corr.do
     *   do do/va/prior_decile_original_sample.do

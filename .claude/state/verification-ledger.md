@@ -89,6 +89,16 @@ Cache of verification results for the adversarial-default rule (`.claude/rules/a
 | do/va/va_spec_fb_tab.do | adr-0021-sandbox-write | 2026-05-08T00:30Z | 480b0c5d2267 | PASS | 1 esttab using -> CANONICAL `$tables_dir/.../combined/fb_spec_<outcome>.csv`; all `est use` reads from CANONICAL `$estimates_dir/...`; no LEGACY reads (no predicted-score branch) |
 | do/va/va_spec_fb_tab.do | helper-include-absolute | 2026-05-08T00:30Z | 480b0c5d2267 | PASS | 1/1 absolute (only macros_va.doh needed; b_str/las_str/ls_str locals defined therein at L560/600/616 propagate via include) |
 | do/settings.do | tables-figures-globals | 2026-05-08T00:30Z | 5f0101247e55 | PASS | $tables_dir = "$consolidated_dir/tables" and $figures_dir = "$consolidated_dir/figures" added to CANONICAL block (per ADR-0012; consumers in batch 3b use $tables_dir for paper-shipping spec/FB tables) |
+| do/va/merge_va_est.do | no-hardcoded-paths | 2026-05-08T01:00Z | 1c39c8a4fc48 | PASS | grep returned 0 matches |
+| do/va/merge_va_est.do | adr-0021-sandbox-write | 2026-05-08T01:00Z | 1c39c8a4fc48 | PASS | 7 save calls (5 per-outcome + 1 super-master + log/translate) all target CANONICAL `$estimates_dir/...` and `$logdir/`; no LEGACY writes |
+| do/va/merge_va_est.do | helper-include-absolute | 2026-05-08T01:00Z | 1c39c8a4fc48 | PASS | 2/2 absolute (macros_va, macros_va_all_samples_controls) |
+| do/va/va_corr.do | no-hardcoded-paths | 2026-05-08T01:00Z | db97ccf8d626 | PASS | grep returned 0 matches |
+| do/va/va_corr.do | adr-0021-sandbox-write | 2026-05-08T01:00Z | db97ccf8d626 | PASS | no .dta/.csv writes (correlation diagnostic); only log + translate target CANONICAL `$logdir/` |
+| do/va/va_corr.do | helper-include-absolute | 2026-05-08T01:00Z | db97ccf8d626 | PASS | 1/1 absolute (macros_va) |
+| do/va/prior_decile_original_sample.do | no-hardcoded-paths | 2026-05-08T01:00Z | 4e39d3ba2f8e | PASS | grep returned 0 matches |
+| do/va/prior_decile_original_sample.do | adr-0021-sandbox-write | 2026-05-08T01:00Z | 4e39d3ba2f8e | PASS | 2 saves to CANONICAL `$datadir_clean/sbac/...` (was LEGACY $vaprojdir/data/sbac/ in predecessor); log+translate target CANONICAL `$logdir/` |
+| do/va/prior_decile_original_sample.do | legacy-include-macro-trace | 2026-05-08T01:00Z | 4e39d3ba2f8e | PASS | $projdir alias-before-include applied per [LEARN:stata] 2026-04-30 + siblingoutxwalk.do precedent (`global projdir "$caschls_projdir"` then `include $caschls_projdir/do/share/siblingvaregs/vafilemacros.doh`); benign session-scope side effect |
+| do/va/prior_decile_original_sample.do | helper-include-absolute | 2026-05-08T01:00Z | 4e39d3ba2f8e | PASS | 1/1 absolute (macros_va) |
 
 <!-- Real entries replace the _example_ rows above. Keep one row per (path, check). When a file changes, its rows become stale and are re-evaluated on next access.
 
