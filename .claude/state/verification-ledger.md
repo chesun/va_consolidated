@@ -73,6 +73,22 @@ Cache of verification results for the adversarial-default rule (`.claude/rules/a
 | do/va/va_out_fb_all.do | helper-include-absolute | 2026-05-07T23:30Z | 26af7f0587d8 | PASS | 3/3 helper includes absolute |
 | do/va/va_out_fb_all.do | dependency-chain-integrity | 2026-05-07T23:30Z | 26af7f0587d8 | PASS | merge in DK branch reads same CANONICAL path va_score_all.do:251 writes |
 | do/main.do | gate-parity | 2026-05-07T23:30Z | f9497e091c8a | PASS | `local do_va = 0` matches predecessor `do_all.do:160`; 4 batch 3a invocations gated by `if `do_va''`; matches the run-once-cached pattern established in batch 2b for sample construction |
+| do/va/va_score_spec_test_tab.do | no-hardcoded-paths | 2026-05-08T00:30Z | 25e751e81150 | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
+| do/va/va_score_spec_test_tab.do | adr-0021-sandbox-write | 2026-05-08T00:30Z | 25e751e81150 | PASS | 4 regsave + 1 use target CANONICAL `$tables_dir/va_cfr_all_`version'/spec_test/`; log + translate target `$logdir/`; predicted_prior_score reads KEPT LEGACY (Step 11 deferred) |
+| do/va/va_score_spec_test_tab.do | helper-include-absolute | 2026-05-08T00:30Z | 25e751e81150 | PASS | 3/3 helper includes use absolute `$consolidated_dir/do/va/helpers/...` |
+| do/va/va_out_spec_test_tab.do | no-hardcoded-paths | 2026-05-08T00:30Z | d261fd799c64 | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
+| do/va/va_out_spec_test_tab.do | adr-0021-sandbox-write | 2026-05-08T00:30Z | d261fd799c64 | PASS | 4 regsave + 1 use target CANONICAL `$tables_dir/...`; predicted_prior_score reads KEPT LEGACY |
+| do/va/va_out_spec_test_tab.do | helper-include-absolute | 2026-05-08T00:30Z | d261fd799c64 | PASS | 3/3 absolute |
+| do/va/va_score_fb_test_tab.do | no-hardcoded-paths | 2026-05-08T00:30Z | b2f2d96665d6 | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
+| do/va/va_score_fb_test_tab.do | adr-0021-sandbox-write | 2026-05-08T00:30Z | b2f2d96665d6 | PASS | 4 regsave target CANONICAL `$tables_dir/.../fb_test/`; CFR ster reads CANONICAL; predicted_prior_score reads KEPT LEGACY |
+| do/va/va_score_fb_test_tab.do | helper-include-absolute | 2026-05-08T00:30Z | b2f2d96665d6 | PASS | 2/2 absolute (no drift_limit needed — only reads .ster, no vam call) |
+| do/va/va_out_fb_test_tab.do | no-hardcoded-paths | 2026-05-08T00:30Z | 6b5932f1cf93 | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
+| do/va/va_out_fb_test_tab.do | adr-0021-sandbox-write | 2026-05-08T00:30Z | 6b5932f1cf93 | PASS | 4 regsave target CANONICAL `$tables_dir/.../fb_test/`; CFR ster reads CANONICAL; predicted_prior_score reads KEPT LEGACY |
+| do/va/va_out_fb_test_tab.do | helper-include-absolute | 2026-05-08T00:30Z | 6b5932f1cf93 | PASS | 2/2 absolute |
+| do/va/va_spec_fb_tab.do | no-hardcoded-paths | 2026-05-08T00:30Z | 480b0c5d2267 | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
+| do/va/va_spec_fb_tab.do | adr-0021-sandbox-write | 2026-05-08T00:30Z | 480b0c5d2267 | PASS | 1 esttab using -> CANONICAL `$tables_dir/.../combined/fb_spec_<outcome>.csv`; all `est use` reads from CANONICAL `$estimates_dir/...`; no LEGACY reads (no predicted-score branch) |
+| do/va/va_spec_fb_tab.do | helper-include-absolute | 2026-05-08T00:30Z | 480b0c5d2267 | PASS | 1/1 absolute (only macros_va.doh needed; b_str/las_str/ls_str locals defined therein at L560/600/616 propagate via include) |
+| do/settings.do | tables-figures-globals | 2026-05-08T00:30Z | 5f0101247e55 | PASS | $tables_dir = "$consolidated_dir/tables" and $figures_dir = "$consolidated_dir/figures" added to CANONICAL block (per ADR-0012; consumers in batch 3b use $tables_dir for paper-shipping spec/FB tables) |
 
 <!-- Real entries replace the _example_ rows above. Keep one row per (path, check). When a file changes, its rows become stale and are re-evaluated on next access.
 

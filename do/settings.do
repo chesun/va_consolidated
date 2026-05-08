@@ -102,6 +102,14 @@ global logdir           "$consolidated_dir/log"
 global datadir_clean    "$datadir/cleaned"
 global datadir_raw      "$datadir/raw"
 
+* Tables and figures roots for paper-shipping artifacts.  Match the paper
+* path conventions in CLAUDE.md folder map (`tables/share/va/pub/`,
+* `figures/share/va/v1/`, etc.).  Phase 3+ producer scripts write here;
+* paper main.tex `\input{}` reads from `tables/...` and `\includegraphics{}`
+* reads from `figures/...`.
+global tables_dir       "$consolidated_dir/tables"
+global figures_dir      "$consolidated_dir/figures"
+
 
 /*==============================================================================
 LEGACY PATHS — READ-ONLY per ADR-0021 sandbox

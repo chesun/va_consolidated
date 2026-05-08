@@ -199,15 +199,18 @@ if `run_va_estimation' {
         do do/va/va_score_fb_all.do                    // forecast-bias test for score-VA (excludes lasd by design — see macros_va_all_samples_controls.doh:66); writes .../{vam,fb_test}/
         do do/va/va_out_all.do                         // estimate outcome-VA + Deep Knowledge VA (controlling for ELA/Math VA from va_score_all); writes .../{vam,spec_test,va_est_dta}/
         do do/va/va_out_fb_all.do                      // forecast-bias test for outcome-VA + DK VA; writes .../{vam,fb_test}/
+
+        * RELOCATED 2026-05-07 per plan v3 §3.3 step 3 batch 3b — paper-shipping
+        * spec/FB test summary tables.  Read .ster outputs from the 4 entry-point
+        * scripts above; produce summary .dta + (for va_spec_fb_tab) per-outcome
+        * CSV at $tables_dir/va_cfr_all_v[12]/{spec_test,fb_test,combined}/.
+        do do/va/va_score_spec_test_tab.do             // score-VA spec-test summary table; appends rows to $tables_dir/.../spec_test/spec_<subject>_all.dta
+        do do/va/va_out_spec_test_tab.do               // outcome-VA spec-test summary table; appends rows to $tables_dir/.../spec_test/spec_<outcome>_all.dta
+        do do/va/va_score_fb_test_tab.do               // score-VA FB-test summary table (excludes lasd per ADR-0004); appends rows to $tables_dir/.../fb_test/fb_<subject>_all.dta
+        do do/va/va_out_fb_test_tab.do                 // outcome-VA FB-test summary table; appends rows to $tables_dir/.../fb_test/fb_<outcome>_all.dta
+        do do/va/va_spec_fb_tab.do                     // combined spec+FB CSV per (outcome × version); writes $tables_dir/.../combined/fb_spec_<outcome>.csv
     }
 
-    * TODO Phase 1a §3.3 step 3 batch 3b: spec/FB test tables
-    *   do do/va/va_score_spec_test_tab.do
-    *   do do/va/va_out_spec_test_tab.do
-    *   do do/va/va_score_fb_test_tab.do
-    *   do do/va/va_out_fb_test_tab.do
-    *   do do/va/va_spec_fb_tab.do
-    *
     * TODO Phase 1a §3.3 step 3 batch 3c: utilities + outcome regressions
     *   do do/va/merge_va_est.do
     *   do do/va/va_corr.do
