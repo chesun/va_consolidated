@@ -1412,3 +1412,77 @@ PASS 95/100. 5 concerns dispatched. Two non-blocking Minor findings:
 2. **Grep before claim** for both locals/macros AND output paths (batch 3d lesson).
 3. Script-based sed+Python relocation for batches >300 lines.
 4. **Header OUTPUTS:** always grep the file body BEFORE writing the header, not after (3rd-recurrence lesson).
+
+---
+
+## 2026-05-08 (continued) — Phase 1a §3.3 Step 4: heterogeneity (Steps 1-5 ALL COMPLETE)
+
+**Status:** Tree clean; pushed to origin (`c84371f`). Per Christina's directive: log + housekeeping after every batch.
+
+### Summary
+
+Step 4 landed: 4 heterogeneity .do files relocated to `do/va/heterogeneity/`. Plan v3 §3.3 step 4 mentioned `pass_through/` as an additional destination, but the predecessor has NO `pass_through/` directory — Step 4 is just the 4 va_het/ files (559 body lines).
+
+### Files relocated (4)
+
+| File | Body lines | Outputs (verified by grep) |
+|---|---:|---|
+| `do/va/heterogeneity/va_het.do` | 235 | `$estimates_dir/.../{va_est_dta/va_all_schl_char.dta, va_het/<...>.dta}` + `$tables_dir/share/va/{check,pub}/va_het/{var_across_district,corr_char}_*.tex` |
+| `do/va/heterogeneity/va_corr_schl_char.do` | 124 | `$estimates_dir/.../va_het/<outcome>_het_<het_char>_<...>.ster` |
+| `do/va/heterogeneity/va_corr_schl_char_fig.do` | 133 | `$figures_dir/.../va_het/{scatter,density_*}_<...>.pdf` |
+| `do/va/heterogeneity/persist_het_student_char_fig.do` | 67 | `$figures_dir/.../het_reg_combined_panels/student_char/<...>.pdf` |
+
+### Discipline applied — grep-before-claim for OUTPUTS (lesson worked!)
+
+I ran `grep -nE 'save\|esttab using\|graph export\|regsave using\|texsave using'` on each file body BEFORE writing headers. Caught the header-vs-body mismatches that bit me in batches 3b/3c2/3d.
+
+### But — same lesson class for INPUTS
+
+Coder-critic round-1 caught **M2 (-7, Major strict-phase)**: I extended grep-before-claim to OUTPUTS but DIDN'T apply it to INPUTS in `persist_het_student_char_fig.do`. The boilerplate INPUTS section claimed `sch_char.dta` + `va_all.dta` reads that the body never makes — body only reads `.gph` files at L97-101 via `graph combine`.
+
+**Fixed in-commit** by rewriting INPUTS section to list actual `.gph` paths from body.
+
+**Lesson extension (4th recurrence):** the grep-before-claim discipline now applies to BOTH inputs AND outputs in headers. TODO.md pre-batch checklist item 5 will be expanded.
+
+### Coder-critic dispatch
+
+PASS 91/100. Two findings:
+- **M1 (-2):** bare `log close _all` (no `cap`) in 3 of 4 files — verbatim-preserved predecessor inconsistency; defer to Phase 1b §4.4.
+- **M2 (-7):** persist_het_student_char_fig.do INPUTS header — **FIXED in-commit before push.**
+
+15 ledger rows added in-commit (4 files × 3-4 checks each).
+
+### Commits today (continuing)
+
+- `3503765` — TODO maintenance + LEARN. docs-only.
+- `ccc2600` — Step 3 batch 3d. PASS 95/100. **Step 3 COMPLETE.**
+- `69b0bec` — hygiene for batch 3d + grep-before-OUTPUTS LEARN. docs-only.
+- `c84371f` — **Step 4 heterogeneity. PASS 91/100. Steps 1-5 COMPLETE.**
+
+### Phase 1a §3.3 progress: 46 of ~150 files relocated
+
+- Step 1 (3 files) — `7983a8d` ✓
+- Step 2 (17 files) — `94fd2b8`, `5de34a7`, `90700c2` ✓
+- Step 3 (21 files) — `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600` ✓
+- **Step 4 (4 files) — `c84371f`** ★ COMPLETE
+- Step 5 (1 file) — `275efc0` ✓
+- **Step 6** (siblingvaregs archive ~30 files) NEXT
+- Steps 7, 8, 9, 10 remaining
+
+### Status
+
+- **ADR ledger:** 21 Decided. No new ADRs.
+- **Plan v3:** APPROVED. Step 4 inconsistency noted (no pass_through/ predecessor) — flag for future maintenance.
+- **Tree:** clean; in sync with origin.
+- **Coder-critic audit trail:** 14 entries, all PASS ≥ 84/100.
+
+### Next-session pickup
+
+**Step 6 — siblingvaregs deprecated archive (~30 files).** Source: `caschls/do/share/siblingvaregs/`. Destination: `do/_archive/siblingvaregs/`. **No path repointing needed** (archive untouched per ADR-0004 + ADR-0021); just `git mv` + brief README explaining the archive.
+
+**Convention reminders for Step 6 (different from active relocations):**
+1. `git mv` to preserve git history.
+2. Bodies untouched (archive convention).
+3. Verify ADR-0004 deprecation list matches actual file inventory before moving.
+4. `siblingoutxwalk.do` already relocated to `do/sibling_xwalk/` — exclude from archive batch.
+5. Add `do/_archive/siblingvaregs/README.md` explaining the archive scope.
