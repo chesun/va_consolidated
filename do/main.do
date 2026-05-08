@@ -218,16 +218,23 @@ if `run_va_estimation' {
         do do/va/merge_va_est.do                       // merge per-cell VA estimate dtas into va_<outcome>_all.dta + super-master va_all.dta; writes $estimates_dir/va_cfr_all_v[12]/va_est_dta/
         do do/va/va_corr.do                            // diagnostic: print correlation matrix of VA estimates across 8 spec combinations; output to log only (no .dta/.csv)
         do do/va/prior_decile_original_sample.do       // build student-level prior-score deciles + race/sex/econ from out_b sample; census income deciles from out_a; writes $datadir_clean/sbac/{prior_decile_original_sample,census_income_decile_a_sample}.dta
+
+        * RELOCATED 2026-05-08 per plan v3 §3.3 step 3 batch 3c2 — outcome
+        * regressions + paper-shipping tables/figures.  Read merged VA estimates
+        * (from merge_va_est.do) + outcome samples (from batch 2b) + prior-decile
+        * dtas (from prior_decile_original_sample.do); produce regression .ster
+        * + paper Tables 4-7 CSVs + paper figures.
+        do do/va/reg_out_va_all.do                     // regress postsec outcomes on score VA + heterogeneity (prior decile gated off; race/sex/econ/charter/income); writes $estimates_dir/.../reg_out_va/
+        do do/va/reg_out_va_all_tab.do                 // paper-shipping CSV tables of outcome-VA regressions; writes $tables_dir/.../reg_out_va/
+        do do/va/reg_out_va_all_fig.do                 // paper-shipping figures of outcome-VA heterogeneity; writes $figures_dir/.../ + $output_dir/gph_files/.../ (intermediate .gph)
+        do do/va/reg_out_va_dk_all.do                  // regress postsec outcomes on Deep Knowledge VA; heterogeneity by prior-score decile; writes $estimates_dir/.../reg_out_va/
+        do do/va/reg_out_va_dk_all_tab.do              // paper-shipping CSV tables of DK VA regressions; writes $tables_dir/.../reg_out_va_dk/
+        do do/va/reg_out_va_dk_all_fig.do              // paper-shipping figures of DK VA heterogeneity; writes $figures_dir/.../ + $output_dir/gph_files/.../
     }
 
-    * TODO Phase 1a §3.3 step 3 batch 3c2: outcome regressions + tables/figures
-    *   do do/va/merge_va_est.do
-    *   do do/va/va_corr.do
-    *   do do/va/prior_decile_original_sample.do
-    *   do do/va/reg_out_va_all.do  + _tab.do + _fig.do
-    *   do do/va/reg_out_va_dk_all.do + _tab.do + _fig.do
-    *
-    * TODO Phase 1a §3.3 step 3 batch 3d (or step 4): sibling lag diagnostic
+    * TODO Phase 1a §3.3 step 3 batch 3d (or roll into step 4): sibling lag diagnostic.
+    * Per do_all.do comment: "kept active for diagnostic; not reported in the
+    * paper but kept available in case coauthors revisit."
     *   do do/va/va_score_sib_lag.do
     *   do do/va/va_out_sib_lag.do
     *   do do/va/va_sib_lag_spec_fb_tab.do

@@ -99,6 +99,24 @@ Cache of verification results for the adversarial-default rule (`.claude/rules/a
 | do/va/prior_decile_original_sample.do | adr-0021-sandbox-write | 2026-05-08T01:00Z | 4e39d3ba2f8e | PASS | 2 saves to CANONICAL `$datadir_clean/sbac/...` (was LEGACY $vaprojdir/data/sbac/ in predecessor); log+translate target CANONICAL `$logdir/` |
 | do/va/prior_decile_original_sample.do | legacy-include-macro-trace | 2026-05-08T01:00Z | 4e39d3ba2f8e | PASS | $projdir alias-before-include applied per [LEARN:stata] 2026-04-30 + siblingoutxwalk.do precedent (`global projdir "$caschls_projdir"` then `include $caschls_projdir/do/share/siblingvaregs/vafilemacros.doh`); benign session-scope side effect |
 | do/va/prior_decile_original_sample.do | helper-include-absolute | 2026-05-08T01:00Z | 4e39d3ba2f8e | PASS | 1/1 absolute (macros_va) |
+| do/va/reg_out_va_all.do | no-hardcoded-paths | 2026-05-08T02:00Z | 7ffc1d31909b | PASS | grep returned 0 matches |
+| do/va/reg_out_va_all.do | adr-0021-sandbox-write | 2026-05-08T02:00Z | 7ffc1d31909b | PASS | all 19 estimates_save+regsave calls -> CANONICAL `$estimates_dir/.../reg_out_va/`; charter_status.dta read KEPT LEGACY (Step 9 deferred CDE data) |
+| do/va/reg_out_va_all.do | helper-include-absolute | 2026-05-08T02:00Z | 7ffc1d31909b | PASS | 1/1 absolute (macros_va) |
+| do/va/reg_out_va_all_tab.do | no-hardcoded-paths | 2026-05-08T02:00Z | 38e810f6a92e | PASS | grep returned 0 matches |
+| do/va/reg_out_va_all_tab.do | adr-0021-sandbox-write | 2026-05-08T02:00Z | 38e810f6a92e | PASS | 2 esttab using calls -> CANONICAL `$tables_dir/.../reg_out_va/`; estimates use reads -> CANONICAL `$estimates_dir/...` |
+| do/va/reg_out_va_all_tab.do | helper-include-absolute | 2026-05-08T02:00Z | 38e810f6a92e | PASS | 1/1 absolute |
+| do/va/reg_out_va_all_fig.do | no-hardcoded-paths | 2026-05-08T02:00Z | 1ad4cd0f4452 | PASS | grep returned 0 matches |
+| do/va/reg_out_va_all_fig.do | adr-0021-sandbox-write | 2026-05-08T02:00Z | 1ad4cd0f4452 | PASS | graph export -> $figures_dir/...; saving() -> $output_dir/gph_files/... (intermediate Stata .gph; CANONICAL output_dir per ADR-0021) |
+| do/va/reg_out_va_all_fig.do | helper-include-absolute | 2026-05-08T02:00Z | 1ad4cd0f4452 | PASS | 1/1 absolute |
+| do/va/reg_out_va_dk_all.do | no-hardcoded-paths | 2026-05-08T02:00Z | 9d4eaccc9857 | PASS | grep returned 0 matches |
+| do/va/reg_out_va_dk_all.do | adr-0021-sandbox-write | 2026-05-08T02:00Z | 9d4eaccc9857 | PASS | all estimates_save -> CANONICAL `$estimates_dir/.../reg_out_va/`; reads merged va_<outcome>_all.dta from $estimates_dir |
+| do/va/reg_out_va_dk_all.do | helper-include-absolute | 2026-05-08T02:00Z | 9d4eaccc9857 | PASS | 1/1 absolute |
+| do/va/reg_out_va_dk_all_tab.do | no-hardcoded-paths | 2026-05-08T02:00Z | 17902bcb4ce5 | PASS | grep returned 0 matches |
+| do/va/reg_out_va_dk_all_tab.do | adr-0021-sandbox-write | 2026-05-08T02:00Z | 17902bcb4ce5 | PASS | 2 esttab using calls -> CANONICAL `$tables_dir/.../reg_out_va_dk/` |
+| do/va/reg_out_va_dk_all_tab.do | helper-include-absolute | 2026-05-08T02:00Z | 17902bcb4ce5 | PASS | 1/1 absolute |
+| do/va/reg_out_va_dk_all_fig.do | no-hardcoded-paths | 2026-05-08T02:00Z | 8a033ce8ace6 | PASS | grep returned 0 matches |
+| do/va/reg_out_va_dk_all_fig.do | adr-0021-sandbox-write | 2026-05-08T02:00Z | 8a033ce8ace6 | PASS | graph export -> $figures_dir/...; saving() -> $output_dir/gph_files/... |
+| do/va/reg_out_va_dk_all_fig.do | helper-include-absolute | 2026-05-08T02:00Z | 8a033ce8ace6 | PASS | 1/1 absolute |
 
 <!-- Real entries replace the _example_ rows above. Keep one row per (path, check). When a file changes, its rows become stale and are re-evaluated on next access.
 
