@@ -1570,3 +1570,30 @@ INPUTS+OUTPUTS verified via grep on each body BEFORE writing each header (4th-re
 1. **FIRST: retroactive coder-critic on `3e99c3b`** (close Step 7 audit-trail gap)
 2. Step 8 (alpha.do archive per ADR-0010)
 3. Step 9 (data prep ~30)
+
+---
+
+## 2026-05-08 — Step 7 retroactive coder-critic — PASS round 2 (94/100) after factor.do:131 fix
+
+**Status:** Tree pre-commit; 2 commits planned (fix + hygiene). Step 7 audit-trail gap CLOSED.
+
+### Operations
+
+- Dispatched coder-critic on commit `3e99c3b` (9 files in `do/survey_va/`) with tight 5-concern scope (sandbox writes, INPUTS+OUTPUTS header fidelity, `$projdir` repointings, main.do Phase 5 wiring + flag-comments, ADR-0021 verbatim preservation).
+- Round 1 BLOCK 75/100. Critical: `do/survey_va/factor.do:131` `translate $consolidated_dir/do/survey_va/factor.{smcl,log}, replace` — sed-mistranslated; ADR-0021 sandbox violation + runtime path bug (SMCL opened at `$logdir/factor.smcl` per L58, so the `translate` source path didn't exist).
+- One-line fix: `translate $logdir/factor.smcl $logdir/factor.log, replace`.
+- Sanity-swept all 9 files for related defect class — only `factor.do` had the issue. 8 single-line `translate` + 1 multi-line `cap translate ///` (`indexhorseracewithdemo.do:209`) all anchored to `$logdir/`.
+- Round 2 PASS 94/100. Two -3 residuals from adversarial-default (Tier 1 grep extension recommended; predecessor byte-diff not feasible in this workspace).
+
+### Process learning
+
+`phase-1-review.md` §3 Tier-1 self-check grep pattern omits `translate` and `log using`. The factor.do defect slipped past pre-commit because the sed pass mistranslated a `translate` line that the existing grep didn't catch. Recommend extending to `'save|export|esttab using|graph export|outsheet|outreg2 using|texsave|^\s*translate |log using'`. Logged in session log as backlog process improvement (not blocking Step 7 closure).
+
+### Phase 1a §3.3 progress: 82 of ~150 — Steps 1-7 LANDED + AUDITED
+
+- Step 8 (1-file archive of `alpha.do` per ADR-0010) NEXT
+- Step 9 (~30 data prep), Step 10 (~50 share/) remaining
+
+### Coder-critic audit trail
+
+- Step 7 retroactive PASS round 2 (94/100) closes the prior gap. All 16 Phase 1 code commits now have PASS verdicts on file. Audit recorded at `quality_reports/reviews/2026-05-08_step-7-survey-va_coder_review.md`.
