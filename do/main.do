@@ -230,15 +230,15 @@ if `run_va_estimation' {
         do do/va/reg_out_va_dk_all.do                  // regress postsec outcomes on Deep Knowledge VA; heterogeneity by prior-score decile; writes $estimates_dir/.../reg_out_va/
         do do/va/reg_out_va_dk_all_tab.do              // paper-shipping CSV tables of DK VA regressions; writes $tables_dir/.../reg_out_va_dk/
         do do/va/reg_out_va_dk_all_fig.do              // paper-shipping figures of DK VA heterogeneity; writes $figures_dir/.../ + $output_dir/gph_files/.../
+
+        * RELOCATED 2026-05-08 per plan v3 §3.3 step 3 batch 3d — sibling-lag
+        * forecast-bias diagnostic (not paper-reported per do_all.do comment).
+        * Reads score_s sample dta from batch 2b; produces .ster + summary CSV.
+        do do/va/va_score_sib_lag.do                   // sibling-lag FB diagnostic for score VA; lag-1 older-sibling controls + lag-2 FB leave-out; writes $estimates_dir/.../{vam,spec_test,fb_test,va_est_dta}/
+        do do/va/va_out_sib_lag.do                     // sibling-lag FB diagnostic for outcome VA (mirror of score variant)
+        do do/va/va_sib_lag_spec_fb_tab.do             // combined spec+FB summary CSV for sibling-lag diagnostic specs; writes $tables_dir/.../combined/sib_lag_fb_spec_<outcome>.csv
     }
 
-    * TODO Phase 1a §3.3 step 3 batch 3d (or roll into step 4): sibling lag diagnostic.
-    * Per do_all.do comment: "kept active for diagnostic; not reported in the
-    * paper but kept available in case coauthors revisit."
-    *   do do/va/va_score_sib_lag.do
-    *   do do/va/va_out_sib_lag.do
-    *   do do/va/va_sib_lag_spec_fb_tab.do
-    *
     * NOTE: predecessor `out_drift_limit.doh' is DEAD CODE (never included by any
     * active script — all 4 entry points include `drift_limit.doh' which already
     * defines both score_drift_limit and out_drift_limit).  Defer to Phase 1c §5.1

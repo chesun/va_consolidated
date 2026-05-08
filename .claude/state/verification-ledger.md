@@ -117,6 +117,16 @@ Cache of verification results for the adversarial-default rule (`.claude/rules/a
 | do/va/reg_out_va_dk_all_fig.do | no-hardcoded-paths | 2026-05-08T02:00Z | 8a033ce8ace6 | PASS | grep returned 0 matches |
 | do/va/reg_out_va_dk_all_fig.do | adr-0021-sandbox-write | 2026-05-08T02:00Z | 8a033ce8ace6 | PASS | graph export -> $figures_dir/...; saving() -> $output_dir/gph_files/... |
 | do/va/reg_out_va_dk_all_fig.do | helper-include-absolute | 2026-05-08T02:00Z | 8a033ce8ace6 | PASS | 1/1 absolute |
+| do/va/va_score_sib_lag.do | no-hardcoded-paths | 2026-05-08T03:00Z | ddad9f7b3491 | PASS | grep returned 0 matches |
+| do/va/va_score_sib_lag.do | adr-0021-sandbox-write | 2026-05-08T03:00Z | ddad9f7b3491 | PASS | 3 estimates_save calls all -> CANONICAL `$estimates_dir/va_cfr_all_*/{vam,spec_test,fb_test,va_est_dta}/`; log/translate -> `$logdir/` |
+| do/va/va_score_sib_lag.do | helper-include-absolute | 2026-05-08T03:00Z | ddad9f7b3491 | PASS | 2/2 absolute (macros_va + drift_limit) |
+| do/va/va_out_sib_lag.do | no-hardcoded-paths | 2026-05-08T03:00Z | 9f2df0aac2ee | PASS | grep returned 0 matches |
+| do/va/va_out_sib_lag.do | adr-0021-sandbox-write | 2026-05-08T03:00Z | 9f2df0aac2ee | PASS | 3 estimates_save calls all CANONICAL; log/translate -> `$logdir/` |
+| do/va/va_out_sib_lag.do | helper-include-absolute | 2026-05-08T03:00Z | 9f2df0aac2ee | PASS | 2/2 absolute |
+| do/va/va_sib_lag_spec_fb_tab.do | no-hardcoded-paths | 2026-05-08T03:00Z | 03a86ea32a40 | PASS | grep returned 0 matches |
+| do/va/va_sib_lag_spec_fb_tab.do | adr-0021-sandbox-write | 2026-05-08T03:00Z | 03a86ea32a40 | PASS | 4 regsave/save calls all -> CANONICAL `$tables_dir/va_cfr_all_*/{spec_test,fb_test}/spec_sib_lag.dta` + `fb_sib_lag.dta`; log/translate -> `$logdir/` |
+| do/va/va_sib_lag_spec_fb_tab.do | helper-include-absolute | 2026-05-08T03:00Z | 03a86ea32a40 | PASS | 1/1 absolute |
+| do/main.do | brace-balance-batch-3d | 2026-05-08T03:00Z | 02149ecb668c | PASS | run_va_estimation L180/L248 + do_va L197/L240; batch 3d invocations L237-239 inside do_va block; nesting correct (initial draft had brace-misplacement bug — fixed before commit) |
 
 <!-- Real entries replace the _example_ rows above. Keep one row per (path, check). When a file changes, its rows become stale and are re-evaluated on next access.
 
