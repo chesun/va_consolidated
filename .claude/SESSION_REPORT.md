@@ -1252,3 +1252,96 @@ Added `$tables_dir = "$consolidated_dir/tables"` and `$figures_dir = "$consolida
 ### Next-session pickup
 
 Step 3 batch 3c — 9 files (3 utilities + 3 outcome regression .do + 3 outcome regression _tab/_fig). `merge_va_est.do`, `va_corr.do`, `prior_decile_original_sample.do`, `reg_out_va_all.do` + `_tab.do` + `_fig.do`, `reg_out_va_dk_all.do` + `_tab.do` + `_fig.do`. **Convention reminders:** absolute `$consolidated_dir/do/...` after `cd $vaprojdir`; **always grep** before claiming a local/macro is undefined (batch 3b lesson).
+
+---
+
+## 2026-05-07 (continued) — Phase 1a §3.3 step 3 batch 3c (split into 3c1 + 3c2)
+
+**Status:** Tree clean; pushed to origin. Two commits: `9e102fd` (3c1 utilities) and `421333f` (3c2 regressions).
+
+### Summary
+
+Step 3 batch 3c landed in two atomic commits given the size (~2550 body lines combined):
+- **Batch 3c1**: 3 utilities (`merge_va_est`, `va_corr`, `prior_decile_original_sample`)
+- **Batch 3c2**: 6 regression files (`reg_out_va_all` + `_tab` + `_fig` × {regular, dk})
+
+Together, these complete Step 3's outcome-regression production chain: merge per-cell VA estimates → diagnostic correlations → prior-decile + race/sex/econ helpers → outcome regressions + DK regressions → paper Tables 4-7 CSVs + paper figures.
+
+### Files relocated (9)
+
+| Sub-batch | File | Body lines |
+|---|---|---:|
+| 3c1 | `do/va/merge_va_est.do` | 121 |
+| 3c1 | `do/va/va_corr.do` | 88 |
+| 3c1 | `do/va/prior_decile_original_sample.do` | 121 |
+| 3c2 | `do/va/reg_out_va_all.do` | 400 |
+| 3c2 | `do/va/reg_out_va_all_tab.do` | 468 |
+| 3c2 | `do/va/reg_out_va_all_fig.do` | 607 |
+| 3c2 | `do/va/reg_out_va_dk_all.do` | 213 |
+| 3c2 | `do/va/reg_out_va_dk_all_tab.do` | 288 |
+| 3c2 | `do/va/reg_out_va_dk_all_fig.do` | 245 |
+
+### Methodology — script-based path repointing (efficiency at scale)
+
+Batch 3c2's 6 large files (~2220 body lines) used a script-based relocation:
+- **sed pass** for the standard $vaprojdir → CANONICAL repointings (8 patterns).
+- **Python script** for ADR-0021 header insertion + mkdir prep + RUN START block.
+- Manual review of grep output to verify intentional LEGACY preservations.
+
+This was much faster than per-file Edit+Write, but trades off custom header detail. Headers are concise but ADR-0021-compliant in letter (PURPOSE / INVOKED FROM / OUTPUTS / RELOCATION / ADRs all present).
+
+### LEGACY preservations (verbatim per ADR-0021)
+
+- `cd $vaprojdir` preserved at top of each file (predecessor pattern); `cd "$consolidated_dir"` restoration appended at end.
+- `$vaprojdir/data/public_access/clean/cde/charter_status.dta` KEPT LEGACY in `reg_out_va_all.do:146` (Step 9 deferred CDE public-access data).
+- All predecessor typos / dead comment blocks preserved verbatim.
+- `prior_decile_original_sample.do`: `$projdir` aliased to `$caschls_projdir` before LEGACY include of `vafilemacros.doh` (per [LEARN:stata] 2026-04-30 + siblingoutxwalk.do precedent).
+
+### `gph_files` routing (new convention)
+
+Predecessor wrote intermediate Stata `.gph` graph files to `$vaprojdir/gph_files/...`. Routed to `$output_dir/gph_files/...` (CANONICAL output_dir, distinct from paper-shipping `$figures_dir`). Final `.pdf` figures → `$figures_dir/...` (paper-shipping).
+
+### Coder-critic dispatches
+
+**Batch 3c1: PASS 96/100.** No fabrications this batch (verified `_str` locals at macros_va.doh:150/153/157/160/163 BEFORE claiming them in header — lesson learned from batch 3b round-1). Two non-blocking Minor findings (verbatim-preserved dead-comment block + leading-space style inconsistency).
+
+**Batch 3c2: PASS 87/100.** One fixable finding (M1 -3): stale TODO at main.do:235-240 referencing files now relocated by 3c1+3c2. **FIXED in-commit before push.** One acknowledged Minor (M2 -2): concise headers on dk files (efficiency compromise for 6-file batch).
+
+Per verify-deferred-Minor convention, also closed in-commit:
+- 11 new ledger rows for 3c1 files
+- 18 new ledger rows for 3c2 files
+
+### Commits today (8)
+
+- `5de34a7` — Step 2 batch 2b. PASS 96/100.
+- `90700c2` — Step 2 batch 2c (+ bugfix). PASS 95/100.
+- `223e9b2` — Step 3 batch 3a. PASS 92/100.
+- `4ee0b58` — Step 3 batch 3b. PASS 84/100.
+- `9e102fd` — **Step 3 batch 3c1 (3 utilities). PASS 96/100.**
+- `421333f` — **Step 3 batch 3c2 (6 regressions). PASS 87/100.**
+- (4 hygiene commits docs-only, plus this one)
+
+### Phase 1a §3.3 progress: 39 of ~150 files relocated
+
+- Step 5 (1 file) DONE — `275efc0`
+- Step 1 (3 files) DONE — `7983a8d`
+- Step 2 (17 files) DONE — `94fd2b8`, `5de34a7`, `90700c2`
+- Step 3 batches 3a/3b/3c1/3c2 (18 files) DONE — `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`
+- **Step 3 batch 3d (sibling lag diagnostic: 3 files) NEXT**
+- Steps 4-10 remaining
+
+### Status (end of 2026-05-07 session)
+
+- **ADR ledger:** 21 Decided. No new ADRs.
+- **Plan v3:** APPROVED.
+- **Tree:** clean; in sync with origin.
+- **Coder-critic audit trail:** 12 entries, all PASS ≥ 84/100.
+
+### Next-session pickup
+
+Step 3 batch 3d (or roll into Step 4): 3 sibling-lag diagnostic files (`va_score_sib_lag.do`, `va_out_sib_lag.do`, `va_sib_lag_spec_fb_tab.do`). Per do_all.do: "kept active for diagnostic; not reported in the paper but kept available in case coauthors revisit." Quick batch — small files, similar pattern to batch 3b. After batch 3d, Step 3 COMPLETE; move to Step 4 (heterogeneity + pass-through; ~12 files).
+
+**Convention reminders (still binding):**
+1. Absolute `$consolidated_dir/do/...` for any consolidated include after `cd $vaprojdir`.
+2. **Always grep** before claiming a local/macro is undefined (batch 3b lesson).
+3. Script-based sed+Python relocation works well for files >300 lines with consistent path patterns; reserve for batches with similar files.
