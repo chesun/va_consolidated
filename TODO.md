@@ -1,10 +1,10 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-08 (after Step 9 batch 9a commit `4a88874` — **PASS 95/100** — 2 ACS files relocated)
+Last updated: 2026-05-08 (after Step 9 batch 9b commits `40cb161` + fix `9478ded` — **PASS 92/100** — 11 schl_chars files relocated)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.3 IN PROGRESS — 85 of ~150 files relocated/archived. Steps 1-8 + Step 9 batch 9a COMPLETE.** Remaining: Step 9 batches 9b-9e (~31 files) + Step 10 (~50 share/).
+- [ ] **Phase 1a §3.3 IN PROGRESS — 96 of ~150 files relocated/archived. Steps 1-8 + Step 9 batches 9a+9b COMPLETE.** Remaining: Step 9 batches 9c-9e (~20 files) + Step 10 (~50 share/).
 
 ### Step 9 — Data prep (~33 files; Christina-owned) IN PROGRESS — batch 9b NEXT
 
@@ -15,8 +15,8 @@ Last updated: 2026-05-08 (after Step 9 batch 9a commit `4a88874` — **PASS 95/1
 | Batch | Source | Files | Status | Score |
 |---|---|---:|---|---|
 | 9a | `cde/do_files/acs/` | 2 | LANDED `4a88874` | PASS 95/100 |
-| 9b | `cde/do_files/schl_chars/` | 11 | NEXT | — |
-| 9c | `cde/do_files/k12_postsec_distance/` | 5 | pending | — |
+| 9b | `cde/do_files/schl_chars/` | 11 | LANDED `40cb161` + fix `9478ded` | PASS 92/100 (round 1) |
+| 9c | `cde/do_files/k12_postsec_distance/` | 5 | NEXT | — |
 | 9d | `caschls/do/build/prepare/` | 4 | pending | — |
 | 9e | `caschls/do/build/buildanalysisdata/qoiclean/` | 11 | pending | — |
 
@@ -57,7 +57,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`, `3e99c3b` (retroactive round 2 94/100 after `factor.do:131` fix `68cf30e`), `8fe1f28` (Step 8 alpha.do archive 97/100), `4a88874` (Step 9 batch 9a 95/100 — `quality_reports/reviews/2026-05-08_step-9-batch-9a_coder_review.md`). (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`, `3e99c3b` (retroactive round 2 94/100 after `factor.do:131` fix `68cf30e`), `8fe1f28` (Step 8 alpha.do archive 97/100), `4a88874` (Step 9 batch 9a 95/100), `40cb161` (Step 9 batch 9b 92/100 + fix `9478ded` — `quality_reports/reviews/2026-05-08_step-9-batch-9b_coder_review.md`). (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -124,7 +124,8 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **Tier-1 sandbox-write grep extension** — `phase-1-review.md` §3 pattern extended to `'save|export|esttab using|graph export|outsheet|outreg2 using|texsave|^\s*translate |log using'`. Process learning from Step 7 retroactive audit: original pattern omitted log-write commands; sed-mistranslated `translate` line slipped past pre-commit. Codified `[LEARN:discipline]` in MEMORY.md cross-referencing the rule update. (`3f05995`) — 2026-05-08
 - [x] **Phase 1a §3.3 step 8 — alpha.do archived** (1-file batch) to `do/_archive/exploratory/`. ADR-0010 authority (paper-α canonical producer is `indexalpha.do` — relocated to `do/survey_va/` in Step 7; `alpha.do` was exploratory wider-item-list 20/17/4 sensitivity vs production 9/15/4). Body preserved verbatim (semantic; LF normalization per repo `text=auto` consistent with Step 7 actively-relocated `indexalpha.do` from same predecessor dir). README at `do/_archive/exploratory/README.md` documents archive scope, ADR-0010 authority, file list, why-archived, verify-before-archive grep result, ADR-0010 vs ADR-0021 convention reconciliation. main.do:307 flag-comment updated past-tense COMPLETE; Step 11 flag retained. **Steps 1-8 NOW COMPLETE.** Coder-critic PASS 97/100 (one Minor -3 on README defensive cross-ref). (`8fe1f28`) — 2026-05-08
 - [x] **Phase 1a §3.3 step 9 inventory + 5-batch plan committed** at `quality_reports/plans/2026-05-08_step-9-data-prep-inventory.md`. 33 files across 5 named sub-batches (acs/2, schl_chars/11, k12_postsec_distance/5, prepare/4, qoiclean/11). Discovered-but-out-of-named-scope: `buildanalysisdata/poolingdata/` (5) + `responserate/` (4); decision deferred to end of Step 9. (`a6cd5f2`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 batch 9a — 2 ACS census-tract files relocated** to `do/data_prep/acs/`: `acs_2017_gen_dict.do` (47 body lines; ACS subject-table dictionaries via `descsave`) + `clean_acs_census_tract.do` (369 body lines; 2010-2013 ACS census-tract panel cleaning). Path repointings: `cd $vaprojdir` removed (absolute paths); reads to `$vaprojdir/data/...` (LEGACY raw); writes to `$datadir_clean/acs/...` (CANONICAL chain) + `$output_dir/csv/acs/2017/...` (intermediate diagnostic) + `$logdir/...`; `include do_files/sbac/macros_va.doh` → `$consolidated_dir/do/va/helpers/macros_va.doh`. Predecessor's commented `$projdir/dta/...` save preserved verbatim per ADR-0021 (inside `/* ... */`). main.do Phase 1 wired with 2 invocations + pending-9b/9c/9d/9e flag-comments. Coder-critic PASS 95/100 (2 Minors deferred non-blocking: tempfile disclosure precision + mkdir verbosity). (`4a88874`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 batch 9a — 2 ACS census-tract files relocated** to `do/data_prep/acs/`: `acs_2017_gen_dict.do` (47 body lines) + `clean_acs_census_tract.do` (369 body lines). Path repointings: `cd $vaprojdir` removed; reads `$vaprojdir/data/...` (LEGACY raw); writes `$datadir_clean/acs/...` (CHAIN) + `$output_dir/csv/acs/2017/...` (diagnostic) + `$logdir/...`; `include do_files/sbac/macros_va.doh` → `$consolidated_dir/do/va/helpers/macros_va.doh`. Coder-critic PASS 95/100 (2 Minors deferred). (`4a88874`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 batch 9b — 11 school-characteristics files relocated** to `do/data_prep/schl_chars/`: `cds_nces_xwalk` + `clean_locale` (chain producers) + 6 yearly cleaners (`clean_{elsch,enr,frpm,staffcred,staffdemo,staffschoolfte}`) producing `$datadir_clean/cde/<sub>/<sub>_<year>_clean.dta` + `clean_charter` + `clean_ecn_disadv` + `clean_sch_char` (master). Chain order from predecessor `do_all.do:75-97`. Methodology: Python regex+sed transforms + ADR-0021 header insertion + per-file mkdir blocks. Caught 3 mid-pass bugs: (a) initial sed missed relative-after-cd `data/public_access/clean/...` form; (b) removing `cd $vaprojdir` exposed broken relative `import delimited data/public_access/raw/...`; (c) Python INPUTS regex missed `import delimited`/`import excel` — patched 8 headers. Coder-critic PASS 92/100 round 1; 2 round-1 findings (Major: `clean_sch_char.do:609` relative `save data/sch_char_<year>.dta` missed by sed; Minor cluster: incorrectly attributed tempfile production to 6 sister cleaners — actually all 8 tempfiles defined in clean_sch_char itself) FIXED in follow-up `9478ded`. (`40cb161`+`9478ded`) — 2026-05-08
 
 **Older completions** (pre-2026-05-07 batches) live in:
 - `quality_reports/session_logs/2026-04-*` — per-session detailed logs

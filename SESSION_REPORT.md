@@ -1645,3 +1645,30 @@ ADR-0010 (2026-04-27) wrote "header note documenting purpose"; ADR-0021 (later) 
 ### Coder-critic audit trail
 
 - 18 PASS verdicts. `4a88874` Step 9 batch 9a PASS 95/100.
+
+---
+
+## 2026-05-08 — Step 9 batch 9b (11 schl_chars/ files) — PASS 92/100 + fix
+
+**Status:** `40cb161` PASS 92/100; round-1 findings fixed in `9478ded`. Phase 1a §3.3 progress: 96 of ~150.
+
+### Operations
+
+- Script-based methodology (Python: cp + regex+sed transforms + ADR-0021 header insertion + per-file mkdir blocks).
+- 11 files; chain order from predecessor `do_all.do:75-97`: cds_nces_xwalk → clean_locale → 6 yearly cleaners → clean_charter → clean_ecn_disadv → clean_sch_char (MASTER).
+- Path repointings: `cd $vaprojdir` removed; relative + absolute clean-data paths → `$datadir_clean/{cde,nces}/*`; relative raw imports → absolute `$vaprojdir/data/public_access/raw/*` (LEGACY); log/translate → `$logdir/`.
+- 3 mid-pass bugs caught + fixed before commit (relative-after-cd form, broken raw imports after `cd` removal, Python INPUTS regex missed `import delimited|excel`).
+
+### Tier-2 round-1 findings (fixed in `9478ded`)
+
+1. Major (-5): `clean_sch_char.do:609` had relative `save data/sch_char_<year>.dta, replace` missed by sed → fixed to `$datadir_clean/sch_char_<year>.dta`. Was landing in `$consolidated_dir/data/...` instead of canonical target.
+2. Minor cluster (-3): "tempfile from sister cleaner" attribution drift across 7 files (6 sister cleaner PURPOSE + clean_sch_char INPUTS/OUTPUTS + 7 main.do comments). Sister cleaners produce per-year persistent dtas, NOT tempfiles. The 8 tempfiles in clean_sch_char.do are defined and consumed within that file. Documentation-only fix.
+
+### Phase 1a §3.3 progress: 96 of ~150 — Steps 1-8 + Step 9 batches 9a+9b COMPLETE
+
+- Batch 9c (k12_postsec_distance/, 5 files) NEXT
+- Batches 9d (4) + 9e (11) remaining
+
+### Coder-critic audit trail
+
+- 19 PASS verdicts. `40cb161` Step 9 batch 9b PASS 92/100; `9478ded` follow-up fix.
