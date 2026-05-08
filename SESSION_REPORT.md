@@ -1486,3 +1486,59 @@ PASS 91/100. Two findings:
 3. Verify ADR-0004 deprecation list matches actual file inventory before moving.
 4. `siblingoutxwalk.do` already relocated to `do/sibling_xwalk/` — exclude from archive batch.
 5. Add `do/_archive/siblingvaregs/README.md` explaining the archive scope.
+
+---
+
+## 2026-05-08 (continued) — Phase 1a §3.3 Step 6: siblingvaregs archive — Steps 1-6 ALL COMPLETE
+
+**Status:** Tree clean; pushed (`b8b4ce8`). Per Christina's directive: log + housekeeping after every batch.
+
+### Summary
+
+Step 6 landed: 27 deprecated .do/.doh files archived to `do/_archive/siblingvaregs/` per ADR-0004. **First archive-convention batch** in this project (bodies preserved verbatim per ADR-0021; no path repointing; not invoked from main.do).
+
+### Files archived (27 of 29 in source)
+
+Source: `caschls/do/share/siblingvaregs/` (Dropbox path).
+
+**Excluded per "verify before archiving" (ADR-0004 line 31):**
+- `siblingoutxwalk.do` — already relocated to `do/sibling_xwalk/` per ADR-0005
+- `vafilemacros.doh` — consumed by ACTIVE relocated code (siblingoutxwalk.do:164 + prior_decile_original_sample.do:155); kept LEGACY-static at predecessor
+
+### Archive convention precedent (codified for Step 8)
+
+Sets precedent for Step 8 (`alpha.do` single-file archive per ADR-0010):
+- Use `cp` (not `git mv`) when source is outside va_consolidated git repo (e.g., Dropbox)
+- Bodies UNTOUCHED — predecessor `$projdir`/`$vaprojdir` references preserved
+- Add README at archive subdir explaining scope + exclusions + ADR cross-refs
+- No main.do wiring (archived files not invoked)
+- Verify-before-archiving clause: cross-reference ADR deprecation list against active-code grep; exclude files consumed by relocated active code
+
+### Coder-critic dispatch
+
+PASS 96/100. One Minor finding: README count nits → FIXED in-commit by enumerating each file. 2 ledger rows added in-commit.
+
+### Commits today (continuing)
+
+- `f94ce8e` — Step 4 hygiene + INPUTS-grep LEARN. docs-only.
+- `b8b4ce8` — **Step 6 siblingvaregs archive (27 files). PASS 96/100. Steps 1-6 COMPLETE.**
+
+### Phase 1a §3.3 progress: 73 of ~150 files
+
+- Step 1 (3) ✓ `7983a8d`
+- Step 2 (17) ✓ batches 2a/2b/2c
+- Step 3 (21) ✓ batches 3a/3b/3c1/3c2/3d
+- Step 4 (4) ✓ `c84371f`
+- Step 5 (1) ✓ `275efc0`
+- **Step 6 (27 archive) ★ — `b8b4ce8`**
+- Step 7 (Survey VA, ~10) NEXT
+- Steps 8 (1 archive), 9 (~30), 10 (~50) remaining
+
+### Status
+
+- **Tree:** clean; in sync with origin.
+- **Coder-critic audit trail:** 15 entries, all PASS ≥ 84/100.
+
+### Next-session pickup
+
+**Step 7 — Survey VA (~10 files).** Source: `caschls/do/share/factoranalysis/`. Active relocations (NOT archive); paths need repointing per ADR-0021. Watch for `$projdir` references (alias-before-include pattern per siblingoutxwalk.do precedent). Note: `alpha.do` is in same source dir but is Step 8 (archive per ADR-0010); separate.
