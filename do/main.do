@@ -290,17 +290,22 @@ if `run_survey_va' {
     di as text "PHASE 5: SURVEY VA"
     di as text "{hline 80}"
 
-    * TODO Phase 1a §3.3 step 7: invoke CalSCHLS index construction +
-    * survey-VA regressions (relocated under do/survey_va/).  Each invocation
-    * carries a one-liner per the ADR-0021 description convention.  Example
-    * shape:
-    *
-    *   do do/survey_va/imputation.do                // multiply-impute missing CalSCHLS QOI items
-    *   do do/survey_va/imputedcategoryindex.do      // build climate/quality/support indices on imputed data (sums→means fix per ADR-0011)
-    *   do do/survey_va/compcasecategoryindex.do     // build climate/quality/support indices on complete-case data (sums→means fix per ADR-0011)
-    *   do do/survey_va/indexalpha.do                // Cronbach α for canonical paper-α per ADR-0010
-    *   do do/survey_va/indexregwithdemo.do          // single-index survey-VA regressions (paper Table 8 panel)
-    *   do do/survey_va/indexhorseracewithdemo.do    // multi-index horserace survey-VA regressions (paper Table 8 panel)
+    * RELOCATED 2026-05-08 per plan v3 §3.3 step 7 — Survey VA chain.
+    * Reads $caschls_projdir/dta/allsvyfactor/* (LEGACY; from allsvymerge.do
+    * Step 11 deferred); writes CANONICAL $datadir_clean/survey_va/* +
+    * $estimates_dir/survey_va/factor/* + $output_dir/csv|graph/factoranalysis/*.
+    do do/survey_va/imputation.do                  // multiply-impute missing CalSCHLS QOI items; writes $datadir_clean/survey_va/imputedallsvyqoimeans.dta
+    do do/survey_va/imputedcategoryindex.do        // build climate/quality/support indices on imputed data (9/15/4 items per ADR-0010); sums→means fix DEFERRED Phase 1b §4.2 per ADR-0011
+    do do/survey_va/compcasecategoryindex.do       // same indices on complete-case data
+    do do/survey_va/indexalpha.do                  // Cronbach α for paper footnote (paper-text fix DEFERRED post-handoff per Christina 2026-05-07)
+    do do/survey_va/indexregwithdemo.do            // bivariate survey-VA regressions w/ school chars (paper Table 8 Panel A)
+    do do/survey_va/indexhorseracewithdemo.do      // horserace survey-VA regressions w/ school chars (paper Table 8 Panel B)
+    do do/survey_va/indexhorserace.do              // horserace without demo controls
+    do do/survey_va/factor.do                      // exploratory factor analysis (eigen plots; intermediate, not paper-shipping)
+    do do/survey_va/pcascore.do                    // PCA scoreplot for survey factors
+
+    * TODO Phase 1a §3.3 step 8 — `alpha.do' archived per ADR-0010 (`do/_archive/exploratory/').
+    * TODO Phase 1a §3.3 step 11 — `allsvymerge.do' + `allsvyfactor.do' + `testscore.do' (exploratory-or-data-prep; deferred to do/explore/ or do/data_prep/).
 }
 
 
