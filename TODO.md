@@ -1,35 +1,28 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-07 (after batch 3c hygiene + MEMORY.md learnings; HEAD `712f803`)
+Last updated: 2026-05-08 (after Step 3 batch 3d commit `ccc2600` — **Step 3 COMPLETE**)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.3 IN PROGRESS — 39 of ~150 files relocated.** Step 5 (1 file) + Step 1 (3 files) + Step 2 (17 files) + Step 3 batches 3a/3b/3c1/3c2 (18 files) DONE. Step 3 only sibling-lag diagnostic (batch 3d) remains.
+- [ ] **Phase 1a §3.3 IN PROGRESS — 42 of ~150 files relocated. STEP 3 COMPLETE.** Step 5 (1 file) + Step 1 (3 files) + Step 2 (17 files) + Step 3 (21 files: 4 entry points + 5 spec/FB tables + 3 utilities + 6 outcome regs + 3 sibling-lag diagnostic) DONE.
 
-### Next session — Step 3 batch 3d (sibling lag diagnostic, 3 files)
+### Next session — Step 4 (heterogeneity + pass-through, ~12 files)
 
-Per plan v3 §3.3 step 3 + flag-comment in `do/main.do`. Sibling-lag forecast-bias diagnostic; per `do_all.do` comment: "kept active for diagnostic; not reported in the paper but kept available in case coauthors revisit."
-
-| File | Predecessor location | Notes |
-|---|---|---|
-| `va_score_sib_lag.do` | `cde_va_project_fork/do_files/sbac/` | Score-VA with sibling-lag-only specs |
-| `va_out_sib_lag.do` | same | Outcome-VA with sibling-lag-only specs |
-| `va_sib_lag_spec_fb_tab.do` | same | Combined spec/FB summary table for sibling-lag specs |
+Per plan v3 §3.3 step 4. Relocate `va_het.do`, `pass_through/<scripts>`, `reg_out_va_*.do` from `cde_va_project_fork/do_files/va_het/` and related paths to `do/va/heterogeneity/` + `do/va/pass_through/`.
 
 **Pre-batch checklist (carry forward):**
 
-1. Read all 3 files; map I/O.
+1. Inventory the source files at `cde_va_project_fork/do_files/va_het/` and confirm scope.
 2. **Absolute paths after `cd $vaprojdir`** — convention from batch 2c bugfix.
 3. ADR-0021 conventions: header, sandbox-write check, LEGACY-include macro-trace.
 4. **Always grep before claiming a local/macro is undefined** (batch 3b lesson).
-
-After batch 3d: Step 3 COMPLETE. Move to Step 4 (heterogeneity + pass-through).
+5. **Always grep before describing OUTPUTS** (batch 3d lesson — header-vs-code mismatch caught when I assumed CSV outputs from filename pattern; the file actually wrote .dta to spec_test/fb_test).
 
 ### Remaining Phase 1a §3.3 steps after Step 3
 
 | Step | Description | Source | Destination | Approx files |
 |---|---|---|---|---:|
-| 4 | Heterogeneity + pass-through (`va_het.do`, `pass_through/`, `reg_out_va_*.do`) | `cde_va_project_fork/do_files/sbac/` | `do/va/heterogeneity/` + `do/va/pass_through/` | ~12 |
+| 4 | Heterogeneity + pass-through (`va_het.do`, `pass_through/`) | `cde_va_project_fork/do_files/va_het/` | `do/va/heterogeneity/` + `do/va/pass_through/` | ~12 |
 | 6 | siblingvaregs deprecated archive (~30 files; minus `siblingoutxwalk.do` already moved). **INCLUDES the 3 caschls files originally tagged for batch 2b** (`createvasample.do`, `create_va_sib_acs_restr_smp.do`, `create_va_sib_acs_out_restr_smp.do`) — disposition decided 2026-05-07 per ADR-0004 (siblingvaregs deprecated; no cde-side caller). | `caschls/do/share/siblingvaregs/` | `do/_archive/siblingvaregs/` | ~30 |
 | 7 | Survey VA (`imputedcategoryindex.do`, `compcasecategoryindex.do`, `indexalpha.do`, `indexhorserace*`, `indexregwithdemo.do`, `imputation.do`, `factor.do`, `pcascore.do`, `mvpatterns.do`) | `caschls/do/share/factoranalysis/` | `do/survey_va/` | ~10 |
 | 8 | `alpha.do` archived per ADR-0010 | `caschls/do/share/factoranalysis/` | `do/_archive/exploratory/` | 1 |
@@ -51,7 +44,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -115,6 +108,8 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **Phase 1a §3.3 step 3 batch 3c1 — 3 VA utility files** (`merge_va_est`, `va_corr`, `prior_decile_original_sample`) relocated. `merge_va_est` produces master VA dataset (`va_<outcome>_all.dta` + super-master `va_all.dta`); `va_corr` correlation diagnostic; `prior_decile_original_sample` builds prior-score deciles + race/sex/econ + census income deciles. `prior_decile_original_sample.do` uses `$projdir` alias-before-include pattern per siblingoutxwalk.do precedent. `_str` locals verified at `macros_va.doh:150/153/157/160/163` BEFORE writing header (lesson from batch 3b applied). Coder-critic 96/100 PASS. (`9e102fd`) — 2026-05-07
 - [x] **Phase 1a §3.3 step 3 batch 3c2 — 6 outcome-regression files** (`reg_out_va_all` + `_tab` + `_fig` × {regular, dk}) relocated via script-based methodology (sed for 8 path patterns + Python for ADR-0021 header insertion + mkdir + RUN-START block). ~2220 body lines. New `gph_files` routing convention: intermediate `.gph` → `$output_dir/gph_files/...`; paper-shipping `.pdf` → `$figures_dir/...`. Charter status data KEPT LEGACY (Step 9 deferred). Round-1 critic finding M1 (-3): stale TODO in main.do referencing now-relocated files — fixed in-commit. Coder-critic 87/100 PASS. (`421333f`) — 2026-05-07
 - [x] **Hygiene + MEMORY.md learnings** — TODO + SESSION_REPORT (+ `.claude/` mirror) + new session log for batches 3c1/3c2; 2 `[LEARN]` entries in MEMORY.md (script-based relocation methodology + `gph_files` routing convention). (`4c4ec81`, `712f803`) — 2026-05-07
+- [x] **TODO maintenance fix + 1 LEARN entry** — Christina caught Done section drift (~50 stale 2026-04-* entries; missing 6 recent batches). Pruned per todo-tracking.md rule 6 (~10 most recent). Added `[LEARN:workflow]` codifying the hygiene-commit-must-update-Done-and-prune discipline. (`3503765`) — 2026-05-07
+- [x] **Phase 1a §3.3 step 3 batch 3d — 3 sibling-lag diagnostic files** (`va_score_sib_lag`, `va_out_sib_lag`, `va_sib_lag_spec_fb_tab`) relocated to `do/va/`. Diagnostic-only per do_all.do. **Brace-misplacement bug in main.do wiring caught + fixed before push** (Python script landed batch 3d invocations OUTSIDE the `if `do_va'' block; corrected via Edit). One round-1 critic finding (M1 -3): header-vs-code mismatch in va_sib_lag_spec_fb_tab.do (declared CSV outputs that don't get written; actually appends .dta to spec_test/fb_test) — derive-don't-guess violation, FIXED in-commit by rewriting OUTPUTS section. **STEP 3 NOW COMPLETE.** Coder-critic 95/100 PASS. (`ccc2600`) — 2026-05-08
 
 **Older completions** (pre-2026-05-07 batches) live in:
 - `quality_reports/session_logs/2026-04-*` — per-session detailed logs

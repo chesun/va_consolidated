@@ -1345,3 +1345,70 @@ Step 3 batch 3d (or roll into Step 4): 3 sibling-lag diagnostic files (`va_score
 1. Absolute `$consolidated_dir/do/...` for any consolidated include after `cd $vaprojdir`.
 2. **Always grep** before claiming a local/macro is undefined (batch 3b lesson).
 3. Script-based sed+Python relocation works well for files >300 lines with consistent path patterns; reserve for batches with similar files.
+
+---
+
+## 2026-05-08 — Phase 1a §3.3 step 3 batch 3d: sibling-lag diagnostic — STEP 3 COMPLETE
+
+**Status:** Tree clean; pushed to origin (`ccc2600`). Per Christina's directive: log + housekeeping after every batch.
+
+### Summary
+
+Step 3 batch 3d landed: 3 sibling-lag forecast-bias diagnostic files relocated (`va_score_sib_lag`, `va_out_sib_lag`, `va_sib_lag_spec_fb_tab`). Diagnostic-only per do_all.do; not paper-reported.
+
+**With this commit, Step 3 is COMPLETE: 21 files relocated across batches 3a/3b/3c1/3c2/3d** (4 entry points + 5 spec/FB tables + 3 utilities + 6 outcome regressions + 3 sibling-lag diagnostic).
+
+### Files relocated (3)
+
+| File | Body lines | Outputs |
+|---|---:|---|
+| `do/va/va_score_sib_lag.do` | 150 | `$estimates_dir/va_cfr_all_v[12]/{vam,spec_test,fb_test,va_est_dta}/...` |
+| `do/va/va_out_sib_lag.do` | 155 | Same structure (outcome variant) |
+| `do/va/va_sib_lag_spec_fb_tab.do` | 139 | `$tables_dir/va_cfr_all_v[12]/{spec_test,fb_test}/{spec,fb}_sib_lag.dta` |
+
+### Bugs caught + fixed before push
+
+**1. main.do brace-misplacement.** Python script that injects ADR-0021 headers landed the 3 batch 3d invocations OUTSIDE the `if \`do_va''` block (the closing `}` was placed mid-block). Caught by manual diff inspection; corrected via Edit before commit. Verified balanced nesting via grep.
+
+**2. Header-vs-code OUTPUTS mismatch in `va_sib_lag_spec_fb_tab.do`.** I had written that the file produces `combined/sib_lag_fb_spec_<outcome>.csv` outputs (assumption based on sister `va_spec_fb_tab.do` from batch 3b). Coder-critic ran a grep and found the actual writes go to `spec_test/spec_sib_lag.dta` and `fb_test/fb_sib_lag.dta`. Pure derive-don't-guess violation — I copied the OUTPUTS pattern from batch 3b without verifying. **Fixed in-commit** by reading the file body and rewriting OUTPUTS section to match the verified write paths. `combined/` mkdir prep flagged as dead code (verbatim-preserved predecessor behavior).
+
+**Lesson recurrence:** this is the 3rd time the grep-before-claim discipline has been needed (batches 3b, 3c2, 3d). Each time the verbatim-preservation rule made me feel "safe" to copy headers from prior files, but the actual code always needs verification. **Process change for batch 4+: grep the OUTPUTS paths from the file body BEFORE writing the header, not after.**
+
+### Coder-critic dispatch
+
+PASS 95/100. 5 concerns dispatched. Two non-blocking Minor findings:
+- M1 (-3): header-vs-code OUTPUTS mismatch — **FIXED in-commit before push.**
+- M2 (-2): standalone-execution dependency on batch 3b mkdirs (file writes to spec_test/fb_test but doesn't `cap mkdir` them itself; relies on batch 3b precursors running first). Verbatim-preserved predecessor behavior; defensive-code opportunity acknowledged.
+
+10 ledger rows added in-commit (3 files × 3 checks + 1 main.do brace-balance row).
+
+### Commits today (so far)
+
+- `3503765` — TODO maintenance + LEARN (caught Done drift). docs-only.
+- `ccc2600` — **Step 3 batch 3d. PASS 95/100. STEP 3 COMPLETE.**
+
+### Phase 1a §3.3 progress: 42 of ~150 files relocated. STEP 3 COMPLETE.
+
+- Step 5 (1 file) — `275efc0`
+- Step 1 (3 files) — `7983a8d`
+- Step 2 (17 files) — `94fd2b8`, `5de34a7`, `90700c2`
+- **Step 3 (21 files) — `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`** ★ COMPLETE
+- Step 4 (heterogeneity + pass-through, ~12 files) NEXT
+- Steps 6-10 remaining
+
+### Status
+
+- **ADR ledger:** 21 Decided. No new ADRs.
+- **Plan v3:** APPROVED.
+- **Tree:** clean; in sync with origin.
+- **Coder-critic audit trail:** 13 entries, all PASS ≥ 84/100.
+
+### Next-session pickup
+
+**Step 4 — heterogeneity + pass-through (~12 files).** Source: `cde_va_project_fork/do_files/va_het/`. Files: `va_corr_schl_char.do`, `va_corr_schl_char_fig.do`, `persist_het_student_char_fig.do`, `va_het.do`, plus `pass_through/` subtree.
+
+**Convention reminders:**
+1. Absolute `$consolidated_dir/do/...` after `cd $vaprojdir`.
+2. **Grep before claim** for both locals/macros AND output paths (batch 3d lesson).
+3. Script-based sed+Python relocation for batches >300 lines.
+4. **Header OUTPUTS:** always grep the file body BEFORE writing the header, not after (3rd-recurrence lesson).
