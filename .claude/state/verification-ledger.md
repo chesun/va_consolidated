@@ -58,6 +58,21 @@ Cache of verification results for the adversarial-default rule (`.claude/rules/a
 | do/samples/merge_lag2_ela.doh | adr-0021-sandbox-write | 2026-05-07T22:00Z | 4731ca86546d | PASS | pure parent-context fragment; no own save/log; same LEGACY K12 read as merge_loscore.doh |
 | do/samples/merge_va_smp_acs.doh | no-hardcoded-paths | 2026-05-07T22:00Z | 464da3083c57 | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
 | do/samples/merge_va_smp_acs.doh | adr-0021-sandbox-write | 2026-05-07T22:00Z | 464da3083c57 | PASS | called via `do' (own scope); 4 tempfile saves (exempt per established convention); no persistent-disk writes; reads LEGACY `$vaprojdir/data/...` (restricted-access K12 + crosswalks) and CONSOLIDATED `$consolidated_dir/do/va/helpers/macros_va.doh` |
+| do/va/va_score_all.do | no-hardcoded-paths | 2026-05-07T23:30Z | 8f4df08c6a6d | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
+| do/va/va_score_all.do | adr-0021-sandbox-write | 2026-05-07T23:30Z | 8f4df08c6a6d | PASS | 5 estimates/save calls (vam ster L208, spec_test ster L215, vam ster L233, spec_test ster L240, dta L251) all target CANONICAL `$estimates_dir/va_cfr_all_`version'/...`; log + translate target `$logdir/`; no LEGACY writes |
+| do/va/va_score_all.do | helper-include-absolute | 2026-05-07T23:30Z | 8f4df08c6a6d | PASS | 3/3 helper includes use absolute `$consolidated_dir/do/va/helpers/...` (macros_va, drift_limit, macros_va_all_samples_controls); zero relative `include do/...` post-`cd $vaprojdir` per batch 2c bugfix convention |
+| do/va/va_score_fb_all.do | no-hardcoded-paths | 2026-05-07T23:30Z | 3e4867fe8278 | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
+| do/va/va_score_fb_all.do | adr-0021-sandbox-write | 2026-05-07T23:30Z | 3e4867fe8278 | PASS | 4 estimates/save calls (vam ster L227 + L279, fb_test ster L237 + L288) all target CANONICAL `$estimates_dir/va_cfr_all_`version'/...`; log + translate target `$logdir/`; no-FB-leaveout vam calls intentionally don't save (residual-only); no LEGACY writes |
+| do/va/va_score_fb_all.do | helper-include-absolute | 2026-05-07T23:30Z | 3e4867fe8278 | PASS | 3/3 helper includes use absolute `$consolidated_dir/do/va/helpers/...` |
+| do/va/va_out_all.do | no-hardcoded-paths | 2026-05-07T23:30Z | c00e81dd22ee | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
+| do/va/va_out_all.do | adr-0021-sandbox-write | 2026-05-07T23:30Z | c00e81dd22ee | PASS | 9 estimates/save + 1 .dta save all target CANONICAL `$estimates_dir/va_cfr_all_`version'/...`; log + translate target `$logdir/`; no LEGACY writes |
+| do/va/va_out_all.do | helper-include-absolute | 2026-05-07T23:30Z | c00e81dd22ee | PASS | 3/3 helper includes absolute |
+| do/va/va_out_all.do | dependency-chain-integrity | 2026-05-07T23:30Z | c00e81dd22ee | PASS | merge at L232 reads `$estimates_dir/va_cfr_all_`version'/va_est_dta/va_`subject'_`sample'_sp_`va_ctrl'_ct.dta` — exact-match path va_score_all.do:251 writes |
+| do/va/va_out_fb_all.do | no-hardcoded-paths | 2026-05-07T23:30Z | 26af7f0587d8 | PASS | grep -nE '"/Users\|"/home\|"C:\\\\' returned 0 matches |
+| do/va/va_out_fb_all.do | adr-0021-sandbox-write | 2026-05-07T23:30Z | 26af7f0587d8 | PASS | 8 estimates/save calls (4 standard + 4 DK; all .ster) all target CANONICAL `$estimates_dir/va_cfr_all_`version'/...`; log + translate target `$logdir/`; no LEGACY writes |
+| do/va/va_out_fb_all.do | helper-include-absolute | 2026-05-07T23:30Z | 26af7f0587d8 | PASS | 3/3 helper includes absolute |
+| do/va/va_out_fb_all.do | dependency-chain-integrity | 2026-05-07T23:30Z | 26af7f0587d8 | PASS | merge in DK branch reads same CANONICAL path va_score_all.do:251 writes |
+| do/main.do | gate-parity | 2026-05-07T23:30Z | f9497e091c8a | PASS | `local do_va = 0` matches predecessor `do_all.do:160`; 4 batch 3a invocations gated by `if `do_va''`; matches the run-once-cached pattern established in batch 2b for sample construction |
 
 <!-- Real entries replace the _example_ rows above. Keep one row per (path, check). When a file changes, its rows become stale and are re-evaluated on next access.
 

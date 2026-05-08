@@ -182,14 +182,50 @@ if `run_va_estimation' {
     di as text "PHASE 3: VA ESTIMATION"
     di as text "{hline 80}"
 
-    * TODO Phase 1a §3.3 step 3: invoke VA estimation
-    * (relocated under do/va/).  Each invocation carries a one-liner per
-    * the ADR-0021 description convention.  Example shape:
+    * VA estimation sub-toggle (mirrors predecessor `do_all.do:160' for
+    * behavior parity).  All four entry points are run-once-cached: outputs
+    * persist in $estimates_dir/va_cfr_all_v[12]/ and are re-read by
+    * downstream paper tables, figures, and pass-through regressions.
+    * Default 0 mirrors `do_all.do:160' (`local do_va = 0').  Flip to 1 only
+    * when re-running estimation (e.g., after ADR-0006 vam.ado update).
+    local do_va  0
+
+    * RELOCATED 2026-05-07 per plan v3 §3.3 step 3 batch 3a — score-VA + outcome-VA
+    * estimation entry points (canonical pipeline per ADR-0004; v1/v2 prior-score
+    * controls per ADR-0009; CFR drift-limit shrinkage via vam.ado v2.0.1+noseed
+    * per ADR-0006).  All 4 gated together (run-once-cached pattern).
+    if `do_va' {
+        do do/va/va_score_all.do                       // estimate score-VA (16 specs × subject × v1/v2; CFR drift; spec-test); writes $estimates_dir/va_cfr_all_v[12]/{vam,spec_test,va_est_dta}/
+        do do/va/va_score_fb_all.do                    // forecast-bias test for score-VA (excludes lasd by design — see macros_va_all_samples_controls.doh:66); writes .../{vam,fb_test}/
+        do do/va/va_out_all.do                         // estimate outcome-VA + Deep Knowledge VA (controlling for ELA/Math VA from va_score_all); writes .../{vam,spec_test,va_est_dta}/
+        do do/va/va_out_fb_all.do                      // forecast-bias test for outcome-VA + DK VA; writes .../{vam,fb_test}/
+    }
+
+    * TODO Phase 1a §3.3 step 3 batch 3b: spec/FB test tables
+    *   do do/va/va_score_spec_test_tab.do
+    *   do do/va/va_out_spec_test_tab.do
+    *   do do/va/va_score_fb_test_tab.do
+    *   do do/va/va_out_fb_test_tab.do
+    *   do do/va/va_spec_fb_tab.do
     *
-    *   do do/va/va_score_all.do                  // estimate score-VA (CFR drift) — canonical pipeline per ADR-0004 + ADR-0009 v1
-    *   do do/va/va_out_all.do                    // estimate outcome-VA for postsec outcomes — canonical pipeline per ADR-0004
-    *   do do/va/heterogeneity/va_het.do          // VA heterogeneity by school + student characteristics
-    *   do do/va/pass_through/<scripts>           // pass-through regressions (paper Tables 4-7)
+    * TODO Phase 1a §3.3 step 3 batch 3c: utilities + outcome regressions
+    *   do do/va/merge_va_est.do
+    *   do do/va/va_corr.do
+    *   do do/va/prior_decile_original_sample.do
+    *   do do/va/reg_out_va_all.do  + _tab.do + _fig.do
+    *   do do/va/reg_out_va_dk_all.do + _tab.do + _fig.do
+    *
+    * TODO Phase 1a §3.3 step 3 batch 3d (or step 4): sibling lag diagnostic
+    *   do do/va/va_score_sib_lag.do
+    *   do do/va/va_out_sib_lag.do
+    *   do do/va/va_sib_lag_spec_fb_tab.do
+    *
+    * NOTE: predecessor `out_drift_limit.doh' is DEAD CODE (never included by any
+    * active script — all 4 entry points include `drift_limit.doh' which already
+    * defines both score_drift_limit and out_drift_limit).  Defer to Phase 1c §5.1
+    * archival.
+
+    * TODO Phase 1a §3.3 step 4: heterogeneity + pass-through (do/va/heterogeneity/, do/va/pass_through/)
 }
 
 
