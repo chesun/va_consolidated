@@ -16,7 +16,8 @@ When writing a new review, consult this index first. If an `Active` entry exists
 - [2026-05-08_step-9-batch-9a_coder_review.md](2026-05-08_step-9-batch-9a_coder_review.md) — Phase 1a §3.3 step 9 batch 9a (2 ACS census-tract files + main.do Phase 1 wiring; commit `4a88874`), score 95, Active
 - [2026-05-08_step-9-batch-9b_coder_review.md](2026-05-08_step-9-batch-9b_coder_review.md) — Phase 1a §3.3 step 9 batch 9b (11 schl_chars files + main.do Phase 1 wiring; commit `40cb161`), score 92, Active
 - [2026-05-08_step-9-batch-9c_coder_review.md](2026-05-08_step-9-batch-9c_coder_review.md) — Phase 1a §3.3 step 9 batch 9c (5 k12_postsec_distance files + main.do Phase 1 wiring; commit `4403758`), score 84, Active
-- [2026-05-08_step-9-batch-9d_coder_review.md](2026-05-08_step-9-batch-9d_coder_review.md) — Phase 1a §3.3 step 9 batch 9d (4 caschls/prepare files + settings.do LEGACY-globals delta + main.do Phase 1 wiring; commit `677033f`), round 1 67/100 BLOCK, Active
+- [2026-05-08_step-9-batch-9d_coder_review.md](2026-05-08_step-9-batch-9d_coder_review.md) — Phase 1a §3.3 step 9 batch 9d (4 caschls/prepare files + settings.do LEGACY-globals delta + main.do Phase 1 wiring; round 1 commit `677033f` 67/100 BLOCK → round 2 commit `c35e22a` 87/100 PASS), Active
+- [2026-05-08_step-9-batch-9e_coder_review.md](2026-05-08_step-9-batch-9e_coder_review.md) — Phase 1a §3.3 step 9 batch 9e (10 caschls/qoiclean files + main.do Phase 1 wiring; commit `0034ae2`; STEP 9 COMPLETE), score 95, Active
 
 ---
 

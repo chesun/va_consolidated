@@ -1727,3 +1727,36 @@ Chain regression caught: splitstaff0414 read LEGACY `$clndtadir/staff/staff0414`
 ### Coder-critic audit trail
 
 - 21 PASS verdicts. `677033f` BLOCK 67 round 1; `c35e22a` round 2 PASS 87.
+
+---
+
+## 2026-05-08 — Step 9 batch 9e (10 qoiclean files) — PASS 95/100 — **STEP 9 COMPLETE**
+
+**Status:** `0034ae2` PASS 95/100. **All 5 Step 9 batches (9a-9e) LANDED — 32 Christina-owned data-prep files relocated.** Phase 1a §3.3: 115 of ~150.
+
+### Operations
+
+- 10 year-by-year QOI cleaning files; multi-year files (4 of 10) use `\`year'` loop pattern.
+- Path repointings: `$projdir/log/.../qoiclean/...` → `$logdir/*` (flattened); `$projdir/dta/.../qoiclean/...` → `$datadir_clean/calschls/qoiclean/*`; `$clndtadir/<sub>/*` → `$datadir_clean/calschls/<sub>/*` (CHAIN from renamedata batch 9d).
+- Chain-coordination discipline applied upfront (no LEGACY-read regressions like the 9d staff0414 issue).
+- Inventory recount: 10 files (not 11). Step 9 total = 32 files.
+- main.do umbrella header updated from "IN PROGRESS" to "COMPLETE 2026-05-08" in the same hygiene pass per the -2 Minor finding.
+
+### Step 9 retrospective (5 batches, 32 files, mean 88.6/100)
+
+| Batch | Files | Score | Notes |
+|---|---:|---|---|
+| 9a | 2 | 95 | Smallest; canary |
+| 9b | 11 | 92 | 3 mid-pass bugs caught before commit |
+| 9c | 5 | 84 | SECURITY SCRUB: revoked OpenCage key |
+| 9d | 4 | 67→87 | Critical: undefined $rawcsvdir + chain regression |
+| 9e | 10 | 95 | Lessons-applied; final batch |
+
+### Phase 1a §3.3 progress: 115 of ~150 — Steps 1-9 ALL COMPLETE
+
+- **Step 10 (share/ paper producers, ~50 files) NEXT**
+- Pending Christina decision: extend Step 9 with `buildanalysisdata/poolingdata/` (5) + `responserate/` (4)?
+
+### Coder-critic audit trail
+
+- 22 PASS verdicts. `0034ae2` Step 9 batch 9e PASS 95/100. All Step 9 batches now have audit-trail closure.

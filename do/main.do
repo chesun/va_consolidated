@@ -100,10 +100,9 @@ if `run_data_prep' {
     di as text "PHASE 1: DATA PREP"
     di as text "{hline 80}"
 
-    * Phase 1a §3.3 step 9 IN PROGRESS — Christina-owned data-prep scripts
-    * relocated under do/data_prep/.  5-batch split (9a-9e); landing batches
-    * incrementally per Christina's "log + housekeeping after every batch"
-    * directive 2026-05-07.  Each invocation carries a one-liner per ADR-0021.
+    * Phase 1a §3.3 step 9 COMPLETE 2026-05-08 — Christina-owned data-prep
+    * scripts relocated under do/data_prep/.  5 batches (9a-9e) landed;
+    * 32 files total.  Each invocation carries a one-liner per ADR-0021.
     *
     * Step 9 batch 9a — ACS census-tract (2 files): LANDED 2026-05-08
     do do/data_prep/acs/acs_2017_gen_dict.do        // build 2017 ACS subject-table data dictionaries (descsave .dta+.csv)
