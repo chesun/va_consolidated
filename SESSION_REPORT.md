@@ -1542,3 +1542,31 @@ PASS 96/100. One Minor finding: README count nits → FIXED in-commit by enumera
 ### Next-session pickup
 
 **Step 7 — Survey VA (~10 files).** Source: `caschls/do/share/factoranalysis/`. Active relocations (NOT archive); paths need repointing per ADR-0021. Watch for `$projdir` references (alias-before-include pattern per siblingoutxwalk.do precedent). Note: `alpha.do` is in same source dir but is Step 8 (archive per ADR-0010); separate.
+
+---
+
+## 2026-05-08 (continued) — Step 7 LANDED (coder-critic DEFERRED per context-budget)
+
+**Status:** Tree clean; pushed (`3e99c3b`). **Context budget at 81% — Tier 2 dispatch deferred to next session. First action of next session: retroactive coder-critic on `3e99c3b`.**
+
+### Summary
+
+9 active Survey-VA files relocated to `do/survey_va/`. Tier 1 self-check PASS. Path strategy: chain outputs CANONICAL `$datadir_clean/survey_va/*` + `$estimates_dir/survey_va/factor/*`; LEGACY external reads `$caschls_projdir/dta/*`; intermediate exploratory `$output_dir/{csv,graph}/factoranalysis/*`. Out-of-scope: `alpha.do` (Step 8), `mattschlchar.do` (Step 10), `allsvymerge`/`allsvyfactor`/`testscore` (Step 11).
+
+INPUTS+OUTPUTS verified via grep on each body BEFORE writing each header (4th-recurrence discipline).
+
+### Caught + fixed in-session
+
+- `factor.do` predecessor had unusual log path `$projdir/do/share/factoranalysis/factor.smcl`; my sed routed to consolidated `do/survey_va/factor.smcl` (sandbox violation in `do/`); fixed manually to `$logdir/factor.smcl`.
+
+### Phase 1a §3.3 progress: 82 of ~150 files
+
+- Steps 1-5 active (46) + Step 6 archive (27) + **Step 7 LANDED (9)** = 82
+- Step 8 (1 file archive) NEXT
+- Steps 9 (~30), 10 (~50) remaining
+
+### Next session
+
+1. **FIRST: retroactive coder-critic on `3e99c3b`** (close Step 7 audit-trail gap)
+2. Step 8 (alpha.do archive per ADR-0010)
+3. Step 9 (data prep ~30)

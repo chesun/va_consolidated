@@ -1,12 +1,21 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-08 (after Step 6 commit `b8b4ce8` — **Steps 1-6 ALL COMPLETE**)
+Last updated: 2026-05-08 (after Step 7 commit `3e99c3b` — **Steps 1-7 LANDED; coder-critic DEFERRED per context-budget**)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.3 IN PROGRESS — 73 of ~150 files relocated/archived. Steps 1-6 COMPLETE.** Remaining: Step 7 (~10) + Step 8 (1) + Step 9 (~30) + Step 10 (~50).
+- [ ] **Phase 1a §3.3 IN PROGRESS — 82 of ~150 files relocated/archived. Steps 1-7 LANDED.** Remaining: Step 8 (1) + Step 9 (~30) + Step 10 (~50). **NOTE:** Step 7 (`3e99c3b`) committed without coder-critic dispatch due to context-budget pressure (session at 81% pre-compact). Next session must dispatch coder-critic on Step 7 retroactively before claiming Step 7 PASS.
 
-### Next session — Step 7 (Survey VA, ~10 files)
+### Next session — FIRST: retroactive coder-critic on Step 7 commit `3e99c3b`
+
+Before starting Step 8, dispatch coder-critic on the 9 Step 7 files (`do/survey_va/*.do`) to close out the audit-trail gap. Tight scope (5 concerns):
+1. Sandbox-write check (writes -> CANONICAL `$datadir_clean/survey_va/*` + `$estimates_dir/survey_va/factor/*` + `$output_dir/csv|graph/factoranalysis/*` + `$logdir/`)
+2. INPUTS-OUTPUTS header fidelity (per 4th-recurrence grep-before-claim discipline)
+3. `$projdir` repointings clean (LEGACY-only via `$caschls_projdir`; chain outputs via CANONICAL)
+4. main.do Phase 5 wiring + flag-comments for Step 8 + Step 11
+5. Verbatim preservation under ADR-0021 (predecessor typos preserved; e.g., `indexhorsewithdemo.smcl` instead of `indexhorseracewithdemo.smcl`)
+
+### After Step 7 audit — Step 8 (alpha.do archive, 1 file)
 
 Per plan v3 §3.3 step 7. Relocate `imputedcategoryindex.do`, `compcasecategoryindex.do`, `indexalpha.do`, `indexhorserace.do`, `indexhorseracewithdemo.do`, `indexregwithdemo.do`, `imputation.do`, `factor.do`, `pcascore.do`, `mvpatterns.do` from `caschls/do/share/factoranalysis/` to `do/survey_va/`.
 
@@ -44,7 +53,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`. **Step 7 commit `3e99c3b` PENDING coder-critic** (deferred next-session per context-budget; first action of next session). (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -112,6 +121,7 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **Phase 1a §3.3 step 3 batch 3d — 3 sibling-lag diagnostic files** (`va_score_sib_lag`, `va_out_sib_lag`, `va_sib_lag_spec_fb_tab`) relocated to `do/va/`. Diagnostic-only per do_all.do. **Brace-misplacement bug in main.do wiring caught + fixed before push** (Python script landed batch 3d invocations OUTSIDE the `if `do_va'' block; corrected via Edit). One round-1 critic finding (M1 -3): header-vs-code mismatch in va_sib_lag_spec_fb_tab.do (declared CSV outputs that don't get written; actually appends .dta to spec_test/fb_test) — derive-don't-guess violation, FIXED in-commit by rewriting OUTPUTS section. **STEP 3 NOW COMPLETE.** Coder-critic 95/100 PASS. (`ccc2600`) — 2026-05-08
 - [x] **Phase 1a §3.3 step 4 — 4 heterogeneity files** (`va_het`, `va_corr_schl_char`, `va_corr_schl_char_fig`, `persist_het_student_char_fig`) relocated to `do/va/heterogeneity/`. Plan v3 mentioned `pass_through/` but predecessor has no such directory; Step 4 = 4 files only. One round-1 critic finding (M2 -7, Major strict-phase): `persist_het_student_char_fig.do` header INPUTS section had boilerplate sch_char/va_all references that the body doesn't read (body only reads `.gph` from `$output_dir/gph_files/`); fixed in-commit by rewriting INPUTS to match body grep at L97-101. Lesson recurrence — discipline now extends to BOTH OUTPUTS and INPUTS. Coder-critic 91/100 PASS. (`c84371f`) — 2026-05-08
 - [x] **Phase 1a §3.3 step 6 — 27 deprecated siblingvaregs files archived** to `do/_archive/siblingvaregs/`. First archive-convention batch (bodies preserved verbatim per ADR-0021; not invoked from main.do). 2 files NOT archived per ADR-0004's "verify before archiving" caveat: `siblingoutxwalk.do` (already relocated to `do/sibling_xwalk/` per ADR-0005); `vafilemacros.doh` (still consumed by ACTIVE relocated code in siblingoutxwalk.do + prior_decile_original_sample.do — kept LEGACY-static at predecessor location). README at `do/_archive/siblingvaregs/README.md` documents archive scope + exclusion rationale. One Minor critic finding (README count nits) FIXED in-commit. **Steps 1-6 NOW COMPLETE.** Coder-critic 96/100 PASS. (`b8b4ce8`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 7 — 9 Survey VA files relocated** to `do/survey_va/`: `imputation`, `imputed/compcase categoryindex`, `indexalpha`, `indexhorserace[withdemo]`, `indexregwithdemo`, `factor`, `pcascore`. Out-of-scope: `alpha.do` (Step 8 archive), `mattschlchar.do` (Step 10), `allsvymerge`/`allsvyfactor`/`testscore` (Step 11). Path repointing methodology: chain outputs to `$datadir_clean/survey_va/*` + `$estimates_dir/survey_va/factor/*`; LEGACY external reads via `$caschls_projdir`; intermediate exploratory outputs to `$output_dir/{csv,graph}/factoranalysis/*`. INPUTS+OUTPUTS verified via grep on each body BEFORE writing each header (4th-recurrence discipline applied). **Coder-critic DEFERRED to next session per context-budget pressure** (session at 81% real context); Tier 1 self-check PASS. Next-session retroactive audit required before claiming Step 7 PASS. (`3e99c3b`) — 2026-05-08
 
 **Older completions** (pre-2026-05-07 batches) live in:
 - `quality_reports/session_logs/2026-04-*` — per-session detailed logs
