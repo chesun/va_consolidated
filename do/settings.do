@@ -144,13 +144,20 @@ global nscdtadir_oldformat  "$nscdtadir/oldformat"
 * Matt's separate crosswalks dir (distinct from $vaprojxwalks).
 global mattxwalks       "/home/research/ca_ed_lab/users/msnaven/data/restricted_access/clean/crosswalks"
 
-* Christina-owned k12-to-postsecondary distance data (LEGACY: predecessor at
-* cde_va_project_fork/data/k12_postsec_distance/, scheduled to relocate in
-* Phase 1a §3.3 step 9 data-prep batch).  Read by sample-construction scripts
-* via the LEGACY `merge_k12_postsec_dist.doh' helper, which expands
-* $distance_dtadir at line 23 (`merge m:1 cdscode using $distance_dtadir/clean/...').
+* Christina-owned k12-to-postsecondary distance data (LEGACY for raw inputs;
+* relocated batch 9c writes outputs to $datadir_clean/k12_postsec_distance/clean/*).
 * Predecessor settings.do (do_files/settings.do:52) bound this to the same path.
 global distance_dtadir  "$vaprojdir/data/k12_postsec_distance"
+
+* CalSCHLS restricted-access data dirs (LEGACY-READ-ONLY).  Predecessor caschls
+* settings.do binds these to absolute Scribe paths outside both repos.  Used
+* for raw-survey reads in batch 9d (renamedata.do, splitstaff0414.do) and
+* batch 9e (qoiclean year-by-year files).  Writes from those batches go to
+* CANONICAL $datadir_clean/calschls/* per ADR-0021 sandbox-write principle.
+* Pre-existing cleaned data already in $clndtadir (e.g., staff0414) stays
+* there as a LEGACY read source for splitstaff0414's split operation.
+global rawdtadir  "/home/research/ca_ed_lab/data/restricted_access/raw/calschls/stata"
+global clndtadir  "/home/research/ca_ed_lab/data/restricted_access/clean/calschls"
 
 
 /*==============================================================================

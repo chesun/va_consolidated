@@ -130,8 +130,13 @@ if `run_data_prep' {
     do do/data_prep/k12_postsec_distance/k12_postsec_distances.do  // MAIN: build K12-postsec distance file (IPEDS HD2021 + CDE pubschls + geodist); writes $datadir_clean/k12_postsec_distance/clean/k12_postsec_{distance,mindistance}.dta; calls `run hd2021.do' as sub-script
     do do/data_prep/k12_postsec_distance/check_merge.do            // diagnostic: verify mindistance merges cleanly with score_b VA sample (sanity check; LEGACY read of $vaprojdir/data/va_samples_v1/score_b.dta + include of merge_k12_postsec_dist.doh)
 
-    * Step 9 batches 9d-9e PENDING (relocations land in subsequent commits):
-    *   9d — prepare/ (~4 files including enrollmentclean; caschls-side)
+    * Step 9 batch 9d — caschls/prepare/ (4 files): LANDED 2026-05-08
+    do do/data_prep/prepare/enrollmentclean.do          // clean CDE annual enrollment 2014-15..2018-19; produces $datadir_clean/enrollment/schoollevel/enr<year>.dta (5 files; chain producer)
+    do do/data_prep/prepare/poolgr11enr.do              // pool gr11 enrollment across 5 years; reads CHAIN enr<year>; writes $datadir_clean/enrollment/schoollevel/poolgr11enr.dta
+    do do/data_prep/prepare/renamedata.do               // rename + standardize raw CalSCHLS surveys (elementary/parent/secondary across years); writes $datadir_clean/calschls/{elementary,parent,secondary}/<x><year>.dta
+    do do/data_prep/prepare/splitstaff0414.do           // split pre-existing $clndtadir/staff/staff0414 by year; writes $datadir_clean/calschls/staff/staff<year>.dta
+
+    * Step 9 batch 9e PENDING (relocations land in subsequent commit):
     *   9e — qoiclean/ (~11 files; caschls-side, year-by-year QOI cleaning)
     *
     * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
