@@ -100,17 +100,20 @@ if `run_data_prep' {
     di as text "PHASE 1: DATA PREP"
     di as text "{hline 80}"
 
-    * TODO Phase 1a §3.3 step 9: invoke Christina-owned data-prep scripts
-    * (relocated under do/data_prep/).  Each invocation carries a one-liner
-    * per the ADR-0021 description convention.  Authoritative longer
-    * description lives in the called script's own header.  Example shape:
+    * Phase 1a §3.3 step 9 IN PROGRESS — Christina-owned data-prep scripts
+    * relocated under do/data_prep/.  5-batch split (9a-9e); landing batches
+    * incrementally per Christina's "log + housekeeping after every batch"
+    * directive 2026-05-07.  Each invocation carries a one-liner per ADR-0021.
     *
-    *   do do/data_prep/enrollmentclean.do            // clean K12 enrollment records
-    *   do do/data_prep/acs/<scripts>                 // build ACS school-neighborhood demographics (2010-2013)
-    *   do do/data_prep/schl_chars/<scripts>          // assemble school-level characteristics (race/SES/Title-I)
-    *   do do/data_prep/k12_postsec_distance/<scripts>// build K12-to-postsec mindist controls
-    *   do do/data_prep/prepare/<scripts>             // pre-merge prep for sample construction
-    *   do do/data_prep/caschls_qoiclean/<scripts>    // clean CalSCHLS QOI items for survey-VA
+    * Step 9 batch 9a — ACS census-tract (2 files): LANDED 2026-05-08
+    do do/data_prep/acs/acs_2017_gen_dict.do        // build 2017 ACS subject-table data dictionaries (descsave .dta+.csv)
+    do do/data_prep/acs/clean_acs_census_tract.do   // clean 2010-2013 ACS census-tract subject tables S0601/S1501/S1702/S1901; produces $datadir_clean/acs/acs_ca_census_tract_clean.dta
+
+    * Step 9 batches 9b-9e PENDING (relocations land in subsequent commits):
+    *   9b — schl_chars/  (~11 files; cde-side)
+    *   9c — k12_postsec_distance/ (~5 files; cde-side)
+    *   9d — prepare/ (~4 files including enrollmentclean; caschls-side)
+    *   9e — qoiclean/ (~11 files; caschls-side, year-by-year QOI cleaning)
     *
     * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
     * + plan v3 §8 Q1 (verified by grep — ZERO production invocations of
