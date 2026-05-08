@@ -1700,3 +1700,30 @@ ADR-0010 (2026-04-27) wrote "header note documenting purpose"; ADR-0021 (later) 
 ### Coder-critic audit trail
 
 - 20 PASS verdicts. `4403758` Step 9 batch 9c PASS 84/100; `02b5189` follow-up fix.
+
+---
+
+## 2026-05-08 — Step 9 batch 9d (4 caschls/prepare/ files) — BLOCK 67 → PASS 87
+
+**Status:** `677033f` BLOCK 67 round 1; round-1 fixes in `c35e22a`; round 2 PASS 87. Phase 1a §3.3: 105 of ~150.
+
+### Operations
+
+- 4 caschls-side files; first batch into `do/data_prep/prepare/`.
+- Settings.do edit: added 3 LEGACY-globals (`$rawdtadir`, `$rawcsvdir`, `$clndtadir`) for CalSCHLS restricted-access data.
+- Coder-critic round 1 found Critical bug: `$rawcsvdir` was referenced but not defined in settings (Critical -20); chain regression on staff0414 (Major -10); missing mkdir for staff/ (Major -5); 2 Minors. All 5 fixed in `c35e22a`.
+
+### Critical bug pattern caught
+
+`$rawcsvdir` global undefined: predecessor caschls/do/settings.do:12 defines it; my batch 9d settings.do delta missed adding it. Would have caused runtime failure at renamedata.do:230. **Pair-flow vindication**: Tier 1 self-check missed this because the grep pattern checked `$projdir`/`$vaprojdir`/`$caschls` but not `$rawcsvdir`. Tier 2's broader scope caught it.
+
+Chain regression caught: splitstaff0414 read LEGACY `$clndtadir/staff/staff0414` instead of CHAIN `$datadir_clean/calschls/staff/staff0414` (produced by renamedata in same Stata session). After fresh `rm -rf $datadir_clean/calschls/staff/`, splitstaff0414 would silently read stale LEGACY. Process rule: after repointing ANY write to CANONICAL, grep consolidated for reads of the same LEGACY path; update all in the same commit.
+
+### Phase 1a §3.3 progress: 105 of ~150 — Steps 1-8 + Step 9 batches 9a+9b+9c+9d COMPLETE
+
+- Batch 9e (qoiclean/, 11 files) NEXT — last batch of Step 9
+- Plus rollup of 9d round-2 deferred Minor doc-string drift in batch 9e commit
+
+### Coder-critic audit trail
+
+- 21 PASS verdicts. `677033f` BLOCK 67 round 1; `c35e22a` round 2 PASS 87.
