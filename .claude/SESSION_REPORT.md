@@ -1597,3 +1597,30 @@ INPUTS+OUTPUTS verified via grep on each body BEFORE writing each header (4th-re
 ### Coder-critic audit trail
 
 - Step 7 retroactive PASS round 2 (94/100) closes the prior gap. All 16 Phase 1 code commits now have PASS verdicts on file. Audit recorded at `quality_reports/reviews/2026-05-08_step-7-survey-va_coder_review.md`.
+
+---
+
+## 2026-05-08 — Step 8 alpha.do archive — PASS 97/100
+
+**Status:** Tree dirty pre-hygiene; Step 8 commit `8fe1f28` landed locally + Tier-2 PASS. Steps 1-8 ALL COMPLETE.
+
+### Operations
+
+- Located predecessor `caschls/do/share/factoranalysis/alpha.do` (Dropbox); verify-before-archive grep PASS (no invoking caller).
+- cp byte-identical → `do/_archive/exploratory/alpha.do` (224 lines).
+- Wrote `do/_archive/exploratory/README.md` documenting archive scope, ADR-0010 authority, file list, why-archived (Christina Phase 0e Q-3 answer cited verbatim), verify-before-archive result, and ADR-0010 vs ADR-0021 convention reconciliation.
+- Updated `do/main.do:307` flag-comment from TODO to past-tense COMPLETE; retained Step 11 flag.
+- Tier-2 dispatch: tight 4-concern scope (verify-before-archive, README accuracy, main.do flag, body verbatim). **PASS 97/100** with one Minor (-3) on defensive README cross-ref to `68cf30e` (verified correct).
+
+### Reconciliation note (ADR-0010 vs ADR-0021)
+
+ADR-0010 (2026-04-27) wrote "header note documenting purpose"; ADR-0021 (later) codified archive convention as body-verbatim with no in-file header. Resolution: per-batch README satisfies the documentation requirement equivalently; ADR-0021 supersedes the specific in-file-header instruction. Same precedent as Step 6 siblingvaregs archive.
+
+### Phase 1a §3.3 progress: 83 of ~150 — Steps 1-8 ALL COMPLETE
+
+- Step 9 (~30 data prep, Christina-owned) NEXT
+- Step 10 (~50 share/ paper producers) after
+
+### Coder-critic audit trail
+
+- 17 PASS verdicts. `8fe1f28` Step 8 archive PASS 97/100 closes the second archive batch (after Step 6 siblingvaregs `b8b4ce8` PASS 96/100).
