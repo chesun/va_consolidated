@@ -19,6 +19,8 @@ INPUTS (verified via grep on file body)
     $rawdtadir/parent/CSPS_1718_ParentData_Statewide_ID_082818  (LEGACY)
     $rawdtadir/parent/CSPS_1819_ParentData_Statewide_ID_102819  (LEGACY)
     $rawdtadir/parent/csps1415 all.dta  (LEGACY)
+    $rawcsvdir/secondary/CHKS_1112_SecData_Statewide_School_ID_1213Var_110414.csv  (LEGACY raw — pre-2014 csv)
+    $rawcsvdir/secondary/CHKS_1213_SecData_Statewide_School_ID_111114.csv  (LEGACY raw — pre-2014 csv)
     $rawdtadir/secondary/CHKS_1314_SecData_AllDistricts_050718.dta  (LEGACY)
     $rawdtadir/secondary/CHKS_1415_SecData_AllDistricts_012916.dta  (LEGACY)
     $rawdtadir/secondary/CHKS_1516_SecData_AllDistricts_ID_032817.dta  (LEGACY)
@@ -108,6 +110,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/elementary"
 cap mkdir "$datadir_clean/calschls/parent"
 cap mkdir "$datadir_clean/calschls/secondary"
+cap mkdir "$datadir_clean/calschls/staff"
 
 log using "$logdir/renamedata.smcl", replace text name(renamedata)
 

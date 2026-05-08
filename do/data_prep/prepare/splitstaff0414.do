@@ -9,7 +9,7 @@ INVOKED FROM
     `do/main.do' Phase 1 (DATA PREP) under flag `do_data_prep'.
 
 INPUTS (verified via grep on file body)
-    $clndtadir/staff/staff0414  (LEGACY)
+    $datadir_clean/calschls/staff/staff0414  (CHAIN read; from renamedata.do this batch — runs first per main.do invocation order)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/calschls/staff/staff`i'
@@ -65,7 +65,7 @@ cap mkdir "$datadir_clean/calschls/staff"
 
 log using "$logdir/splitstaff0414.smcl", replace text name(splitstaff0414)
 
-use $clndtadir/staff/staff0414, clear
+use $datadir_clean/calschls/staff/staff0414, clear  // CHAIN read from renamedata.do (same-batch producer; see plan v3 §3.3 step 9 batch 9d invocation order)
 
 gen str tempyear = "" //generate a temp string var for ease of writing short file names
 replace tempyear = "0405" if schlyear == 2004.2005

@@ -154,9 +154,14 @@ global distance_dtadir  "$vaprojdir/data/k12_postsec_distance"
 * for raw-survey reads in batch 9d (renamedata.do, splitstaff0414.do) and
 * batch 9e (qoiclean year-by-year files).  Writes from those batches go to
 * CANONICAL $datadir_clean/calschls/* per ADR-0021 sandbox-write principle.
-* Pre-existing cleaned data already in $clndtadir (e.g., staff0414) stays
-* there as a LEGACY read source for splitstaff0414's split operation.
+* $rawdtadir holds .dta-format raw surveys (most years); $rawcsvdir holds
+* the pre-2014 .csv-format secondary surveys.  $clndtadir is currently used
+* only by qoiclean (batch 9e) for legacy-clean reads — splitstaff0414 was
+* repointed to read CHAIN $datadir_clean/calschls/staff/staff0414 (produced
+* by renamedata earlier in main.do invocation order; coder-critic round 1
+* on commit 677033f flagged the LEGACY-read regression).
 global rawdtadir  "/home/research/ca_ed_lab/data/restricted_access/raw/calschls/stata"
+global rawcsvdir  "/home/research/ca_ed_lab/data/restricted_access/raw/calschls/csv"
 global clndtadir  "/home/research/ca_ed_lab/data/restricted_access/clean/calschls"
 
 

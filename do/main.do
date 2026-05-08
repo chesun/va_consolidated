@@ -133,7 +133,7 @@ if `run_data_prep' {
     * Step 9 batch 9d — caschls/prepare/ (4 files): LANDED 2026-05-08
     do do/data_prep/prepare/enrollmentclean.do          // clean CDE annual enrollment 2014-15..2018-19; produces $datadir_clean/enrollment/schoollevel/enr<year>.dta (5 files; chain producer)
     do do/data_prep/prepare/poolgr11enr.do              // pool gr11 enrollment across 5 years; reads CHAIN enr<year>; writes $datadir_clean/enrollment/schoollevel/poolgr11enr.dta
-    do do/data_prep/prepare/renamedata.do               // rename + standardize raw CalSCHLS surveys (elementary/parent/secondary across years); writes $datadir_clean/calschls/{elementary,parent,secondary}/<x><year>.dta
+    do do/data_prep/prepare/renamedata.do               // rename + standardize raw CalSCHLS surveys (elementary/parent/secondary/staff across years); writes $datadir_clean/calschls/{elementary,parent,secondary,staff}/<x><year>.dta — incl. pooled staff0414 consumed by splitstaff0414
     do do/data_prep/prepare/splitstaff0414.do           // split pre-existing $clndtadir/staff/staff0414 by year; writes $datadir_clean/calschls/staff/staff<year>.dta
 
     * Step 9 batch 9e PENDING (relocations land in subsequent commit):
