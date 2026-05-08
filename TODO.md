@@ -1,10 +1,10 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-08 (after Step 9 batch 9b commits `40cb161` + fix `9478ded` — **PASS 92/100** — 11 schl_chars files relocated)
+Last updated: 2026-05-08 (after Step 9 batch 9c commits `4403758` + fix `02b5189` — **PASS 84/100** — 5 k12-postsec-distance files relocated)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.3 IN PROGRESS — 96 of ~150 files relocated/archived. Steps 1-8 + Step 9 batches 9a+9b COMPLETE.** Remaining: Step 9 batches 9c-9e (~20 files) + Step 10 (~50 share/).
+- [ ] **Phase 1a §3.3 IN PROGRESS — 101 of ~150 files relocated/archived. Steps 1-8 + Step 9 batches 9a+9b+9c COMPLETE.** Remaining: Step 9 batches 9d (4) + 9e (11) + Step 10 (~50 share/).
 
 ### Step 9 — Data prep (~33 files; Christina-owned) IN PROGRESS — batch 9b NEXT
 
@@ -16,8 +16,8 @@ Last updated: 2026-05-08 (after Step 9 batch 9b commits `40cb161` + fix `9478ded
 |---|---|---:|---|---|
 | 9a | `cde/do_files/acs/` | 2 | LANDED `4a88874` | PASS 95/100 |
 | 9b | `cde/do_files/schl_chars/` | 11 | LANDED `40cb161` + fix `9478ded` | PASS 92/100 (round 1) |
-| 9c | `cde/do_files/k12_postsec_distance/` | 5 | NEXT | — |
-| 9d | `caschls/do/build/prepare/` | 4 | pending | — |
+| 9c | `cde/do_files/k12_postsec_distance/` | 5 | LANDED `4403758` + fix `02b5189` | PASS 84/100 (round 1) |
+| 9d | `caschls/do/build/prepare/` | 4 | NEXT | — |
 | 9e | `caschls/do/build/buildanalysisdata/qoiclean/` | 11 | pending | — |
 
 **Out-of-named-scope discovered:** `caschls/do/build/buildanalysisdata/poolingdata/` (5) + `responserate/` (4) — defer Christina-decision to end of Step 9.
@@ -57,7 +57,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`, `3e99c3b` (retroactive round 2 94/100 after `factor.do:131` fix `68cf30e`), `8fe1f28` (Step 8 alpha.do archive 97/100), `4a88874` (Step 9 batch 9a 95/100), `40cb161` (Step 9 batch 9b 92/100 + fix `9478ded` — `quality_reports/reviews/2026-05-08_step-9-batch-9b_coder_review.md`). (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`, `3e99c3b` (retroactive round 2 94/100 after `factor.do:131` fix `68cf30e`), `8fe1f28` (Step 8 alpha.do archive 97/100), `4a88874` (Step 9 batch 9a 95/100), `40cb161` (Step 9 batch 9b 92/100 + fix `9478ded`), `4403758` (Step 9 batch 9c 84/100 + fix `02b5189` — `quality_reports/reviews/2026-05-08_step-9-batch-9c_coder_review.md`). (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -125,7 +125,8 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **Phase 1a §3.3 step 8 — alpha.do archived** (1-file batch) to `do/_archive/exploratory/`. ADR-0010 authority (paper-α canonical producer is `indexalpha.do` — relocated to `do/survey_va/` in Step 7; `alpha.do` was exploratory wider-item-list 20/17/4 sensitivity vs production 9/15/4). Body preserved verbatim (semantic; LF normalization per repo `text=auto` consistent with Step 7 actively-relocated `indexalpha.do` from same predecessor dir). README at `do/_archive/exploratory/README.md` documents archive scope, ADR-0010 authority, file list, why-archived, verify-before-archive grep result, ADR-0010 vs ADR-0021 convention reconciliation. main.do:307 flag-comment updated past-tense COMPLETE; Step 11 flag retained. **Steps 1-8 NOW COMPLETE.** Coder-critic PASS 97/100 (one Minor -3 on README defensive cross-ref). (`8fe1f28`) — 2026-05-08
 - [x] **Phase 1a §3.3 step 9 inventory + 5-batch plan committed** at `quality_reports/plans/2026-05-08_step-9-data-prep-inventory.md`. 33 files across 5 named sub-batches (acs/2, schl_chars/11, k12_postsec_distance/5, prepare/4, qoiclean/11). Discovered-but-out-of-named-scope: `buildanalysisdata/poolingdata/` (5) + `responserate/` (4); decision deferred to end of Step 9. (`a6cd5f2`) — 2026-05-08
 - [x] **Phase 1a §3.3 step 9 batch 9a — 2 ACS census-tract files relocated** to `do/data_prep/acs/`: `acs_2017_gen_dict.do` (47 body lines) + `clean_acs_census_tract.do` (369 body lines). Path repointings: `cd $vaprojdir` removed; reads `$vaprojdir/data/...` (LEGACY raw); writes `$datadir_clean/acs/...` (CHAIN) + `$output_dir/csv/acs/2017/...` (diagnostic) + `$logdir/...`; `include do_files/sbac/macros_va.doh` → `$consolidated_dir/do/va/helpers/macros_va.doh`. Coder-critic PASS 95/100 (2 Minors deferred). (`4a88874`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 batch 9b — 11 school-characteristics files relocated** to `do/data_prep/schl_chars/`: `cds_nces_xwalk` + `clean_locale` (chain producers) + 6 yearly cleaners (`clean_{elsch,enr,frpm,staffcred,staffdemo,staffschoolfte}`) producing `$datadir_clean/cde/<sub>/<sub>_<year>_clean.dta` + `clean_charter` + `clean_ecn_disadv` + `clean_sch_char` (master). Chain order from predecessor `do_all.do:75-97`. Methodology: Python regex+sed transforms + ADR-0021 header insertion + per-file mkdir blocks. Caught 3 mid-pass bugs: (a) initial sed missed relative-after-cd `data/public_access/clean/...` form; (b) removing `cd $vaprojdir` exposed broken relative `import delimited data/public_access/raw/...`; (c) Python INPUTS regex missed `import delimited`/`import excel` — patched 8 headers. Coder-critic PASS 92/100 round 1; 2 round-1 findings (Major: `clean_sch_char.do:609` relative `save data/sch_char_<year>.dta` missed by sed; Minor cluster: incorrectly attributed tempfile production to 6 sister cleaners — actually all 8 tempfiles defined in clean_sch_char itself) FIXED in follow-up `9478ded`. (`40cb161`+`9478ded`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 batch 9b — 11 school-characteristics files relocated** to `do/data_prep/schl_chars/`. Chain order from predecessor `do_all.do:75-97`. Caught 3 mid-pass bugs (relative-after-cd form; broken raw imports after `cd` removal; Python INPUTS regex missed `import delimited|excel`). Coder-critic PASS 92/100 round 1; 2 findings (Major: `clean_sch_char.do:609` relative `save` missed by sed; Minor: tempfile attribution drift) FIXED in `9478ded`. (`40cb161`+`9478ded`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 batch 9c — 5 k12-postsec-distance files relocated** to `do/data_prep/k12_postsec_distance/`: `k12_postsec_distances.do` (MAIN), `hd2021.do` (4322-line IPEDS HD loader, runs from MAIN), `reconcile_cdscodes.do` (ORPHAN — not invoked by anyone in either predecessor or consolidated; preserved per ADR-0021), `merge_k12_postsec_dist.doh` (helper used by relocated batch 2b sample-construction files; consolidated callsites in `do/samples/create_{score,out}_samples.do` updated this batch), `check_merge.do` (diagnostic). Path repointings to `$datadir_clean/k12_postsec_distance/clean/*` (CANONICAL chain). **SECURITY SCRUB**: OpenCage API key (revoked 2026-04-30 per T1-5) replaced with placeholder `"REVOKED-2026-04-30"` in commented `opencagegeo` line of MAIN. Coder-critic PASS 84/100 round 1; 3 findings (Major: false `do reconcile_cdscodes` sub-call claim; Minor: stale `$vaprojdir` includes in 2 already-relocated callers; Minor: header self-listing + duplicate INPUTS) FIXED in `02b5189`. (`4403758`+`02b5189`) — 2026-05-08
 
 **Older completions** (pre-2026-05-07 batches) live in:
 - `quality_reports/session_logs/2026-04-*` — per-session detailed logs

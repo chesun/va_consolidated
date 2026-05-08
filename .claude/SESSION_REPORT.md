@@ -1672,3 +1672,31 @@ ADR-0010 (2026-04-27) wrote "header note documenting purpose"; ADR-0021 (later) 
 ### Coder-critic audit trail
 
 - 19 PASS verdicts. `40cb161` Step 9 batch 9b PASS 92/100; `9478ded` follow-up fix.
+
+---
+
+## 2026-05-08 — Step 9 batch 9c (5 k12-postsec-distance files) — PASS 84/100 + fixes
+
+**Status:** `4403758` PASS 84/100; round-1 findings fixed in `02b5189`. Phase 1a §3.3: 101 of ~150.
+
+### Operations
+
+- 5 files: MAIN `k12_postsec_distances.do` + 4322-line `hd2021.do` (IPEDS HD loader, runs from MAIN) + ORPHAN `reconcile_cdscodes.do` + helper `merge_k12_postsec_dist.doh` (used by relocated batch 2b sample-construction) + diagnostic `check_merge.do`.
+- CANONICAL chain repointings: `$distance_dtadir/clean/*` → `$datadir_clean/k12_postsec_distance/clean/*`. `$distance_dtadir/raw/*` kept LEGACY.
+- **SECURITY SCRUB**: OpenCage API key (revoked 2026-04-30 per T1-5) replaced with placeholder `"REVOKED-2026-04-30"` in commented `opencagegeo` line. Predecessor in cde_va_project_fork still has the key in history.
+- Updated 2 already-relocated callers in `do/samples/` to point at consolidated helper path.
+
+### Tier-2 round-1 findings (fixed in `02b5189`)
+
+1. Major (-10): False `do reconcile_cdscodes.do` sub-call claim. reconcile_cdscodes.do is ORPHAN in both predecessor and consolidated; documented explicitly with ORPHAN STATUS block.
+2. Minor (-3): Stale `$vaprojdir` includes in `do/samples/create_{score,out}_samples.do` (2 callsites). Updated to `$consolidated_dir/do/data_prep/k12_postsec_distance/...`.
+3. Minor (-3): Header INPUTS self-listing in 4 files (Python regex matched doc-block "to run" comments) + duplicate entry in reconcile_cdscodes. Cleaned.
+
+### Phase 1a §3.3 progress: 101 of ~150 — Steps 1-8 + Step 9 batches 9a+9b+9c COMPLETE
+
+- Batch 9d (caschls/do/build/prepare/, 4 files) NEXT
+- Batch 9e (qoiclean/, 11 files) remaining
+
+### Coder-critic audit trail
+
+- 20 PASS verdicts. `4403758` Step 9 batch 9c PASS 84/100; `02b5189` follow-up fix.
