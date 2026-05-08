@@ -1,21 +1,36 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-07 (after Step 2 batch 2c commit `90700c2`)
+Last updated: 2026-05-07 (after Step 3 batch 3a commit `223e9b2`)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.3 IN PROGRESS — 21 of ~150 files relocated. Step 2 (sample construction) COMPLETE.** Step 5 (sibling_xwalk: 1 file) + Step 1 (helpers/macros: 3 files) + Step 2 batches 2a/2b/2c (samples: 17 files total) DONE.
+- [ ] **Phase 1a §3.3 IN PROGRESS — 25 of ~150 files relocated.** Step 5 (sibling_xwalk: 1 file) + Step 1 (helpers/macros: 3 files) + Step 2 batches 2a/2b/2c (samples: 17 files) + Step 3 batch 3a (VA estimation entry points: 4 files) DONE.
 
-### Next session — Step 3 (VA estimation core, ~15 files)
+### Next session — Step 3 batch 3b (spec/FB test tables, 5 files)
 
-Per plan v3 §3.3 step 3. Relocate `va_score_all.do`, `va_out_all.do` + `va_*_tab.do` + `va_*_fig.do` from `cde_va_project_fork/do_files/sbac/` to `do/va/`. These are the canonical VA estimation entry points (per ADR-0004) — consume the sample-construction outputs from Step 2 (`$datadir_clean/va_samples_v[12]/`) and produce the VA estimates (`$estimates_dir/...`).
+Per plan v3 §3.3 step 3. The 4 entry points produce .ster files; batch 3b reads them and produces paper-shipping spec-test and FB-test tables.
 
-**Pre-batch checklist (carry forward from batch 2c):**
+| File | Predecessor location | Reads | Writes |
+|---|---|---|---|
+| `va_score_spec_test_tab.do` | `cde_va_project_fork/do_files/sbac/` | `$estimates_dir/.../spec_test/spec_<subject>...ster` | spec-test summary table |
+| `va_out_spec_test_tab.do` | same | `$estimates_dir/.../spec_test/spec_<outcome>...ster` (incl. dk_spec_*) | outcome spec-test table |
+| `va_score_fb_test_tab.do` | same | `$estimates_dir/.../fb_test/fb_<subject>...ster` | FB-test summary table |
+| `va_out_fb_test_tab.do` | same | `$estimates_dir/.../fb_test/fb_<outcome>...ster` (incl. dk_fb_*) | outcome FB-test table |
+| `va_spec_fb_tab.do` | same | combined .ster across both | combined spec/FB table |
 
-1. Read entry-point files; map I/O (which sample dtas are read; what estimates dtas are produced).
-2. Apply ADR-0021 conventions: header, sandbox-write check, LEGACY-include macro-trace.
-3. **CRITICAL — convention reminder from batch 2c bugfix**: any consolidated `include`/`do` in a script that does `cd $vaprojdir` MUST use absolute `$consolidated_dir/do/...` prefix. Relative `do/...` after the cd resolves to `$vaprojdir/do/...` (broken). Verify every consolidated reference is absolute before commit.
-4. Helper relocations: `vaestmacros.doh` and similar VA-estimation helpers may need relocation as part of Step 3 (or as a sub-batch); identify scope when reading entry points.
+**Pre-batch checklist (carry forward + convention reminder):**
+
+1. Read all 5 files; confirm reads are from `$estimates_dir/...` (CANONICAL — produced by batch 3a).
+2. **Absolute paths after `cd $vaprojdir`** — convention from batch 2c bugfix.
+3. ADR-0021 conventions: header, sandbox-write (table outputs land in `$consolidated_dir/tables/share/va/...`), LEGACY-include macro-trace.
+
+### Step 3 batch 3c (utilities + outcome regressions, ~9 files; after 3b)
+
+`merge_va_est.do`, `va_corr.do`, `prior_decile_original_sample.do` (utilities) + `reg_out_va_all.do` + `_tab.do` + `_fig.do` + `reg_out_va_dk_all.do` + `_tab.do` + `_fig.do` (outcome regressions).
+
+### Step 3 batch 3d (sibling lag diagnostic, 3 files; or roll into Step 4)
+
+`va_score_sib_lag.do`, `va_out_sib_lag.do`, `va_sib_lag_spec_fb_tab.do`. Per do_all.do comment: "kept active for diagnostic; not reported in the paper but kept available in case coauthors revisit."
 
 ### Remaining Phase 1a §3.3 steps after Step 3
 
@@ -43,7 +58,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`. (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 

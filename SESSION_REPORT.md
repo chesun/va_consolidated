@@ -1104,3 +1104,82 @@ Two non-blocking Minor findings (header-attribution stylistic uniformity; siblin
 ### Next-session pickup
 
 Step 3: VA estimation entry points (`va_score_all.do`, `va_out_all.do`, plus `va_*_tab.do` and `va_*_fig.do` paper-shipping artifacts). ~15 files. **Convention reminder from batch 2c bugfix:** any consolidated `include`/`do` in a script that does `cd $vaprojdir` MUST use absolute `$consolidated_dir/do/...` prefix. Verify every consolidated reference is absolute before commit.
+
+---
+
+## 2026-05-07 (continued) — Phase 1a §3.3 step 3 batch 3a: VA estimation entry points
+
+**Status:** Tree clean; pushed to origin (`223e9b2`).
+
+### Summary
+
+Step 3 batch 3a landed: 4 VA estimation entry points (the largest batch yet, ~870 body lines + headers) relocated from `cde_va_project_fork/do_files/sbac/` to `do/va/`. These are ADR-0004's canonical entry points — score-VA estimation (`va_score_all.do`), score-VA forecast-bias (`va_score_fb_all.do`), outcome-VA + Deep Knowledge VA (`va_out_all.do`), outcome FB + DK FB (`va_out_fb_all.do`).
+
+### Files relocated (4)
+
+| File | Body lines | Outputs |
+|---|---:|---|
+| `do/va/va_score_all.do` | 142 | `$estimates_dir/va_cfr_all_v[12]/{vam,spec_test,va_est_dta}/...` |
+| `do/va/va_score_fb_all.do` | 200 | `$estimates_dir/va_cfr_all_v[12]/{vam,fb_test}/...` |
+| `do/va/va_out_all.do` | 211 | `$estimates_dir/va_cfr_all_v[12]/{vam,spec_test,va_est_dta}/...` (incl. DK estimates) |
+| `do/va/va_out_fb_all.do` | 315 | `$estimates_dir/va_cfr_all_v[12]/{vam,fb_test}/...` (incl. DK FB estimates) |
+
+### Critical dependency chain (verified atomic)
+
+`va_score_all.do:251` writes `$estimates_dir/va_cfr_all_v[12]/va_est_dta/va_<subject>_<sample>_sp_<va_ctrl>_ct.dta`. Both `va_out_all.do:232` (DK branch) and `va_out_fb_all.do:294` (DK FB branch) read this exact path. Coder-critic verified token-for-token match — without atomic relocation, the DK chain would have broken.
+
+### Dead code identified
+
+`out_drift_limit.doh` (predecessor sbac/) is **never included** by any of the 4 entry points (verified by grep). They all include `drift_limit.doh` which already defines BOTH `score_drift_limit` AND `out_drift_limit`. Defer to Phase 1c §5.1 archival; flag-comment in `do/main.do:223`.
+
+### main.do Phase 3 wiring
+
+Introduces `local do_va = 0` mirroring predecessor `do_all.do:160` (run-once-cached pattern). 4 invocations under `if \`do_va''` block. Flag-comments for batches 3b/3c/3d follow.
+
+### Verbatim preservation under ADR-0021
+
+Predecessor typos preserved (Phase 1a is path-only):
+- "Sptember" in change logs (4 instances)
+- "WIth peer controls" (va_score_fb_all.do)
+- `_cts.ster` typo at va_out_all.do:290 (intended `_ct.ster`)
+- Empty `\`subject'` macro reference at va_out_all.do:180 (predecessor bug — outcome branch references undefined macro)
+
+All flagged in coder-critic review for Phase 1b naming/clarity resolution.
+
+### Coder-critic dispatch
+
+Tight-scope (5 concerns: sandbox-write, dependency chain, gate parity, helper-include path correctness, verbatim preservation). Returned in ~2 minutes.
+
+**Verdict: PASS 92/100.** Three Minor advisory findings, all non-blocking:
+- M1 (-3): predecessor-bug catalog incomplete in change-log block.
+- M2 (-3): predecessor line-references in headers not independently auditable from this repo (advisory only; consolidated paths verified).
+- M3 (-2): inherited verbatim indent inconsistency between score_*/out_* file pairs.
+
+Per verify-deferred-Minor convention, also closed in-commit:
+- 16 new ledger rows for the 5 batch-3a files (4 entry points × {no-hardcoded-paths, adr-0021-sandbox-write, helper-include-absolute} + dependency-chain-integrity for the 2 outcome files + gate-parity for main.do).
+
+### Commits today (3)
+
+- `5de34a7` — Step 2 batch 2b (4 sample entry points). PASS 96/100.
+- `90700c2` — Step 2 batch 2c (4 merge helpers + bugfix). PASS 95/100.
+- `223e9b2` — Step 3 batch 3a (4 VA estimation entry points). PASS 92/100.
+
+### Phase 1a §3.3 progress: 25 of ~150 files relocated
+
+- Step 5 (sibling_xwalk: 1 file) DONE — `275efc0`
+- Step 1 (helpers/macros: 3 files) DONE — `7983a8d`
+- Step 2 (sample construction: 17 files) DONE — `94fd2b8`, `5de34a7`, `90700c2`
+- **Step 3 batch 3a (VA estimation: 4 files) DONE — `223e9b2`**
+- Step 3 batch 3b (spec/FB test tables: 5 files) NEXT
+- Step 3 batches 3c, 3d + Steps 4-10 remaining
+
+### Status (end of 2026-05-07 session)
+
+- **ADR ledger:** 21 Decided. No new ADRs.
+- **Plan v3:** APPROVED. Phase 1b §4.1 (paper-text) retired by Christina 2026-05-07.
+- **Tree:** clean; in sync with origin.
+- **Coder-critic audit trail:** 9 entries, all PASS ≥ 92/100.
+
+### Next-session pickup
+
+Step 3 batch 3b: 5 spec/FB test table .do files. Read .ster outputs from batch 3a (CANONICAL `$estimates_dir/...`), produce paper-shipping summary tables. Convention reminder from batch 2c remains binding: absolute `$consolidated_dir/do/...` for any consolidated include after `cd $vaprojdir`.
