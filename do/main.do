@@ -304,7 +304,7 @@ if `run_survey_va' {
     do do/survey_va/factor.do                      // exploratory factor analysis (eigen plots; intermediate, not paper-shipping)
     do do/survey_va/pcascore.do                    // PCA scoreplot for survey factors
 
-    * TODO Phase 1a §3.3 step 8 — `alpha.do' archived per ADR-0010 (`do/_archive/exploratory/').
+    * Phase 1a §3.3 step 8 COMPLETE — `alpha.do' archived to `do/_archive/exploratory/' per ADR-0010 (paper-α canonical producer is `indexalpha.do' invoked above; `alpha.do' was an exploratory wider-item-list sensitivity check, non-load-bearing).
     * TODO Phase 1a §3.3 step 11 — `allsvymerge.do' + `allsvyfactor.do' + `testscore.do' (exploratory-or-data-prep; deferred to do/explore/ or do/data_prep/).
 }
 
