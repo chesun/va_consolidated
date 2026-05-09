@@ -1844,3 +1844,57 @@ Chain coordination discipline from batch 9d (where splitstaff0414 LEGACY-read re
 ### Coder-critic audit trail
 
 - 24 PASS verdicts. `4477b6d` Step 10 batch 10a BLOCK 71 round 1; `ef6006c` round 2 PASS 88.
+
+---
+
+## 2026-05-08 — Step 10 batches 10b+10c (joint review) — PASS 82/100 — **STEP 10 + ALL OF PHASE 1a §3.3 COMPLETE**
+
+**Status:** `65aae2d` (10b 4 files) + `bc17fbf` (10c 7 files) + joint fix `3d8874d`. Joint round-2 PASS 82/100. Phase 1a §3.3: **145 of ~150 — 10 STEPS COMPLETE.**
+
+### Operations
+
+- 10b: 4 caschls demographics coverage analyses (diagnostic .png graphs).
+- 10c: 7 caschls misc files across 4 sub-destinations (outcomesumstats, siblingxwalk, svyvaregs, mattschlchar to do/survey_va/ per ADR-0013).
+- Settings.do edit: added `$cstdtadir` LEGACY global (caught upfront via global-enumeration sweep).
+- Phase 5 INSERT: mattschlchar.do wired before indexreg* scripts (chain producer for Table 8).
+- Joint Tier-2 BLOCK 78/100 round 1 (F1 Major mkdir mismatches in 6 files; F2 Minor header drift); F1 + F2.headline fixes in `3d8874d`; round 2 PASS 82/100.
+
+### Phase 1a §3.3 GRAND retrospective — 10 steps, 145 files, 26 PASS verdicts
+
+| Step | Files | Notes |
+|---|---:|---|
+| 1 | helpers/macros | foundational |
+| 2 | samples + merge helpers | 3 batches; chain-critical |
+| 3 | VA estimation | 4 batches; ~870-2220 lines per |
+| 4 | heterogeneity | small batch |
+| 5 | sibling crosswalk | per ADR-0005 |
+| 6 | siblingvaregs archive | 27 files per ADR-0004 |
+| 7 | survey VA | 9 active relocations; round-2 after factor.do:131; surfaced Tier-1 grep extension |
+| 8 | alpha.do archive | 1-file per ADR-0010 |
+| 9 (extended) | data prep | **41 files across 7 batches**; mean ~91/100 |
+| 10 | share/ paper producers | 21 files across 3 batches |
+
+**Phase 1a §3.3 totals: ~145 files relocated/archived across 10 steps. 26 coder-critic PASS verdicts.**
+
+### Phase 1a §3.3 process learnings (cumulative across Steps 9-10; candidates for MEMORY.md)
+
+1. Settings.do globals enumerated upfront from predecessor.
+2. Cross-script chain coordination: after repointing writes, grep tree for matching predecessor reads.
+3. Python regex must be whitespace-tolerant.
+4. Stata `\`name'` macro syntax breaks `\w+` regex.
+5. Translate inconsistencies: `.txt` vs `.log`, missing-space `translate$vaprojdir`.
+6. Even gated LEGACY writes are ADR-0021 violations.
+7. cap mkdir blocks must match ACTUAL write targets (not assumed).
+8. Helper relocations ripple to callers — search-and-update.
+9. Multi-year files use `\`year'` loops — INPUTS enumerate the year-set.
+10. Initial inventory counts can be wrong — recount during setup.
+
+### Next: Phase 1a §3.5 — Golden-master verification (M4)
+
+Per ADR-0018 acceptance criteria. Verifier in submission mode runs `diff -r consolidated/output predecessor/output` on a fresh end-to-end run on Scribe.
+
+Plus carry-forward Minor doc-string drift items → Phase 1b §4.3 cleanup commit.
+
+### Coder-critic audit trail
+
+- 26 PASS verdicts. Step 10 closes audit trail.
