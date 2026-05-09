@@ -158,7 +158,14 @@ if `run_data_prep' {
     do do/data_prep/responserate/trimparentdemo.do      // trim parent CalSCHLS demographics per year (1415-1819); writes 5 yearly trimparentdemo dtas
     do do/data_prep/responserate/parentresponserate.do  // compute parent survey response rates by school; writes $datadir_clean/calschls/responserate/parentresponserate.dta (consumed by 9f parentpooling)
 
-    * Step 9 batch 9f (poolingdata, 5 files) PENDING — invocations land in subsequent commit.
+    * Step 9 batch 9f — caschls/poolingdata (5 files): LANDED 2026-05-08 (extension batch — Christina decision)
+    * Order from predecessor master.do:302-341: <sub>pooling -> mergegr11enr -> clean_va.
+    * Reads CHAIN qoiclean (9e) + responserate (9g) + poolgr11enr (9d); writes CHAIN analysisready/poolingdata/va outputs (consumed by Step 7 survey-VA in do/survey_va/).
+    do do/data_prep/poolingdata/secpooling.do           // pool secondary qoiclean across years; writes secpooledstats + secanalysisready
+    do do/data_prep/poolingdata/parentpooling.do        // pool parent qoiclean across years; writes parentpooledstats + parentanalysisready
+    do do/data_prep/poolingdata/staffpooling.do         // pool staff qoiclean across years; writes staffpooledstats + staffanalysisready
+    do do/data_prep/poolingdata/mergegr11enr.do         // merge gr11enr_mean weight onto parent/sec/staff analysisready; in-place update
+    do do/data_prep/poolingdata/clean_va.do             // clean VA estimates from $estimates_dir/va_cfr_all_v1/ (CHAIN from do/va/merge_va_est.do); writes $datadir_clean/calschls/va/va_pooled_all.dta
     *
     * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
     * + plan v3 §8 Q1 (verified by grep — ZERO production invocations of
