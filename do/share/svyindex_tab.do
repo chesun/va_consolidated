@@ -248,5 +248,4 @@ di "Start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
 log close
-translate$vaprojdir/log_files/share/svyindex_tab.smcl ///
-  $vaprojdir/log_files/share/svyindex_tab.log, replace
+translate $logdir/svyindex_tab.smcl $logdir/svyindex_tab.log, replace

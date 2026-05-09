@@ -86,6 +86,8 @@ cap log close _all
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
 cap mkdir "$tables_dir"
+cap mkdir "$datadir_clean"
+cap mkdir "$datadir_clean/share"
 cap mkdir "$tables_dir/share"
 cap mkdir "$tables_dir/share/va"
 cap mkdir "$tables_dir/share/va/check"
@@ -251,12 +253,12 @@ if `create_sample'==1 {
 
 
 
-  save $vaprojdir/data/va_samples_v1/base_nodrop.dta, replace
+  save $datadir_clean/share/base_nodrop.dta, replace  // CANONICAL local cache (was $vaprojdir/data/va_samples_v1/; repointed per ADR-0021 sandbox)
 
 }
 
 if `create_sample'==0 {
-  use $vaprojdir/data/va_samples_v1/base_nodrop.dta, clear
+  use $datadir_clean/share/base_nodrop.dta, clear  // CANONICAL chain — paired with cached save above
 }
 
 

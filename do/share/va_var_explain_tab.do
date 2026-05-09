@@ -69,7 +69,7 @@ do $vaprojdir/do_files/share/va_var_explain_tab.do
 set tracedepth 1
 set trace on
 
- cd $vaprojdir
+* CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
 
  cap log close _all
 

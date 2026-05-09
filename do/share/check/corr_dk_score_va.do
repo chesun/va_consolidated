@@ -137,7 +137,6 @@ di "Start date time /reg_out_va_all.do: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
 log close 
-translate $vaprojdir/log_files/share/check/corr_dk_score_va.smcl ///
-    $vaprojdir/log_files/share/check/corr_dk_score_va.txt, replace 
+translate $logdir/corr_dk_score_va.smcl $logdir/corr_dk_score_va.log, replace  // predecessor used .txt extension; normalized to .log per consolidated convention 
 
 
