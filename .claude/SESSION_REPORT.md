@@ -1760,3 +1760,41 @@ Chain regression caught: splitstaff0414 read LEGACY `$clndtadir/staff/staff0414`
 ### Coder-critic audit trail
 
 - 22 PASS verdicts. `0034ae2` Step 9 batch 9e PASS 95/100. All Step 9 batches now have audit-trail closure.
+
+---
+
+## 2026-05-08 — Step 9 EXTENSION batches 9g+9f (joint review) — PASS 93/100 — **STEP 9 EXTENDED COMPLETE — 41 files**
+
+**Status:** `87856ba` (9g) + `cf9cb10` (9f) joint PASS 93/100. Phase 1a §3.3: 124 of ~150.
+
+### Operations
+
+- Per Christina decision 2026-05-08, extended Step 9 with the discovered-but-out-of-named-scope `caschls/do/build/buildanalysisdata/{poolingdata,responserate}/` files.
+- 9g (responserate, 4 files) processed first since 9f reads its outputs.
+- 9f (poolingdata, 5 files) — 4 different chain reads: qoiclean (9e), responserate (9g), poolgr11enr (9d), Step 3 batch 3c1 VA estimates.
+- Cross-batch chain fix: `clean_va.do:96` repointed `$vaprojdir/estimates/...` → `$estimates_dir/...` (CHAIN from `do/va/merge_va_est.do`).
+- Joint Tier-2 dispatch (chain-coupled batches reviewed together): PASS 93/100. 2 Minor main.do one-liner imprecisions fixed in same hygiene commit.
+
+### Lesson applied successfully
+
+Chain coordination discipline from batch 9d (where splitstaff0414 LEGACY-read regression was caught) applied preemptively to 9g+9f. No chain-regression caught in Tier-2 review.
+
+### Step 9 FINAL retrospective — 7 batches, 41 files, mean ~91/100
+
+| Batch | Files | Score | Notes |
+|---|---:|---|---|
+| 9a | 2 | 95 | Canary |
+| 9b | 11 | 92 | 3 mid-pass bugs caught before commit |
+| 9c | 5 | 84 | SECURITY SCRUB (revoked OpenCage key) |
+| 9d | 4 | 67→87 | Critical $rawcsvdir + chain regression |
+| 9e | 10 | 95 | Multi-year loops; lessons-applied |
+| 9g | 4 | 93 (joint) | Extension chain prereq |
+| 9f | 5 | 93 (joint) | Extension; analysisready chain to Step 7 |
+
+### Phase 1a §3.3 progress: 124 of ~150 — Steps 1-9 (extended) ALL COMPLETE
+
+- Step 10 (share/ paper producers, ~50 files) NEXT — final §3.3 step before §3.5 golden-master verification (M4)
+
+### Coder-critic audit trail
+
+- 23 PASS verdicts. `87856ba`+`cf9cb10` joint PASS 93/100.

@@ -163,8 +163,8 @@ if `run_data_prep' {
     * Reads CHAIN qoiclean (9e) + responserate (9g) + poolgr11enr (9d); writes CHAIN analysisready/poolingdata/va outputs (consumed by Step 7 survey-VA in do/survey_va/).
     do do/data_prep/poolingdata/secpooling.do           // pool secondary qoiclean across years; writes secpooledstats + secanalysisready
     do do/data_prep/poolingdata/parentpooling.do        // pool parent qoiclean across years; writes parentpooledstats + parentanalysisready
-    do do/data_prep/poolingdata/staffpooling.do         // pool staff qoiclean across years; writes staffpooledstats + staffanalysisready
-    do do/data_prep/poolingdata/mergegr11enr.do         // merge gr11enr_mean weight onto parent/sec/staff analysisready; in-place update
+    do do/data_prep/poolingdata/staffpooling.do         // pool staff qoiclean across years; writes staffpooledstats only (staffanalysisready is created downstream by mergegr11enr from staffpooledstats + poolgr11enr)
+    do do/data_prep/poolingdata/mergegr11enr.do         // merge gr11enr_mean weight onto parent/sec analysisready (in-place update); CREATES staffanalysisready from staffpooledstats + poolgr11enr
     do do/data_prep/poolingdata/clean_va.do             // clean VA estimates from $estimates_dir/va_cfr_all_v1/ (CHAIN from do/va/merge_va_est.do); writes $datadir_clean/calschls/va/va_pooled_all.dta
     *
     * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
