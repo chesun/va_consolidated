@@ -373,15 +373,25 @@ if `run_paper_outputs' {
     di as text "PHASE 6: PAPER OUTPUTS"
     di as text "{hline 80}"
 
-    * TODO Phase 1a §3.3 step 10 (non-VA share/ producers): paper-shipping
-    * tables/figures that don't depend on VA estimates (counts, descriptives,
-    * survey-VA tables).  See Phase 4 note for the §3.3-step-10 split rationale.
-    * Each invocation carries a one-liner per the ADR-0021 description
-    * convention.  Example shape:
+    * Phase 1a §3.3 step 10 IN PROGRESS — share/ paper producers relocated
+    * under do/share/.  3-batch split (10a-10c); landing batches incrementally.
+    * Each invocation carries a one-liner per the ADR-0021 description convention.
     *
-    *   do do/share/sample_counts_tab.do             // paper Table A.1 sample-restriction waterfall (ADR-0009 v1-only)
-    *   do do/share/base_sum_stats_tab.do            // paper Table 1 baseline summary statistics (ADR-0009 v1-only)
-    *   ... etc.
+    * Step 10 batch 10a — cde/share (10 files): LANDED 2026-05-08
+    do do/share/sample_counts_tab.do                // sample-size counts table across spec/sample/outcome combinations
+    do do/share/base_sum_stats_tab.do               // base sample summary statistics table for paper
+    do do/share/kdensity.do                         // kdensity plots of VA estimates by version
+    do do/share/va_scatter.do                       // VA scatter plots — score vs outcome VA, multiple specifications
+    do do/share/va_var_explain.do                   // variance-explained regression by VA component
+    do do/share/va_var_explain_tab.do               // variance-explained table from var-explain regression results
+    do do/share/va_spec_fb_tab_all.do               // VA specification + forecast-bias test summary table (all-outcomes combined)
+    do do/share/reg_out_va_tab.do                   // outcome-on-VA regression coefficient table
+    do do/share/svyindex_tab.do                     // survey-VA index regression table (Table 8 panels); reads CHAIN $estimates_dir/survey_va/factor/* (Step 7)
+    do do/share/check/corr_dk_score_va.do           // diagnostic: correlation between drift-knot (DK) score and VA estimates
+
+    * Step 10 batches 10b-10c PENDING (relocations land in subsequent commits):
+    *   10b — caschls/share/demographics/ (4 files; coverage analyses)
+    *   10c — caschls/share/{outcomesumstats,siblingxwalk,svyvaregs,factoranalysis/mattschlchar} (7 files)
 }
 
 
