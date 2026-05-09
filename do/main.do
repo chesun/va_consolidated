@@ -149,6 +149,16 @@ if `run_data_prep' {
     do do/data_prep/qoiclean/staff/staffqoiclean1415.do              // QOI clean staff CalSCHLS 1415
     do do/data_prep/qoiclean/staff/staffqoiclean1617_1516.do         // QOI clean staff CalSCHLS 1516+1617 (loop)
     do do/data_prep/qoiclean/staff/staffqoiclean1819_1718.do         // QOI clean staff CalSCHLS 1718+1819 (loop)
+
+    * Step 9 batch 9g — caschls/responserate (4 files): LANDED 2026-05-08 (extension batch — Christina decision)
+    * Order from predecessor master.do:220-229: trim<sub>demo -> <sub>responserate per subgroup.
+    * Reads LEGACY $caschls_projdir/dta/demographics/<sub>/* (raw); writes CHAIN $datadir_clean/calschls/{demotrim,responserate}/*.
+    do do/data_prep/responserate/trimsecdemo.do         // trim secondary CalSCHLS demographics per year (1415-1819); writes 5 yearly trimsecdemo dtas
+    do do/data_prep/responserate/secresponserate.do     // compute secondary survey response rates by school; writes $datadir_clean/calschls/responserate/secresponserate.dta (consumed by 9f secpooling)
+    do do/data_prep/responserate/trimparentdemo.do      // trim parent CalSCHLS demographics per year (1415-1819); writes 5 yearly trimparentdemo dtas
+    do do/data_prep/responserate/parentresponserate.do  // compute parent survey response rates by school; writes $datadir_clean/calschls/responserate/parentresponserate.dta (consumed by 9f parentpooling)
+
+    * Step 9 batch 9f (poolingdata, 5 files) PENDING — invocations land in subsequent commit.
     *
     * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
     * + plan v3 §8 Q1 (verified by grep — ZERO production invocations of
