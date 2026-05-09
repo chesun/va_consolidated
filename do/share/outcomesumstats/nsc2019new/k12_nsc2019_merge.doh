@@ -13,8 +13,8 @@ INPUTS (verified via grep on file body)
     /home/research/ca_ed_lab/msnaven/data/public_access/clean/k12_public_schools/k12_public_schools_clean.dta  (LEGACY hardcoded; per ADR-0013 dormant rebuild branch)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
-    $caschls_projdir/dta/outcomesumstats/k12_nsc_2019_final_merge
-    $caschls_projdir/dta/outcomesumstats/k12_nsc_2019_provisional_merge
+    $datadir_clean/outcomesumstats/k12_nsc_2019_final_merge
+    $datadir_clean/outcomesumstats/k12_nsc_2019_provisional_merge
 
 RELOCATION (per plan v3 §3.3 step 10 batch 10c, applied 2026-05-08)
     Source: caschls/do/share/outcomesumstats/nsc2019new/k12_nsc2019_merge.doh

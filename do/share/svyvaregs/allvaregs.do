@@ -75,12 +75,18 @@ set scheme s1color
 set seed 1984
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
-cap mkdir "$estimates_dir"
-cap mkdir "$tables_dir"
-cap mkdir "$tables_dir/share"
-cap mkdir "$tables_dir/share/survey"
-cap mkdir "$tables_dir/share/survey/check"
-cap mkdir "$tables_dir/share/survey/pub"
+cap mkdir "$output_dir"
+cap mkdir "$output_dir/dta"
+cap mkdir "$output_dir/dta/varegs"
+cap mkdir "$output_dir/xls"
+cap mkdir "$output_dir/xls/varegs"
+cap mkdir "$output_dir/xls/varegs/unweighted"
+cap mkdir "$output_dir/xls/varegs/weighted"
+foreach svyname in parent sec staff elem {
+    cap mkdir "$output_dir/dta/varegs/`svyname'"
+    cap mkdir "$output_dir/xls/varegs/unweighted/`svyname'"
+    cap mkdir "$output_dir/xls/varegs/weighted/`svyname'"
+}
 
 
 log using "$logdir/allvaregs.smcl", replace text

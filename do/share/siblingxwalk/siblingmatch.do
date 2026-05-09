@@ -54,7 +54,7 @@ set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
 cap mkdir "$datadir_clean"
-cap mkdir "$datadir_clean/sibling"
+cap mkdir "$datadir_clean/siblingxwalk"
 
 
 log using "$logdir/siblingmatch.smcl", replace text

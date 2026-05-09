@@ -62,10 +62,8 @@ set more off
 cap mkdir "$logdir"
 cap mkdir "$output_dir"
 cap mkdir "$output_dir/graph"
-cap mkdir "$output_dir/graph/pooleddiagnostics"
-cap mkdir "$output_dir/graph/pooleddiagnostics/elementary"
-cap mkdir "$output_dir/graph/pooleddiagnostics/parent"
-cap mkdir "$output_dir/graph/pooleddiagnostics/secondary"
+cap mkdir "$output_dir/graph/svycoverage"
+cap mkdir "$output_dir/graph/svycoverage/elemcoverage"
 
 
 log using "$logdir/elemcoverageanalysis.smcl", replace text name(elemcoverageanalysis)
