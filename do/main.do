@@ -353,6 +353,7 @@ if `run_survey_va' {
     do do/survey_va/imputedcategoryindex.do        // build climate/quality/support indices on imputed data (9/15/4 items per ADR-0010); sums→means fix DEFERRED Phase 1b §4.2 per ADR-0011
     do do/survey_va/compcasecategoryindex.do       // same indices on complete-case data
     do do/survey_va/indexalpha.do                  // Cronbach α for paper footnote (paper-text fix DEFERRED post-handoff per Christina 2026-05-07)
+    do do/survey_va/mattschlchar.do                // RELOCATED Step 10 batch 10c per ADR-0013; produces $datadir_clean/schoolchar/schlcharpooledmeans.dta consumed by Table 8 panel producers (indexregwithdemo + indexhorseracewithdemo below)
     do do/survey_va/indexregwithdemo.do            // bivariate survey-VA regressions w/ school chars (paper Table 8 Panel A)
     do do/survey_va/indexhorseracewithdemo.do      // horserace survey-VA regressions w/ school chars (paper Table 8 Panel B)
     do do/survey_va/indexhorserace.do              // horserace without demo controls
@@ -396,8 +397,14 @@ if `run_paper_outputs' {
     do do/share/demographics/seccoverageanalysis.do         // diagnostic: secondary CalSCHLS coverage analysis
     do do/share/demographics/pooledsecanalysis.do           // diagnostic: pooled secondary CalSCHLS analysis
 
-    * Step 10 batch 10c PENDING (relocations land in subsequent commit):
-    *   10c — caschls/share/{outcomesumstats,siblingxwalk,svyvaregs,factoranalysis/mattschlchar} (7 files)
+    * Step 10 batch 10c — caschls/share/{outcomesumstats,siblingxwalk,svyvaregs,factoranalysis/mattschlchar} (7 files): LANDED 2026-05-08 — STEP 10 COMPLETE
+    do do/share/siblingxwalk/siblingmatch.do            // build sibling-match (cdscode-pair) crosswalk
+    do do/share/siblingxwalk/uniquefamily.do            // produce unique-family identifier crosswalk (reads CHAIN siblingxwalk/k12_xwalk)
+    do do/share/siblingxwalk/siblingpairxwalk.do        // produce sibling-pair crosswalk dataset for downstream regs
+    do do/share/outcomesumstats/nsc_codebook.do         // produce NSC outcomes codebook (txt log; 2010-2017 + 2010-2018)
+    do do/share/svyvaregs/allvaregs.do                  // run all VA-on-survey regressions (svyvaregs umbrella)
+    * NOTE: do/share/outcomesumstats/nsc2019new/k12_nsc2019_merge.doh is a helper `include'd by callers — not directly invoked from main.do.
+    * NOTE: do/survey_va/mattschlchar.do (relocated this batch per ADR-0013) is invoked from Phase 5 via the existing wiring or separately by Table 8 producers.
 }
 
 

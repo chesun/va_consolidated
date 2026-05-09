@@ -164,6 +164,12 @@ global rawdtadir  "/home/research/ca_ed_lab/data/restricted_access/raw/calschls/
 global rawcsvdir  "/home/research/ca_ed_lab/data/restricted_access/raw/calschls/csv"
 global clndtadir  "/home/research/ca_ed_lab/data/restricted_access/clean/calschls"
 
+* CDE CST (California Standards Tests) cleaned data dir (LEGACY-READ-ONLY).
+* Predecessor caschls/do/settings.do:35 binds this to the absolute Scribe
+* path.  Used by batch 10c siblingmatch.do (sibling-name-address xwalk
+* construction) for raw CST yearly reads ($cstdtadir/cst_<year>).
+global cstdtadir  "/home/research/ca_ed_lab/data/restricted_access/clean/cde/cst"
+
 
 /*==============================================================================
 STATA DEFAULTS
