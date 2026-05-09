@@ -1,162 +1,100 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-08 (after Step 10 batches 10b+10c commits `65aae2d`+`bc17fbf` + fix `3d8874d` — **joint round 2 PASS 82/100** — STEP 10 + ALL OF PHASE 1a §3.3 COMPLETE)
+Last updated: 2026-05-08 (after Step 11 commit `6791dec` PASS 96/100 — **PHASE 1a §3.3 FULLY COMPLETE — 148 files across 11 steps**)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.3 COMPLETE — 145 of ~150 files relocated/archived across 10 steps.** Next: §3.5 golden-master verification (M4) per ADR-0018; plus Step 11 deferred files (allsvymerge/allsvyfactor/testscore — exploratory).
+- [ ] **Phase 1a §3.5 — Golden-master verification (M4)** per ADR-0018 acceptance criteria. Verifier in submission mode runs `diff -r consolidated/output predecessor/output` on a fresh end-to-end Scribe run. Confirms behavior preservation across all 148 relocated/archived files. **First gate before `v1.0-final` tag.**
 
-### Step 9 — Data prep (41 files; Christina-owned) EXTENDED COMPLETE 2026-05-08 ✅
+## Phase 1a §3.3 — COMPLETE 2026-05-08 ✅ (148 files across 11 steps)
 
-**Inventory + 5-batch plan:** `quality_reports/plans/2026-05-08_step-9-data-prep-inventory.md` (committed `a6cd5f2`). **Extension (9f+9g) added 2026-05-08 per Christina decision** to include the discovered poolingdata + responserate dirs.
-
-**Final batch progress (all LANDED):**
-
-| Batch | Source | Files | Status |
+| Step | Description | Files | Status |
 |---|---|---:|---|
-| 9a | `cde/do_files/acs/` | 2 | LANDED `4a88874` PASS 95/100 |
-| 9b | `cde/do_files/schl_chars/` | 11 | LANDED `40cb161` + fix `9478ded` PASS 92/100 |
-| 9c | `cde/do_files/k12_postsec_distance/` | 5 | LANDED `4403758` + fix `02b5189` PASS 84/100 |
-| 9d | `caschls/do/build/prepare/` | 4 | LANDED `677033f` + fix `c35e22a` round 2 PASS 87/100 |
-| 9e | `caschls/do/build/buildanalysisdata/qoiclean/` | 10 | LANDED `0034ae2` PASS 95/100 |
-| 9g | `caschls/do/build/buildanalysisdata/responserate/` | 4 | LANDED `87856ba` PASS 93/100 (joint with 9f) |
-| 9f | `caschls/do/build/buildanalysisdata/poolingdata/` | 5 | LANDED `cf9cb10` PASS 93/100 (joint with 9g) |
+| 1 | Helpers + macros (`do/va/helpers/`) | foundational | ✅ |
+| 2 | Samples + merge helpers (`do/samples/`) | 3 batches | ✅ |
+| 3 | VA estimation (`do/va/`) | 4 batches (3a-3d); ~2200 body lines/batch | ✅ |
+| 4 | Heterogeneity (`do/va/heterogeneity/`) | small batch | ✅ |
+| 5 | Sibling crosswalk (`do/sibling_xwalk/`) | per ADR-0005 | ✅ |
+| 6 | siblingvaregs archive (`do/_archive/siblingvaregs/`) | 27 files per ADR-0004 | ✅ |
+| 7 | Survey VA (`do/survey_va/`) | 9 active relocations | ✅ |
+| 8 | `alpha.do` archive (`do/_archive/exploratory/`) | 1-file per ADR-0010 | ✅ |
+| 9 (extended) | Data prep (`do/data_prep/`) | **41 files across 7 batches** (9a-9g) | ✅ |
+| 10 | share/ paper producers (`do/share/` + `do/survey_va/mattschlchar.do`) | 21 files across 3 batches (10a-10c) | ✅ |
+| 11 | Deferred files resolved | 2 ACTIVE (allsvymerge + testscore → `do/survey_va/`) + 1 ARCHIVE (allsvyfactor → `do/_archive/exploratory/`) per ADR-0010 | ✅ |
 
-**Step 9 totals: 41 files, mean ~91/100 across 7 batches.**
+**Totals: 148 files. 27 coder-critic PASS verdicts.** Chain reads/writes coordinated end-to-end across all batches.
 
-### Step 10 — share/ paper producers (21 files) COMPLETE 2026-05-08 ✅
+### Coder-critic audit trail
 
-**Inventory + 3-batch plan:** `quality_reports/plans/2026-05-08_step-10-share-inventory.md` (committed `28f3c98`).
+`git log --grep='coder-critic'` is the index. Recent entries (Step 9-11): `4a88874`, `40cb161`+`9478ded`, `4403758`+`02b5189`, `677033f`+`c35e22a`, `0034ae2`, `87856ba`+`cf9cb10`, `4477b6d`+`ef6006c`, `65aae2d`+`bc17fbf`+`3d8874d`, `6791dec` (Step 11 PASS 96/100). Pre-Step-9 entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`, `3e99c3b`+`68cf30e`, `8fe1f28`. Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip).
 
-**Final batch progress (all LANDED):**
+## Up Next (post §3.3)
 
-| Batch | Source | Files | Status |
-|---|---|---:|---|
-| 10a | `cde/do_files/share/` (incl. check/) | 10 | LANDED `4477b6d` + fix `ef6006c` round 2 PASS 88/100 |
-| 10b | `caschls/share/demographics/` | 4 | LANDED `65aae2d` (joint with 10c) |
-| 10c | `caschls/share/{outcomesumstats,siblingxwalk,svyvaregs,factoranalysis/mattschlchar}` | 7 | LANDED `bc17fbf` + joint fix `3d8874d` round 2 PASS 82/100 |
+- [ ] **Phase 1a §3.5 — Golden-master verification (M4)** — see Active above.
+- [ ] **Phase 1b — Bug fixes by priority** (per plan v3 §4):
+  - **§4.2 — Code corrections:** ADR-0011 sums→means in `imputedcategoryindex.do` + `compcasecategoryindex.do`.
+  - **§4.3 — Naming/clarity:** ADR-0016 pooledrr rename, ADR-0015 Filipino-into-Asian comment, ADR-0013 mattschlchar dormant-branch comment, **plus carry-forward Minor doc-string drift items** from Steps 9-10 round-2 deductions (per `quality_reports/reviews/2026-05-08_step-10-batches-10bc_coder_review.md` round-2 carry-forward list).
+  - **§4.1 — Paper-text corrections:** ADR-0010 footnote, ADR-0014 old-draft note. **DEFERRED post-handoff** per Christina 2026-05-07; coordinate with senior coauthor on a separate timeline. Effectively retired from Phase 1.
+- [ ] **Phase 1c §5.1 — Cosmetic cleanup** — dead-code archival, log/translate sweep (per-do-file logging convention from §5.1 step 2). Includes `out_drift_limit.doh` (identified as dead in Step 3 batch 3a; deferred there).
+- [ ] **Phase 1c §5.2 — README polish + cold-read** (PRE-DRAFT done as Option B `053871e`; writer-critic 86/100; 2 Minors deferred to §5.4 polish: m1 em-dash density, m7 status-note Phase-1c jargon). Final polish + cold-read test occur at §5.4. File transfer is operator-choice per ADR-0020.
+- [ ] **Phase 1c §5.2 step 8 — offboarding deliverable memo** at `quality_reports/handoff/` (per ADR-0018). Stub created `053871e`. Memo content per `quality_reports/handoff/README.md`. **Specific Christina action when writing the memo:** sweep for residual *semantic* codebook ambiguities (e.g., specific NSC sector codes she knows but never wrote down) — last chance to externalize codebook-authority knowledge before deposit, since post-`v1.0-final` no fallback exists (no provider PDFs; Kramer is custodian-not-maintainer).
+- [ ] **Phase 1c §5.3 — Data checks — TBD-codebook resolution.** Six skeletons pre-drafted as Option A (`d775efe`); each runnable as no-op via capture-confirm-file shim; becomes a real check post-Phase-1a §3.3. TBD-codebook markers (NSC merge rate; CCC/CSU match-level==1 share; paper-table cell magnitudes) resolve as Phase 1a §3.5 golden-master + first production runs supply baselines.
+- [ ] **Phase 1c §5.4 — Acceptance run** (per ADR-0018) — `stata -b do do/main.do` on Scribe with `run_data_checks 1`; README cold-read test by friendly non-Christina lab member. BOTH must pass before `v1.0-final` tag.
 
-**Step 10 totals: 21 files, mean ~84/100 across 3 batches.**
+## Per-commit review discipline (active through `v1.0-final` tag)
 
-### §3.5 Golden-master verification (M4) — NEXT
+Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.claude/rules/phase-1-review.md`. Commit footer convention:
 
-Per ADR-0018 acceptance criteria. Verifier in submission mode runs `diff -r consolidated/output predecessor/output` on a fresh end-to-end run on Scribe. Confirms behavior preservation across all 145 relocated/archived files.
-
-Plus carry-forward items from Step 10 round-2 minor deductions → Phase 1b §4.3 cleanup commit.
-
-Per plan v3 §3.3 step 9. Relocate Christina-owned cleaning files from mixed predecessor sources to `do/data_prep/` (subdirs: `acs/` ✓, `schl_chars/`, `k12_postsec_distance/`, `prepare/`, `qoiclean/`). Apply Step 7 active-relocation methodology (header + sed path repointing + main.do Phase wiring).
-
-**Pre-batch checklist (carry forward; per `[LEARN:discipline]` lessons in MEMORY.md):**
-
-1. Inventory source files (mixed sources: `cde_va_project_fork/do_files/...` + `caschls/do/...`).
-2. **Absolute paths after `cd $vaprojdir`** — convention from batch 2c bugfix.
-3. ADR-0021 conventions: header, sandbox-write check (now-extended grep `'save|export|esttab using|graph export|outsheet|outreg2 using|texsave|^\s*translate |log using'` per commit `3f05995`), LEGACY-include macro-trace.
-4. **Always grep before claiming a local/macro is undefined** (batch 3b lesson).
-5. **Always grep BOTH inputs AND outputs before writing the header** (batches 3d + Step 4 lessons — 4th-recurrence discipline).
-6. **Tier-1 grep extension catches sed-mistranslated `translate`/`log using` paths** (Step 7 lesson — see `[LEARN:discipline]` 2026-05-08).
-7. Watch for `$projdir` references in caschls files (per [LEARN:stata] siblingoutxwalk pattern: alias-before-include or pre-emptive repoint).
-8. Likely sub-batches given size (~30 files): inventory first, propose batch split before starting.
-
-### Remaining Phase 1a §3.3 steps
-
-| Step | Description | Source | Destination | Approx files | Status |
-|---|---|---|---|---:|---|
-| 9 | Data prep (Christina-owned; `enrollmentclean.do`, `acs/`, `schl_chars/`, `k12_postsec_distance/`, `prepare/`, `caschls_qoiclean/`) | mixed | `do/data_prep/` | ~30 | NEXT |
-| 10 | share/ paper producers (everything in `cde_va_project_fork/do_files/share/` + `caschls/do/share/` minus deprecated subtrees) | mixed | `do/share/` | ~50 | After 9 |
-- [x] ~~**Christina: mark plan v3 APPROVED**~~ — APPROVED 2026-04-29 (`949b452`). Plan v3 status flipped DRAFT → APPROVED.
-- [ ] Phase 1 sub-phase structure (locked): 1a consolidate (behavior-preserving) → 1b bug fixes by priority → 1c cosmetic. File ownership constraint: Matt Naven's files stay UNTOUCHED per ADR-0017.
-
-### Options for next code work (Christina picks; in priority order)
-
-- [x] ~~**Option A — pre-draft `do/check/check_*.do` skeletons**~~ — DONE 2026-04-29 (`d775efe`); 84/100 PASS.
-- [x] ~~**Option B — pre-draft README.md skeleton**~~ — DONE 2026-04-29 (`053871e`); 86/100 PASS.
-- [x] ~~**Option C — begin Phase 1a §3.3 with `siblingoutxwalk.do`**~~ — STARTED 2026-04-30 (`275efc0`); first real production relocation landed; precedent established for the remaining ~150 relocations.
-
-### Per-commit review discipline (active)
-
-Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.claude/rules/phase-1-review.md`. Commit message footer convention:
-
-- Code commits: `coder-critic: PASS (XX/100)`
+- Code commits: `coder-critic: PASS (XX/100)` (or `BLOCK XX/100` followed by fix + round-2)
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`, `3e99c3b` (retroactive round 2 94/100 after `factor.do:131` fix `68cf30e`), `8fe1f28` (Step 8 alpha.do archive 97/100), `4a88874` (Step 9 batch 9a 95/100), `40cb161` (Step 9 batch 9b 92/100 + fix `9478ded`), `4403758` (Step 9 batch 9c 84/100 + fix `02b5189`), `677033f` (Step 9 batch 9d 67/100 BLOCK round 1 + fix `c35e22a` round 2 PASS 87/100), `0034ae2` (Step 9 batch 9e 95/100), `87856ba`+`cf9cb10` (Step 9 extension joint PASS 93/100), `4477b6d` (Step 10 batch 10a 71/100 BLOCK round 1 + fix `ef6006c` round 2 PASS 88/100), `65aae2d`+`bc17fbf` (Step 10 batches 10b+10c joint 78/100 BLOCK round 1 + fix `3d8874d` round 2 PASS 82/100 — STEP 10 + Phase 1a §3.3 COMPLETE — `quality_reports/reviews/2026-05-08_step-10-batches-10bc_coder_review.md`). (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+## Process learnings cumulative across Phase 1a §3.3 (codified in MEMORY.md as `[LEARN]` entries)
 
-## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
+10 learnings accumulated through Steps 9-11; ready to codify or already in MEMORY.md:
 
-Consolidated as a single .do file at `do/check/t1_empirical_tests.do` (2026-04-27). **Reduced from 5 to 3 tests after ADR-0017 retired Matt-Naven-file tests (T1-1, T1-2).**
+1. Settings.do globals must be enumerated upfront from predecessor (caused Step 9d Critical `$rawcsvdir`; Step 10 batch 10c `$cstdtadir` add).
+2. Cross-script chain coordination: after repointing writes, grep tree for matching predecessor reads (caused Step 9d splitstaff0414 chain regression; Step 11 surfaced 2 BONUS Step 10 schlcharpooledmeans catches).
+3. Python regex must be whitespace-tolerant for `cd`/`log using` patterns.
+4. Stata `\`name'` macro syntax breaks `\w+` regex — use literal sub or `[^/]+`.
+5. Translate destinations: predecessor inconsistencies (`.txt` vs `.log`; missing-space `translate$vaprojdir`) — normalize.
+6. Even gated LEGACY writes are ADR-0021 violations (e.g., `if create_sample==1` branches).
+7. cap mkdir blocks must match ACTUAL write targets (not assumed sub-dir name); grep first.
+8. Helper relocations ripple to callers — search-and-update all callers.
+9. Multi-year files use `\`year'` loops — INPUTS sections enumerate the year-set.
+10. Initial inventory counts can be wrong — recount during setup (Step 9e was 10 not 11; Step 10 was 21 not ~50).
 
-- [x] **T1-3** — `school_id == cdscode` 1:1 check — **VERDICT: 1:1 (N=5009).** Cosmetic rename only in Phase 1. Resolves P2-3, P2-11. — 2026-04-27
-- [x] **T1-4** — mtitles count test — **BUG FIRED** (49/33/33/33 cols vs 24 declared). Per Q-6, CSVs don't feed paper → cosmetic. — 2026-04-27
-- [x] **T1-5** — Revoke OpenCage API key — **RESOLVED 2026-04-30 (Christina revoked the key + history-stripped from repo).**
+## T1 Tests for Christina — ALL RESOLVED 2026-04-27/30
 
-**Retired:**
-- ~~T1-1 — `crosswalk_nsc_outcomes.do:250` `id` macro~~ — file is Christina's (per ADR-0019, refining ADR-0017) but **out of scope by time-budget** in Phase 1: file not pipeline-active, paper blast radius for Bug 93 null, ½-day fix not justified vs. offboarding acceptance run.
-- ~~T1-2 — Bug 93 family count (4 instances)~~ — NSC instances in Christina's file (per ADR-0019) but out of scope by time-budget; CCC/CSU instances in Matt's files (`merge_k12_postsecondary.doh`) per ADR-0017.
+- [x] T1-3 — `school_id == cdscode` 1:1 check — VERDICT: 1:1 (N=5009). Cosmetic rename only. — 2026-04-27
+- [x] T1-4 — mtitles count test — BUG FIRED (cosmetic per Q-6). — 2026-04-27
+- [x] T1-5 — Revoke OpenCage API key — RESOLVED 2026-04-30 (key revoked + history-stripped from repo). — 2026-04-30
 
-**Removed earlier (resolved by Christina 2026-04-26 FB-test correction):**
-- ~~Column 6 FB rows blank?~~ — NOT A BUG (intentional, FB-test structural property)
-- ~~`predicted_score==0` filter?~~ — NOT A BUG (separate dirs, no conflation)
+## Codebook export for Christina — COMPLETE 2026-04-28
 
-## Up Next
+- [x] All steps complete; sanitized log at `master_supporting_docs/codebooks/codebook_export_28-Apr-2026_13-25-41.log`. Findings extracted to `quality_reports/reviews/2026-04-28_data-checks-design.md`.
 
-- [ ] **Phase 1a §3.3 script relocation** (the bulk of Phase 1a — ~6 weeks). Each file move is one commit; coder-critic dispatch on each per phase-1-review rule. Order: helpers/macros → samples → VA estimation → heterogeneity/pass-through → sibling crosswalk → siblingvaregs deprecation → survey VA → data prep → share/.
-- [ ] **Phase 1a §3.5 golden-master verification** (M4) at end of §3.3. Verifier in submission mode; the canonical relative regression check (predecessor vs consolidated outputs).
-- [ ] **Phase 1b bug fixes by priority** — code corrections (ADR-0011 sums→means, P3 typos) → naming/clarity (ADR-0016 pooledrr rename, ADR-0015 Filipino-into-Asian comment, ADR-0013 mattschlchar dormant-branch comment). **Paper-text corrections (ADR-0010 footnote, ADR-0014 old-draft note) DEFERRED post-handoff per Christina 2026-05-07** — out of scope for consolidation; coordinate with senior coauthor on a separate timeline. Plan v3 §4.1 effectively retired.
-- [ ] **Phase 1c §5.1 cosmetic cleanup** — dead-code archival, log/translate sweep (per-do-file logging convention from §5.1 step 2).
-- [ ] **Phase 1c §5.2 README polish + cold-read** (PRE-DRAFT done as Option B `053871e`; writer-critic 86/100; 2 Minors deferred to §5.4 polish: m1 em-dash density, m7 status-note Phase-1c jargon). Final polish + cold-read test occur at §5.4. File transfer is operator-choice per ADR-0020.
-- [ ] **Phase 1c §5.2 step 8 — offboarding deliverable memo at `quality_reports/handoff/`** (per ADR-0018). Stub created `053871e`. Memo content per `quality_reports/handoff/README.md`. **Specific Christina action when writing the memo:** sweep for residual *semantic* codebook ambiguities (e.g., specific NSC sector codes she knows but never wrote down) — last chance to externalize codebook-authority knowledge before deposit, since post-`v1.0-final` no fallback exists (no provider PDFs; Kramer is custodian-not-maintainer).
-- [ ] **Phase 1c §5.3 data checks — TBD-codebook resolution.** Six skeletons pre-drafted as Option A (`d775efe`); each runnable as no-op via capture-confirm-file shim; becomes a real check post-Phase-1a §3.3. TBD-codebook markers (NSC merge rate; CCC/CSU match-level==1 share; paper-table cell magnitudes) resolve as Phase 1a §3.5 golden-master + first production runs supply baselines.
-- [ ] **Phase 1c §5.4 acceptance run** (per ADR-0018) — `stata -b do do/main.do` on Scribe with `run_data_checks 1`; README cold-read test by friendly non-Christina lab member. BOTH must pass before `v1.0-final` tag.
+## Open T4 escalations (require Christina input at Phase 0e) — ALL RESOLVED 2026-04-27
 
-## Open T4 escalations (require Christina input at Phase 0e)
-
-**ALL RESOLVED 2026-04-27** in `quality_reports/audits/2026-04-27_T4_answers_CS.md`. ADRs 0004-0016 operationalize. Q-14 (special-ed/home-instruction restrictions) deferred per Christina's "honestly no idea, took from Matt" answer.
-
-## Codebook export for Christina (run on Scribe — for plan v3 §5.3 data checks)
-
-Single .do file at `do/explore/codebook_export.do`. Produces a consolidated codebook log Claude needs to design the Phase 1c automated data-checks pipeline. ~5-15 min runtime.
-
-**Status 2026-04-28**: COMPLETE. First run surfaced PII in `codebook` Examples blocks; remediated by (1) adding `master_supporting_docs/codebooks/` to `.gitignore` and (2) editing the script to `cap drop` known PII columns before `describe`/`codebook`. Christina re-ran; sanitized log at `master_supporting_docs/codebooks/codebook_export_28-Apr-2026_13-25-41.log` (3.8 MB, gitignored, PII-scrub fired in all 10 datasets). Findings extracted to **`quality_reports/reviews/2026-04-28_data-checks-design.md`** — ~250-line design memo covering all six future `do/check/check_*.do` files (assertions, Likert ranges, sample-size invariants, codebook line refs).
-
-- [x] Verify dataset paths in §0 — done; all 10 datasets loaded without [SKIP].
-- [x] First run on Scribe — done.
-- [x] PII-scrub re-run on Scribe — done.
-- [x] Extract findings into data-checks design memo — done (`quality_reports/reviews/2026-04-28_data-checks-design.md`).
-
-## Waiting On
-
-- [x] ~~Christina T1-5 (revoke OpenCage API key — manual action)~~ — RESOLVED 2026-04-30 (key revoked + history-stripped from repo via git-filter-repo). T1-3 and T1-4 RESOLVED 2026-04-27.
-- [ ] Christina codebook-export run on Scribe (above section). Not blocking Phase 1a start; needed before Phase 1c §5.3 finalizes.
+In `quality_reports/audits/2026-04-27_T4_answers_CS.md`. ADRs 0004-0016 operationalize. Q-14 (special-ed/home-instruction restrictions) deferred per Christina's "honestly no idea, took from Matt" answer.
 
 ## Backlog
 
-- [ ] ~~Bug 93 (NSC UC inlist precedence) — P1 fix during Phase 1~~ — RETIRED per ADR-0017 (Matt's files untouched in Phase 1)
 - [ ] Universal hook fix in workflow repo (status: shipped + propagated; only filter-ordering edge case remains, low priority)
 - [ ] Stata version compatibility revisit (post-consolidation, pre-submission)
+- [ ] **Tier-1 sandbox-write grep further extension** — current pattern catches `save|export|esttab|graph export|outsheet|outreg2|texsave|translate|log using`. Step 10 surfaced `regsave using` and `export excel` patterns that may need separate consideration (caught by extended grep for these specifically). Low priority; current pattern catches the overwhelming majority.
 
-## Done (recent — last ~10 entries; older completions in session logs + git history per `todo-tracking.md` rule 6)
+## Done (last ~10 — older completions in session logs + git history per `todo-tracking.md` rule 6)
 
-- [x] **Phase 1a §3.3 step 3 batch 3c2 — 6 outcome-regression files** (`reg_out_va_all` + `_tab` + `_fig` × {regular, dk}) relocated via script-based methodology (sed for 8 path patterns + Python for ADR-0021 header insertion + mkdir + RUN-START block). ~2220 body lines. New `gph_files` routing convention: intermediate `.gph` → `$output_dir/gph_files/...`; paper-shipping `.pdf` → `$figures_dir/...`. Charter status data KEPT LEGACY (Step 9 deferred). Round-1 critic finding M1 (-3): stale TODO in main.do referencing now-relocated files — fixed in-commit. Coder-critic 87/100 PASS. (`421333f`) — 2026-05-07
-- [x] **Hygiene + MEMORY.md learnings** — TODO + SESSION_REPORT (+ `.claude/` mirror) + new session log for batches 3c1/3c2; 2 `[LEARN]` entries in MEMORY.md (script-based relocation methodology + `gph_files` routing convention). (`4c4ec81`, `712f803`) — 2026-05-07
-- [x] **TODO maintenance fix + 1 LEARN entry** — Christina caught Done section drift (~50 stale 2026-04-* entries; missing 6 recent batches). Pruned per todo-tracking.md rule 6 (~10 most recent). Added `[LEARN:workflow]` codifying the hygiene-commit-must-update-Done-and-prune discipline. (`3503765`) — 2026-05-07
-- [x] **Phase 1a §3.3 step 3 batch 3d — 3 sibling-lag diagnostic files** (`va_score_sib_lag`, `va_out_sib_lag`, `va_sib_lag_spec_fb_tab`) relocated to `do/va/`. Diagnostic-only per do_all.do. **Brace-misplacement bug in main.do wiring caught + fixed before push** (Python script landed batch 3d invocations OUTSIDE the `if `do_va'' block; corrected via Edit). One round-1 critic finding (M1 -3): header-vs-code mismatch in va_sib_lag_spec_fb_tab.do (declared CSV outputs that don't get written; actually appends .dta to spec_test/fb_test) — derive-don't-guess violation, FIXED in-commit by rewriting OUTPUTS section. **STEP 3 NOW COMPLETE.** Coder-critic 95/100 PASS. (`ccc2600`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 4 — 4 heterogeneity files** (`va_het`, `va_corr_schl_char`, `va_corr_schl_char_fig`, `persist_het_student_char_fig`) relocated to `do/va/heterogeneity/`. Plan v3 mentioned `pass_through/` but predecessor has no such directory; Step 4 = 4 files only. One round-1 critic finding (M2 -7, Major strict-phase): `persist_het_student_char_fig.do` header INPUTS section had boilerplate sch_char/va_all references that the body doesn't read (body only reads `.gph` from `$output_dir/gph_files/`); fixed in-commit by rewriting INPUTS to match body grep at L97-101. Lesson recurrence — discipline now extends to BOTH OUTPUTS and INPUTS. Coder-critic 91/100 PASS. (`c84371f`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 6 — 27 deprecated siblingvaregs files archived** to `do/_archive/siblingvaregs/`. First archive-convention batch (bodies preserved verbatim per ADR-0021; not invoked from main.do). 2 files NOT archived per ADR-0004's "verify before archiving" caveat: `siblingoutxwalk.do` (already relocated to `do/sibling_xwalk/` per ADR-0005); `vafilemacros.doh` (still consumed by ACTIVE relocated code in siblingoutxwalk.do + prior_decile_original_sample.do — kept LEGACY-static at predecessor location). README at `do/_archive/siblingvaregs/README.md` documents archive scope + exclusion rationale. One Minor critic finding (README count nits) FIXED in-commit. **Steps 1-6 NOW COMPLETE.** Coder-critic 96/100 PASS. (`b8b4ce8`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 7 — 9 Survey VA files relocated** to `do/survey_va/`: `imputation`, `imputed/compcase categoryindex`, `indexalpha`, `indexhorserace[withdemo]`, `indexregwithdemo`, `factor`, `pcascore`. Out-of-scope: `alpha.do` (Step 8 archive), `mattschlchar.do` (Step 10), `allsvymerge`/`allsvyfactor`/`testscore` (Step 11). Path repointing: chain outputs CANONICAL `$datadir_clean/survey_va/*` + `$estimates_dir/survey_va/factor/*`; LEGACY external reads via `$caschls_projdir`; intermediate exploratory outputs to `$output_dir/{csv,graph}/factoranalysis/*`. INPUTS+OUTPUTS verified via grep on each body BEFORE writing each header (4th-recurrence discipline). Original commit `3e99c3b` deferred Tier 2 per context-budget. **Retroactive audit (2026-05-08): coder-critic round 1 BLOCK 75/100 — flagged `factor.do:131` `translate $consolidated_dir/do/survey_va/factor.{smcl,log}` (sed-mistranslated; ADR-0021 sandbox violation + runtime path bug since SMCL opened at `$logdir/factor.smcl` per L58). One-line fix to `$logdir/factor.{smcl,log}`. Round 2 PASS 94/100.** (`3e99c3b` + fix `68cf30e`) — 2026-05-08
-- [x] **Tier-1 sandbox-write grep extension** — `phase-1-review.md` §3 pattern extended to `'save|export|esttab using|graph export|outsheet|outreg2 using|texsave|^\s*translate |log using'`. Process learning from Step 7 retroactive audit: original pattern omitted log-write commands; sed-mistranslated `translate` line slipped past pre-commit. Codified `[LEARN:discipline]` in MEMORY.md cross-referencing the rule update. (`3f05995`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 8 — alpha.do archived** (1-file batch) to `do/_archive/exploratory/`. ADR-0010 authority (paper-α canonical producer is `indexalpha.do` — relocated to `do/survey_va/` in Step 7; `alpha.do` was exploratory wider-item-list 20/17/4 sensitivity vs production 9/15/4). Body preserved verbatim (semantic; LF normalization per repo `text=auto` consistent with Step 7 actively-relocated `indexalpha.do` from same predecessor dir). README at `do/_archive/exploratory/README.md` documents archive scope, ADR-0010 authority, file list, why-archived, verify-before-archive grep result, ADR-0010 vs ADR-0021 convention reconciliation. main.do:307 flag-comment updated past-tense COMPLETE; Step 11 flag retained. **Steps 1-8 NOW COMPLETE.** Coder-critic PASS 97/100 (one Minor -3 on README defensive cross-ref). (`8fe1f28`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 inventory + 5-batch plan committed** at `quality_reports/plans/2026-05-08_step-9-data-prep-inventory.md`. 33 files across 5 named sub-batches (acs/2, schl_chars/11, k12_postsec_distance/5, prepare/4, qoiclean/11). Discovered-but-out-of-named-scope: `buildanalysisdata/poolingdata/` (5) + `responserate/` (4); decision deferred to end of Step 9. (`a6cd5f2`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 batch 9a — 2 ACS census-tract files relocated** to `do/data_prep/acs/`: `acs_2017_gen_dict.do` (47 body lines) + `clean_acs_census_tract.do` (369 body lines). Path repointings: `cd $vaprojdir` removed; reads `$vaprojdir/data/...` (LEGACY raw); writes `$datadir_clean/acs/...` (CHAIN) + `$output_dir/csv/acs/2017/...` (diagnostic) + `$logdir/...`; `include do_files/sbac/macros_va.doh` → `$consolidated_dir/do/va/helpers/macros_va.doh`. Coder-critic PASS 95/100 (2 Minors deferred). (`4a88874`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 batch 9b — 11 school-characteristics files relocated** to `do/data_prep/schl_chars/`. Chain order from predecessor `do_all.do:75-97`. Caught 3 mid-pass bugs (relative-after-cd form; broken raw imports after `cd` removal; Python INPUTS regex missed `import delimited|excel`). Coder-critic PASS 92/100 round 1; 2 findings (Major: `clean_sch_char.do:609` relative `save` missed by sed; Minor: tempfile attribution drift) FIXED in `9478ded`. (`40cb161`+`9478ded`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 batch 9c — 5 k12-postsec-distance files relocated** to `do/data_prep/k12_postsec_distance/`. Path repointings to `$datadir_clean/k12_postsec_distance/clean/*`. SECURITY SCRUB: revoked OpenCage API key replaced with placeholder. Coder-critic PASS 84/100 round 1; 3 findings (false sub-call claim; stale callsite includes in `do/samples/`; header self-listing) FIXED in `02b5189`. (`4403758`+`02b5189`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 batch 9d — 4 caschls/prepare files relocated** to `do/data_prep/prepare/`: `enrollmentclean`, `poolgr11enr`, `renamedata`, `splitstaff0414`. Settings.do edit: added 3 LEGACY-READ-ONLY globals (`$rawdtadir`, `$rawcsvdir`, `$clndtadir`). Coder-critic round 1 BLOCK 67/100 (Critical: undefined `$rawcsvdir`; Major: chain regression splitstaff0414 LEGACY-read; Major: missing mkdir; 2 Minors); 5 fixes in `c35e22a`. Round 2 PASS 87/100. (`677033f`+`c35e22a`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 batch 9e — 10 caschls/qoiclean files relocated** to `do/data_prep/qoiclean/{parent,secondary,staff}/`. Year-by-year QOI cleaning; multi-year files loop over years. Reads CHAIN qoiclean inputs from renamedata batch 9d; writes CHAIN qoiclean outputs. Coder-critic PASS 95/100. (`0034ae2`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 EXTENSION batches 9g+9f (joint) — 9 caschls/buildanalysisdata files relocated** per Christina 2026-05-08 decision. 9g (4 responserate) + 9f (5 poolingdata). Cross-batch chain fix: `clean_va.do:96` repointed `$vaprojdir/estimates/...` → `$estimates_dir/...` (Step 3 batch 3c1 chain). **STEP 9 EXTENDED COMPLETE — 41 files across 7 batches.** Coder-critic joint PASS 93/100. (`87856ba`+`cf9cb10`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 10 inventory + 3-batch plan committed** — 21 files (NOT ~50 as plan v3 estimated; Steps 7/8/11 + ADR-0017 carved out 36 files from the share/ trees). 10a (cde 10) + 10b (caschls demo 4) + 10c (caschls misc 7). (`28f3c98`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 10 batch 10a — 10 cde/share paper producers relocated** to `do/share/`. Paper-shipping figures + tables. 13 sbac helper includes repointed; chain reads to `$estimates_dir/va_cfr_all_<v>/*` (Step 3) + `$estimates_dir/survey_va/factor/*` (Step 7). Coder-critic round 1 BLOCK 71/100 (5 Major); 5 fixes in `ef6006c`. Round 2 PASS 88/100. (`4477b6d`+`ef6006c`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 10 batches 10b+10c (joint) — 11 caschls/share files relocated.** 10b (4 demographics coverage analyses) + 10c (7 misc: nsc_codebook, k12_nsc2019_merge.doh helper, 3 siblingxwalk, allvaregs, mattschlchar). Sub-destinations: `do/share/{demographics,outcomesumstats,siblingxwalk,svyvaregs}/` + `do/survey_va/mattschlchar.do` (per ADR-0013, matching Step 7 precedent). Settings.do edit: added `$cstdtadir` LEGACY global (caught upfront via global-enumeration sweep — lesson from 9d $rawcsvdir Critical applied). Phase 5 INSERT: mattschlchar.do wired before indexreg* scripts. Coder-critic joint round 1 BLOCK 78/100 (F1 Major mkdir mismatches across 6 files; F2 Minor cluster header drift); F1+F2.headline fixes in `3d8874d`. Round 2 PASS 82/100. **STEP 10 + ALL OF PHASE 1a §3.3 COMPLETE — 145 files across 10 steps; 26 coder-critic PASS verdicts.** (`65aae2d`+`bc17fbf`+`3d8874d`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 batch 9b — 11 school-characteristics files relocated** to `do/data_prep/schl_chars/`. Chain order from predecessor `do_all.do:75-97`. Caught 3 mid-pass bugs. Coder-critic PASS 92/100 round 1; 2 findings (Major: `clean_sch_char.do:609` relative `save` missed by sed; Minor: tempfile attribution drift) FIXED in `9478ded`. (`40cb161`+`9478ded`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 batch 9c — 5 k12-postsec-distance files relocated** to `do/data_prep/k12_postsec_distance/`. SECURITY SCRUB: revoked OpenCage API key replaced with placeholder. Coder-critic PASS 84/100 round 1; 3 findings FIXED in `02b5189`. (`4403758`+`02b5189`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 batch 9d — 4 caschls/prepare files relocated** to `do/data_prep/prepare/`. Settings.do edit: 3 LEGACY-READ-ONLY globals (`$rawdtadir`, `$rawcsvdir`, `$clndtadir`). Coder-critic round 1 BLOCK 67/100 (Critical undefined `$rawcsvdir`; Major chain regression; Major missing mkdir; 2 Minors); 5 fixes in `c35e22a` round 2 PASS 87/100. (`677033f`+`c35e22a`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 batch 9e — 10 caschls/qoiclean files relocated** to `do/data_prep/qoiclean/{parent,secondary,staff}/`. Multi-year loop files. Coder-critic PASS 95/100. (`0034ae2`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 EXTENSION batches 9g+9f (joint) — 9 caschls/buildanalysisdata files relocated** per Christina decision. **STEP 9 EXTENDED COMPLETE — 41 files across 7 batches.** Coder-critic joint PASS 93/100. (`87856ba`+`cf9cb10`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 10 batch 10a — 10 cde/share paper producers relocated** to `do/share/`. 13 sbac helper includes repointed; chain reads to Steps 3+7 outputs. Coder-critic round 1 BLOCK 71/100 (5 Major); 5 fixes in `ef6006c` round 2 PASS 88/100. (`4477b6d`+`ef6006c`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 10 batches 10b+10c (joint) — 11 caschls/share files relocated.** Settings.do `$cstdtadir` global added. Phase 5 INSERT: mattschlchar.do wired. Coder-critic joint round 1 BLOCK 78/100 (F1 mkdir mismatches + F2 header drift); fix in `3d8874d` round 2 PASS 82/100. **STEP 10 COMPLETE.** (`65aae2d`+`bc17fbf`+`3d8874d`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 11 — deferred files resolved** — 2 ACTIVE relocations (allsvymerge.do + testscore.do → `do/survey_va/`) + 1 ARCHIVE (allsvyfactor.do → `do/_archive/exploratory/`). Cross-step chain coordination: 4 Step 7 files repointed (allsvyqoimeans + testscorecontrols + 2 BONUS schlcharpooledmeans catches from Step 10 chain). main.do Phase 5 wiring updated. Coder-critic PASS 96/100. **STEP 11 COMPLETE — PHASE 1a §3.3 FULLY DONE — 148 files across 11 steps; 27 coder-critic PASS verdicts.** (`6791dec`) — 2026-05-08
 
 **Older completions** (pre-2026-05-07 batches) live in:
-- `quality_reports/session_logs/2026-04-*` — per-session detailed logs
+- `quality_reports/session_logs/2026-04-*` and `2026-05-0[1-7]_*` — per-session detailed logs
 - `git log --oneline` — commit-level audit trail
-- `git log --grep='coder-critic'` — Phase 1 code-commit audit trail (12 entries through `421333f`)
+- `git log --grep='coder-critic'` — Phase 1 code-commit audit trail

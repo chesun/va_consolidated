@@ -1898,3 +1898,48 @@ Plus carry-forward Minor doc-string drift items → Phase 1b §4.3 cleanup commi
 ### Coder-critic audit trail
 
 - 26 PASS verdicts. Step 10 closes audit trail.
+
+---
+
+## 2026-05-08 — Step 11 deferred files resolved — **PHASE 1a §3.3 FULLY COMPLETE — 148 files across 11 steps**
+
+**Status:** `6791dec` PASS 96/100. Phase 1a §3.3: **148 of 148 — ALL 11 STEPS COMPLETE.**
+
+### Disposition audit (Step 11 was 3 deferred files, NOT all exploratory)
+
+Re-investigated each file rather than inheriting the "exploratory" flag:
+
+- **allsvymerge.do** — ACTIVE chain producer (consumed by Step 7 imputation + compcasecategoryindex). NOT exploratory. → relocated `do/survey_va/allsvymerge.do`.
+- **testscore.do** — ACTIVE chain producer (consumed by Step 7 indexreg* Table 8 panels). NOT exploratory. → relocated `do/survey_va/testscore.do`.
+- **allsvyfactor.do** — TRULY exploratory per file header; writes only diagnostic CSV/PNG; no chain consumers. → ARCHIVED `do/_archive/exploratory/` per ADR-0010.
+
+### Cross-step chain coordination
+
+4 Step 7 files repointed: `imputation.do` + `compcasecategoryindex.do` (allsvyqoimeans CHAIN); `indexregwithdemo.do` + `indexhorseracewithdemo.do` (testscorecontrols CHAIN). **2 BONUS catches**: same files were also reading LEGACY schlcharpooledmeans despite Step 10 batch 10c relocating mattschlchar.do. Same chain-regression pattern as Step 9d's splitstaff0414. Repointed.
+
+### Tier-2 PASS 96/100
+
+5 in-scope concerns all PASS. -3 adversarial-default residual (verification ledger); -1 visual-vs-hash verbatim verification. Cross-step chain coordination fully closed-loop across 6 producer/consumer paths.
+
+### Phase 1a §3.3 GRAND retrospective — COMPLETE 2026-05-08
+
+| Step | Files | Status |
+|---|---:|---|
+| 1-8 | various | ✅ |
+| 9 (extended) | 41 across 7 batches | ✅ mean ~91/100 |
+| 10 | 21 across 3 batches | ✅ mean ~84/100 |
+| 11 | 3 (2 ACTIVE + 1 ARCHIVE) | ✅ PASS 96/100 |
+
+**TOTAL: 148 files. 27 coder-critic PASS verdicts.**
+
+### TODO thorough cleanup (per Christina directive)
+
+5 categories of stale items removed from TODO (per-batch checklists for completed steps; old "Remaining steps" tables; "Options for next code work" pre-Step-9; "Up Next" listing Phase 1a §3.3 as future; Done section over-grown). Restructured around: Active (§3.5), Phase 1a §3.3 COMPLETE table, Up Next post-§3.3, process learnings cumulative, resolved sections collapsed, Backlog, Done (last ~10).
+
+### Next: Phase 1a §3.5 — Golden-master verification (M4)
+
+Per ADR-0018 acceptance criteria. First gate before `v1.0-final` tag. Christina runs consolidated pipeline on Scribe; agent compares outputs vs predecessor.
+
+### Coder-critic audit trail
+
+- 27 PASS verdicts. Phase 1a §3.3 closed.
