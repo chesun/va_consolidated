@@ -9,9 +9,10 @@
 
 Single-file batch (Step 8). Files copied verbatim from `caschls/do/share/factoranalysis/` (predecessor; Dropbox path). Bodies preserved byte-identical per ADR-0021 — no header note added, no path repointing, not invoked from `do/main.do`.
 
-## Files archived (1)
+## Files archived (2)
 
-- `alpha.do` — Cronbach's α over a wider candidate item list (20 items for school climate, 17 for teacher/staff quality, 4 for counseling). Exploratory sensitivity check; not the source of paper-reported α values.
+- `alpha.do` (added Step 8, 2026-05-08) — Cronbach's α over a wider candidate item list (20 items for school climate, 17 for teacher/staff quality, 4 for counseling). Exploratory sensitivity check; not the source of paper-reported α values.
+- `allsvyfactor.do` (added Step 11, 2026-05-08) — Exploratory factor analysis on the merged `allsvyqoimeans.dta`. Per file header: "exploratory factor analysis for merge dataset with all 3 survey qoi means". Reads `$caschls_projdir/dta/allsvyfactor/allsvyqoimeans` (LEGACY; pre-relocation predecessor path) and writes ONLY exploratory diagnostics: `allsvyfactor.csv`, `allsvyscreeplot.png`, `allsvyfactoreigen1.csv`. **No chain consumers in either predecessor or consolidated**; archived per ADR-0010 archive convention. Body preserved verbatim per ADR-0021.
 
 ## NOT archived (canonical / still active)
 

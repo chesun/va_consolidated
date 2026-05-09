@@ -11,7 +11,7 @@ INVOKED FROM
     in this relocation).
 
 INPUTS (verified via grep on file body)
-    $caschls_projdir/dta/allsvyfactor/allsvyqoimeans.dta (LEGACY; complete-case branch reads raw qoimeans without imputation)
+    $datadir_clean/survey_va/allsvyqoimeans.dta (CHAIN read from Step 11 allsvymerge.do; complete-case branch reads merged qoimeans without imputation)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/survey_va/categoryindex/compcasecategoryindex.dta — complete-case indices; $estimates_dir/survey_va/factor/compcase/<...>.dta — per-cell regsave; $estimates_dir/survey_va/factor/compcase/<index>_va_compregs.dta — combined; $output_dir/csv/factoranalysis/compcase/<index>_va_compregs.xlsx — Excel
@@ -83,7 +83,7 @@ di as text "compcasecategoryindex.do — RUN START: `c(current_date)' `c(current
 di as text "{hline 80}"
 
 
-use $caschls_projdir/dta/allsvyfactor/allsvyqoimeans, clear
+use $datadir_clean/survey_va/allsvyqoimeans, clear
 
 local climatevars parentqoi16mean_pooled parentqoi17mean_pooled parentqoi27mean_pooled secqoi22mean_pooled secqoi23mean_pooled secqoi24mean_pooled secqoi26mean_pooled secqoi27mean_pooled  secqoi29mean_pooled
 local qualityvars parentqoi30mean_pooled parentqoi31mean_pooled parentqoi32mean_pooled parentqoi33mean_pooled parentqoi34mean_pooled secqoi28mean_pooled secqoi35mean_pooled secqoi36mean_pooled secqoi37mean_pooled secqoi38mean_pooled secqoi39mean_pooled secqoi40mean_pooled staffqoi20mean_pooled staffqoi24mean_pooled staffqoi87mean_pooled

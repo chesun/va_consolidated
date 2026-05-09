@@ -345,23 +345,25 @@ if `run_survey_va' {
     di as text "PHASE 5: SURVEY VA"
     di as text "{hline 80}"
 
-    * RELOCATED 2026-05-08 per plan v3 §3.3 step 7 — Survey VA chain.
-    * Reads $caschls_projdir/dta/allsvyfactor/* (LEGACY; from allsvymerge.do
-    * Step 11 deferred); writes CANONICAL $datadir_clean/survey_va/* +
+    * RELOCATED 2026-05-08 per plan v3 §3.3 steps 7+10+11 — Survey VA chain.
+    * Reads CHAIN $datadir_clean/{survey_va,schoolchar,calschls/{analysisready,va}}/*
+    * (Steps 9f + 10 + 11); writes CANONICAL $datadir_clean/survey_va/* +
     * $estimates_dir/survey_va/factor/* + $output_dir/csv|graph/factoranalysis/*.
+    do do/survey_va/allsvymerge.do                 // RELOCATED Step 11; merges parent/sec/staff CalSCHLS qoimeans into $datadir_clean/survey_va/allsvyqoimeans.dta + per-survey formerge dtas (consumed by imputation + compcasecategoryindex below)
     do do/survey_va/imputation.do                  // multiply-impute missing CalSCHLS QOI items; writes $datadir_clean/survey_va/imputedallsvyqoimeans.dta
     do do/survey_va/imputedcategoryindex.do        // build climate/quality/support indices on imputed data (9/15/4 items per ADR-0010); sums→means fix DEFERRED Phase 1b §4.2 per ADR-0011
     do do/survey_va/compcasecategoryindex.do       // same indices on complete-case data
     do do/survey_va/indexalpha.do                  // Cronbach α for paper footnote (paper-text fix DEFERRED post-handoff per Christina 2026-05-07)
     do do/survey_va/mattschlchar.do                // RELOCATED Step 10 batch 10c per ADR-0013; produces $datadir_clean/schoolchar/schlcharpooledmeans.dta consumed by Table 8 panel producers (indexregwithdemo + indexhorseracewithdemo below)
+    do do/survey_va/testscore.do                   // RELOCATED Step 11; produces $datadir_clean/schoolchar/testscorecontrols.dta (6th + 8th grade test scores) consumed by Table 8 panel producers below
     do do/survey_va/indexregwithdemo.do            // bivariate survey-VA regressions w/ school chars (paper Table 8 Panel A)
     do do/survey_va/indexhorseracewithdemo.do      // horserace survey-VA regressions w/ school chars (paper Table 8 Panel B)
     do do/survey_va/indexhorserace.do              // horserace without demo controls
     do do/survey_va/factor.do                      // exploratory factor analysis (eigen plots; intermediate, not paper-shipping)
     do do/survey_va/pcascore.do                    // PCA scoreplot for survey factors
 
-    * Phase 1a §3.3 step 8 COMPLETE — `alpha.do' archived to `do/_archive/exploratory/' per ADR-0010 (paper-α canonical producer is `indexalpha.do' invoked above; `alpha.do' was an exploratory wider-item-list sensitivity check, non-load-bearing).
-    * TODO Phase 1a §3.3 step 11 — `allsvymerge.do' + `allsvyfactor.do' + `testscore.do' (exploratory-or-data-prep; deferred to do/explore/ or do/data_prep/).
+    * Phase 1a §3.3 step 8 COMPLETE — `alpha.do' archived to `do/_archive/exploratory/' per ADR-0010.
+    * Phase 1a §3.3 step 11 COMPLETE — `allsvymerge.do' + `testscore.do' relocated ACTIVE above (chain producers, not exploratory as initially flagged); `allsvyfactor.do' archived to `do/_archive/exploratory/' per ADR-0010 (truly exploratory; no chain consumers).
 }
 
 

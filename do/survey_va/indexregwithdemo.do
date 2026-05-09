@@ -11,7 +11,7 @@ INVOKED FROM
     in this relocation).
 
 INPUTS (verified via grep on file body)
-    $datadir_clean/survey_va/categoryindex/<type>categoryindex.dta (CANONICAL); $caschls_projdir/dta/schoolchar/schlcharpooledmeans.dta + testscorecontrols.dta (LEGACY)
+    $datadir_clean/survey_va/categoryindex/<type>categoryindex.dta (CANONICAL); $datadir_clean/schoolchar/schlcharpooledmeans.dta (CHAIN read from Step 10 mattschlchar.do) + $datadir_clean/schoolchar/testscorecontrols.dta (CHAIN read from Step 11 testscore.do)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $estimates_dir/survey_va/factor/indexbivarwithdemo/<type>/<...>_index.dta — per-cell regsave; $datadir_clean/survey_va/categoryindex/<type>indexwithdemo.dta — merged dataset; $estimates_dir/survey_va/factor/indexbivarwithdemo/<type>_index_bivar_wdemo.dta — combined; $output_dir/csv/factoranalysis/indexbivarwithdemo/<type>_index_bivar_wdemo.xlsx — Excel
@@ -92,10 +92,10 @@ foreach type of local datatype {
 
   //merge with pooled average enrollment characteristics over 1415-1718 constructed from Matt Naven's data
   //keep only merged observations or unmatched master observations
-  merge 1:1 cdscode using $caschls_projdir/dta/schoolchar/schlcharpooledmeans, keep(1 3) nogen
+  merge 1:1 cdscode using $datadir_clean/schoolchar/schlcharpooledmeans, keep(1 3) nogen
 
 
-  merge 1:1 cdscode using $caschls_projdir/dta/schoolchar/testscorecontrols, keep(1 3) nogen
+  merge 1:1 cdscode using $datadir_clean/schoolchar/testscorecontrols, keep(1 3) nogen
 
 
 

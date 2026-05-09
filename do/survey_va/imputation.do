@@ -11,7 +11,7 @@ INVOKED FROM
     in this relocation).
 
 INPUTS (verified via grep on file body)
-    $caschls_projdir/dta/allsvyfactor/allsvyqoimeans (LEGACY; produced by allsvymerge.do, Step 11 deferred)
+    $datadir_clean/survey_va/allsvyqoimeans (CHAIN read from Step 11 allsvymerge.do)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/survey_va/imputedallsvyqoimeans.dta — imputed dataset for downstream indexing
@@ -63,7 +63,7 @@ di as text "imputation.do — RUN START: `c(current_date)' `c(current_time)'"
 di as text "{hline 80}"
 
 
-use $caschls_projdir/dta/allsvyfactor/allsvyqoimeans, clear
+use $datadir_clean/survey_va/allsvyqoimeans, clear
 
 local allqoivars parentqoi9mean_pooled parentqoi15mean_pooled parentqoi16mean_pooled parentqoi17mean_pooled parentqoi27mean_pooled parentqoi30mean_pooled parentqoi31mean_pooled parentqoi32mean_pooled parentqoi33mean_pooled parentqoi34mean_pooled parentqoi64mean_pooled ///
 secqoi22mean_pooled secqoi23mean_pooled secqoi24mean_pooled secqoi25mean_pooled secqoi26mean_pooled secqoi27mean_pooled secqoi28mean_pooled secqoi29mean_pooled secqoi30mean_pooled secqoi31mean_pooled secqoi32mean_pooled secqoi33mean_pooled secqoi34mean_pooled secqoi35mean_pooled secqoi36mean_pooled secqoi37mean_pooled secqoi38mean_pooled secqoi39mean_pooled secqoi40mean_pooled ///
