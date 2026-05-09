@@ -389,8 +389,14 @@ if `run_paper_outputs' {
     do do/share/svyindex_tab.do                     // survey-VA index regression table (Table 8 panels); reads CHAIN $estimates_dir/survey_va/factor/* (Step 7)
     do do/share/check/corr_dk_score_va.do           // diagnostic: correlation between drift-knot (DK) score and VA estimates
 
-    * Step 10 batches 10b-10c PENDING (relocations land in subsequent commits):
-    *   10b — caschls/share/demographics/ (4 files; coverage analyses)
+    * Step 10 batch 10b — caschls/share/demographics (4 files): LANDED 2026-05-08
+    * Diagnostic coverage analyses; produce .png graphs under $output_dir/graph/pooleddiagnostics/.
+    do do/share/demographics/elemcoverageanalysis.do        // diagnostic: elementary CalSCHLS coverage analysis
+    do do/share/demographics/parentcoverageanalysis.do      // diagnostic: parent CalSCHLS coverage analysis
+    do do/share/demographics/seccoverageanalysis.do         // diagnostic: secondary CalSCHLS coverage analysis
+    do do/share/demographics/pooledsecanalysis.do           // diagnostic: pooled secondary CalSCHLS analysis
+
+    * Step 10 batch 10c PENDING (relocations land in subsequent commit):
     *   10c — caschls/share/{outcomesumstats,siblingxwalk,svyvaregs,factoranalysis/mattschlchar} (7 files)
 }
 
