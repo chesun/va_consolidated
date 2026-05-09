@@ -73,6 +73,15 @@ set trace on
 
  cap log close _all
 
+* --- output-directory prep (CANONICAL) ---------------------------------------
+cap mkdir "$logdir"
+cap mkdir "$tables_dir"
+cap mkdir "$tables_dir/share"
+cap mkdir "$tables_dir/share/va"
+cap mkdir "$tables_dir/share/va/check"
+cap mkdir "$tables_dir/share/va/pub"
+cap mkdir "$estimates_dir"
+
  log using "$logdir/va_var_explain_tab.smcl", replace text
 
  graph drop _all

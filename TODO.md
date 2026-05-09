@@ -1,10 +1,10 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-08 (after Step 9 extension batches 9g `87856ba` + 9f `cf9cb10` — **PASS 93/100** — 9 more files relocated; **STEP 9 EXTENDED COMPLETE — 41 files**)
+Last updated: 2026-05-08 (after Step 10 batch 10a commits `4477b6d` + fix `ef6006c` — **round 2 PASS 88/100** — 10 cde/share paper producers relocated)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.3 IN PROGRESS — 124 of ~150 files relocated/archived. Steps 1-9 (extended) ALL COMPLETE.** Remaining: Step 10 (~50 share/ paper producers).
+- [ ] **Phase 1a §3.3 IN PROGRESS — 134 of ~150 files relocated/archived. Steps 1-9 (extended) + Step 10 batch 10a COMPLETE.** Remaining: Step 10 batches 10b (4) + 10c (7).
 
 ### Step 9 — Data prep (41 files; Christina-owned) EXTENDED COMPLETE 2026-05-08 ✅
 
@@ -24,9 +24,17 @@ Last updated: 2026-05-08 (after Step 9 extension batches 9g `87856ba` + 9f `cf9c
 
 **Step 9 totals: 41 files, mean ~91/100 across 7 batches.**
 
-### Step 10 — share/ paper producers (~50 files) — NEXT
+### Step 10 — share/ paper producers (21 files; NOT ~50 as plan v3 estimated) — IN PROGRESS
 
-Per plan v3 §3.3 step 10. Source: mixed (`cde_va_project_fork/do_files/share/` + `caschls/do/share/` minus deprecated subtrees). Apply mature methodology from Step 9: Python script-based + ADR-0021 headers + Tier 1 grep + Tier 2 dispatch + atomic commits per batch. Likely sub-batches given size (~50 files); inventory first, propose batch split before starting.
+**Inventory + 3-batch plan:** `quality_reports/plans/2026-05-08_step-10-share-inventory.md` (committed `28f3c98`).
+
+**Batch progress:**
+
+| Batch | Source | Files | Status |
+|---|---|---:|---|
+| 10a | `cde/do_files/share/` (incl. check/) | 10 | LANDED `4477b6d` + fix `ef6006c` round 2 PASS 88/100 |
+| 10b | `caschls/share/demographics/` | 4 | NEXT |
+| 10c | `caschls/share/{outcomesumstats,siblingxwalk,svyvaregs,factoranalysis/mattschlchar}` | 7 | pending |
 
 Per plan v3 §3.3 step 9. Relocate Christina-owned cleaning files from mixed predecessor sources to `do/data_prep/` (subdirs: `acs/` ✓, `schl_chars/`, `k12_postsec_distance/`, `prepare/`, `qoiclean/`). Apply Step 7 active-relocation methodology (header + sed path repointing + main.do Phase wiring).
 
@@ -63,7 +71,7 @@ Every Phase 1 code commit goes through coder-critic at 80/100 hard gate per `.cl
 - Code commits: `coder-critic: PASS (XX/100)`
 - Cosmetic / out-of-scope: `coder-critic: skipped (rationale: ...)`
 
-Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`, `3e99c3b` (retroactive round 2 94/100 after `factor.do:131` fix `68cf30e`), `8fe1f28` (Step 8 alpha.do archive 97/100), `4a88874` (Step 9 batch 9a 95/100), `40cb161` (Step 9 batch 9b 92/100 + fix `9478ded`), `4403758` (Step 9 batch 9c 84/100 + fix `02b5189`), `677033f` (Step 9 batch 9d 67/100 BLOCK round 1 + fix `c35e22a` round 2 PASS 87/100), `0034ae2` (Step 9 batch 9e 95/100), `87856ba`+`cf9cb10` (Step 9 extension batches 9g+9f joint PASS 93/100 — STEP 9 EXTENDED COMPLETE — `quality_reports/reviews/2026-05-08_step-9-batch-9fg_coder_review.md`). (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
+Audit trail: `git log --grep='coder-critic'`. Entries: `e1cbc56`, `9120754`, `d775efe`, `275efc0`, `7983a8d`, `94fd2b8`, `5de34a7`, `90700c2`, `223e9b2`, `4ee0b58`, `9e102fd`, `421333f`, `ccc2600`, `c84371f`, `b8b4ce8`, `3e99c3b` (retroactive round 2 94/100 after `factor.do:131` fix `68cf30e`), `8fe1f28` (Step 8 alpha.do archive 97/100), `4a88874` (Step 9 batch 9a 95/100), `40cb161` (Step 9 batch 9b 92/100 + fix `9478ded`), `4403758` (Step 9 batch 9c 84/100 + fix `02b5189`), `677033f` (Step 9 batch 9d 67/100 BLOCK round 1 + fix `c35e22a` round 2 PASS 87/100), `0034ae2` (Step 9 batch 9e 95/100), `87856ba`+`cf9cb10` (Step 9 extension joint PASS 93/100), `4477b6d` (Step 10 batch 10a 71/100 BLOCK round 1 + fix `ef6006c` round 2 PASS 88/100 — `quality_reports/reviews/2026-05-08_step-10-batch-10a_coder_review.md`). (Plus writer-critic dispatches for doc commits: `053871e`.) Note: pre-`275efc0` SHAs were rewritten 2026-04-30 by `git filter-repo` (OpenCage history strip); refs in markdown use post-rewrite SHAs.
 
 ## T1 Tests for Christina (run on Scribe when convenient — ~5-15 min in one session)
 
@@ -135,7 +143,9 @@ Single .do file at `do/explore/codebook_export.do`. Produces a consolidated code
 - [x] **Phase 1a §3.3 step 9 batch 9c — 5 k12-postsec-distance files relocated** to `do/data_prep/k12_postsec_distance/`. Path repointings to `$datadir_clean/k12_postsec_distance/clean/*`. SECURITY SCRUB: revoked OpenCage API key replaced with placeholder. Coder-critic PASS 84/100 round 1; 3 findings (false sub-call claim; stale callsite includes in `do/samples/`; header self-listing) FIXED in `02b5189`. (`4403758`+`02b5189`) — 2026-05-08
 - [x] **Phase 1a §3.3 step 9 batch 9d — 4 caschls/prepare files relocated** to `do/data_prep/prepare/`: `enrollmentclean`, `poolgr11enr`, `renamedata`, `splitstaff0414`. Settings.do edit: added 3 LEGACY-READ-ONLY globals (`$rawdtadir`, `$rawcsvdir`, `$clndtadir`). Coder-critic round 1 BLOCK 67/100 (Critical: undefined `$rawcsvdir`; Major: chain regression splitstaff0414 LEGACY-read; Major: missing mkdir; 2 Minors); 5 fixes in `c35e22a`. Round 2 PASS 87/100. (`677033f`+`c35e22a`) — 2026-05-08
 - [x] **Phase 1a §3.3 step 9 batch 9e — 10 caschls/qoiclean files relocated** to `do/data_prep/qoiclean/{parent,secondary,staff}/`. Year-by-year QOI cleaning; multi-year files loop over years. Reads CHAIN qoiclean inputs from renamedata batch 9d; writes CHAIN qoiclean outputs. Coder-critic PASS 95/100. (`0034ae2`) — 2026-05-08
-- [x] **Phase 1a §3.3 step 9 EXTENSION batches 9g+9f (joint) — 9 caschls/buildanalysisdata files relocated** per Christina 2026-05-08 decision. Batch 9g (4 responserate files) → `do/data_prep/responserate/`: trim<sub>demo + <sub>responserate produce CHAIN demotrim + responserate dtas. Batch 9f (5 poolingdata files) → `do/data_prep/poolingdata/`: <sub>pooling + mergegr11enr + clean_va consume CHAIN qoiclean (9e) + responserate (9g) + poolgr11enr (9d) + $estimates_dir VA outputs (Step 3 batch 3c1); produce CHAIN analysisready/poolingdata/va outputs consumed by Step 7 survey-VA. Cross-batch chain fix: `clean_va.do:96` repointed `$vaprojdir/estimates/...` → `$estimates_dir/...` (Step 3 batch 3c1 chain). **STEP 9 EXTENDED COMPLETE — 41 files total across 7 batches.** Coder-critic PASS 93/100 joint review (2 Minor main.do one-liner imprecisions fixed in same hygiene commit). (`87856ba`+`cf9cb10`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 9 EXTENSION batches 9g+9f (joint) — 9 caschls/buildanalysisdata files relocated** per Christina 2026-05-08 decision. 9g (4 responserate) + 9f (5 poolingdata). Cross-batch chain fix: `clean_va.do:96` repointed `$vaprojdir/estimates/...` → `$estimates_dir/...` (Step 3 batch 3c1 chain). **STEP 9 EXTENDED COMPLETE — 41 files across 7 batches.** Coder-critic joint PASS 93/100. (`87856ba`+`cf9cb10`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 10 inventory + 3-batch plan committed** — 21 files (NOT ~50 as plan v3 estimated; Steps 7/8/11 + ADR-0017 carved out 36 files from the share/ trees). 10a (cde 10) + 10b (caschls demo 4) + 10c (caschls misc 7). (`28f3c98`) — 2026-05-08
+- [x] **Phase 1a §3.3 step 10 batch 10a — 10 cde/share paper producers relocated** to `do/share/` + `do/share/check/`. Paper-shipping figures + tables (kdensity, scatter, sample counts, sumstats, regression/var-explain tables, survey-VA index table). 13 sbac helper includes repointed; chain reads to `$estimates_dir/va_cfr_all_<v>/*` (Step 3) + `$estimates_dir/survey_va/factor/*` (Step 7); chain writes to `$tables_dir/share/{va,survey}/{check,pub}/*` + `$figures_dir/share/va/*` + `$output_dir/gph_files/*` (intermediate). Coder-critic round 1 BLOCK 71/100 (5 Major: 2 leading-space `cd $vaprojdir`, 1 missing-space `translate$vaprojdir`, 1 `.txt` extension translate, 1 gated LEGACY data-dir write); 5 fixes in `ef6006c`. **Round 2 PASS 88/100** (one Minor cap mkdir fixed in hygiene commit). (`4477b6d`+`ef6006c`) — 2026-05-08
 
 **Older completions** (pre-2026-05-07 batches) live in:
 - `quality_reports/session_logs/2026-04-*` — per-session detailed logs

@@ -1798,3 +1798,49 @@ Chain coordination discipline from batch 9d (where splitstaff0414 LEGACY-read re
 ### Coder-critic audit trail
 
 - 23 PASS verdicts. `87856ba`+`cf9cb10` joint PASS 93/100.
+
+---
+
+## 2026-05-08 — Step 10 inventory + batch 10a (10 cde/share paper producers) — BLOCK 71 → PASS 88
+
+**Status:** Step 10 inventory committed (`28f3c98`); batch 10a `4477b6d` BLOCK 71 round 1; round-1 5-fix in `ef6006c` round 2 PASS 88. Phase 1a §3.3: 134 of ~150.
+
+### Step 10 inventory result
+
+21 files (NOT ~50 as plan v3 estimated). Steps 7/8/11 + ADR-0017 carved out 36 files from the share/ trees.
+
+3-batch split:
+  - 10a: cde/share/ (10 files) — paper producers
+  - 10b: caschls/share/demographics/ (4 files)
+  - 10c: caschls/share/misc (7 files)
+
+### Batch 10a operations
+
+- 10 cde/share files (mostly large; va_scatter is 722 lines).
+- 13 distinct sbac helper includes repointed to `do/{va/helpers,samples}/`.
+- Chain reads: `$estimates_dir/va_cfr_all_<v>/*` (Step 3) + `$estimates_dir/survey_va/factor/*` (Step 7 via svyindex_tab).
+- Chain writes: `$tables_dir/share/{va,survey}/{check,pub}/*` + `$figures_dir/share/va/*` + `$output_dir/gph_files/*`.
+- Coder-critic round 1 BLOCK 71/100 with 5 Major findings; round-1 fixes in `ef6006c`; round 2 PASS 88/100.
+
+### Round-1 findings (all fixed)
+
+1. Major (-10): leading-space ` cd $vaprojdir` in 2 files (Python regex required no leading space).
+2. Major (-15): `translate$vaprojdir/...` missing-space typo (predecessor verbatim).
+3. Major (-10): translate to `.txt` extension (predecessor verbatim).
+4. Major (-10): gated LEGACY data-dir write (`if create_sample==1`) — ADR-0021 sandbox is static; repointed to CANONICAL.
+
+### Process learnings (from 5 Major findings)
+
+- Python regex must be whitespace-tolerant for predecessor lines (use `\s*` liberally).
+- Stata `\`name'` macro syntax breaks `\w+` regex — use literal-string sub or `[^/]+`.
+- Translate destinations: predecessor inconsistencies (`.txt` vs `.log`; missing-space `translate$vaprojdir`) — normalize to `.log` with single space.
+- Even gated LEGACY writes are ADR-0021 violations.
+
+### Phase 1a §3.3 progress: 134 of ~150 — Step 10 batch 10a COMPLETE
+
+- Batches 10b (4 caschls demographics files) + 10c (7 caschls misc files) NEXT
+- After 10c: §3.5 golden-master verification (M4)
+
+### Coder-critic audit trail
+
+- 24 PASS verdicts. `4477b6d` Step 10 batch 10a BLOCK 71 round 1; `ef6006c` round 2 PASS 88.
