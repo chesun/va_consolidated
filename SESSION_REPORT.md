@@ -1943,3 +1943,51 @@ Per ADR-0018 acceptance criteria. First gate before `v1.0-final` tag. Christina 
 ### Coder-critic audit trail
 
 - 27 PASS verdicts. Phase 1a §3.3 closed.
+
+---
+
+## 2026-05-08 END OF SESSION — Phase 1a §3.3 FULLY COMPLETE; pause for new session
+
+**Headline:** Phase 1a §3.3 closed today. 148 of 148 files relocated/archived across 11 steps. 27 coder-critic PASS verdicts. Cross-step chain coordination closed-loop end-to-end.
+
+### Session arc
+
+Picked up from prior-session Step 7 deferred Tier-2 dispatch (factor.do:131 fix). Today executed the entire back half of Phase 1a §3.3:
+- Step 7 audit closure + Tier-1 grep extension
+- Step 8 (alpha.do archive)
+- Step 9 extended (41 files across 7 batches; mean ~91/100)
+- Step 10 (21 files across 3 batches; mean ~84/100)
+- Step 11 (3 deferred files resolved: 2 ACTIVE + 1 ARCHIVE; PASS 96/100)
+- TODO thorough cleanup per Christina directive
+
+**~25 commits, 22 pushes.**
+
+### Cumulative process learnings (10; ready to codify in MEMORY.md)
+
+1. Settings.do globals enumerated upfront from predecessor.
+2. Cross-script chain coordination after every relocation.
+3. Python regex whitespace-tolerant.
+4. Stata `\`name'` macro vs `\w+` regex.
+5. Translate inconsistencies (`.txt` vs `.log`; missing-space).
+6. Even gated LEGACY writes are violations.
+7. cap mkdir blocks must match actual write targets.
+8. Helper relocations ripple to callers.
+9. Multi-year `\`year'` loops — INPUTS enumerate year-set.
+10. Initial inventory counts can be wrong — recount + re-investigate dispositions.
+
+### Status
+
+- Phase 1a §3.3: **COMPLETE** (148 files, 11 steps, 27 PASS verdicts).
+- Tree clean; in sync with origin.
+- ADR ledger: 21 Decided.
+- Plan v3: APPROVED.
+
+### Next session pickup
+
+**Phase 1a §3.5 — Golden-master verification (M4)** per ADR-0018. First gate before `v1.0-final` tag. Christina runs consolidated pipeline on Scribe; agent compares outputs vs predecessor.
+
+Pre-flight prep (low-effort, agent-side): write M4 verification protocol doc at `quality_reports/plans/2026-05-08_m4-golden-master-protocol.md`.
+
+Down-stream: Phase 1b bug fixes; Phase 1c cosmetic + offboarding + acceptance + `v1.0-final` tag.
+
+End-of-session log: `quality_reports/session_logs/2026-05-08_END-OF-SESSION_phase-1a-3.3-complete.md`.
