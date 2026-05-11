@@ -5,31 +5,21 @@
 ## Version
 - Server may use Stata 18 with older package versions — flag compatibility concerns
 
+## Invocation (local machine)
+- **Always invoke as `stata17` from the command line** — `stata17 -b do file.do` for batch runs.
+- **Never call binaries inside `/Applications/Stata/StataMP.app/...` directly.** That path is the older Stata MP 14 install on this machine; both versions ship a binary literally named `StataMP` / `stata-mp` inside their respective `.app` bundles, so a direct path call to `/Applications/Stata/...` silently picks Stata 14.
+- `stata17` is the version-pinned alias on PATH (typically `~/.local/bin/stata17 → ~/Documents/stata/StataMP.app/Contents/MacOS/stata-mp`). The unqualified `stata-mp` resolves to the same binary on this machine but is ambiguous in principle; prefer `stata17`.
+- See `.claude/skills/stata/SKILL.md` for full Stata reference, including documentation lookup, language essentials, and common pitfalls.
+
 ## Project Structure
-- **Master file:** `do/main.do` (per ADR-0021) — runs all do files via `do do/<subdir>/<file>.do`. CWD at runtime is `$consolidated_dir`.
-- **Settings:** `do/settings.do` (per ADR-0021) — globals for paths, machine-specific via `c(hostname)` branching. Loaded by main.do via `include do/settings.do`.
+- **Master file:** `mainscript.do` or `main.do` — runs all do files via `do ./do/filename.do`
+- **Settings:** `settings.do` — globals for paths, machine-specific via `c(hostname)` branching
 - **Helpers:** `.doh` extension — included via `include` (preserves local macros)
 - **Naming:** `01_clean.do`, `02_analysis.do`, `03_figures.do` (numbered order)
-- **Subdirs under `do/`:** `data_prep/`, `samples/`, `va/`, `survey_va/`, `share/`, `sibling_xwalk/`, `check/`, `debug/`, `explore/`, `local/`, `upstream/`, `_archive/`
-
-## Description Convention (per ADR-0021)
-Every do file under `do/` (excluding `_archive/`) has both:
-1. **Header description block** at the top — PURPOSE / INVOKED FROM / CONVENTIONS / REFERENCES (mirror the existing `do/settings.do` and `do/main.do` style). The header is the authoritative longer description of what the file does.
-2. **A one-liner inline next to its `do do/<path>/<file>.do` invocation in `do/main.do`** — `do do/<path>/<file>.do    // <one-liner>`. Names the script's role at a glance.
-
-Both are checked by coder-critic on every Phase 1 relocation per `phase-1-review.md` §3.
-
-## Sandbox Write Discipline (per ADR-0021)
-The `consolidated/` folder is a self-contained output sandbox. Every `save`, `export`, `outsheet`, `esttab using`, `graph export`, `outreg2 using`, `texsave`, etc. in any do file under `do/` MUST target a path under `$consolidated_dir` — i.e., one of the CANONICAL globals defined in `do/settings.do` (`$consolidated_dir`, `$datadir`, `$datadir_clean`, `$datadir_raw`, `$logdir`, `$estimates_dir`, `$output_dir`, plus `$consolidated_dir/tables/` and `$consolidated_dir/figures/`).
-
-LEGACY globals (`$matt_files_dir`, `$vaprojdir`, `$vaprojxwalks`, `$caschls_projdir`, `$nscdtadir`, `$nscdtadir_oldformat`, `$mattxwalks`) are READ-ONLY. Writing to a LEGACY path breaks the `diff -r consolidated/output predecessor/output` comparability that the consolidation enables.
-
-Per-commit self-check (per `phase-1-review.md` Tier 1): run `grep -nE 'save|export|esttab using|graph export|outsheet|outreg2 using|texsave'` on each relocated file; verify each match targets a CANONICAL global.
+- **Subdirs:** `clean/`, `share/`, `learn/`, `helpers/`
 
 ## Required Packages
-reghdfe, estout, coefplot, ivreghdfe, palettes, cleanplots, egenmore, regsave, cdfplot, binscatter, binscatter2, filelist
-
-`filelist` (ssc) walks a directory tree and returns a Stata dataset with columns `dirname` + `filename` — used by `do/check/check_logs.do` to enumerate `.do` files under `do/` and verify each has a matching log under `$logdir/`.
+reghdfe, estout, coefplot, ivreghdfe, palettes, cleanplots, egenmore, regsave, cdfplot, binscatter, binscatter2
 
 When new package used: save `[LEARN:stata] New package: name — purpose` to MEMORY.md.
 
