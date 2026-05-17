@@ -101,6 +101,9 @@ set more off
 cap log close _all
 set linesize 200
 
+include do/settings.do
+
+
 cap mkdir "$logdir"
 log using "$logdir/m4_golden_master.smcl", replace text
 

@@ -29,6 +29,11 @@ CONVENTIONS
     - Phase toggles let dev iterate on one stage without re-running everything.
       Production / acceptance runs (per ADR-0018) toggle ALL on, including
       run_data_checks.
+    - `m4_acceptance_run' is the master override for ADR-0018 acceptance-run
+      scenarios.  Setting it to 1 forces the three run-once-cached sub-toggles
+      (do_touse_va, do_create_samples, do_va) ON, so the run rebuilds samples
+      + VA estimates from scratch instead of relying on cached predecessor
+      outputs.  Default 0 mirrors predecessor `do_all.do' cached-output pattern.
     - Each phase block calls do-files relative to $consolidated_dir.
     - Per-do-file logging convention (plan v3 §5.1 step 2): each invoked do
       file opens its own log via `log using $logdir/<filename>.smcl`.
@@ -89,6 +94,28 @@ local run_va_tables         1
 local run_survey_va         1
 local run_paper_outputs     1
 local run_data_checks       1
+
+
+/*==============================================================================
+ACCEPTANCE-RUN MASTER OVERRIDE  (per ADR-0018)
+
+    Set m4_acceptance_run = 1 when doing the canonical end-to-end run that
+    produces ALL consolidated outputs (M4 golden-master, v1.0-final freeze,
+    any other ADR-0018-acceptance scenario).  The flag overrides three
+    sub-toggles inside Phases 2-3 (do_touse_va, do_create_samples, do_va)
+    from their cached-default 0 to 1, so the run rebuilds samples + VA
+    estimates from scratch instead of relying on cached predecessor outputs.
+
+    Leave at 0 for dev iteration where you want the cached-outputs pattern
+    (mirrors predecessor `do_all.do' defaults).
+
+    See ADR-0018 acceptance criteria + plan v3 §3.5 golden-master verification.
+==============================================================================*/
+
+local m4_acceptance_run  0    // CHANGE ME to 1 for full acceptance / M4 run
+
+di as text _n "M4 acceptance-run override: " ///
+    cond(`m4_acceptance_run', "ENABLED — sub-toggles do_touse_va, do_create_samples, do_va will be forced to 1", "DISABLED — sub-toggles use cached-defaults")
 
 
 /*==============================================================================
@@ -196,6 +223,12 @@ if `run_samples' {
     local do_touse_va        0
     local do_create_samples  0
 
+    * M4 override (per ADR-0018): acceptance-run flips both sub-toggles ON.
+    if `m4_acceptance_run' {
+        local do_touse_va        1
+        local do_create_samples  1
+    }
+
     * RELOCATED 2026-04-30 per ADR-0005 — sibling enrollment-outcomes crosswalk
     * (the only file from caschls/do/share/siblingvaregs/ that survives
     * consolidation per ADR-0004).  First real Phase 1a §3.3 relocation; sets
@@ -244,6 +277,11 @@ if `run_va_estimation' {
     * Default 0 mirrors `do_all.do:160' (`local do_va = 0').  Flip to 1 only
     * when re-running estimation (e.g., after ADR-0006 vam.ado update).
     local do_va  0
+
+    * M4 override (per ADR-0018): acceptance-run flips do_va ON.
+    if `m4_acceptance_run' {
+        local do_va  1
+    }
 
     * RELOCATED 2026-05-07 per plan v3 §3.3 step 3 batch 3a — score-VA + outcome-VA
     * estimation entry points (canonical pipeline per ADR-0004; v1/v2 prior-score
