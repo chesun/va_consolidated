@@ -32,20 +32,23 @@ ROLE IN ADR-0021 SANDBOX
     `tempfile' + `save \`va_g11_dataset'' (Stata tempfile is auto-cleaned,
     not persisted).
 
-RELOCATION HISTORY (per ADR-0021, applied 2026-04-30)
+RELOCATION HISTORY (per ADR-0021, applied 2026-04-30; absolute-include fix 2026-05-17)
     Source:      cde_va_project_fork/do_files/sbac/create_va_g11_sample_v1.doh
     Destination: do/samples/create_va_g11_sample_v1.doh
     Path repointing per ADR-0021 path-globals-only amendment:
       - L8: `include do_files/sbac/create_diff_school_prop.doh'
-        -> `include do/samples/create_diff_school_prop.doh' (CANONICAL)
+        -> `include $consolidated_dir/do/samples/create_diff_school_prop.doh' (CANONICAL)
       - L11: `include do_files/sbac/create_prior_scores_v1.doh'
-        -> `include do/samples/create_prior_scores_v1.doh' (CANONICAL)
+        -> `include $consolidated_dir/do/samples/create_prior_scores_v1.doh' (CANONICAL)
     Body otherwise verbatim from predecessor.
     NOTE: `create_va_g11_sample.doh' (no-suffix) is byte-identical to v1
     in the predecessor; both relocated for verbatim preservation.  Phase 1c
     §5.1 may archive the redundant base if confirmed unused.
     Predecessor caller-update protocol: predecessor callers untouched per
     plan v3 §3.3 step 5 parenthetical.
+    2026-05-17: switched relative `include do/samples/...' to absolute
+    `include $consolidated_dir/do/samples/...' to survive parent caller's
+    `cd $vaprojdir' (pre-flight Partition B finding 5).
 
 REFERENCES
     Plan v3 §3.3 step 2 (sample construction)
@@ -57,10 +60,10 @@ REFERENCES
 local drift_limit = max(`test_score_max_year' - `test_score_min_year' - 1, 1)
 use if grade==11 & dataset=="CAASPP" & inrange(year, `test_score_min_year', `test_score_max_year') using `va_dataset', clear
 
-include do/samples/create_diff_school_prop.doh
+include $consolidated_dir/do/samples/create_diff_school_prop.doh
 keep if diff_school_prop>=0.95
 
-include do/samples/create_prior_scores_v1.doh
+include $consolidated_dir/do/samples/create_prior_scores_v1.doh
 
 
 * Save temporary dataset

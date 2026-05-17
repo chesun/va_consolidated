@@ -19,15 +19,18 @@ INCLUDED FROM
 ROLE IN ADR-0021 SANDBOX
     Same as v1: reads `\`va_dataset'.dta'; no persistent saves.
 
-RELOCATION HISTORY (per ADR-0021, applied 2026-04-30)
+RELOCATION HISTORY (per ADR-0021, applied 2026-04-30; absolute-include fix 2026-05-17)
     Source:      cde_va_project_fork/do_files/sbac/create_va_g11_out_sample_v2.doh
     Destination: do/samples/create_va_g11_out_sample_v2.doh
     Path repointing per ADR-0021 path-globals-only amendment:
       - L6: `include do_files/sbac/create_diff_school_prop.doh'
-        -> `include do/samples/create_diff_school_prop.doh' (CANONICAL)
+        -> `include $consolidated_dir/do/samples/create_diff_school_prop.doh' (CANONICAL)
       - L9: `include do_files/sbac/create_prior_scores_v2.doh'
-        -> `include do/samples/create_prior_scores_v2.doh' (CANONICAL)
+        -> `include $consolidated_dir/do/samples/create_prior_scores_v2.doh' (CANONICAL)
     Body otherwise verbatim from predecessor.
+    2026-05-17: switched relative `include do/samples/...' to absolute
+    `include $consolidated_dir/do/samples/...' to survive parent caller's
+    `cd $vaprojdir' (pre-flight Partition B finding 5).
 
 REFERENCES
     Plan v3 §3.3 step 2 (sample construction)
@@ -40,10 +43,10 @@ REFERENCES
 local drift_limit = max(`outcome_max_year' - `outcome_min_year' - 1, 1)
 use if grade==11 & dataset=="CAASPP" & inrange(year, `outcome_min_year', `outcome_max_year') using `va_dataset', clear
 
-include do/samples/create_diff_school_prop.doh
+include $consolidated_dir/do/samples/create_diff_school_prop.doh
 keep if diff_school_prop>=0.95
 
-include do/samples/create_prior_scores_v2.doh
+include $consolidated_dir/do/samples/create_prior_scores_v2.doh
 
 
 * Save temporary dataset

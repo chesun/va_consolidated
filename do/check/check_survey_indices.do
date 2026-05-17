@@ -14,8 +14,8 @@ INPUTS
       $caschls_projdir/dta/allsvyfactor/imputedallsvyqoimeans.dta  (calschls_1)
       $caschls_projdir/dta/allsvyfactor/allsvyqoimeans.dta         (calschls_2)
     Built index files (post-Phase-1a §3.3 CANONICAL):
-      $estimates_dir/calschls/categoryindex/imputedcategoryindex.dta
-      $estimates_dir/calschls/categoryindex/compcasecategoryindex.dta
+      $datadir_clean/survey_va/categoryindex/imputedcategoryindex.dta
+      $datadir_clean/survey_va/categoryindex/compcasecategoryindex.dta
     Built by relocated `imputedcategoryindex.do` + `compcasecategoryindex.do`
     under do/survey_va/.
 
@@ -25,10 +25,10 @@ OUTPUTS
 
 ROLE IN ADR-0021 SANDBOX
     Reads from LEGACY ($caschls_projdir, static predecessor source — static
-    CalSCHLS surveys don't change) and CANONICAL ($estimates_dir, post-Phase-1a
-    relocated index outputs).  Writes only to $logdir (CANONICAL).  Skeleton
-    uses capture-confirm-file shim on the CANONICAL inputs so a pre-relocation
-    main.do run skips those sub-checks cleanly.
+    CalSCHLS surveys don't change) and CANONICAL ($datadir_clean/survey_va/,
+    post-Phase-1a relocated index outputs).  Writes only to $logdir (CANONICAL).
+    Skeleton uses capture-confirm-file shim on the CANONICAL inputs so a
+    pre-relocation main.do run skips those sub-checks cleanly.
 
 INDEX STRUCTURE (resolved 2026-04-28; design memo §5)
     Both `imputedcategoryindex.do` + `compcasecategoryindex.do` use IDENTICAL
@@ -194,7 +194,7 @@ SUB-CHECK 2 — built indices (post-Phase-1a §3.3 CANONICAL)
 ==============================================================================*/
 
 foreach idx_tag in imputed compcase {
-    local idx_dta "$estimates_dir/calschls/categoryindex/`idx_tag'categoryindex.dta"
+    local idx_dta "$datadir_clean/survey_va/categoryindex/`idx_tag'categoryindex.dta"
 
     capture confirm file "`idx_dta'"
     if _rc {
