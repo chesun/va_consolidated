@@ -18,7 +18,7 @@ INCLUDED FROM
 
 INPUTS
     Parent-scope locals (from macros_va.doh):
-      `sibling_out_xwalk' -> $caschls_projdir/dta/siblingxwalk/sibling_out_xwalk
+      `sibling_out_xwalk' -> $datadir_clean/siblingxwalk/sibling_out_xwalk
 
     CANONICAL (read-only):
       `sibling_out_xwalk'.dta — sibling enrollment-outcomes crosswalk built by
@@ -35,11 +35,9 @@ OUTPUTS
 
 ROLE IN ADR-0021 SANDBOX
     Pure fragment; no save / export / log.  Reads `sibling_out_xwalk'
-    (resolves to $caschls_projdir/dta/siblingxwalk/...) via parent-scope local.
-    Note: this LEGACY-classed read is on a CANONICAL output of the relocated
-    siblingoutxwalk.do — the local in macros_va.doh still resolves to the
-    caschls predecessor location until a future relocation routes it to
-    $datadir_clean.  Sandbox-trivially clean.
+    (resolves to CANONICAL $datadir_clean/siblingxwalk/sibling_out_xwalk) via
+    parent-scope local in macros_va.doh.  Sandbox-trivially clean; reader-path
+    matches producer-path (do/sibling_xwalk/siblingoutxwalk.do:338).
 
 RELOCATION HISTORY (per plan v3 §3.3 step 2 batch 2c, applied 2026-05-07)
     Source:      cde_va_project_fork/do_files/sbac/merge_sib.doh (predecessor)

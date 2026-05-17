@@ -11,7 +11,9 @@ INVOKED FROM
     in this relocation).
 
 INPUTS (verified via grep on file body)
-    $caschls_projdir/dta/buildanalysisdata/analysisready/{sec,parent,staff}analysisready.dta (LEGACY)
+    $datadir_clean/calschls/analysisready/secanalysisready  (CHAIN read; from Step 9f poolingdata/secpooling.do)
+    $datadir_clean/calschls/analysisready/parentanalysisready  (CHAIN read; from Step 9f poolingdata/parentpooling.do)
+    $datadir_clean/calschls/analysisready/staffanalysisready  (CHAIN read; from Step 9f poolingdata/mergegr11enr.do)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $output_dir/graph/factoranalysis/pcascore/{sec,parent,staff[pc1|pc2]}pcascore.png
@@ -23,6 +25,7 @@ RELOCATION (per plan v3 §3.3 step 7, applied 2026-05-08)
       $projdir/log/share/factoranalysis/* -> $logdir/*
       $projdir/dta/allsvyfactor/imputedallsvyqoimeans -> $datadir_clean/survey_va/imputedallsvyqoimeans (chain output)
       $projdir/dta/allsvyfactor/categoryindex/* -> $datadir_clean/survey_va/categoryindex/* (chain output)
+      $caschls_projdir/dta/buildanalysisdata/analysisready/* -> $datadir_clean/calschls/analysisready/* (CHAIN read from Step 9f poolingdata producers; was LEGACY pre-flight-D fix 2026-05-16)
       $projdir/out/dta/factor/* -> $estimates_dir/survey_va/factor/* (CANONICAL chain estimates)
       $projdir/out/csv/factoranalysis/* -> $output_dir/csv/factoranalysis/* (intermediate exploratory; not paper-shipping)
       $projdir/out/graph/factoranalysis/* -> $output_dir/graph/factoranalysis/* (intermediate exploratory)
@@ -62,7 +65,7 @@ di as text "{hline 80}"
 
 
 /* creating pca compiste score for secondary survey */
-use $caschls_projdir/dta/buildanalysisdata/analysisready/secanalysisready, clear
+use $datadir_clean/calschls/analysisready/secanalysisready, clear
 
 pca *mean_pooled
 predict pc1, score
@@ -71,7 +74,7 @@ graph export $output_dir/graph/factoranalysis/pcascore/secpcascore.png, replace
 
 
 /* creating pca compiste score for parent survey */
-use $caschls_projdir/dta/buildanalysisdata/analysisready/parentanalysisready, clear
+use $datadir_clean/calschls/analysisready/parentanalysisready, clear
 
 pca *mean_pooled
 predict pc1, score
@@ -80,7 +83,7 @@ graph export $output_dir/graph/factoranalysis/pcascore/parentpcascore.png, repla
 
 
 /* creating pca compiste score for staff survey */
-use $caschls_projdir/dta/buildanalysisdata/analysisready/staffanalysisready, clear
+use $datadir_clean/calschls/analysisready/staffanalysisready, clear
 
 pca *mean_pooled
 predict pc1 pc2, score

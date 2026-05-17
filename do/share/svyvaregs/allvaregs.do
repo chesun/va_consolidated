@@ -10,7 +10,7 @@ INVOKED FROM
     (or as a helper `include'd by sister scripts).
 
 INPUTS (verified via grep on file body)
-    $caschls_projdir/dta/buildanalysisdata/analysisready/`svyname'analysisready  (LEGACY)
+    $datadir_clean/calschls/analysisready/`svyname'analysisready  (CHAIN read; from Step 9f poolingdata producers — sec/parent via secpooling+parentpooling, staff via mergegr11enr)
     $output_dir/dta/varegs/`svyname'/va_`va_outcome'_`sample'_sp_`control'_ct`peer'_nw ///  (LEGACY)
     $output_dir/dta/varegs/`svyname'/va_`va_outcome'_`sample'_sp_`control'_ct`peer'_wt ///  (LEGACY)
     $output_dir/xls/varegs/unweighted/`svyname'/`svyname'_va_all_nw  (LEGACY)
@@ -30,6 +30,7 @@ RELOCATION (per plan v3 §3.3 step 10 batch 10c, applied 2026-05-08)
       $projdir/out/txt/outcomesumstats/* -> $output_dir/txt/outcomesumstats/* (txt-format log destination for nsc_codebook)
       $projdir/dta/sibling* -> $datadir_clean/sibling* (CANONICAL chain — sibling crosswalks)
       $projdir/dta/schoolchar/* -> $datadir_clean/schoolchar/* (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
+      $caschls_projdir/dta/buildanalysisdata/analysisready/* -> $datadir_clean/calschls/analysisready/* (CHAIN read from Step 9f poolingdata producers; was LEGACY pre-flight-D fix 2026-05-16)
       $projdir/dta/<other>/* -> $caschls_projdir/dta/<other>/* (LEGACY-static raw reads)
       $projdir/out/* -> $output_dir/* (intermediate CANONICAL)
       translate (single-line ABS form) -> $logdir/* (CANONICAL)
@@ -110,7 +111,7 @@ foreach svyname in sec parent staff {
   // create z scores for survey qoi and VA estimates
   //-------------------------------------------------------------
 
-  use $caschls_projdir/dta/buildanalysisdata/analysisready/`svyname'analysisready, clear
+  use $datadir_clean/calschls/analysisready/`svyname'analysisready, clear
 
   /* standardize qoi mean vars into z scores */
   foreach i of local `svyname'qoinums {

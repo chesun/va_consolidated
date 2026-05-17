@@ -11,7 +11,9 @@ INVOKED FROM
     in this relocation).
 
 INPUTS (verified via grep on file body)
-    $caschls_projdir/dta/buildanalysisdata/analysisready/{sec,parent,staff}analysisready.dta (LEGACY; pre-built CalSCHLS analysis-ready data)
+    $datadir_clean/calschls/analysisready/secanalysisready  (CHAIN read; from Step 9f poolingdata/secpooling.do)
+    $datadir_clean/calschls/analysisready/parentanalysisready  (CHAIN read; from Step 9f poolingdata/parentpooling.do)
+    $datadir_clean/calschls/analysisready/staffanalysisready  (CHAIN read; from Step 9f poolingdata/mergegr11enr.do)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $output_dir/graph/factoranalysis/{sec,parent,staff}screeplot.png — scree plots; $output_dir/csv/factoranalysis/{sec,parent,staff}factoreigen1.csv — eigen tables (intermediate exploratory; not paper-shipping)
@@ -23,6 +25,7 @@ RELOCATION (per plan v3 §3.3 step 7, applied 2026-05-08)
       $projdir/log/share/factoranalysis/* -> $logdir/*
       $projdir/dta/allsvyfactor/imputedallsvyqoimeans -> $datadir_clean/survey_va/imputedallsvyqoimeans (chain output)
       $projdir/dta/allsvyfactor/categoryindex/* -> $datadir_clean/survey_va/categoryindex/* (chain output)
+      $caschls_projdir/dta/buildanalysisdata/analysisready/* -> $datadir_clean/calschls/analysisready/* (CHAIN read from Step 9f poolingdata producers; was LEGACY pre-flight-D fix 2026-05-16)
       $projdir/out/dta/factor/* -> $estimates_dir/survey_va/factor/* (CANONICAL chain estimates)
       $projdir/out/csv/factoranalysis/* -> $output_dir/csv/factoranalysis/* (intermediate exploratory; not paper-shipping)
       $projdir/out/graph/factoranalysis/* -> $output_dir/graph/factoranalysis/* (intermediate exploratory)
@@ -71,7 +74,7 @@ Notice that the greater ‘uniqueness’ the lower the relevance of the variable
 factor model. */
 
 /* secondary */
-use $caschls_projdir/dta/buildanalysisdata/analysisready/secanalysisready, clear
+use $datadir_clean/calschls/analysisready/secanalysisready, clear
 
 /* standardize qoi mean vars into z scores */
 foreach i of numlist 22/40 {
@@ -89,7 +92,7 @@ esttab using $output_dir/csv/factoranalysis/secfactoreigen1.csv, cells("L[1](t l
 
 
 /* parent */
-use $caschls_projdir/dta/buildanalysisdata/analysisready/parentanalysisready, clear
+use $datadir_clean/calschls/analysisready/parentanalysisready, clear
 
 /* standardize qoi mean vars into z scores */
 foreach i of numlist 9 15/17 27 30/34 64 {
@@ -107,7 +110,7 @@ esttab using $output_dir/csv/factoranalysis/parentfactoreigen1.csv, cells("L[1](
 
 
 /* staff */
-use $caschls_projdir/dta/buildanalysisdata/analysisready/staffanalysisready, clear
+use $datadir_clean/calschls/analysisready/staffanalysisready, clear
 
 /* standardize qoi mean vars into z scores */
 foreach i of numlist 10 20 24 41 44 64 87 98 103/105 109 111 112 128 {

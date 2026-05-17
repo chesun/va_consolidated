@@ -33,9 +33,12 @@ ROLE IN ADR-0021 SANDBOX
         (LEGACY restricted-access K12 raw data)
       - $vaprojdir/data/public_access/...
         (LEGACY public-access subdirs)
-      - $caschls_projdir/dta/siblingxwalk/<...>
-        (sibling crosswalk built by relocated do/sibling_xwalk/siblingoutxwalk.do
-         per ADR-0005; predecessor referenced as `$projdir/...')
+      - $caschls_projdir/dta/siblingxwalk/{siblingpairxwalk,ufamilyxwalk}
+        (LEGACY-static predecessor sibling-pair / unique-family crosswalks)
+    Reads from CANONICAL paths:
+      - $datadir_clean/siblingxwalk/sibling_out_xwalk
+        (sibling-outcomes crosswalk built by relocated
+         do/sibling_xwalk/siblingoutxwalk.do per ADR-0005; producer at L338)
 
 RELOCATION HISTORY (per ADR-0005 + ADR-0021, applied 2026-04-30)
     Source:      cde_va_project_fork/do_files/sbac/macros_va.doh
@@ -107,7 +110,7 @@ local k12_public_schools "$vaprojdir/data/public_access/clean/k12_public_schools
 local k12_test_scores_public "$vaprojdir/data/public_access/clean/k12_test_scores" ;
 local siblingxwalk "$caschls_projdir/dta/siblingxwalk/siblingpairxwalk";
 local ufamilyxwalk "$caschls_projdir/dta/siblingxwalk/ufamilyxwalk";
-local sibling_out_xwalk "$caschls_projdir/dta/siblingxwalk/sibling_out_xwalk";
+local sibling_out_xwalk "$datadir_clean/siblingxwalk/sibling_out_xwalk";
 
 
 **** Dates ;

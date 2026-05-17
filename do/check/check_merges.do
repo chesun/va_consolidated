@@ -63,7 +63,7 @@ SUB-CHECK 1 — score_b merge flags
 ==============================================================================*/
 
 * TODO Phase 1a §3.3: confirm post-relocation path (sample-construction).
-local in_score_b "$estimates_dir/va_samples_v1/score_b.dta"
+local in_score_b "$datadir_clean/va_samples_v1/score_b.dta"
 
 capture confirm file "`in_score_b'"
 if _rc {

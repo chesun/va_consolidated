@@ -11,7 +11,7 @@ PURPOSE
 INPUTS
     `score_b.dta` — student-year, g11, cohorts 2015-18 (1,784,445 rows × 77 vars
     per codebook line 73020).
-    Path post-Phase-1a §3.3: $estimates_dir/va_samples_v1/score_b.dta
+    Path post-Phase-1a §3.3: $datadir_clean/va_samples_v1/score_b.dta
     (built by relocated sample-construction scripts under do/samples/).
 
 OUTPUTS
@@ -19,7 +19,7 @@ OUTPUTS
     On `assert` failure: pipeline halts; partial outputs preserved.
 
 ROLE IN ADR-0021 SANDBOX
-    Reads from CANONICAL ($estimates_dir/va_samples_v1/score_b.dta) once
+    Reads from CANONICAL ($datadir_clean/va_samples_v1/score_b.dta) once
     Phase 1a §3.3 lands the sample-construction relocation.  Writes only to
     $logdir (CANONICAL).  Skeleton uses capture-confirm-file shim so a
     pre-relocation main.do run skips this check cleanly with an informative
@@ -67,8 +67,8 @@ INPUT
 
 * TODO Phase 1a §3.3: confirm post-relocation path (sample-construction scripts
 *    under do/samples/ produce `score_b.dta`; canonical destination expected
-*    under $estimates_dir/va_samples_v1/).
-local in_dta "$estimates_dir/va_samples_v1/score_b.dta"
+*    under $datadir_clean/va_samples_v1/).
+local in_dta "$datadir_clean/va_samples_v1/score_b.dta"
 
 capture confirm file "`in_dta'"
 if _rc {
