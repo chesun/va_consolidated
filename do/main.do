@@ -179,7 +179,7 @@ if `run_data_prep' {
 
     * Step 9 batch 9g — caschls/responserate (4 files): LANDED 2026-05-08 (extension batch — Christina decision)
     * Order from predecessor master.do:220-229: trim<sub>demo -> <sub>responserate per subgroup.
-    * Reads LEGACY $caschls_projdir/dta/demographics/<sub>/* (raw); writes CHAIN $datadir_clean/calschls/{demotrim,responserate}/*.
+    * Reads LEGACY $caschls_projdir/dta/demographics/<sub>/<x> (raw); writes CHAIN $datadir_clean/calschls/{demotrim,responserate}/<x>.
     do do/data_prep/responserate/trimsecdemo.do         // trim secondary CalSCHLS demographics per year (1415-1819); writes 5 yearly trimsecdemo dtas
     do do/data_prep/responserate/secresponserate.do     // compute secondary survey response rates by school; writes $datadir_clean/calschls/responserate/secresponserate.dta (consumed by 9f secpooling)
     do do/data_prep/responserate/trimparentdemo.do      // trim parent CalSCHLS demographics per year (1415-1819); writes 5 yearly trimparentdemo dtas
@@ -384,9 +384,9 @@ if `run_survey_va' {
     di as text "{hline 80}"
 
     * RELOCATED 2026-05-08 per plan v3 §3.3 steps 7+10+11 — Survey VA chain.
-    * Reads CHAIN $datadir_clean/{survey_va,schoolchar,calschls/{analysisready,va}}/*
-    * (Steps 9f + 10 + 11); writes CANONICAL $datadir_clean/survey_va/* +
-    * $estimates_dir/survey_va/factor/* + $output_dir/csv|graph/factoranalysis/*.
+    * Reads CHAIN $datadir_clean/{survey_va,schoolchar,calschls/{analysisready,va}}/<x>
+    * (Steps 9f + 10 + 11); writes CANONICAL $datadir_clean/survey_va/<x> +
+    * $estimates_dir/survey_va/factor/<x> + $output_dir/csv|graph/factoranalysis/<x>.
     do do/survey_va/allsvymerge.do                 // RELOCATED Step 11; merges parent/sec/staff CalSCHLS qoimeans into $datadir_clean/survey_va/allsvyqoimeans.dta + per-survey formerge dtas (consumed by imputation + compcasecategoryindex below)
     do do/survey_va/imputation.do                  // multiply-impute missing CalSCHLS QOI items; writes $datadir_clean/survey_va/imputedallsvyqoimeans.dta
     do do/survey_va/imputedcategoryindex.do        // build climate/quality/support indices on imputed data (9/15/4 items per ADR-0010); sums→means fix DEFERRED Phase 1b §4.2 per ADR-0011
@@ -457,20 +457,20 @@ if `run_data_checks' {
     di as text "PHASE 7: AUTOMATED DATA CHECKS"
     di as text "{hline 80}"
 
-    * TODO Phase 1c §5.3: six check files per the design memo
+    * Phase 1c §5.3 — six check files per the design memo
     * (quality_reports/reviews/2026-04-28_data-checks-design.md).
     * Order matters: structural check first, then data invariants, then
     * pipeline outputs.  A failed `assert` halts the pipeline at the
     * offending check, leaving partial outputs on disk for diagnosis.
     * Each invocation carries a one-liner per the ADR-0021 description
     * convention.
-    *
-    *   do do/check/check_logs.do            // assert every relocated do file produced a log (structural; runs first)
-    *   do do/check/check_samples.do         // assert sample-construction N's match historical baselines
-    *   do do/check/check_merges.do          // assert merge rates against codebook-derived bounds
-    *   do do/check/check_va_estimates.do    // assert VA estimate ranges + counts within expected envelopes
-    *   do do/check/check_survey_indices.do  // assert CalSCHLS indices in [-2,2] (means per ADR-0011)
-    *   do do/check/check_paper_outputs.do   // assert paper table cells match historical magnitudes
+    * WIRED 2026-05-17 — calls below activated for ADR-0018 acceptance run.
+    do do/check/check_logs.do            // assert every relocated do file produced a log (structural; runs first)
+    do do/check/check_samples.do         // assert sample-construction N's match historical baselines
+    do do/check/check_merges.do          // assert merge rates against codebook-derived bounds
+    do do/check/check_va_estimates.do    // assert VA estimate ranges + counts within expected envelopes
+    do do/check/check_survey_indices.do  // assert CalSCHLS indices in [-2,2] (means per ADR-0011)
+    do do/check/check_paper_outputs.do   // assert paper table cells match historical magnitudes
 }
 
 
