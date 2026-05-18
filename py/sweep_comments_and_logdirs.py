@@ -59,6 +59,10 @@ REFERENCES
         addendum noting the state-machine pre-pass + T2 idempotence fix)
     quality_reports/reviews/2026-05-17_dual-sweep-round2_coder_review.md
         (round-2 finding M-T2: T2 idempotence)
+    quality_reports/reviews/2026-05-18_overflatten-fix_coder_review.md
+        Round-3 review: closed the over-flatten bug deferred from round 2.
+        Confirmed path-glob predicates + context-aware inner rewriter prevent
+        legitimate block-marker destruction. PASS 95/100.
     ADR-0021 (sandbox + description convention)
     .claude/rules/stata-code-conventions.md (rule additions in same commit)
 """

@@ -3,7 +3,7 @@
 **Reviewer:** coder-critic
 **Target:** dual sweep round-2 fix on `py/sweep_comments_and_logdirs.py::_flatten_lone_block_opens` (state-machine rewrite) + 5 originally-flagged + 4 additional qoiclean files re-flattened to close C1 / C2 from round 1; balance + regression checks across 159 active+archived `.do`/`.doh` files
 **Score:** 90/100
-**Status:** Active
+**Status:** Superseded by quality_reports/reviews/2026-05-18_overflatten-fix_coder_review.md
 **Supersedes:** `quality_reports/reviews/2026-05-17_dual-sweep_coder_review.md`
 
 ---
