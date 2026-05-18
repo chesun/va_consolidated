@@ -140,9 +140,9 @@ cap mkdir "$logdir"
 cap mkdir "$logdir/va"
 cd $vaprojdir
 
-log close _all
+cap log close va_score_spec_test_tab
 
-log using "$logdir/va/va_score_spec_test_tab.smcl", replace text
+log using "$logdir/va/va_score_spec_test_tab.smcl", replace text name(va_score_spec_test_tab)
 
 di as text _n "{hline 80}"
 di as text "va_score_spec_test_tab.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -314,7 +314,7 @@ timer off 1
 timer list
 timer clear 1
 
-cap log close
+cap log close va_score_spec_test_tab
 cap translate "$logdir/va/va_score_spec_test_tab.smcl" ///
   "$logdir/va/va_score_spec_test_tab.log", replace
 

@@ -81,9 +81,9 @@ cap mkdir "$logdir"
 cap mkdir "$logdir/va"
 cd $vaprojdir
 
-cap log close _all
+cap log close reg_out_va_all
 
-log using "$logdir/va/reg_out_va_all.smcl", replace text
+log using "$logdir/va/reg_out_va_all.smcl", replace text name(reg_out_va_all)
 
 di as text _n "{hline 80}"
 di as text "reg_out_va_all.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -452,7 +452,7 @@ local time2 = c(current_time)
 di "Start date time /reg_out_va_all.do: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
-cap log close
+cap log close reg_out_va_all
 cap translate "$logdir/va/reg_out_va_all.smcl" ///
   "$logdir/va/reg_out_va_all.log", replace
 

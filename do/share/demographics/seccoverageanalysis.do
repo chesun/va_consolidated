@@ -55,7 +55,7 @@ ORIGINAL HEADER preserved verbatim below.
 
 /* this do file creates graphs by comparing survey sample against enrollment data
 for secondary demographics datasets to investigate the survey sample representativrness  */
-cap log close _all
+cap log close seccoverageanalysis
 clear
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
@@ -68,7 +68,7 @@ cap mkdir "$output_dir/graph/svycoverage"
 cap mkdir "$output_dir/graph/svycoverage/seccoverage"
 
 
-log using "$logdir/share/demographics/seccoverageanalysis.smcl", replace text
+log using "$logdir/share/demographics/seccoverageanalysis.smcl", replace text name(seccoverageanalysis)
 
 local years `" "1415" "1516" "1617" "1718" "1819" "' //local macro for elementary dataset years
 
@@ -113,5 +113,5 @@ foreach year of local years {
 
 grstyle clear // sets off grstyle
 
-log close
+cap log close seccoverageanalysis
 translate $logdir/share/demographics/seccoverageanalysis.smcl $logdir/share/demographics/seccoverageanalysis.log, replace 

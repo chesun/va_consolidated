@@ -47,7 +47,7 @@ such as pct disagree/agree etc. */
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close staffqoiclean1617_1516
 clear all
 set more off
 set varabbrev off, perm //set variable abbreviation permanently off
@@ -62,7 +62,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/staff"
 
-log using "$logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.smcl", replace text
+log using "$logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.smcl", replace text name(staffqoiclean1617_1516)
 
 /* the code for cleaning 1516 and 1617 is exactly the same, so use the same code to clean them */
 local years `" "1516" "1617" "'
@@ -451,5 +451,5 @@ foreach year of local years {
 }
 
 
-log close
+cap log close staffqoiclean1617_1516
 translate $logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.smcl $logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.log, replace 

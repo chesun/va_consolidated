@@ -48,7 +48,7 @@ analysis vars such as pct disagree/agree etc. */
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close secqoiclean1819_1718_1516
 clear all
 set more off
 
@@ -62,7 +62,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/secondary"
 
-log using "$logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.smcl", replace text
+log using "$logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.smcl", replace text name(secqoiclean1819_1718_1516)
 
 /* ssc install elabel, replace //install the elabel package for easy renaming of labels
 ssc install labutil2, replace //package to help with managing value labels because stata sucks in that regard
@@ -281,5 +281,5 @@ save $datadir_clean/calschls/qoiclean/secondary/secqoiclean`year', replace
 
 }
 
-log close
+cap log close secqoiclean1819_1718_1516
 translate $logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.smcl $logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.log, replace

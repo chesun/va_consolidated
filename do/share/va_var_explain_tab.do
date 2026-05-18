@@ -71,7 +71,7 @@ set trace on
 
 * CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
 
- cap log close _all
+ cap log close va_var_explain_tab
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
@@ -83,7 +83,7 @@ cap mkdir "$tables_dir/share/va/check"
 cap mkdir "$tables_dir/share/va/pub"
 cap mkdir "$estimates_dir"
 
- log using "$logdir/share/va_var_explain_tab.smcl", replace text
+ log using "$logdir/share/va_var_explain_tab.smcl", replace text name(va_var_explain_tab)
 
  graph drop _all
  set more off
@@ -199,5 +199,5 @@ set trace off
  di "Start date time: `date1' `time1'"
  di "End date time: `date2' `time2'"
 
- log close
+ cap log close va_var_explain_tab
  translate $logdir/share/va_var_explain_tab.smcl $logdir/share/va_var_explain_tab.log, replace

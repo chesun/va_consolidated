@@ -60,7 +60,7 @@ do $vaprojdir/do_files/share/check/corr_dk_score_va.do
 */
 
 * CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
-cap log close _all
+cap log close corr_dk_score_va
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
@@ -78,7 +78,7 @@ cap mkdir "$figures_dir"
 cap mkdir "$figures_dir/share"
 cap mkdir "$figures_dir/share/va"
 
-log using "$logdir/share/check/corr_dk_score_va.smcl", replace text
+log using "$logdir/share/check/corr_dk_score_va.smcl", replace text name(corr_dk_score_va)
 
 graph drop _all
 set more off
@@ -138,7 +138,7 @@ local time2 = c(current_time)
 di "Start date time /reg_out_va_all.do: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
-log close 
+cap log close corr_dk_score_va
 translate $logdir/share/check/corr_dk_score_va.smcl $logdir/share/check/corr_dk_score_va.log, replace  // predecessor used .txt extension; normalized to .log per consolidated convention 
 
 

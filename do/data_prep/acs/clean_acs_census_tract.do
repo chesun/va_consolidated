@@ -70,7 +70,7 @@ set more off
 set varabbrev off
 set graphics off
 set scheme s1color
-cap log close _all
+cap log close clean_acs_census_tract
 
 * --- output-directory prep (CANONICAL) -------------------------------------
 cap mkdir "$logdir"
@@ -79,7 +79,7 @@ cap mkdir "$logdir/data_prep/acs"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/acs"
 
-log using "$logdir/data_prep/acs/clean_acs_census_tract.smcl", replace text
+log using "$logdir/data_prep/acs/clean_acs_census_tract.smcl", replace text name(clean_acs_census_tract)
 
 di as text _n "{hline 80}"
 di as text "clean_acs_census_tract.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -423,5 +423,5 @@ save $datadir_clean/acs/acs_ca_census_tract_clean.dta, replace
 
 timer off 1
 timer list
-log close
+cap log close clean_acs_census_tract
 translate $logdir/data_prep/acs/clean_acs_census_tract.smcl $logdir/data_prep/acs/clean_acs_census_tract.log, replace

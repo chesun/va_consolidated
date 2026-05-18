@@ -46,7 +46,7 @@ ORIGINAL HEADER preserved verbatim below.
 
 /* this do file creates graphs by comparing survey sample against enrollment data
 for parent demographics datasets to investigate the survey sample representativrness  */
-cap log close _all
+cap log close parentcoverageanalysis
 clear
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
@@ -59,7 +59,7 @@ cap mkdir "$output_dir/graph/svycoverage"
 cap mkdir "$output_dir/graph/svycoverage/parentcoverage"
 
 
-log using "$logdir/share/demographics/parentcoverageanalysis.smcl", replace text
+log using "$logdir/share/demographics/parentcoverageanalysis.smcl", replace text name(parentcoverageanalysis)
 
 grstyle init  //initializes the grstyle package
 grstyle set plain   //set graph background to plain
@@ -81,5 +81,5 @@ foreach year of local years {
 
 grstyle clear // sets off grstyle
 
-log close
+cap log close parentcoverageanalysis
 translate $logdir/share/demographics/parentcoverageanalysis.smcl $logdir/share/demographics/parentcoverageanalysis.log, replace 

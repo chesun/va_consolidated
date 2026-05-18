@@ -49,7 +49,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close secresponserate
 clear all
 set more off
 
@@ -61,7 +61,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/responserate"
 
-log using "$logdir/data_prep/responserate/secresponserate.smcl", replace text
+log using "$logdir/data_prep/responserate/secresponserate.smcl", replace text name(secresponserate)
 
 use $datadir_clean/calschls/demotrim/secondary/trimsecdemo1415, replace
 merge 1:1 cdscode using $datadir_clean/calschls/demotrim/secondary/trimsecdemo1516
@@ -144,5 +144,5 @@ compress
 save $datadir_clean/calschls/responserate/secresponserate, replace
 
 
-log close
+cap log close secresponserate
 translate $logdir/data_prep/responserate/secresponserate.smcl $logdir/data_prep/responserate/secresponserate.log, replace 

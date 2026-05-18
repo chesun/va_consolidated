@@ -66,9 +66,9 @@ cap mkdir "$logdir/va"
 cap mkdir "$logdir/va/heterogeneity"
 cd $vaprojdir
 
-log close _all
+cap log close va_corr_schl_char
 
-log using "$logdir/va/heterogeneity/va_corr_schl_char.smcl", replace text
+log using "$logdir/va/heterogeneity/va_corr_schl_char.smcl", replace text name(va_corr_schl_char)
 
 di as text _n "{hline 80}"
 di as text "va_corr_schl_char.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -174,7 +174,7 @@ local time2 = c(current_time)
 di "do file start time: `date1' `time1' "
 di "do file end time: `date2' `time2' "
 
-cap log close
+cap log close va_corr_schl_char
 cap translate "$logdir/va/heterogeneity/va_corr_schl_char.smcl" ///
     "$logdir/va/heterogeneity/va_corr_schl_char.log", replace
 

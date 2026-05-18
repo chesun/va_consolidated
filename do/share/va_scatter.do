@@ -89,7 +89,7 @@ fixed title issues
  */
 
 * CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
-cap log close _all
+cap log close va_scatter
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
@@ -106,7 +106,7 @@ cap mkdir "$figures_dir"
 cap mkdir "$figures_dir/share"
 cap mkdir "$figures_dir/share/va"
 
-log using "$logdir/share/va_scatter.smcl", replace text
+log using "$logdir/share/va_scatter.smcl", replace text name(va_scatter)
 
 graph drop _all
 set more off
@@ -803,5 +803,5 @@ local time2 = c(current_time)
 di "Start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
-log close
+cap log close va_scatter
 translate $logdir/share/va_scatter.smcl $logdir/share/va_scatter.log, replace

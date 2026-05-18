@@ -50,7 +50,7 @@ do $vaprojdir/do_files/schl_chars/clean_charter.do
  */
 
 * CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
-log close _all
+cap log close clean_charter
 
 
 
@@ -78,7 +78,7 @@ if c(machine_type)=="Macintosh (Intel 64-bit)" {
 }
 else {
     import delimited using $vaprojdir/data/public_access/raw/cde/CDESchoolDirectoryExport.txt, delimiters("\t") clear
-    log using "$logdir/data_prep/schl_chars/clean_charter.smcl", replace text
+    log using "$logdir/data_prep/schl_chars/clean_charter.smcl", replace text name(clean_charter)
 
 }
 
@@ -115,7 +115,7 @@ else {
     di "do file start time: `date1' `time1' "
     di "do file end time: `date2' `time2' "
 
-    log close
+    cap log close clean_charter
     translate $logdir/data_prep/schl_chars/clean_charter.smcl $logdir/data_prep/schl_chars/clean_charter.log, replace 
 }
 

@@ -122,7 +122,7 @@ set more off
 set varabbrev off
 set scheme s1color
 
-cap log close _all
+cap log close siblingoutxwalk
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$datadir_clean"
@@ -132,7 +132,7 @@ cap mkdir "$logdir"
 
 cap mkdir "$logdir/sibling_xwalk"
 * --- per-do-file log (CANONICAL per ADR-0021 + plan v3 §5.1 step 2) ----------
-log using "$logdir/sibling_xwalk/siblingoutxwalk.smcl", replace text
+log using "$logdir/sibling_xwalk/siblingoutxwalk.smcl", replace text name(siblingoutxwalk)
 
 di as text _n "{hline 80}"
 di as text "siblingoutxwalk.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -355,7 +355,7 @@ di as text "{hline 80}"
 * (this file's `cd $vaprojdir` above was preserved for behavior parity).
 cd "$consolidated_dir"
 
-cap log close
+cap log close siblingoutxwalk
 cap translate "$logdir/sibling_xwalk/siblingoutxwalk.smcl" "$logdir/sibling_xwalk/siblingoutxwalk.log", replace
 
 * end of file

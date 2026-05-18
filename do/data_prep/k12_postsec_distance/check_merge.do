@@ -60,7 +60,7 @@ cap mkdir "$logdir"
 
 cap mkdir "$logdir/data_prep"
 cap mkdir "$logdir/data_prep/k12_postsec_distance"
-log using "$logdir/data_prep/k12_postsec_distance/check_merge.smcl", replace text
+log using "$logdir/data_prep/k12_postsec_distance/check_merge.smcl", replace text name(check_merge)
 
 include $consolidated_dir/do/va/helpers/macros_va.doh
 
@@ -70,5 +70,5 @@ merge m:1 cdscode using $datadir_clean/k12_postsec_distance/clean/k12_postsec_mi
 
 tab cdscode year if _merge==1
 
-log close
+cap log close check_merge
 translate $logdir/data_prep/k12_postsec_distance/check_merge.smcl $logdir/data_prep/k12_postsec_distance/check_merge.log, replace

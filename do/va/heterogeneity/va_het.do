@@ -68,9 +68,9 @@ cap mkdir "$logdir/va"
 cap mkdir "$logdir/va/heterogeneity"
 cd $vaprojdir
 
-log close _all
+cap log close va_het
 
-log using "$logdir/va/heterogeneity/va_het.smcl", replace text
+log using "$logdir/va/heterogeneity/va_het.smcl", replace text name(va_het)
 
 di as text _n "{hline 80}"
 di as text "va_het.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -296,7 +296,7 @@ foreach version in v1 v2 {
 
 
 
-cap log close
+cap log close va_het
 cap translate "$logdir/va/heterogeneity/va_het.smcl" ///
     "$logdir/va/heterogeneity/va_het.log", replace
 

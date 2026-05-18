@@ -54,7 +54,7 @@ generating conditional response rate datasets */
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close trimsecdemo
 clear
 set more off
 
@@ -67,7 +67,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/demotrim"
 cap mkdir "$datadir_clean/calschls/demotrim/secondary"
 
-log using "$logdir/data_prep/responserate/trimsecdemo.smcl", replace text
+log using "$logdir/data_prep/responserate/trimsecdemo.smcl", replace text name(trimsecdemo)
 
 ********************************************************************************
 /* rename variables in the secondary demographics datasets to indicate year, keep only vars needed to calculate response rates */
@@ -141,5 +141,5 @@ save $datadir_clean/calschls/demotrim/secondary/trimsecdemo1819, replace
 
 
 
-log close
+cap log close trimsecdemo
 translate $logdir/data_prep/responserate/trimsecdemo.smcl $logdir/data_prep/responserate/trimsecdemo.log, replace 

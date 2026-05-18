@@ -47,7 +47,7 @@ such as pct disagree/agree etc. */
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close staffqoiclean1415
 clear all
 set more off
 set varabbrev off, perm //set variable abbreviation permanently off
@@ -62,7 +62,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/staff"
 
-log using "$logdir/data_prep/qoiclean/staff/staffqoiclean1415.smcl", replace text
+log using "$logdir/data_prep/qoiclean/staff/staffqoiclean1415.smcl", replace text name(staffqoiclean1415)
 
 use $datadir_clean/calschls/staff/staff1415, clear
 
@@ -431,5 +431,5 @@ label data "cleaned staff 1415 survey questions of interest with percent disagre
 compress
 save $datadir_clean/calschls/qoiclean/staff/staffqoiclean1415, replace
 
-log close
+cap log close staffqoiclean1415
 translate $logdir/data_prep/qoiclean/staff/staffqoiclean1415.smcl $logdir/data_prep/qoiclean/staff/staffqoiclean1415.log, replace 

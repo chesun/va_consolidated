@@ -53,7 +53,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close enrollmentclean
 clear
 set more off
 

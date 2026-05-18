@@ -42,7 +42,7 @@ ORIGINAL CHANGE LOG preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close indexalpha
 clear all
 set more off
 
@@ -51,7 +51,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/survey_va/indexalpha.smcl", replace text
+log using "$logdir/survey_va/indexalpha.smcl", replace text name(indexalpha)
 
 di as text _n "{hline 80}"
 di as text "indexalpha.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -74,5 +74,5 @@ alpha `qualityvars', std item
 alpha `supportvars', std item
 
 
-cap log close
+cap log close indexalpha
 translate $logdir/survey_va/indexalpha.smcl $logdir/survey_va/indexalpha.log, replace 

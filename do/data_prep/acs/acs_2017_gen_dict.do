@@ -75,7 +75,7 @@ ssc install descsave, replace  */
  set varabbrev off
  set scheme s1color
  //capture log close: Stata should not complain if there is no log open to close
- cap log close _all
+ cap log close acs_2017_gen_dict
 
  * --- output-directory prep (CANONICAL) --------------------------------------
  cap mkdir "$output_dir"
@@ -86,7 +86,7 @@ ssc install descsave, replace  */
 
  cap mkdir "$logdir/data_prep"
  cap mkdir "$logdir/data_prep/acs"
- log using "$logdir/data_prep/acs/acs_2017_gen_dict.smcl", replace text
+ log using "$logdir/data_prep/acs/acs_2017_gen_dict.smcl", replace text name(acs_2017_gen_dict)
 
  di as text _n "{hline 80}"
  di as text "acs_2017_gen_dict.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -112,5 +112,5 @@ ssc install descsave, replace  */
     //while waiting for write access to project folder, write files to my personal folder to checck them
    /* export delimited using $vaprojdir/data/public_access/raw/acs/subject_tables/2017/acs_2017_`subject'_dict.csv, replace */
 
-cap log close
+cap log close acs_2017_gen_dict
 translate $logdir/data_prep/acs/acs_2017_gen_dict.smcl $logdir/data_prep/acs/acs_2017_gen_dict.log, replace

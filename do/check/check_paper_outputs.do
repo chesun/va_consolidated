@@ -48,13 +48,13 @@ REFERENCES
 
 clear all
 set more off
-cap log close _all
+cap log close check_paper_outputs
 set linesize 120
 
 cap mkdir "$logdir"
 
 cap mkdir "$logdir/check"
-log using "$logdir/check/check_paper_outputs.smcl", replace text
+log using "$logdir/check/check_paper_outputs.smcl", replace text name(check_paper_outputs)
 
 di as text _n "{hline 80}"
 di as text "check_paper_outputs.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -78,7 +78,7 @@ else {
     capture assert _N == 1784445
     if _rc {
         di as error "  FAIL: paper Table 1 N = " r(N) " (expected 1,784,445 student-years)"
-        cap log close
+        cap log close check_paper_outputs
         cap translate "$logdir/check/check_paper_outputs.smcl" "$logdir/check/check_paper_outputs.log", replace
         exit _rc
     }
@@ -103,7 +103,7 @@ else {
     capture assert _N == 5009
     if _rc {
         di as error "  FAIL: paper Table 2 N schools = " r(N) " (expected 5,009)"
-        cap log close
+        cap log close check_paper_outputs
         cap translate "$logdir/check/check_paper_outputs.smcl" "$logdir/check/check_paper_outputs.log", replace
         exit _rc
     }
@@ -140,7 +140,7 @@ di as text _n "{hline 80}"
 di as text "check_paper_outputs.do — RUN END: `c(current_date)' `c(current_time)'"
 di as text "{hline 80}"
 
-cap log close
+cap log close check_paper_outputs
 cap translate "$logdir/check/check_paper_outputs.smcl" "$logdir/check/check_paper_outputs.log", replace
 
 * end of file

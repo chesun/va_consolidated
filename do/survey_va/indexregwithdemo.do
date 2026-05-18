@@ -53,7 +53,7 @@ do $consolidated_dir/do/survey_va/indexregwithdemo
 
  */
 
-cap log close _all
+cap log close indexregwithdemo
 clear all
 set more off
 
@@ -73,7 +73,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/survey_va/indexregwithdemo.smcl", replace text
+log using "$logdir/survey_va/indexregwithdemo.smcl", replace text name(indexregwithdemo)
 
 di as text _n "{hline 80}"
 di as text "indexregwithdemo.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -221,5 +221,5 @@ foreach type of local datatype {
 set trace off
 
 
-cap log close
+cap log close indexregwithdemo
 translate $logdir/survey_va/indexregwithdemo.smcl $logdir/survey_va/indexregwithdemo.log, replace

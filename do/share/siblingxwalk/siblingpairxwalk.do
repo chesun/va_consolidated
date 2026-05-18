@@ -51,7 +51,7 @@ Same combination with different orders are different observations. */
 ********************************************************************************
 
 ***this resulting dataset can be used to merge siblings into a dataset with sibling pairs
-cap log close _all
+cap log close siblingpairxwalk
 clear all
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
@@ -62,7 +62,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/siblingxwalk"
 
 
-log using "$logdir/share/siblingxwalk/siblingpairxwalk.smcl", replace text
+log using "$logdir/share/siblingxwalk/siblingpairxwalk.smcl", replace text name(siblingpairxwalk)
 
 use $datadir_clean/siblingxwalk/uniquelinkedfamilyclean, clear
 
@@ -128,5 +128,5 @@ label data "Unique sibling pairs after dropping duplicate permutations"
 save $datadir_clean/siblingxwalk/uniquesiblingpairxwalk, replace
 
 
-log close
+cap log close siblingpairxwalk
 translate $logdir/share/siblingxwalk/siblingpairxwalk.smcl $logdir/share/siblingxwalk/siblingpairxwalk.log, replace

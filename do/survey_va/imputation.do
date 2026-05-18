@@ -46,7 +46,7 @@ ORIGINAL CHANGE LOG preserved verbatim below.
 /* change log:
 12/19/2024: correct spelling error in supportimputedummies local macro */
 
-cap log close _all
+cap log close imputation
 clear all
 set more off
 
@@ -57,7 +57,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/survey_va/imputation.smcl", replace text
+log using "$logdir/survey_va/imputation.smcl", replace text name(imputation)
 
 di as text _n "{hline 80}"
 di as text "imputation.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -180,5 +180,5 @@ foreach i of local motivationvars {
 
 save $datadir_clean/survey_va/imputedallsvyqoimeans, replace
 
-cap log close
+cap log close imputation
 translate $logdir/survey_va/imputation.smcl $logdir/survey_va/imputation.log, replace

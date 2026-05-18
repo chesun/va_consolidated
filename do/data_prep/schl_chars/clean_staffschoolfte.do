@@ -44,7 +44,7 @@ ORIGINAL HEADER preserved verbatim below.
 
 
 version 16.1
-cap log close _all
+cap log close clean_staffschoolfte
 clear all
 
 ********************************************************************************
@@ -72,7 +72,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/cde"
 cap mkdir "$datadir_clean/cde/staffschoolfte"
 
-log using "$logdir/data_prep/schl_chars/clean_staffschoolfte.smcl", replace text
+log using "$logdir/data_prep/schl_chars/clean_staffschoolfte.smcl", replace text name(clean_staffschoolfte)
 
 graph drop _all
 set more off
@@ -207,5 +207,5 @@ forvalues fall_year = `= `test_score_min_year' - 1' (1) `= `test_score_max_year'
 
 timer off 1
 timer list
-log close
+cap log close clean_staffschoolfte
 translate $logdir/data_prep/schl_chars/clean_staffschoolfte.smcl $logdir/data_prep/schl_chars/clean_staffschoolfte.log, replace

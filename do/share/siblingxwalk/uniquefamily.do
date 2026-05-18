@@ -54,7 +54,7 @@ to link siblings from the same family across years and delete duplicates  */
 /* to run this do file:
 do $projdir/do/share/siblingxwalk/uniquefamily.do
  */
-cap log close _all
+cap log close uniquefamily
 clear all
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
@@ -65,7 +65,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/siblingxwalk"
 
 
-log using "$logdir/share/siblingxwalk/uniquefamily.smcl", replace text
+log using "$logdir/share/siblingxwalk/uniquefamily.smcl", replace text name(uniquefamily)
 
 use $datadir_clean/siblingxwalk/k12_xwalk_name_address_year, clear
 
@@ -126,5 +126,5 @@ label data "dataset with unique family ID for each SSID, family size capped at 1
 save $datadir_clean/siblingxwalk/ufamilyxwalk, replace
 
 
-log close
+cap log close uniquefamily
 translate $logdir/share/siblingxwalk/uniquefamily.smcl $logdir/share/siblingxwalk/uniquefamily.log, replace 

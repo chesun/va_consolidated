@@ -52,7 +52,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close mergegr11enr
 clear all
 set more off
 
@@ -64,7 +64,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/analysisready"
 
-log using "$logdir/data_prep/poolingdata/mergegr11enr.smcl", replace text
+log using "$logdir/data_prep/poolingdata/mergegr11enr.smcl", replace text name(mergegr11enr)
 
 /* merge gr11 enrollment with parent pooled dataset */
 use $datadir_clean/calschls/analysisready/parentanalysisready, clear
@@ -95,5 +95,5 @@ drop _merge
 save $datadir_clean/calschls/analysisready/staffanalysisready, replace
 
 
-log close
+cap log close mergegr11enr
 translate $logdir/data_prep/poolingdata/mergegr11enr.smcl $logdir/data_prep/poolingdata/mergegr11enr.log, replace 

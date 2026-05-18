@@ -105,9 +105,9 @@ cap mkdir "$logdir"
 cap mkdir "$logdir/va"
  cd $vaprojdir
 
- log close _all
+ cap log close merge_va_est
 
- log using "$logdir/va/merge_va_est.smcl", replace text
+ log using "$logdir/va/merge_va_est.smcl", replace text name(merge_va_est)
 
  di as text _n "{hline 80}"
  di as text "merge_va_est.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -190,7 +190,7 @@ di "Do file merge_va_est.do start date time: `date1_va_scatter_plot' `time1_va_s
 di "End date time: `date2_va_scatter_plot' `time2_va_scatter_plot'"
 
 
-cap log close
+cap log close merge_va_est
 cap translate "$logdir/va/merge_va_est.smcl" ///
   "$logdir/va/merge_va_est.log", replace
 

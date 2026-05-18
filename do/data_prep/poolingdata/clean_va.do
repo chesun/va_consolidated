@@ -65,7 +65,7 @@ do $projdir/do/build//buildanalysisdata/poolingdata/clean_va.do
 
 
 
-cap log close _all
+cap log close clean_va
 graph drop _all
 set more off
 set varabbrev off
@@ -81,7 +81,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/va"
 
-log using "$logdir/data_prep/poolingdata/clean_va.smcl", replace text
+log using "$logdir/data_prep/poolingdata/clean_va.smcl", replace text name(clean_va)
 
 
 
@@ -142,5 +142,5 @@ di "Do file clean_va.do start date time: `date1_va_scatter_plot' `time1_va_scatt
 di "End date time: `date2_va_scatter_plot' `time2_va_scatter_plot'"
 
 
-log close
+cap log close clean_va
 translate $logdir/data_prep/poolingdata/clean_va.smcl $logdir/data_prep/poolingdata/clean_va.log, replace

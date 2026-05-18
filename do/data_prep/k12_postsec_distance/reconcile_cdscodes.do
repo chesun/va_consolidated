@@ -98,7 +98,7 @@ do $consolidated_dir/do/data_prep/k12_postsec_distance/reconcile_cdscodes.do
  /* CHANGE LOG (CHRISTINA SUN):
 */
 
-cap log close _all
+cap log close reconcile_cdscodes
 clear all
 
 graph drop _all
@@ -117,7 +117,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/k12_postsec_distance"
 cap mkdir "$datadir_clean/k12_postsec_distance/clean"
 
-log using "$logdir/data_prep/k12_postsec_distance/reconcile_cdscodes.smcl", replace text
+log using "$logdir/data_prep/k12_postsec_distance/reconcile_cdscodes.smcl", replace text name(reconcile_cdscodes)
 
 
 import delimited using $vaprojdir/data/k12_postsec_distance/raw/cdscode_changes.csv, clear
@@ -145,5 +145,5 @@ replace cdscode = cdscode_va if cdscode_va!=""
 
 
 save $datadir_clean/k12_postsec_distance/clean/k12_postsec_mindistance.dta, replace
-log close
+cap log close reconcile_cdscodes
 translate $logdir/data_prep/k12_postsec_distance/reconcile_cdscodes.smcl $logdir/data_prep/k12_postsec_distance/reconcile_cdscodes.log, replace

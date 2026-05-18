@@ -141,9 +141,9 @@ cap mkdir "$logdir"
 cap mkdir "$logdir/va"
  cd $vaprojdir
 
- log close _all
+ cap log close va_score_fb_all
 
- log using "$logdir/va/va_score_fb_all.smcl", replace text
+ log using "$logdir/va/va_score_fb_all.smcl", replace text name(va_score_fb_all)
 
  di as text _n "{hline 80}"
  di as text "va_score_fb_all.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -302,7 +302,7 @@ timer off 1
 timer list
 timer clear 1
 
-cap log close
+cap log close va_score_fb_all
 cap translate "$logdir/va/va_score_fb_all.smcl" ///
   "$logdir/va/va_score_fb_all.log", replace
 

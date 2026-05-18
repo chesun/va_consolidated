@@ -47,13 +47,13 @@ REFERENCES
 
 clear all
 set more off
-cap log close _all
+cap log close check_merges
 set linesize 120
 
 cap mkdir "$logdir"
 
 cap mkdir "$logdir/check"
-log using "$logdir/check/check_merges.smcl", replace text
+log using "$logdir/check/check_merges.smcl", replace text name(check_merges)
 
 di as text _n "{hline 80}"
 di as text "check_merges.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -88,7 +88,7 @@ else {
         if _rc {
             di as error "  FAIL: `m' has more than 5 distinct values"
             qui tab `m', missing
-            cap log close
+            cap log close check_merges
             cap translate "$logdir/check/check_merges.smcl" "$logdir/check/check_merges.log", replace
             exit _rc
         }
@@ -151,7 +151,7 @@ di as text _n "{hline 80}"
 di as text "check_merges.do — RUN END: `c(current_date)' `c(current_time)'"
 di as text "{hline 80}"
 
-cap log close
+cap log close check_merges
 cap translate "$logdir/check/check_merges.smcl" "$logdir/check/check_merges.log", replace
 
 * end of file

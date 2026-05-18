@@ -137,9 +137,9 @@ cap mkdir "$logdir"
 cap mkdir "$logdir/va"
  cd $vaprojdir
 
- log close _all
+ cap log close va_out_all
 
- log using "$logdir/va/va_out_all.smcl", replace text
+ log using "$logdir/va/va_out_all.smcl", replace text name(va_out_all)
 
  di as text _n "{hline 80}"
  di as text "va_out_all.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -319,7 +319,7 @@ timer off 1
 timer list
 timer clear 1
 
-cap log close
+cap log close va_out_all
 
 cap translate "$logdir/va/va_out_all.smcl" ///
   "$logdir/va/va_out_all.log", replace

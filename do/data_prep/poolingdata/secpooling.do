@@ -55,7 +55,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close secpooling
 clear all
 set more off
 
@@ -68,7 +68,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/poolingdata"
 cap mkdir "$datadir_clean/calschls/analysisready"
 
-log using "$logdir/data_prep/poolingdata/secpooling.smcl", replace text
+log using "$logdir/data_prep/poolingdata/secpooling.smcl", replace text name(secpooling)
 
 /* ssc install _gwtmean, replace //package to allow use of weights in egen mean  */
 
@@ -162,5 +162,5 @@ compress
 save $datadir_clean/calschls/analysisready/secanalysisready, replace
 
 
-log close
+cap log close secpooling
 translate $logdir/data_prep/poolingdata/secpooling.smcl $logdir/data_prep/poolingdata/secpooling.log, replace 

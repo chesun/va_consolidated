@@ -45,7 +45,7 @@ ORIGINAL CHANGE LOG preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close pcascore
 clear all
 set more off
 
@@ -58,7 +58,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/survey_va/pcascore.smcl", replace text
+log using "$logdir/survey_va/pcascore.smcl", replace text name(pcascore)
 
 di as text _n "{hline 80}"
 di as text "pcascore.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -94,5 +94,5 @@ histogram pc1, freq
 graph export $output_dir/graph/factoranalysis/pcascore/staffpc2score.png, replace
 
 
-cap log close
+cap log close pcascore
 translate $logdir/survey_va/pcascore.smcl $logdir/survey_va/pcascore.log, replace 

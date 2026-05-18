@@ -43,7 +43,7 @@ for both complete case and imputed data  */
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close indexhorserace
 clear all
 set more off
 
@@ -56,7 +56,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/survey_va/indexhorserace.smcl", replace text
+log using "$logdir/survey_va/indexhorserace.smcl", replace text name(indexhorserace)
 
 di as text _n "{hline 80}"
 di as text "indexhorserace.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -153,5 +153,5 @@ foreach type in compcase imputed {
 
 
 
-cap log close
+cap log close indexhorserace
 translate $logdir/survey_va/indexhorserace.smcl $logdir/survey_va/indexhorserace.log, replace

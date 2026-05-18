@@ -119,7 +119,7 @@ REFERENCES
 
 
 version 16.1
-cap log close _all
+cap log close touse_va
 clear all
 
 
@@ -152,7 +152,7 @@ cap mkdir "$logdir/samples"
 * the canonical CWD.
 cd $vaprojdir
 
-log using "$logdir/samples/touse_va.smcl", replace text
+log using "$logdir/samples/touse_va.smcl", replace text name(touse_va)
 
 di as text _n "{hline 80}"
 di as text "touse_va.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -328,7 +328,7 @@ save "$datadir_clean/sbac/va_samples.dta", replace
 timer off 1
 timer list
 
-cap log close
+cap log close touse_va
 cap translate "$logdir/samples/touse_va.smcl" "$logdir/samples/touse_va.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.

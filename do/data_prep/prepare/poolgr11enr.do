@@ -57,7 +57,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close poolgr11enr
 clear all
 set more off
 
@@ -69,7 +69,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/enrollment"
 cap mkdir "$datadir_clean/enrollment/schoollevel"
 
-log using "$logdir/data_prep/prepare/poolgr11enr.smcl", replace text
+log using "$logdir/data_prep/prepare/poolgr11enr.smcl", replace text name(poolgr11enr)
 
 /* append the datasets */
 use $datadir_clean/enrollment/schoollevel/enr1819, clear
@@ -86,5 +86,5 @@ label var gr11enr_mean "average grade 11 enrollment over years"
 save $datadir_clean/enrollment/schoollevel/poolgr11enr, replace
 
 
-log close
+cap log close poolgr11enr
 translate $logdir/data_prep/prepare/poolgr11enr.smcl $logdir/data_prep/prepare/poolgr11enr.log, replace 

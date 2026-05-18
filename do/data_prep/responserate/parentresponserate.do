@@ -49,7 +49,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close parentresponserate
 clear all
 set more off
 
@@ -61,7 +61,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/responserate"
 
-log using "$logdir/data_prep/responserate/parentresponserate.smcl", replace text
+log using "$logdir/data_prep/responserate/parentresponserate.smcl", replace text name(parentresponserate)
 
 use $datadir_clean/calschls/demotrim/parent/trimparentdemo1415, replace
 merge 1:1 cdscode using $datadir_clean/calschls/demotrim/parent/trimparentdemo1516
@@ -143,5 +143,5 @@ label data "parent survey response numbers by grade year with pooled response ra
 compress
 save $datadir_clean/calschls/responserate/parentresponserate, replace
 
-log close
+cap log close parentresponserate
 translate $logdir/data_prep/responserate/parentresponserate.smcl $logdir/data_prep/responserate/parentresponserate.log, replace

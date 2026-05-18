@@ -44,7 +44,7 @@ ORIGINAL HEADER preserved verbatim below.
 
 
 version 16.1
-cap log close _all
+cap log close clean_staffdemo
 clear all
 
 
@@ -72,7 +72,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/cde"
 cap mkdir "$datadir_clean/cde/staffdemo"
 
-log using "$logdir/data_prep/schl_chars/clean_staffdemo.smcl", replace text
+log using "$logdir/data_prep/schl_chars/clean_staffdemo.smcl", replace text name(clean_staffdemo)
 
 graph drop _all
 set more off
@@ -456,5 +456,5 @@ forvalues fall_year = 2015 (1) `= `test_score_max_year' - 1' {
 
 timer off 1
 timer list
-log close
+cap log close clean_staffdemo
 translate $logdir/data_prep/schl_chars/clean_staffdemo.smcl $logdir/data_prep/schl_chars/clean_staffdemo.log, replace

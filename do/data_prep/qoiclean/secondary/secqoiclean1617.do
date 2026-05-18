@@ -46,7 +46,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close secqoiclean1617
 clear all
 set more off
 
@@ -60,7 +60,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/secondary"
 
-log using "$logdir/data_prep/qoiclean/secondary/secqoiclean1617.smcl", replace text
+log using "$logdir/data_prep/qoiclean/secondary/secqoiclean1617.smcl", replace text name(secqoiclean1617)
 
 use $datadir_clean/calschls/secondary/sec1617, clear
 keep cdscode a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 //only keep questions of interest
@@ -240,5 +240,5 @@ gen year = 1617
  save $datadir_clean/calschls/qoiclean/secondary/secqoiclean1617, replace
 
 
-log close
+cap log close secqoiclean1617
 translate $logdir/data_prep/qoiclean/secondary/secqoiclean1617.smcl $logdir/data_prep/qoiclean/secondary/secqoiclean1617.log, replace 

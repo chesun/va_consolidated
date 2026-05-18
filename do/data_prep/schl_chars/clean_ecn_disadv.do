@@ -49,7 +49,7 @@ do $vaprojdir/do_files/schl_chars/clean_ecn_disadv.do
  */
 
 * CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
-log close _all
+cap log close clean_ecn_disadv
 
 
 graph drop _all
@@ -66,7 +66,7 @@ cap mkdir "$logdir/data_prep/schl_chars"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/cde"
 
-log using "$logdir/data_prep/schl_chars/clean_ecn_disadv.smcl", replace text
+log using "$logdir/data_prep/schl_chars/clean_ecn_disadv.smcl", replace text name(clean_ecn_disadv)
 
 /* import sbac data */
 use cdscode year econ_disadvantage ///
@@ -85,5 +85,5 @@ save $datadir_clean/cde/ecn_disadv.dta, replace
 
 
 
-log close 
+cap log close clean_ecn_disadv
 translate $logdir/data_prep/schl_chars/clean_ecn_disadv.smcl $logdir/data_prep/schl_chars/clean_ecn_disadv.log, replace 

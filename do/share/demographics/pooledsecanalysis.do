@@ -48,7 +48,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close pooledsecanalysis
 clear
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
@@ -63,7 +63,7 @@ cap mkdir "$output_dir/graph/pooleddiagnostics/parent"
 cap mkdir "$output_dir/graph/pooleddiagnostics/secondary"
 
 
-log using "$logdir/share/demographics/pooledsecanalysis.smcl", replace text
+log using "$logdir/share/demographics/pooledsecanalysis.smcl", replace text name(pooledsecanalysis)
 
 use $caschls_projdir/dta/demographics/pooled/pooledsecdiagnostics, replace
 
@@ -115,5 +115,5 @@ graph export $output_dir/graph/pooleddiagnostics/secondary/pooledwhiterr.png, re
 grstyle clear // sets off grstyle
 
 
-log close
+cap log close pooledsecanalysis
 translate $logdir/share/demographics/pooledsecanalysis.smcl $logdir/share/demographics/pooledsecanalysis.log, replace 

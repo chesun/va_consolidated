@@ -66,7 +66,7 @@ do $vaprojdir/do_files/share/kdensity.do
  */
 
 * CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
-cap log close _all
+cap log close kdensity
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
@@ -83,7 +83,7 @@ cap mkdir "$figures_dir"
 cap mkdir "$figures_dir/share"
 cap mkdir "$figures_dir/share/va"
 
-log using "$logdir/share/kdensity.smcl", replace text
+log using "$logdir/share/kdensity.smcl", replace text name(kdensity)
 
 graph drop _all
 set more off
@@ -186,5 +186,5 @@ local time2 = c(current_time)
 di "Start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
-log close
+cap log close kdensity
 translate $logdir/share/kdensity.smcl $logdir/share/kdensity.log, replace

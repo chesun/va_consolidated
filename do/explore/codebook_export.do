@@ -44,7 +44,7 @@ REFERENCES
 
 clear all
 set more off
-cap log close _all
+cap log close codebook_export
 set linesize 255
 
 
@@ -123,7 +123,7 @@ local stamp = subinstr("`c(current_date)'", " ", "-", .) + "_" ///
             + subinstr("`c(current_time)'", ":", "-", .)
 local logbase "`logdir'/codebook_export_`stamp'"
 
-log using "`logbase'.smcl", replace text
+log using "`logbase'.smcl", replace text name(codebook_export)
 
 di as text _n(2) "{hline 80}"
 di as text "CODEBOOK EXPORT — RUN START: `c(current_date)' `c(current_time)'"
@@ -191,7 +191,7 @@ di as text ""
 di as text "OUTPUT: `logbase'.{smcl,log}"
 di as text "Skim before sharing, then send the .log to Claude."
 
-cap log close
+cap log close codebook_export
 cap translate "`logbase'.smcl" "`logbase'.log", replace
 
 di as text _n "Log written to: `logbase'.log"

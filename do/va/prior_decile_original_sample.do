@@ -127,13 +127,13 @@ set more off
 set varabbrev off
 set scheme s1color
 //capture log close: Stata should not complain if there is no log open to close
-cap log close _all
+cap log close prior_decile_original_sample
 
 /* set trace on */
 
 
 //starting log file
-log using "$logdir/va/prior_decile_original_sample.smcl", replace text
+log using "$logdir/va/prior_decile_original_sample.smcl", replace text name(prior_decile_original_sample)
 
 di as text _n "{hline 80}"
 di as text "prior_decile_original_sample.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -232,7 +232,7 @@ timer list
 
 set trace off
 
-cap log close
+cap log close prior_decile_original_sample
 cap translate "$logdir/va/prior_decile_original_sample.smcl" ///
   "$logdir/va/prior_decile_original_sample.log", replace
 

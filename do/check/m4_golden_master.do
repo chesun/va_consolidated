@@ -98,7 +98,7 @@ REFERENCES
 
 clear all
 set more off
-cap log close _all
+cap log close m4_golden_master
 set linesize 200
 
 include do/settings.do
@@ -108,7 +108,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/check"
-log using "$logdir/check/m4_golden_master.smcl", replace text
+log using "$logdir/check/m4_golden_master.smcl", replace text name(m4_golden_master)
 
 
 /*==============================================================================
@@ -407,7 +407,7 @@ cap mkdir "$output_dir"
 capture confirm file "`matrix_csv'"
 if _rc {
     di as error "  FATAL: path matrix not found at `matrix_csv'"
-    cap log close
+    cap log close m4_golden_master
     cap translate "$logdir/check/m4_golden_master.smcl" "$logdir/check/m4_golden_master.log", replace
     exit _rc
 }
@@ -415,7 +415,7 @@ if _rc {
 * Validate tier_filter
 if !inlist("`tier_filter'", "smoke", "paper", "full") {
     di as error "  FATAL: tier_filter must be smoke|paper|full, got `tier_filter'"
-    cap log close
+    cap log close m4_golden_master
     cap translate "$logdir/check/m4_golden_master.smcl" "$logdir/check/m4_golden_master.log", replace
     exit 198
 }
@@ -461,7 +461,7 @@ di as text "  rows after tier filter: `n_rows'"
 
 if `n_rows' == 0 {
     di as error "  FATAL: zero rows after tier filter — check CSV or tier_filter"
-    cap log close
+    cap log close m4_golden_master
     cap translate "$logdir/check/m4_golden_master.smcl" "$logdir/check/m4_golden_master.log", replace
     exit 198
 }
@@ -667,7 +667,7 @@ di as text "{hline 80}"
 
 di as text _n "m4_golden_master.do — RUN END: `c(current_date)' `c(current_time)'"
 
-cap log close
+cap log close m4_golden_master
 cap translate "$logdir/check/m4_golden_master.smcl" "$logdir/check/m4_golden_master.log", replace
 
 * end of file

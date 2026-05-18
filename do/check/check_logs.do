@@ -38,13 +38,13 @@ REFERENCES
 
 clear all
 set more off
-cap log close _all
+cap log close check_logs
 set linesize 120
 
 * Per-do-file log per stata-code-conventions.md.
 cap mkdir "$logdir"
 cap mkdir "$logdir/check"
-log using "$logdir/check/check_logs.smcl", replace text
+log using "$logdir/check/check_logs.smcl", replace text name(check_logs)
 
 di as text _n "{hline 80}"
 di as text "check_logs.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -66,7 +66,7 @@ ENUMERATE EXPECTED LOGS
 capture which filelist
 if _rc {
     di as error "  ERROR: filelist (ssc) is required.  Run: ssc install filelist"
-    cap log close
+    cap log close check_logs
     cap translate "$logdir/check/check_logs.smcl" "$logdir/check/check_logs.log", replace
     exit 198
 }
@@ -82,7 +82,7 @@ quietly keep if regexm(filename, "\.do$")
 count
 if r(N) == 0 {
     di as error "  ERROR: no .do files found under $consolidated_dir/do — pipeline state surprising."
-    cap log close
+    cap log close check_logs
     cap translate "$logdir/check/check_logs.smcl" "$logdir/check/check_logs.log", replace
     exit 459
 }
@@ -116,7 +116,7 @@ if `n_missing' > 0 {
     di as error _n "  FAIL: `n_missing' do file(s) under do/ have no matching log under \$logdir."
     di as error "  Missing logs:"
     list dirname filename if log_exists == 0, clean noobs
-    cap log close
+    cap log close check_logs
     cap translate "$logdir/check/check_logs.smcl" "$logdir/check/check_logs.log", replace
     * Halt the pipeline — assertion failure semantics per design memo §8.
     exit 9
@@ -132,7 +132,7 @@ di as text _n "{hline 80}"
 di as text "check_logs.do — RUN END: `c(current_date)' `c(current_time)'"
 di as text "{hline 80}"
 
-cap log close
+cap log close check_logs
 cap translate "$logdir/check/check_logs.smcl" "$logdir/check/check_logs.log", replace
 
 * end of file

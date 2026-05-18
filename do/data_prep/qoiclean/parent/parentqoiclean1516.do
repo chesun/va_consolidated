@@ -46,7 +46,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close parentqoiclean1516
 clear all
 set more off
 
@@ -60,7 +60,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/parent"
 
-log using "$logdir/data_prep/qoiclean/parent/parentqoiclean1516.smcl", replace text
+log using "$logdir/data_prep/qoiclean/parent/parentqoiclean1516.smcl", replace text name(parentqoiclean1516)
 
 use $datadir_clean/calschls/parent/parent1516, clear
 
@@ -283,5 +283,5 @@ compress
 save $datadir_clean/calschls/qoiclean/parent/parentqoiclean1516, replace
 
 
-log close
+cap log close parentqoiclean1516
 translate $logdir/data_prep/qoiclean/parent/parentqoiclean1516.smcl $logdir/data_prep/qoiclean/parent/parentqoiclean1516.log, replace 

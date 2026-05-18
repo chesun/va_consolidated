@@ -64,9 +64,9 @@ cap mkdir "$logdir"
 cap mkdir "$logdir/va"
 cd $vaprojdir
 
-cap log close _all
+cap log close va_out_sib_lag
 
-log using "$logdir/va/va_out_sib_lag.smcl", replace text
+log using "$logdir/va/va_out_sib_lag.smcl", replace text name(va_out_sib_lag)
 
 di as text _n "{hline 80}"
 di as text "va_out_sib_lag.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -202,7 +202,7 @@ local time2 = c(current_time)
 di "Start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
-cap log close
+cap log close va_out_sib_lag
 cap translate "$logdir/va/va_out_sib_lag.smcl" ///
   "$logdir/va/va_out_sib_lag.log", replace
 

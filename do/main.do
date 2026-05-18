@@ -57,7 +57,7 @@ REFERENCES
 
 
 clear all
-cap log close _all
+cap log close master
 
 * Load globals.  do/settings.do exits with rc=601 if $consolidated_dir is absent,
 * so failure here is informative.  CWD is $consolidated_dir per the INVOCATION
@@ -72,7 +72,7 @@ LOG SETUP
 cap mkdir "$logdir"
 local stamp = subinstr("`c(current_date)'", " ", "-", .) + "_" ///
             + subinstr("`c(current_time)'", ":", "-", .)
-log using "$logdir/main_`stamp'.smcl", replace text
+log using "$logdir/main_`stamp'.smcl", replace text name(master)
 
 di as text _n(2) "{hline 80}"
 di as text "main.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -482,7 +482,7 @@ di as text _n(3) "{hline 80}"
 di as text "main.do — RUN END: `c(current_date)' `c(current_time)'"
 di as text "{hline 80}"
 
-cap log close
+cap log close master
 cap translate "$logdir/main_`stamp'.smcl" "$logdir/main_`stamp'.log", replace
 
 di as text "Master log: $logdir/main_`stamp'.{smcl,log}"

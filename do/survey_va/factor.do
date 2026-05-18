@@ -45,7 +45,7 @@ ORIGINAL CHANGE LOG preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close factor
 clear all
 set more off
 
@@ -59,7 +59,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/survey_va/factor.smcl", replace text
+log using "$logdir/survey_va/factor.smcl", replace text name(factor)
 
 di as text _n "{hline 80}"
 di as text "factor.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -131,5 +131,5 @@ esttab using $output_dir/csv/factoranalysis/stafffactoreigen1.csv, cells("L[1](t
 since factors are explaining the variance */
 
 
-cap log close
+cap log close factor
 translate $logdir/survey_va/factor.smcl $logdir/survey_va/factor.log, replace

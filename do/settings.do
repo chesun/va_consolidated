@@ -172,6 +172,32 @@ global cstdtadir  "/home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
 
 
 /*==============================================================================
+BOOTSTRAP CANONICAL DIRECTORIES
+
+    Stata's `mkdir` does not auto-create parent directories.  Per-script
+    `cap mkdir "$datadir_clean/<subdir>"` fails silently when intermediate
+    parents (e.g., $datadir) don't yet exist, leading to silent r(603) save
+    failures downstream (e.g., 2026-05-17 M4 attempt #2 r(603) in
+    clean_acs_census_tract.do:406).
+
+    Idempotent — `cap` suppresses "already exists" errors.  Runs every time
+    main.do (or any standalone script that includes settings.do) starts, so
+    canonical top-level directories are guaranteed present before any
+    downstream per-script `cap mkdir` cascade attempts to create children.
+==============================================================================*/
+
+cap mkdir "$consolidated_dir"
+cap mkdir "$datadir"
+cap mkdir "$datadir_clean"
+cap mkdir "$datadir_raw"
+cap mkdir "$estimates_dir"
+cap mkdir "$output_dir"
+cap mkdir "$logdir"
+cap mkdir "$tables_dir"
+cap mkdir "$figures_dir"
+
+
+/*==============================================================================
 STATA DEFAULTS
 ==============================================================================*/
 

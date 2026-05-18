@@ -48,7 +48,7 @@ do $vaprojdir/do_files/schl_chars/clean_locale.do
  */
 
 * CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
-log close _all
+cap log close clean_locale
 
 
 
@@ -59,7 +59,7 @@ cap mkdir "$logdir/data_prep/schl_chars"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/nces"
 
-log using "$logdir/data_prep/schl_chars/clean_locale.smcl", replace text
+log using "$logdir/data_prep/schl_chars/clean_locale.smcl", replace text name(clean_locale)
 
 di as text _n "{hline 80}"
 di as text "clean_locale.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -145,5 +145,5 @@ drop if missing(cdscode)
 
 compress 
 save $datadir_clean/nces/pubschls_locale.dta, replace
-cap log close
+cap log close clean_locale
 translate $logdir/data_prep/schl_chars/clean_locale.smcl $logdir/data_prep/schl_chars/clean_locale.log, replace

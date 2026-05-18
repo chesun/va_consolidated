@@ -50,7 +50,7 @@ do $vaprojdir/do_files/schl_chars/cds_nces_xwalk.do
 
 
 * CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
-log close _all
+cap log close cds_nces_xwalk
 
 
 
@@ -61,7 +61,7 @@ cap mkdir "$logdir/data_prep/schl_chars"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/cde"
 
-log using "$logdir/data_prep/schl_chars/cds_nces_xwalk.smcl", replace text
+log using "$logdir/data_prep/schl_chars/cds_nces_xwalk.smcl", replace text name(cds_nces_xwalk)
 
 di as text _n "{hline 80}"
 di as text "cds_nces_xwalk.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -94,5 +94,5 @@ label var nces_id "12 digit NCES district and school ID"
 
 
 save $datadir_clean/cde/cds_nces_id_xwalk.dta, replace
-cap log close
+cap log close cds_nces_xwalk
 translate $logdir/data_prep/schl_chars/cds_nces_xwalk.smcl $logdir/data_prep/schl_chars/cds_nces_xwalk.log, replace

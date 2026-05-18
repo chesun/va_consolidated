@@ -75,9 +75,9 @@ cap mkdir "$logdir/va"
 cap mkdir "$logdir/va/heterogeneity"
 cd $vaprojdir
 
-cap log close _all
+cap log close persist_het_student_char_fig
 
-log using "$logdir/va/heterogeneity/persist_het_student_char_fig.smcl", replace text
+log using "$logdir/va/heterogeneity/persist_het_student_char_fig.smcl", replace text name(persist_het_student_char_fig)
 
 di as text _n "{hline 80}"
 di as text "persist_het_student_char_fig.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -123,7 +123,7 @@ foreach version in v1 v2 {
 
 
 
-cap log close
+cap log close persist_het_student_char_fig
 translate  $logdir/va/heterogeneity/persist_het_student_char_fig.smcl ///
      "$logdir/va/heterogeneity/persist_het_student_char_fig.log", replace
 

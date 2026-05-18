@@ -68,7 +68,7 @@ only the qoimean variables */
 
  */
  
-cap log close _all
+cap log close allsvymerge
 clear all
 set more off
 
@@ -79,7 +79,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/survey_va"
 cap mkdir "$datadir_clean/survey_va/formerge"
 
-log using "$logdir/survey_va/allsvymerge.smcl", replace text
+log using "$logdir/survey_va/allsvymerge.smcl", replace text name(allsvymerge)
 
 /* rename vars and prep parentanalysisready.dta for merging */
 use $datadir_clean/calschls/analysisready/parentanalysisready, clear
@@ -123,5 +123,5 @@ merge 1:1 cdscode using $datadir_clean/calschls/va/va_pooled_all.dta, keep(1 3) 
 save $datadir_clean/survey_va/allsvyqoimeans, replace
 
 
-log close
+cap log close allsvymerge
 translate $logdir/survey_va/allsvymerge.smcl $logdir/survey_va/allsvymerge.log, replace

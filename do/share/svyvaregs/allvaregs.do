@@ -67,7 +67,7 @@ do $projdir/do/share/svyvaregs/allvaregs
 /* set trace on
 set tracedepth 1 */
 
-cap log close _all
+cap log close allvaregs
 graph drop _all
 set more off
 set varabbrev off
@@ -92,7 +92,7 @@ foreach svyname in parent sec staff elem {
 }
 
 
-log using "$logdir/share/svyvaregs/allvaregs.smcl", replace text
+log using "$logdir/share/svyvaregs/allvaregs.smcl", replace text name(allvaregs)
 
 
 /* create a local macro for secondary qoi numbers  */
@@ -272,5 +272,5 @@ foreach svyname in sec parent staff {
 set trace off
 
 
-log close
+cap log close allvaregs
 translate $logdir/share/svyvaregs/allvaregs.smcl $logdir/share/svyvaregs/allvaregs.log, replace

@@ -69,7 +69,7 @@ do $consolidated_dir/do/data_prep/k12_postsec_distance/k12_postsec_distances.do
 */
 
 * CANONICAL: cd removed; relocated paths now absolute (per [LEARN:workflow] absolute-after-cd batch 2c).
-cap log close _all
+cap log close k12_postsec_distances
 clear all
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
@@ -80,7 +80,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/k12_postsec_distance"
 cap mkdir "$datadir_clean/k12_postsec_distance/clean"
 
-log using "$logdir/data_prep/k12_postsec_distance/k12_postsec_distances.smcl", replace text
+log using "$logdir/data_prep/k12_postsec_distance/k12_postsec_distances.smcl", replace text name(k12_postsec_distances)
 
 
 net install geodist, from(http://fmwww.bc.edu/RePEc/bocode/g) replace
@@ -196,5 +196,5 @@ replace cdscode = "0" + cdscode if strlen(cdscode)==13
 save $datadir_clean/k12_postsec_distance/clean/k12_postsec_mindistance, replace
 
 
-log close
+cap log close k12_postsec_distances
 translate $logdir/data_prep/k12_postsec_distance/k12_postsec_distances.smcl $logdir/data_prep/k12_postsec_distance/k12_postsec_distances.log, replace

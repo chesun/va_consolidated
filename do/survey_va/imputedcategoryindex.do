@@ -55,7 +55,7 @@ do $consolidated_dir/do/survey_va/imputedcategoryindex
 11/21/2022: Rewrote code for using new VA estimates
  */
 
-cap log close _all
+cap log close imputedcategoryindex
 clear all
 set more off
 
@@ -75,7 +75,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/survey_va/imputedcategoryindex.smcl", replace text
+log using "$logdir/survey_va/imputedcategoryindex.smcl", replace text name(imputedcategoryindex)
 
 di as text _n "{hline 80}"
 di as text "imputedcategoryindex.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -219,5 +219,5 @@ export excel using $output_dir/csv/factoranalysis/imputed/vaindex_imputedregs_al
 
 
 
-cap log close
+cap log close imputedcategoryindex
 translate $logdir/survey_va/imputedcategoryindex.smcl $logdir/survey_va/imputedcategoryindex.log, replace

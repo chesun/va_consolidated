@@ -52,7 +52,7 @@ VA regressions with index + school characteristics  */
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close mattschlchar
 clear all
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
@@ -62,7 +62,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/schoolchar"
 
 
-log using "$logdir/survey_va/mattschlchar.smcl", replace text
+log using "$logdir/survey_va/mattschlchar.smcl", replace text name(mattschlchar)
 
 // a macro toggle for cleaning the raw data from Matt's folder
 local clean = 0
@@ -152,5 +152,5 @@ compress
 save $datadir_clean/schoolchar/schlcharpooledmeans, replace
 
 
-log close
+cap log close mattschlchar
 translate $logdir/survey_va/mattschlchar.smcl $logdir/survey_va/mattschlchar.log, replace

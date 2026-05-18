@@ -57,7 +57,7 @@ do $consolidated_dir/do/survey_va/compcasecategoryindex
  */
 
 
-cap log close _all
+cap log close compcasecategoryindex
 clear all
 set more off
 
@@ -77,7 +77,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/survey_va/compcasecategoryindex.smcl", replace text
+log using "$logdir/survey_va/compcasecategoryindex.smcl", replace text name(compcasecategoryindex)
 
 di as text _n "{hline 80}"
 di as text "compcasecategoryindex.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -216,5 +216,5 @@ foreach index of local indexvars {
   export excel using $output_dir/csv/factoranalysis/compcase/`index'_va_compregs, replace firstrow(variables)
 }
 
-cap log close
+cap log close compcasecategoryindex
 translate $logdir/survey_va/compcasecategoryindex.smcl $logdir/survey_va/compcasecategoryindex.log, replace

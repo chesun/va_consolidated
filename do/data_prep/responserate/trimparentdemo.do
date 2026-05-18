@@ -54,7 +54,7 @@ generating conditional response rate datasets */
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
 ********************************************************************************
-cap log close _all
+cap log close trimparentdemo
 clear all
 set more off
 
@@ -67,7 +67,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/demotrim"
 cap mkdir "$datadir_clean/calschls/demotrim/parent"
 
-log using "$logdir/data_prep/responserate/trimparentdemo.smcl", replace text
+log using "$logdir/data_prep/responserate/trimparentdemo.smcl", replace text name(trimparentdemo)
 
 /* rename variables in the secondary demographics datasets to indicate year, keep only vars needed to calculate response rates */
 local grades `" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "' //local macro for grades
@@ -142,5 +142,5 @@ label data "trimmed parent demographics 1819 including only survey responses and
 compress
 save $datadir_clean/calschls/demotrim/parent/trimparentdemo1819, replace
 
-log close
+cap log close trimparentdemo
 translate $logdir/data_prep/responserate/trimparentdemo.smcl $logdir/data_prep/responserate/trimparentdemo.log, replace 

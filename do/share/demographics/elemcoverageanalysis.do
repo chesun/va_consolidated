@@ -55,7 +55,7 @@ for elementary demographics datasets to investigate the survey sample representa
 //ssc install colrspace
 
 //grstyle documentation: http://repec.sowi.unibe.ch/stata/grstyle/help-grstyle-set.html
-cap log close _all
+cap log close elemcoverageanalysis
 clear
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------

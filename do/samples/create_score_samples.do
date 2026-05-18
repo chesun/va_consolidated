@@ -169,10 +169,10 @@ cap mkdir "$logdir"
 cap mkdir "$logdir/samples"
  cd $vaprojdir
 
- log close _all
+ cap log close create_score_samples
 
 
- log using "$logdir/samples/create_score_samples.smcl", replace text
+ log using "$logdir/samples/create_score_samples.smcl", replace text name(create_score_samples)
 
  di as text _n "{hline 80}"
  di as text "create_score_samples.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -388,7 +388,7 @@ foreach version in v1 v2 {
 timer off 1
 timer list
 
-cap log close
+cap log close create_score_samples
 
 cap translate "$logdir/samples/create_score_samples.smcl" ///
   "$logdir/samples/create_score_samples.log", replace

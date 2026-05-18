@@ -54,7 +54,7 @@ do $consolidated_dir/do/survey_va/indexhorseracewithdemo
 
  */
 
-cap log close _all
+cap log close indexhorseracewithdemo
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$estimates_dir"
@@ -69,7 +69,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/indexhorsewithdemo.smcl", replace text
+log using "$logdir/indexhorsewithdemo.smcl", replace text name(indexhorseracewithdemo)
 
 graph drop _all
 set more off
@@ -206,6 +206,6 @@ local time2 = c(current_time)
 di "Start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
-cap log close
+cap log close indexhorseracewithdemo
 cap translate "$logdir/indexhorsewithdemo.smcl" ///
   "$logdir/indexhorsewithdemo.log", replace

@@ -89,9 +89,9 @@ cap mkdir "$logdir"
 cap mkdir "$logdir/va"
  cd $vaprojdir
 
- log close _all
+ cap log close va_corr
 
- log using "$logdir/va/va_corr.smcl", replace text
+ log using "$logdir/va/va_corr.smcl", replace text name(va_corr)
 
  di as text _n "{hline 80}"
  di as text "va_corr.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -156,7 +156,7 @@ local time2 = c(current_time)
  di "End date time: `date2' `time2'"
 
 
-cap log close
+cap log close va_corr
 
 cap translate "$logdir/va/va_corr.smcl" ///
   "$logdir/va/va_corr.log", replace

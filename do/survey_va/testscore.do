@@ -51,7 +51,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close testscore
 clear all
 set more off
 
@@ -61,7 +61,7 @@ cap mkdir "$logdir/survey_va"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/schoolchar"
 
-log using "$logdir/survey_va/testscore.smcl", replace text
+log using "$logdir/survey_va/testscore.smcl", replace text name(testscore)
 
 
 // load up the subsample of students Matt is using. This includes grade 11 students in year 2015-2017 (year of the spring semester)
@@ -98,5 +98,5 @@ label data "SBAC 6th grade math and 8th grade ELA test score for 11 graders in 1
 save $datadir_clean/schoolchar/testscorecontrols, replace
 
 
-log close
+cap log close testscore
 translate $logdir/survey_va/testscore.smcl $logdir/survey_va/testscore.log, replace

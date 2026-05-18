@@ -67,7 +67,7 @@ do $vaprojdir/do_files/share/svyindex_tab.do
 09/12/2024: keep only fully restricted models
  */
 
-cap log close _all
+cap log close svyindex_tab
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
@@ -84,7 +84,7 @@ cap mkdir "$figures_dir"
 cap mkdir "$figures_dir/share"
 cap mkdir "$figures_dir/share/va"
 
-log using "$logdir/share/svyindex_tab.smcl", replace text
+log using "$logdir/share/svyindex_tab.smcl", replace text name(svyindex_tab)
 
 graph drop _all
 set more off
@@ -248,5 +248,5 @@ local time2 = c(current_time)
 di "Start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
-log close
+cap log close svyindex_tab
 translate $logdir/share/svyindex_tab.smcl $logdir/share/svyindex_tab.log, replace

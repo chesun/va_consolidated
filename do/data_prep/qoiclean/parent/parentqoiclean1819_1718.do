@@ -47,7 +47,7 @@ supercedes parentqoiclean1718.do*/
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close parentqoiclean1819_1718
 clear all
 set more off
 
@@ -61,7 +61,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/parent"
 
-log using "$logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.smcl", replace text
+log using "$logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.smcl", replace text name(parentqoiclean1819_1718)
 
 /* the code for cleaning 1819 and 1718 is exactly the same, so use loop */
 local years `" "1718" "1819" "'
@@ -283,5 +283,5 @@ save $datadir_clean/calschls/qoiclean/parent/parentqoiclean`year', replace
 }
 
 
-log close
+cap log close parentqoiclean1819_1718
 translate $logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.smcl $logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.log, replace

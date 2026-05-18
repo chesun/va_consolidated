@@ -48,7 +48,7 @@ do file by Matt Naven  */
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close siblingmatch
 clear all
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
@@ -59,7 +59,7 @@ cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/siblingxwalk"
 
 
-log using "$logdir/share/siblingxwalk/siblingmatch.smcl", replace text
+log using "$logdir/share/siblingxwalk/siblingmatch.smcl", replace text name(siblingmatch)
 
 //append all years of CST datasets, from 2004 to 2013
 foreach year of numlist 2004 (1) 2013 {
@@ -154,5 +154,5 @@ if `matchacrossyears' == 1 {
   save $datadir_clean/siblingxwalk/k12_xwalk_name_address, replace
 }
 
-log close
+cap log close siblingmatch
 translate $logdir/share/siblingxwalk/siblingmatch.smcl $logdir/share/siblingxwalk/siblingmatch.log, replace 

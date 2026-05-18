@@ -53,7 +53,7 @@ ORIGINAL HEADER preserved verbatim below.
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu *******************
 ********************************************************************************
-cap log close _all
+cap log close staffpooling
 clear all
 set more off
 
@@ -66,7 +66,7 @@ cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/poolingdata"
 cap mkdir "$datadir_clean/calschls/analysisready"
 
-log using "$logdir/data_prep/poolingdata/staffpooling.smcl", replace text
+log using "$logdir/data_prep/poolingdata/staffpooling.smcl", replace text name(staffpooling)
 
 /* first append all years to make a pnael dataset to calculate pooled stats */
 use $datadir_clean/calschls/qoiclean/staff/staffqoiclean1819, clear
@@ -142,5 +142,5 @@ compress
 save $datadir_clean/calschls/poolingdata/staffpooledstats, replace
 
 
-log close
+cap log close staffpooling
 translate $logdir/data_prep/poolingdata/staffpooling.smcl $logdir/data_prep/poolingdata/staffpooling.log, replace 

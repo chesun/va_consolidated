@@ -60,7 +60,7 @@ ORIGINAL HEADER preserved verbatim below.
 
 
 version 16.1
-cap log close _all
+cap log close clean_sch_char
 clear all
 ********************************************************************************
 * Description *
@@ -95,7 +95,7 @@ cap mkdir "$logdir/data_prep"
 cap mkdir "$logdir/data_prep/schl_chars"
 cap mkdir "$datadir_clean"
 
-log using "$logdir/data_prep/schl_chars/clean_sch_char.smcl", replace text
+log using "$logdir/data_prep/schl_chars/clean_sch_char.smcl", replace text name(clean_sch_char)
 
 
 graph drop _all
@@ -607,5 +607,5 @@ forvalues spring_year = `test_score_min_year' (1) `test_score_max_year' {
 
 timer off 1
 timer list
-log close
+cap log close clean_sch_char
 translate $logdir/data_prep/schl_chars/clean_sch_char.smcl $logdir/data_prep/schl_chars/clean_sch_char.log, replace
