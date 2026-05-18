@@ -278,10 +278,107 @@ eededa0 phase-1a(§3.5): dual sweep -- /* comment-bug fix + log-dir mirror acros
 5. **Post-smoke iteration**: address the 5 deferred M4-runner items (TODO Backlog) once we see actual smoke output indicating which manifest.
 6. **Phase 1c §5.4 polish**: 6 cosmetic items still deferred (CONVENTIONS-section sweep, dead-code hardcoded paths in dormant gates, missing ledger rows). + 1 follow-up: T2 helper idempotence (now resolved by commit `b261918`).
 
-## Status (end of 2026-05-17)
+## Status (mid-2026-05-17 evening — intermediate snapshot)
 
 - **Phase 1a §3.5 (M4):** infrastructure 100% in place. Comment-bug + log-dir-mirror dual sweep landed. Field guide ready for `claude-config` circulation. **Acceptance run currently executing on Scribe** with M4 flag = 1.
 - **Tree:** clean post-commit `b261918`; HEAD at `b261918` in sync with origin. m4_acceptance_run toggled to 1 in `do/main.do:115` for the active run (committed in this session's wrap-up).
 - **ADR ledger:** 21 Decided + 1 amendment to 0021 (2026-05-17). No new ADRs.
 - **Coder-critic audit trail (2026-05-17 evening):** 4 dispatches — dual-sweep round 1 BLOCK 62/100, dual-sweep round 2 PASS 90/100, T2-polish + field guide PASS. 1 escalation strike on the dual sweep round 1; resolved at round 2.
 - **TODO Backlog:** 4 items resolved today; T2 follow-up resolved this session; 9 items remain (6 cosmetic Phase 1c §5.4 + 5 post-smoke M4-runner items minus 1 resolved).
+
+---
+
+# Continuation — 2026-05-18
+
+## Headline
+
+M4 attempt #2 errored at `clean_acs_census_tract.do:406` with r(603) "could not be opened" because Stata's `mkdir` doesn't auto-create parent directories, and per-script `cap mkdir "$datadir_clean"` silently failed when `$datadir` (= `$consolidated_dir/data`) didn't exist first. Fixed via `do/settings.do` bootstrap block. Master log was also strangely truncated (7.4 KB only) because each nested .do does `cap log close _all` which kills main.do's master log — fixed via named-log sweep across 107 files. M4 attempt #3 then errored at `secqoiclean1415.do:89` r(110) "totalresp already defined" — root cause was the round-2 dual-sweep helper had **over-flattened** legitimate block-comment markers in 2 files (sec1415, sec1617), making bodies into runaway block comments. Round-3 helper fix added path-glob-aware predicates + context-aware inner rewriter. Portable field guide extended with Variant 8 documenting the over-flatten trap. Today's M4 retry NOT YET LAUNCHED (commits ready; sync to Scribe + next attempt is the next user step).
+
+## Per-step rollup (2026-05-18)
+
+### M4 attempt #2 — `clean_acs_census_tract.do` r(603)
+
+Christina launched main.do with `m4_acceptance_run = 1`. Master log started capturing properly (much bigger than attempt #1's 7.4 KB — eventually 240 KB). Phase 1 batch 9a started: `acs_2017_gen_dict.do` completed cleanly (4 ACS subject-table dictionaries written to `$output_dir/csv/acs/2017/`). Then `clean_acs_census_tract.do` errored at line 406 `save $datadir_clean/acs/acs_ca_census_tract_clean_2010.dta, replace` with r(603) "could not be opened".
+
+Christina caught: there was NO `data/` directory under `consolidated/` on Scribe at all. Diagnosis: Stata's `mkdir` does NOT auto-create parent directories. The per-script `cap mkdir "$datadir_clean"` (= `mkdir "$consolidated_dir/data/cleaned"`) silently failed because the parent `$datadir = $consolidated_dir/data` was never created. The `cap` swallowed the error.
+
+Fix (commit `5749872`): bootstrap block in `do/settings.do` lines 174-200 with `cap mkdir` for all 9 canonical top-level globals (`$consolidated_dir`, `$datadir`, `$datadir_clean`, `$datadir_raw`, `$estimates_dir`, `$output_dir`, `$logdir`, `$tables_dir`, `$figures_dir`). Idempotent via `cap`. Runs every time settings.do is included.
+
+### Named-log sweep — fix master-log-killed-by-nested-do (same commit)
+
+Discovered concurrently while reading the failed attempt #2 master log: only 7.4 KB captured. Investigation: every nested .do file starts with `cap log close _all` (predecessor convention), which closes ALL open logs — including main.do's master log opened at `log/main_<stamp>.smcl`. After the FIRST nested .do invocation, the master log is dead. Subsequent error context goes nowhere. The nested-do's own log briefly opens via `log using ...`, then closes on its `log close`; main.do's residual source echo after a downstream error leaks into whichever nested-do log happens to still be open when control returns.
+
+Fix: replace `cap log close _all` + unnamed `log using` + bare `log close` triplet with NAMED-log triplet across 107 .do files. Each script's stem becomes its log name (e.g., `name(clean_acs_census_tract)`). main.do special case uses `name(master)`. `cap log close <name>` only closes that specific log, not the master.
+
+Helper: `py/sweep_named_logs.py` (217 LOC; idempotent state-machine). Stats: 108 × `cap log close _all` → `cap log close <stem>`; 102 × `log using ... name(<stem>)` additions; 128 × bare `log close` → `log close <stem>` (covers early-exit branches in check files).
+
+coder-critic: round 1 PASS 95/100. Bundled with settings.do bootstrap in single commit `5749872`.
+
+### M4 attempt #3 — `secqoiclean1415.do` r(110) "totalresp already defined"
+
+Master log this run was 1.9 MB (vs 7.4 KB before — confirming the named-log fix worked!). Phase 1 batches 9a, 9b, 9c, 9d, parent-qoiclean batch 9e all completed. Then `secqoiclean1415.do:89` errored: `by cdscode: gen totalresp = _N` with r(110) "variable totalresp already defined".
+
+Diagnosis: the dataset at line 89 was inherited from the PREVIOUS script (parentqoiclean1819_1718.do, which already creates `totalresp`). Why did secqoiclean1415's body not run? Because the body (`use sec1415, clear`, `keep cdscode a14...`, foreach renames, etc.) was SILENTLY COMMENTED OUT.
+
+Root cause: the 2026-05-17 dual-sweep helper's `_flatten_lone_block_opens` pre-pass had **over-flattened** legitimate block-comment markers in 2 files (sec1415, sec1617). The pre-pass used greedy depth-counted `_find_matching_close` to find "multi-line outer blocks", then **blanket replaced** every `/*` and `*/` digraph in the inner span. For files with path-glob substrings inside the header (e.g., `$logdir/*`), the depth counter inflated past the real header close at line 40, and the matched outer-close landed at line 87 (a `* count ... */` line-comment with stray `*/` text). Inner span extended lines 2-87. Blanket replacement destroyed:
+- Line 40 `------*/` → `------<x>` (header close lost)
+- Line 44 `/* rename ... */` → `/<x> rename ... <x>` (single-line block destroyed)
+- Lines 73, 74, 80 (more single-line blocks destroyed)
+
+Stata then saw line 1's `/*` open with no `*/` until line 87 (which DID survive because it was in `*`-prefixed line-comment context, treated as text). Lines 2-87 became one giant runaway block comment. `use sec1415, clear` etc. all silent. At line 88 `sort cdscode`, dataset was inherited from previous script. Line 89 errored.
+
+### Round-3 helper fix (commit `06ccbdf`)
+
+Coder fix:
+1. **Restoration**: 7 surgical edits across 2 files (sec1415 lines 40/44/73/74/80; sec1617 lines 40/44) restoring `*/` and `/* ... */` markers
+2. **Helper rewrite**: new predicates `_is_path_glob_open` / `_is_path_glob_close` (preceded/followed by path-continuation char). `_find_matching_close` now skips path-glob digraphs when counting depth. New `_rewrite_inner_block_markers` walks the inner span char-by-char and rewrites ONLY real block markers (whitespace-adjacent), preserving path-globs (which Transform 1 state machine handles natively). `_flatten_lone_block_opens` calls the new walker instead of blanket `inner.replace(...)`.
+3. **Field guide extension**: appended Variant 8 ("Over-flatten bug in fix-tool pre-pass — round-2 trap") to `master_supporting_docs/stata-block-comment-bug-field-guide.md` with concrete example, detection greps, root-cause analysis, fix pattern, reference implementation. Plus updates to §3 (detection commands), §4 (path-glob-awareness invariant), §6 (false-fix row), §7 (case study), §8 (history).
+
+coder-critic: round 1 PASS 95/100. Three non-blocking polish items deferred + addressed in follow-up commit `33d41c6`:
+- Round-3 review cited in helper REFERENCES block
+- TODO Backlog entry for idempotence regression test
+- Round-2 review Status set to `Superseded by 2026-05-18_overflatten-fix_coder_review.md`
+
+### Inventory check
+
+Across 86 files containing `/<x> ... <x>` patterns, ONLY sec1415 and sec1617 had the over-flatten damage. All other files' `/<x>` patterns are LEGITIMATE path-glob rewrites in headers — not over-flatten artifacts. Confirmed via `grep '^-+<x>$'` returning only 2 hits.
+
+Other path-glob-heavy headers (secpooling, renamedata, allvaregs) were spot-checked: their header closes at the expected line are intact. So the over-flatten was specific to these 2 files (likely because their headers' path-globs happened to inflate the depth counter past the real close — a function of where path-glob `/*` substrings appear in the header text and the file's overall structure).
+
+## Today's commits (2026-05-18)
+
+```
+33d41c6 docs: 3 polish items from round-3 over-flatten fix review
+06ccbdf phase-1a(§3.5): fix over-flatten bug (round-3 helper fix) + extend field guide
+5749872 phase-1a(§3.5): bootstrap settings.do + named-log sweep across 107 files
+```
+
+(Plus 4 commits earlier today from before the over-flatten discovery: `d0991f2` track logs, `c64a1b7` TODO update for named-log follow-up.)
+
+## Process learnings (cumulative — append, #13-15)
+
+13. **Stata's `mkdir` doesn't auto-create parent directories.** Per-script `cap mkdir "$datadir_clean"` failed silently when `$datadir` didn't exist. The `cap` swallowed the error. Fix: bootstrap all top-level globals in settings.do. Future workflow rule: any settings.do that defines a directory global should also `cap mkdir` it as part of the bootstrap. Codify in stata-code-conventions.md as part of the consolidation pattern.
+
+14. **`cap log close _all` is a predecessor anti-pattern.** It closes ALL open logs, including the orchestrator's master log. In a single-script-runs-standalone world it's defensive (closes any inherited log); in a master.do-invokes-many-scripts world it kills the master log irrecoverably. Named logs (`name(<stem>)`) are the correct pattern: `cap log close <stem>` only closes that script's log; master log survives. Codify in stata-code-conventions.md.
+
+15. **Pre-pass "fake nested comment" detection must be path-glob-aware.** The round-2 dual-sweep helper used greedy depth-counted matching to find "multi-line outer blocks", treating path-glob `/*` substrings (e.g., `$logdir/*`) as depth-incrementing opens — matching Stata's parser behavior precisely. But then it blanket-replaced ALL `/*` and `*/` digraphs in the inner span, destroying legitimate block markers (header close + single-line body blocks). Round-3 fix: predicates distinguish path-glob digraphs from real block markers; the inner rewriter only touches real markers. Captured in the field guide as Variant 8 + §6 false-fix row + §4 critical-invariant bullet. Codified for cross-project use.
+
+## Next session pickup (updated 2026-05-18)
+
+1. **Christina syncs commits `5749872`, `06ccbdf`, `33d41c6` to Scribe** (3 commits, ~80 files modified across them, all .do files + helpers + reviews + docs).
+2. **Christina re-launches M4 acceptance** with `m4_acceptance_run = 1` already committed: `nohup stata-mp -b do do/main.do &`.
+3. **Phase 1 should now progress** through all of batch 9e (parent + sec + staff qoiclean), 9g (responserate), 9f (poolingdata), into Phase 2 (samples — quick), then Phase 3 (VA estimation — multi-hour, the bottleneck).
+4. **If main.do completes**: launch M4 smoke (`tier_filter = "smoke"` already set in `do/check/m4_golden_master.do:380`).
+5. **Then paper tier, then full tier** per `quality_reports/plans/2026-05-17_m4-golden-master-protocol.md`.
+6. **Post-smoke iteration**: the 5 deferred M4-runner items + 6 cosmetic Phase 1c §5.4 items remain on TODO Backlog.
+
+## Status (end of 2026-05-18)
+
+- **Phase 1a §3.5 (M4):** infrastructure COMPLETE + 4 attempts behind us (1: silent comment bug; 2: r(603) no `data/` dir; 3: r(110) over-flatten). All 4 root causes diagnosed + fixed. Attempt #4 prerequisites ready.
+- **Tree:** clean post-commit `33d41c6`; HEAD in sync with origin.
+- **ADR ledger:** 21 Decided + 1 amendment to 0021 (2026-05-17). No new ADRs this session.
+- **Helper evolution:** `py/sweep_comments_and_logdirs.py` round 1 (narrow regex) → round 2 (state-machine) → round 3 (path-glob-aware predicates). `py/sweep_named_logs.py` new helper.
+- **Field guide:** 8 Variants documented + path-glob-awareness invariant + false-fix rows + case study. Portable to `claude-config`.
+- **Coder-critic audit trail (2026-05-18):** 5 dispatches — bootstrap+named-log PASS 95/100; restoration+helper-fix PASS 95/100; field-guide extension PASS; polish items PASS 98/100. 0 BLOCK verdicts in this session.
+- **TODO Backlog:** 5 items resolved across 2026-05-17 + 2026-05-18 (named-log triplet, T2 idempotence, 3 polish items); 9 items remain (6 cosmetic + 5 post-smoke minus 2 already resolved). 1 new entry added: idempotence regression test.
+- **Total commits today (2026-05-18):** 3 substantive + 4 housekeeping/follow-up = 7. Combined 2026-05-17 + 2026-05-18: ~15 commits.

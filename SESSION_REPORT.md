@@ -1991,3 +1991,71 @@ Pre-flight prep (low-effort, agent-side): write M4 verification protocol doc at 
 Down-stream: Phase 1b bug fixes; Phase 1c cosmetic + offboarding + acceptance + `v1.0-final` tag.
 
 End-of-session log: `quality_reports/session_logs/2026-05-08_END-OF-SESSION_phase-1a-3.3-complete.md`.
+
+## 2026-05-16 to 2026-05-18 — M4 acceptance run prep + 4 attempts
+
+**Multi-day arc working through M4 golden-master verification (Phase 1a §3.5) per ADR-0018 acceptance criteria.** 16+ commits across 3 days addressing pre-flight audit findings, comment-bug discovery, dual-sweep helper development, and 4 acceptance-run attempts.
+
+### Operations
+- Pre-flight Tier-2 audit of 110 active .do files (4 parallel coder-critics): 3 Critical chain regressions caught + fixed.
+- Phase 1a §3.3 deferred items resolved: check_survey_indices parent path, t1_empirical_tests archive, 12 absolute include repointings across 6 .doh files.
+- M4 infrastructure built: `do/check/m4_path_matrix.csv` (8,324 rows), `do/check/m4_golden_master.do` (663 LOC; air-gapped Stata diff runner with tier selector), `quality_reports/plans/2026-05-17_m4-golden-master-protocol.md` (operator guide).
+- M4_ACCEPTANCE_RUN flag added to main.do (override 3 sub-toggles).
+- 2 main.do bugs Christina caught: Phase 7 data checks commented out as TODO stubs; 4 `*`-prefixed lines with `/*` substrings creating runaway block comments.
+- Comprehensive dual sweep across 111 files: path-glob `/*` → `/<x>` + log-directory mirror.
+- Settings.do bootstrap + named-log sweep across 107 files.
+- Round-3 over-flatten fix: 2 files restored + helper made path-glob-aware in both matcher and inner rewriter.
+- Portable field guide at `master_supporting_docs/stata-block-comment-bug-field-guide.md` (8 variants, 561 lines).
+- 4 M4 attempts: #1 silent comment bug (89/129 files affected); #2 r(603) no `data/` dir; #3 r(110) over-flatten dormant-code activation; #4 prerequisites ready, not yet launched.
+
+### Decisions
+- Option B for the comment-bug fix (path-glob `*` → `<x>` in comments) over Option A (eliminate `/* */` blocks). Reason: A alone doesn't fix the bug (same parser issue affects `*` line comments containing `/*`); B preserves header structure.
+- Drop `check_comments.do` runtime invariant — Christina's call: belongs at commit-time (grep) not Stata-runtime.
+- Bundle log-directory mirror with the dual sweep — both transforms in one Python helper.
+- Log/output dirs tracked in git per Christina's call — accumulates audit trail across runs.
+
+### Results
+- 89→0 files with unbalanced `/*` vs `*/` after dual sweep.
+- 11 site-of-failure issues caught by adversarial pairing (5 round-1 critical + 4 additional round-2 + 2 over-flatten round-3).
+- Master log capture restored: 7.4 KB (broken) → 1.9 MB (working) after named-log sweep.
+- Sandbox-write discipline (ADR-0021) confirmed pipeline-wide; 0 LEGACY writes in active code.
+- Field guide ready to circulate to other applied-econ projects via `claude-config`.
+
+### Commits (chronological)
+- `6607445` close 3 Critical chain regressions before golden-master
+- `6d5981d` pre-flight M4 audit — 4-partition coder-critic + 2 round-2 PASS
+- `567b01d` add M4 golden-master infrastructure
+- `07b8f80` M4 protocol doc + air-gap rule tightened
+- `c2d208c` M4_ACCEPTANCE_RUN flag + fix missing settings include
+- `55b0c13` fix two main.do bugs before M4 acceptance run
+- `5782189` fix 3 M4-blocking latent issues
+- `38c6dbb` toggle m4_acceptance_run=1 + session log
+- `b261918` T2 idempotence fix + sweep-helper polish + portable field guide
+- `eededa0` dual sweep `/*` comment-bug fix + log-dir mirror across 111 files
+- `d0991f2` track previously-untracked logs + outputs + codebook export
+- `c64a1b7` TODO update for named-log follow-up
+- `5749872` bootstrap settings.do + named-log sweep across 107 files
+- `06ccbdf` fix over-flatten bug (round-3 helper fix) + extend field guide
+- `33d41c6` 3 polish items from round-3 over-flatten fix review
+
+### Cumulative process learnings appended to MEMORY.md
+- `[LEARN:stata]` Stata's `/*` parser is greedy — never use `*` as path-glob wildcard in comments; use `<x>`.
+- `[LEARN:stata]` Stata's `mkdir` doesn't auto-create parents — bootstrap top-level globals in settings.do.
+- `[LEARN:stata]` `cap log close _all` in nested .do files kills master log irrecoverably — use named logs.
+- `[LEARN:stata]` Fix-tool pre-pass must be path-glob-aware in BOTH matcher AND inner rewriter — blanket `inner.replace()` is wrong.
+
+### Status
+- Phase 1a §3.5 (M4): infrastructure 100% in place; 4 attempts behind us; all 4 root causes diagnosed + fixed; **attempt #4 prerequisites ready, NOT YET LAUNCHED**.
+- Tree clean; HEAD `33d41c6` in sync with origin.
+- ADR ledger: 21 Decided + 1 amendment to 0021 (2026-05-17).
+- TODO Backlog: 5 items resolved across 2026-05-17/18; 9 items remain (6 cosmetic Phase 1c §5.4 + 3 post-smoke M4-runner items + 1 idempotence test).
+
+### Next session pickup
+1. Sync 3 recent commits to Scribe (`5749872`, `06ccbdf`, `33d41c6`).
+2. Re-launch M4 acceptance: `nohup stata-mp -b do do/main.do &`.
+3. Monitor Phase 1 → Phase 2 → Phase 3 (multi-hour VA estimation bottleneck).
+4. On completion: M4 smoke → paper → full per protocol.
+5. Post-smoke iteration on the 5 deferred M4-runner improvements.
+
+### Detailed session log
+`quality_reports/session_logs/2026-05-16_m4-pre-flight-audit-and-protocol.md` (multi-day arc with continuation sections for 2026-05-17 and 2026-05-18).
