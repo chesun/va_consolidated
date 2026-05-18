@@ -43,7 +43,7 @@ OUTPUTS
                                             (intermediate; read back at step 3)
       $datadir_clean/siblingxwalk/sibling_out_xwalk.dta
                                           — final sibling-outcomes crosswalk
-      $logdir/siblingoutxwalk.smcl + .log — per-do-file log
+      $logdir/sibling_xwalk/siblingoutxwalk.smcl + .log — per-do-file log
 
 ROLE IN ADR-0021 SANDBOX
     Reads LEGACY paths for (a) static predecessor inputs (caschls helpers,
@@ -71,7 +71,7 @@ RELOCATION HISTORY (per ADR-0005, applied 2026-04-30)
       - $projdir prefix on includes -> $caschls_projdir (explicit-named global
         per do/settings.do "LEGACY PATHS" comment block)
       - $projdir/log/share/siblingvaregs/sibling_out_xwalk.smcl
-        -> $logdir/siblingoutxwalk.smcl (CANONICAL)
+        -> $logdir/sibling_xwalk/siblingoutxwalk.smcl (CANONICAL)
       - $projdir/dta/common_core_va/k12_postsecondary_out_merge
         -> $datadir_clean/common_core_va/k12_postsecondary_out_merge (CANONICAL)
       - $projdir/dta/siblingxwalk/sibling_out_xwalk
@@ -130,8 +130,9 @@ cap mkdir "$datadir_clean/common_core_va"
 cap mkdir "$datadir_clean/siblingxwalk"
 cap mkdir "$logdir"
 
+cap mkdir "$logdir/sibling_xwalk"
 * --- per-do-file log (CANONICAL per ADR-0021 + plan v3 §5.1 step 2) ----------
-log using "$logdir/siblingoutxwalk.smcl", replace text
+log using "$logdir/sibling_xwalk/siblingoutxwalk.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "siblingoutxwalk.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -355,6 +356,6 @@ di as text "{hline 80}"
 cd "$consolidated_dir"
 
 cap log close
-cap translate "$logdir/siblingoutxwalk.smcl" "$logdir/siblingoutxwalk.log", replace
+cap translate "$logdir/sibling_xwalk/siblingoutxwalk.smcl" "$logdir/sibling_xwalk/siblingoutxwalk.log", replace
 
 * end of file

@@ -12,17 +12,17 @@ INVOKED FROM
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox)
     $estimates_dir/va_cfr_all_v[12]/{vam,spec_test,fb_test,va_est_dta}/<outcome>_s_sp_sib1_ct[_sib2_lv].{ster,dta}
-    $logdir/va_out_sib_lag.smcl + .log
+    $logdir/va/va_out_sib_lag.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 3 batch 3d, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/sbac/va_out_sib_lag.do
     Path repointing applied via script-based sed pass (same as batch 3c2):
-      $vaprojdir/log_files/sbac/* -> $logdir/*
+      $vaprojdir/log_files/sbac/<x> -> $logdir/<x>
       $vaprojdir/data/va_samples_* -> $datadir_clean/va_samples_*
-      $vaprojdir/estimates/* -> $estimates_dir/*
-      $vaprojdir/tables/* -> $tables_dir/*
+      $vaprojdir/estimates/<x> -> $estimates_dir/<x>
+      $vaprojdir/tables/<x> -> $tables_dir/<x>
       $vaprojdir/do_files/sbac/{macros_va,macros_va_all_samples_controls,drift_limit}.doh
-        -> $consolidated_dir/do/va/helpers/* (absolute per batch 2c convention)
+        -> $consolidated_dir/do/va/helpers/<x> (absolute per batch 2c convention)
 
 ADRs: 0004 (canonical pipeline), 0009 (v1 canonical), 0021 (sandbox; description convention)
 ORIGINAL CHANGE LOG preserved verbatim below.
@@ -61,11 +61,12 @@ cap mkdir "$estimates_dir/va_cfr_all_v2/va_est_dta"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
 cd $vaprojdir
 
 cap log close _all
 
-log using "$logdir/va_out_sib_lag.smcl", replace text
+log using "$logdir/va/va_out_sib_lag.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "va_out_sib_lag.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -202,8 +203,8 @@ di "Start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
 cap log close
-cap translate "$logdir/va_out_sib_lag.smcl" ///
-  "$logdir/va_out_sib_lag.log", replace
+cap translate "$logdir/va/va_out_sib_lag.smcl" ///
+  "$logdir/va/va_out_sib_lag.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

@@ -19,16 +19,16 @@ RELOCATION (per plan v3 §3.3 step 9 batch 9c, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/k12_postsec_distance/hd2021.do
     Path repointing applied (script-based methodology):
       cd $vaprojdir                                          -> removed (absolute paths)
-      log_files/k12_postsec_distance/* (absolute form)       -> $logdir/*  (CANONICAL)
+      log_files/k12_postsec_distance/<x> (absolute form)       -> $logdir/<x>  (CANONICAL)
       include $vaprojdir/do_files/sbac/macros_va.doh         -> include $consolidated_dir/do/va/helpers/macros_va.doh
       include $vaprojdir/do_files/k12_postsec_distance/<x>.doh -> include $consolidated_dir/do/data_prep/k12_postsec_distance/<x>.doh
       run/do $vaprojdir/do_files/k12_postsec_distance/<x>     -> run/do $consolidated_dir/do/data_prep/k12_postsec_distance/<x>
       $distance_dtadir/clean/k12_postsec_distance             -> $datadir_clean/k12_postsec_distance/clean/k12_postsec_distance  (CANONICAL chain)
       $distance_dtadir/clean/k12_postsec_mindistance          -> $datadir_clean/k12_postsec_distance/clean/k12_postsec_mindistance  (CANONICAL chain)
       save, replace (reconcile_cdscodes.do; in-place after use) -> explicit save $datadir_clean/k12_postsec_distance/clean/k12_postsec_mindistance.dta, replace
-      translate (multi-line ///) ABS form                     -> translate $logdir/*  (CANONICAL)
-      $distance_dtadir/raw/* (LEGACY raw)                     -> kept LEGACY (predecessor raw IPEDS / CDE inputs)
-      $vaprojdir/data/k12_postsec_distance/raw/*              -> kept LEGACY (raw inputs; equivalent to $distance_dtadir/raw/*)
+      translate (multi-line ///) ABS form                     -> translate $logdir/<x>  (CANONICAL)
+      $distance_dtadir/raw/<x> (LEGACY raw)                     -> kept LEGACY (predecessor raw IPEDS / CDE inputs)
+      $vaprojdir/data/k12_postsec_distance/raw/<x>              -> kept LEGACY (raw inputs; equivalent to $distance_dtadir/raw/<x>)
 
     SECURITY SCRUB applied: OpenCage API key (revoked 2026-04-30 per T1-5)
     in commented `opencagegeo' line of k12_postsec_distances.do replaced

@@ -16,7 +16,7 @@ INPUTS
         `merge_public_schools`) in `score_b.dta`.
 
 OUTPUTS
-    Per-do-file log: $logdir/check_merges.smcl + .log
+    Per-do-file log: $logdir/check/check_merges.smcl + .log
     On `assert` failure: pipeline halts; partial outputs preserved.
 
 ROLE IN ADR-0021 SANDBOX
@@ -51,7 +51,9 @@ cap log close _all
 set linesize 120
 
 cap mkdir "$logdir"
-log using "$logdir/check_merges.smcl", replace text
+
+cap mkdir "$logdir/check"
+log using "$logdir/check/check_merges.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "check_merges.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -87,7 +89,7 @@ else {
             di as error "  FAIL: `m' has more than 5 distinct values"
             qui tab `m', missing
             cap log close
-            cap translate "$logdir/check_merges.smcl" "$logdir/check_merges.log", replace
+            cap translate "$logdir/check/check_merges.smcl" "$logdir/check/check_merges.log", replace
             exit _rc
         }
         di as text "  PASS: `m' has <=5 distinct values (canonical _merge codes)"
@@ -150,6 +152,6 @@ di as text "check_merges.do — RUN END: `c(current_date)' `c(current_time)'"
 di as text "{hline 80}"
 
 cap log close
-cap translate "$logdir/check_merges.smcl" "$logdir/check_merges.log", replace
+cap translate "$logdir/check/check_merges.smcl" "$logdir/check/check_merges.log", replace
 
 * end of file

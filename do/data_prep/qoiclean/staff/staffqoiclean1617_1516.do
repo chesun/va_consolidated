@@ -17,8 +17,8 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/calschls/qoiclean/staff/staffqoiclean`year'
-    $logdir/staffqoiclean1617_1516.smcl (via log using)
-    $logdir/staffqoiclean1617_1516.smcl + $logdir/staffqoiclean1617_1516.log (translate)
+    $logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.smcl (via log using)
+    $logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.smcl + $logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
     Source: caschls/do/build/buildanalysisdata/qoiclean/staff/staffqoiclean1617_1516.do
@@ -29,7 +29,7 @@ RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
         -> $datadir_clean/calschls/qoiclean/<sub>/<x>  (CANONICAL chain output)
       $clndtadir/<sub>/<x> (read) -> $datadir_clean/calschls/<sub>/<x>
         (CHAIN read; produced by renamedata batch 9d in same Stata session)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
 
 REFERENCES
     ADRs:   0021 (sandbox; description convention)
@@ -54,12 +54,15 @@ set varabbrev off, perm //set variable abbreviation permanently off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/qoiclean"
+cap mkdir "$logdir/data_prep/qoiclean/staff"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/staff"
 
-log using "$logdir/staffqoiclean1617_1516.smcl", replace text
+log using "$logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.smcl", replace text
 
 /* the code for cleaning 1516 and 1617 is exactly the same, so use the same code to clean them */
 local years `" "1516" "1617" "'
@@ -183,7 +186,7 @@ foreach year of local years {
 
 
 /* Note: include qoi 41 with the rest in creating statistics for agree/disagree after recoding of values
-  /* note: mean of qoi41 is not comparable to later years */
+  /<x> note: mean of qoi41 is not comparable to later years <x>
   gen all41 = 0
   replace all41 = 1 if qoi41 == 1
 
@@ -358,14 +361,14 @@ foreach year of local years {
     label var neither`i' "number of people choosing not applicable for qoi`i'"
   }
 /*
-  /* label the response options for qoi41 */
+  /<x> label the response options for qoi41 <x>
   label var all41 "number of people choosing nearly all adults for qoi41"
   label var most41 "number of people choosing most adults for qoi41"
   label var some41 "number of people choosing some adults for qoi41"
   label var few41 "number of people choosing few adults for qoi41"
   label var none41 "number of people choosing almost none for qoi41"
 
-  /* label the response options for 128  */
+  /<x> label the response options for 128  <x>
   foreach i of numlist 128 {
     label var strdisagree`i' "number of people choosing strongly disagree for qoi`i'"
     label var disagree`i' "number of people choosing disagree for qoi`i'"
@@ -406,13 +409,13 @@ foreach year of local years {
   }
 
 /*
-  /* Note: treat all and most as agree, some few and none as disagree in qoi41 */
+  /<x> Note: treat all and most as agree, some few and none as disagree in qoi41 <x>
   gen pctagree41 = (all41 + most41)/nettotalresp41
   label var pctagree41 "percent all or most adults in qoi41, equivlent to agree"
   gen pctdisagree41 = (some41 + few41 + none41)/nettotalresp41
   label var pctdisagree41 "percent some, few, or none in qoi41, equivalent to disagree" */
 /*
-  /* generate percentage agree/disagree for qoi 128 */
+  /<x> generate percentage agree/disagree for qoi 128 <x>
   foreach i of numlist 128 {
     gen pctdisagree`i' = (strdisagree`i' + disagree`i')/nettotalresp`i'
     label var pctdisagree`i' "percent strongly disagree or disagree in qoi`i'"
@@ -449,4 +452,4 @@ foreach year of local years {
 
 
 log close
-translate $logdir/staffqoiclean1617_1516.smcl $logdir/staffqoiclean1617_1516.log, replace 
+translate $logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.smcl $logdir/data_prep/qoiclean/staff/staffqoiclean1617_1516.log, replace 

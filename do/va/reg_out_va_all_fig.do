@@ -10,20 +10,20 @@ INVOKED FROM
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox)
     $figures_dir/va_cfr_all_v[12]/{het_reg_chars,het_reg_prior_score,het_reg_combined_panels/score_va}/<...>.pdf + $output_dir/gph_files/va_cfr_all_v[12]/{het_reg_chars,het_reg_prior_score}/<...>.gph
-    $logdir/reg_out_va_all_fig.smcl + .log
+    $logdir/va/reg_out_va_all_fig.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 3 batch 3c2, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/sbac/reg_out_va_all_fig.do
     Path repointing applied via script-based sed pass (same as reg_out_va_all.do):
-      $vaprojdir/log_files/sbac/* -> $logdir/*
+      $vaprojdir/log_files/sbac/<x> -> $logdir/<x>
       $vaprojdir/data/va_samples_* -> $datadir_clean/va_samples_*
-      $vaprojdir/data/sbac/* -> $datadir_clean/sbac/*
-      $vaprojdir/estimates/* -> $estimates_dir/*
-      $vaprojdir/tables/* -> $tables_dir/*
-      $vaprojdir/figures/* -> $figures_dir/*
-      $vaprojdir/gph_files/* -> $output_dir/gph_files/*
+      $vaprojdir/data/sbac/<x> -> $datadir_clean/sbac/<x>
+      $vaprojdir/estimates/<x> -> $estimates_dir/<x>
+      $vaprojdir/tables/<x> -> $tables_dir/<x>
+      $vaprojdir/figures/<x> -> $figures_dir/<x>
+      $vaprojdir/gph_files/<x> -> $output_dir/gph_files/<x>
       $vaprojdir/do_files/sbac/{macros_va,macros_va_all_samples_controls,drift_limit}.doh
-        -> $consolidated_dir/do/va/helpers/* (absolute per batch 2c convention)
+        -> $consolidated_dir/do/va/helpers/<x> (absolute per batch 2c convention)
 
 ADRs: 0004 (canonical pipeline), 0009 (v1 canonical), 0021 (sandbox; description convention)
 ORIGINAL CHANGE LOG preserved verbatim below.
@@ -71,11 +71,12 @@ cap mkdir "$output_dir/gph_files"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
 cd $vaprojdir
 
 cap log close _all
 
-log using "$logdir/reg_out_va_all_fig.smcl", replace text
+log using "$logdir/va/reg_out_va_all_fig.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "reg_out_va_all_fig.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -649,8 +650,8 @@ di "Start date time /reg_out_va_all_fig.do: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
 cap log close
-cap translate "$logdir/reg_out_va_all_fig.smcl" ///
-  "$logdir/reg_out_va_all_fig.log", replace
+cap translate "$logdir/va/reg_out_va_all_fig.smcl" ///
+  "$logdir/va/reg_out_va_all_fig.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

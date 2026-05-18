@@ -19,17 +19,17 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/calschls/responserate/secresponserate
-    $logdir/secresponserate.smcl (via log using)
-    $logdir/secresponserate.smcl + $logdir/secresponserate.log (translate)
+    $logdir/data_prep/responserate/secresponserate.smcl (via log using)
+    $logdir/data_prep/responserate/secresponserate.smcl + $logdir/data_prep/responserate/secresponserate.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9g — extension batch added 2026-05-08)
     Source: caschls/do/build/buildanalysisdata/responserate/secresponserate.do
     Path repointing applied (script-based methodology):
-      $projdir/log/build/buildanalysisdata/responserate/* -> $logdir/* (CANONICAL)
-      $projdir/dta/buildanalysisdata/demotrim/<sub>/* -> $datadir_clean/calschls/demotrim/<sub>/* (CANONICAL chain)
-      $projdir/dta/buildanalysisdata/responserate/* -> $datadir_clean/calschls/responserate/* (CANONICAL output for batch 9f)
-      $projdir/dta/demographics/<sub>/* (read) -> $caschls_projdir/dta/demographics/<sub>/* (LEGACY raw)
-      translate -> $logdir/* (CANONICAL)
+      $projdir/log/build/buildanalysisdata/responserate/<x> -> $logdir/<x> (CANONICAL)
+      $projdir/dta/buildanalysisdata/demotrim/<sub>/<x> -> $datadir_clean/calschls/demotrim/<sub>/<x> (CANONICAL chain)
+      $projdir/dta/buildanalysisdata/responserate/<x> -> $datadir_clean/calschls/responserate/<x> (CANONICAL output for batch 9f)
+      $projdir/dta/demographics/<sub>/<x> (read) -> $caschls_projdir/dta/demographics/<sub>/<x> (LEGACY raw)
+      translate -> $logdir/<x> (CANONICAL)
     Predecessor's `log using' upgraded to consolidated convention with
     double-quotes + `text' flag.
 
@@ -55,11 +55,13 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/responserate"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/responserate"
 
-log using "$logdir/secresponserate.smcl", replace text
+log using "$logdir/data_prep/responserate/secresponserate.smcl", replace text
 
 use $datadir_clean/calschls/demotrim/secondary/trimsecdemo1415, replace
 merge 1:1 cdscode using $datadir_clean/calschls/demotrim/secondary/trimsecdemo1516
@@ -143,4 +145,4 @@ save $datadir_clean/calschls/responserate/secresponserate, replace
 
 
 log close
-translate $logdir/secresponserate.smcl $logdir/secresponserate.log, replace 
+translate $logdir/data_prep/responserate/secresponserate.smcl $logdir/data_prep/responserate/secresponserate.log, replace 

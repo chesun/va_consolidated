@@ -51,7 +51,7 @@ OUTPUTS
       $datadir_clean/va_samples_v1/out_as.dta        — ACS + sibling (v1)
       $datadir_clean/va_samples_v1/out_las.dta       — leave-out + ACS + sibling (v1)
       $datadir_clean/va_samples_v2/out_*.dta         — same 8 files for v2
-      $logdir/create_out_samples.smcl + .log         — per-do-file log
+      $logdir/samples/create_out_samples.smcl + .log         — per-do-file log
 
 ROLE IN ADR-0021 SANDBOX
     Reads LEGACY (Matt's merger; sample-construction merge helpers; restricted-access
@@ -65,7 +65,7 @@ RELOCATION HISTORY (per plan v3 §3.3 step 2 batch 2b, applied 2026-05-07)
                         -> $consolidated_dir/do/samples/create_out_samples.do
       - L39 `cd $vaprojdir' preserved (predecessor pattern); restored at end.
       - L44 log target: $vaprojdir/log_files/sbac/create_out_samples.smcl
-                     -> CANONICAL `$logdir/create_out_samples.smcl'
+                     -> CANONICAL `$logdir/samples/create_out_samples.smcl'
       - L54 `include do_files/sbac/macros_va.doh'
          -> `include $consolidated_dir/do/va/helpers/macros_va.doh' (relocated 2026-04-30)
       - L66 `include do_files/sbac/create_va_sample.doh'
@@ -150,12 +150,13 @@ cap mkdir "$datadir_clean/va_samples_v2"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/samples"
  cd $vaprojdir
 
  log close _all
 
 
- log using "$logdir/create_out_samples.smcl", replace text
+ log using "$logdir/samples/create_out_samples.smcl", replace text
 
  di as text _n "{hline 80}"
  di as text "create_out_samples.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -358,8 +359,8 @@ timer off 1
 timer list
 
 cap log close
-cap translate "$logdir/create_out_samples.smcl" ///
-  "$logdir/create_out_samples.log", replace
+cap translate "$logdir/samples/create_out_samples.smcl" ///
+  "$logdir/samples/create_out_samples.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

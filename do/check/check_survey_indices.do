@@ -20,7 +20,7 @@ INPUTS
     under do/survey_va/.
 
 OUTPUTS
-    Per-do-file log: $logdir/check_survey_indices.smcl + .log
+    Per-do-file log: $logdir/check/check_survey_indices.smcl + .log
     On `assert` failure: pipeline halts; partial outputs preserved.
 
 ROLE IN ADR-0021 SANDBOX
@@ -78,7 +78,9 @@ cap log close _all
 set linesize 120
 
 cap mkdir "$logdir"
-log using "$logdir/check_survey_indices.smcl", replace text
+
+cap mkdir "$logdir/check"
+log using "$logdir/check/check_survey_indices.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "check_survey_indices.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -148,7 +150,7 @@ foreach src_tag in calschls_1 calschls_2 {
     if _rc {
         di as error "  FAIL: `src_label' source _N = " r(N) " (expected 5625)"
         cap log close
-        cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+        cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
         exit _rc
     }
     di as text "  PASS: `src_label' source _N == 5625"
@@ -162,14 +164,14 @@ foreach src_tag in calschls_1 calschls_2 {
         if _rc {
             di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (expected ∈ [-2.01, 0])"
             cap log close
-            cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit _rc
         }
         capture assert inrange(r(max), 0, 2.01)
         if _rc {
             di as error "  FAIL: `src_label' `v' max = " %7.4f r(max) " (expected ∈ [0, 2.01])"
             cap log close
-            cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit _rc
         }
     }
@@ -181,7 +183,7 @@ foreach src_tag in calschls_1 calschls_2 {
         if _rc {
             di as error "  FAIL: `src_label' source missing required item `v'"
             cap log close
-            cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit _rc
         }
     }
@@ -215,28 +217,28 @@ foreach idx_tag in imputed compcase {
         if _rc {
             di as error "  FAIL: `idx_tag' `z' mean = " %7.4f r(mean) " (expected |.| < 0.01)"
             cap log close
-            cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit _rc
         }
         capture assert inrange(r(sd), 0.95, 1.05)
         if _rc {
             di as error "  FAIL: `idx_tag' `z' SD = " %7.4f r(sd) " (expected ∈ [0.95, 1.05])"
             cap log close
-            cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit _rc
         }
         capture assert inrange(r(min), -5, -1)
         if _rc {
             di as error "  FAIL: `idx_tag' `z' min = " %7.4f r(min) " (expected ∈ [-5, -1])"
             cap log close
-            cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit _rc
         }
         capture assert inrange(r(max), 1, 5)
         if _rc {
             di as error "  FAIL: `idx_tag' `z' max = " %7.4f r(max) " (expected ∈ [1, 5])"
             cap log close
-            cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit _rc
         }
     }
@@ -253,7 +255,7 @@ foreach idx_tag in imputed compcase {
             di as error "  FAIL: `idx_tag' raw `idx' min = " %7.4f r(min) " (expected ∈ [-2.01, 0])"
             di as error "        Indicates ADR-0011 sums→means fix has NOT been applied to `idx_tag'."
             cap log close
-            cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit _rc
         }
         capture assert inrange(r(max), 0, 2.01)
@@ -261,7 +263,7 @@ foreach idx_tag in imputed compcase {
             di as error "  FAIL: `idx_tag' raw `idx' max = " %7.4f r(max) " (expected ∈ [0, 2.01])"
             di as error "        Indicates ADR-0011 sums→means fix has NOT been applied to `idx_tag'."
             cap log close
-            cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit _rc
         }
     }
@@ -294,6 +296,6 @@ di as text "check_survey_indices.do — RUN END: `c(current_date)' `c(current_ti
 di as text "{hline 80}"
 
 cap log close
-cap translate "$logdir/check_survey_indices.smcl" "$logdir/check_survey_indices.log", replace
+cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
 
 * end of file

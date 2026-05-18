@@ -13,7 +13,7 @@ INPUTS
     lands.
 
 OUTPUTS
-    Per-do-file log: $logdir/check_paper_outputs.smcl + .log
+    Per-do-file log: $logdir/check/check_paper_outputs.smcl + .log
     On `assert` failure: pipeline halts; partial outputs preserved.
 
 ROLE IN ADR-0021 SANDBOX
@@ -52,7 +52,9 @@ cap log close _all
 set linesize 120
 
 cap mkdir "$logdir"
-log using "$logdir/check_paper_outputs.smcl", replace text
+
+cap mkdir "$logdir/check"
+log using "$logdir/check/check_paper_outputs.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "check_paper_outputs.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -77,7 +79,7 @@ else {
     if _rc {
         di as error "  FAIL: paper Table 1 N = " r(N) " (expected 1,784,445 student-years)"
         cap log close
-        cap translate "$logdir/check_paper_outputs.smcl" "$logdir/check_paper_outputs.log", replace
+        cap translate "$logdir/check/check_paper_outputs.smcl" "$logdir/check/check_paper_outputs.log", replace
         exit _rc
     }
     di as text "  PASS: paper Table 1 N == 1,784,445 (cf. score_b)"
@@ -102,7 +104,7 @@ else {
     if _rc {
         di as error "  FAIL: paper Table 2 N schools = " r(N) " (expected 5,009)"
         cap log close
-        cap translate "$logdir/check_paper_outputs.smcl" "$logdir/check_paper_outputs.log", replace
+        cap translate "$logdir/check/check_paper_outputs.smcl" "$logdir/check/check_paper_outputs.log", replace
         exit _rc
     }
     di as text "  PASS: paper Table 2 N schools == 5,009 (cf. k12_main)"
@@ -139,6 +141,6 @@ di as text "check_paper_outputs.do — RUN END: `c(current_date)' `c(current_tim
 di as text "{hline 80}"
 
 cap log close
-cap translate "$logdir/check_paper_outputs.smcl" "$logdir/check_paper_outputs.log", replace
+cap translate "$logdir/check/check_paper_outputs.smcl" "$logdir/check/check_paper_outputs.log", replace
 
 * end of file

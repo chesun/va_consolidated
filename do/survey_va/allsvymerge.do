@@ -27,17 +27,17 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/survey_va/formerge/parentqoimeans
     $datadir_clean/survey_va/formerge/secqoimeans
     $datadir_clean/survey_va/formerge/staffqoimeans
-    $logdir/allsvymerge.smcl + .log
+    $logdir/survey_va/allsvymerge.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 11 — extension batch added 2026-05-08)
     Source: caschls/do/share/factoranalysis/allsvymerge.do
     Path repointing applied:
-      $projdir/log/share/factoranalysis/* -> $logdir/* (CANONICAL)
-      $projdir/dta/allsvyfactor/* -> $datadir_clean/survey_va/* (CANONICAL chain — consumed by Step 7)
-      $projdir/dta/schoolchar/* -> $datadir_clean/schoolchar/* (CANONICAL chain — consumed by Step 7)
-      $projdir/dta/buildanalysisdata/analysisready/* -> $datadir_clean/calschls/analysisready/* (CANONICAL chain from Step 9f)
-      $projdir/dta/<other>/* -> $caschls_projdir/dta/<other>/* (LEGACY-static raw)
-      translate -> $logdir/* (CANONICAL)
+      $projdir/log/share/factoranalysis/<x> -> $logdir/<x> (CANONICAL)
+      $projdir/dta/allsvyfactor/<x> -> $datadir_clean/survey_va/<x> (CANONICAL chain — consumed by Step 7)
+      $projdir/dta/schoolchar/<x> -> $datadir_clean/schoolchar/<x> (CANONICAL chain — consumed by Step 7)
+      $projdir/dta/buildanalysisdata/analysisready/<x> -> $datadir_clean/calschls/analysisready/<x> (CANONICAL chain from Step 9f)
+      $projdir/dta/<other>/<x> -> $caschls_projdir/dta/<other>/<x> (LEGACY-static raw)
+      translate -> $logdir/<x> (CANONICAL)
 
 CROSS-STEP CHAIN COORDINATION
     Step 7 files updated to read CHAIN paths:
@@ -74,11 +74,12 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/survey_va"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/survey_va"
 cap mkdir "$datadir_clean/survey_va/formerge"
 
-log using "$logdir/allsvymerge.smcl", replace text
+log using "$logdir/survey_va/allsvymerge.smcl", replace text
 
 /* rename vars and prep parentanalysisready.dta for merging */
 use $datadir_clean/calschls/analysisready/parentanalysisready, clear
@@ -123,4 +124,4 @@ save $datadir_clean/survey_va/allsvyqoimeans, replace
 
 
 log close
-translate $logdir/allsvymerge.smcl $logdir/allsvymerge.log, replace
+translate $logdir/survey_va/allsvymerge.smcl $logdir/survey_va/allsvymerge.log, replace

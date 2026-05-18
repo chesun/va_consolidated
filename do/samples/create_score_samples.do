@@ -66,7 +66,7 @@ OUTPUTS
       $datadir_clean/va_samples_v1/score_as.dta      — ACS + sibling (v1)
       $datadir_clean/va_samples_v1/score_las.dta     — leave-out + ACS + sibling (v1)
       $datadir_clean/va_samples_v2/score_*.dta       — same 8 files for v2
-      $logdir/create_score_samples.smcl + .log       — per-do-file log
+      $logdir/samples/create_score_samples.smcl + .log       — per-do-file log
 
 ROLE IN ADR-0021 SANDBOX
     Reads LEGACY (Matt's merger transitively; sample-construction merge
@@ -82,7 +82,7 @@ RELOCATION HISTORY (per plan v3 §3.3 step 2 batch 2b, applied 2026-05-07)
       - L37 `cd $vaprojdir' preserved (predecessor pattern; merge helpers
         rely on it); `cd "$consolidated_dir"' restored at end.
       - L42 log target: $vaprojdir/log_files/sbac/create_score_samples.smcl
-                     -> CANONICAL `$logdir/create_score_samples.smcl'
+                     -> CANONICAL `$logdir/samples/create_score_samples.smcl'
       - L52 `include $vaprojdir/do_files/sbac/macros_va.doh'
          -> `include $consolidated_dir/do/va/helpers/macros_va.doh' (relocated 2026-04-30)
       - L63 `include $vaprojdir/do_files/sbac/create_va_sample.doh'
@@ -166,12 +166,13 @@ cap mkdir "$datadir_clean/va_samples_v2"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/samples"
  cd $vaprojdir
 
  log close _all
 
 
- log using "$logdir/create_score_samples.smcl", replace text
+ log using "$logdir/samples/create_score_samples.smcl", replace text
 
  di as text _n "{hline 80}"
  di as text "create_score_samples.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -389,8 +390,8 @@ timer list
 
 cap log close
 
-cap translate "$logdir/create_score_samples.smcl" ///
-  "$logdir/create_score_samples.log", replace
+cap translate "$logdir/samples/create_score_samples.smcl" ///
+  "$logdir/samples/create_score_samples.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

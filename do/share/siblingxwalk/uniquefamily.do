@@ -16,21 +16,21 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/siblingxwalk/ufamilyxwalk
     $datadir_clean/siblingxwalk/uniquelinkedfamilyclean
     $datadir_clean/siblingxwalk/uniquelinkedfamilyraw
-    $logdir/uniquefamily.smcl (via log using)
-    $logdir/uniquefamily.smcl + $logdir/uniquefamily.log (translate)
+    $logdir/share/siblingxwalk/uniquefamily.smcl (via log using)
+    $logdir/share/siblingxwalk/uniquefamily.smcl + $logdir/share/siblingxwalk/uniquefamily.log (translate)
     $output_dir/graph/siblingxwalk/numsiblingdist.png
 
 RELOCATION (per plan v3 §3.3 step 10 batch 10c, applied 2026-05-08)
     Source: caschls/do/share/siblingxwalk/uniquefamily.do
     Path repointing applied (script-based methodology):
-      $projdir/log/share/<sub>/* -> $logdir/* (CANONICAL; flattened from nested predecessor)
-      $projdir/out/txt/outcomesumstats/* -> $output_dir/txt/outcomesumstats/* (txt-format log destination for nsc_codebook)
+      $projdir/log/share/<sub>/<x> -> $logdir/<x> (CANONICAL; flattened from nested predecessor)
+      $projdir/out/txt/outcomesumstats/<x> -> $output_dir/txt/outcomesumstats/<x> (txt-format log destination for nsc_codebook)
       $projdir/dta/sibling* -> $datadir_clean/sibling* (CANONICAL chain — sibling crosswalks)
-      $projdir/dta/schoolchar/* -> $datadir_clean/schoolchar/* (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
-      $projdir/dta/<other>/* -> $caschls_projdir/dta/<other>/* (LEGACY-static raw reads)
-      $projdir/out/* -> $output_dir/* (intermediate CANONICAL)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
-      /home/research/ca_ed_lab/msnaven/* (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
+      $projdir/dta/schoolchar/<x> -> $datadir_clean/schoolchar/<x> (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
+      $projdir/dta/<other>/<x> -> $caschls_projdir/dta/<other>/<x> (LEGACY-static raw reads)
+      $projdir/out/<x> -> $output_dir/<x> (intermediate CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
+      /home/research/ca_ed_lab/msnaven/<x> (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
     Predecessor's `log using' upgraded to consolidated convention.
 
 REFERENCES
@@ -59,11 +59,13 @@ clear all
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/share"
+cap mkdir "$logdir/share/siblingxwalk"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/siblingxwalk"
 
 
-log using "$logdir/uniquefamily.smcl", replace text
+log using "$logdir/share/siblingxwalk/uniquefamily.smcl", replace text
 
 use $datadir_clean/siblingxwalk/k12_xwalk_name_address_year, clear
 
@@ -125,4 +127,4 @@ save $datadir_clean/siblingxwalk/ufamilyxwalk, replace
 
 
 log close
-translate $logdir/uniquefamily.smcl $logdir/uniquefamily.log, replace 
+translate $logdir/share/siblingxwalk/uniquefamily.smcl $logdir/share/siblingxwalk/uniquefamily.log, replace 

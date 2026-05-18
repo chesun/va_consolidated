@@ -17,8 +17,8 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/calschls/qoiclean/parent/parentqoiclean`year'
-    $logdir/parentqoiclean1819_1718.smcl (via log using)
-    $logdir/parentqoiclean1819_1718.smcl + $logdir/parentqoiclean1819_1718.log (translate)
+    $logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.smcl (via log using)
+    $logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.smcl + $logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
     Source: caschls/do/build/buildanalysisdata/qoiclean/parent/parentqoiclean1819_1718.do
@@ -29,7 +29,7 @@ RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
         -> $datadir_clean/calschls/qoiclean/<sub>/<x>  (CANONICAL chain output)
       $clndtadir/<sub>/<x> (read) -> $datadir_clean/calschls/<sub>/<x>
         (CHAIN read; produced by renamedata batch 9d in same Stata session)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
 
 REFERENCES
     ADRs:   0021 (sandbox; description convention)
@@ -53,12 +53,15 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/qoiclean"
+cap mkdir "$logdir/data_prep/qoiclean/parent"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/parent"
 
-log using "$logdir/parentqoiclean1819_1718.smcl", replace text
+log using "$logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.smcl", replace text
 
 /* the code for cleaning 1819 and 1718 is exactly the same, so use loop */
 local years `" "1718" "1819" "'
@@ -190,7 +193,7 @@ foreach i of numlist 9 15/17 27 30/34 64 {
 
 
 /* This is old code before the recoding of qoi values
- /* generate mean of vars, excluding don't know. */
+ /<x> generate mean of vars, excluding don't know. <x>
  //generate temp vars for low and high bounds to use with rangestat
  gen lowbound = 1
  gen highbound = 4
@@ -198,8 +201,8 @@ foreach i of numlist 9 15/17 27 30/34 64 {
   rangestat (mean) qoi`i', interval(qoi`i' lowbound highbound) by(cdscode)
   rename qoi`i'_mean qoi`i'mean //rename the generated mean vars
 }
-/* Note: don't worry about missing values generated because it does not matter
-after collapsing dataset */
+/<x> Note: don't worry about missing values generated because it does not matter
+after collapsing dataset <x>
 drop lowbound highbound //drop the temp vars */
 
 
@@ -281,4 +284,4 @@ save $datadir_clean/calschls/qoiclean/parent/parentqoiclean`year', replace
 
 
 log close
-translate $logdir/parentqoiclean1819_1718.smcl $logdir/parentqoiclean1819_1718.log, replace
+translate $logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.smcl $logdir/data_prep/qoiclean/parent/parentqoiclean1819_1718.log, replace

@@ -14,17 +14,17 @@ INPUTS (verified via grep on file body)
     $caschls_projdir/dta/demographics/analysis/parent/parentdemo`year'analysis  (LEGACY)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
-    $logdir/parentcoverageanalysis.smcl (via log using)
-    $logdir/parentcoverageanalysis.smcl + $logdir/parentcoverageanalysis.log (translate)
+    $logdir/share/demographics/parentcoverageanalysis.smcl (via log using)
+    $logdir/share/demographics/parentcoverageanalysis.smcl + $logdir/share/demographics/parentcoverageanalysis.log (translate)
     $output_dir/graph/svycoverage/parentcoverage/parent`year'/gr`i'resprate.png
 
 RELOCATION (per plan v3 §3.3 step 10 batch 10b, applied 2026-05-08)
     Source: caschls/do/share/demographics/parentcoverageanalysis.do
     Path repointing applied (script-based methodology):
-      $projdir/log/share/demographics/* -> $logdir/*  (CANONICAL)
-      $projdir/dta/demographics/*       -> $caschls_projdir/dta/demographics/*  (LEGACY-static raw demographics)
-      $projdir/out/graph/*              -> $output_dir/graph/*  (CANONICAL intermediate diagnostic; not paper-shipping)
-      translate (single-line ABS form)  -> $logdir/*  (CANONICAL)
+      $projdir/log/share/demographics/<x> -> $logdir/<x>  (CANONICAL)
+      $projdir/dta/demographics/<x>       -> $caschls_projdir/dta/demographics/<x>  (LEGACY-static raw demographics)
+      $projdir/out/graph/<x>              -> $output_dir/graph/<x>  (CANONICAL intermediate diagnostic; not paper-shipping)
+      translate (single-line ABS form)  -> $logdir/<x>  (CANONICAL)
     Predecessor's `log using' upgraded to consolidated convention with
     double-quotes + `text' flag; `name(...)' suffix preserved if present.
 
@@ -51,13 +51,15 @@ clear
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/share"
+cap mkdir "$logdir/share/demographics"
 cap mkdir "$output_dir"
 cap mkdir "$output_dir/graph"
 cap mkdir "$output_dir/graph/svycoverage"
 cap mkdir "$output_dir/graph/svycoverage/parentcoverage"
 
 
-log using "$logdir/parentcoverageanalysis.smcl", replace text
+log using "$logdir/share/demographics/parentcoverageanalysis.smcl", replace text
 
 grstyle init  //initializes the grstyle package
 grstyle set plain   //set graph background to plain
@@ -80,4 +82,4 @@ foreach year of local years {
 grstyle clear // sets off grstyle
 
 log close
-translate $logdir/parentcoverageanalysis.smcl $logdir/parentcoverageanalysis.log, replace 
+translate $logdir/share/demographics/parentcoverageanalysis.smcl $logdir/share/demographics/parentcoverageanalysis.log, replace 

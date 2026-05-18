@@ -13,7 +13,7 @@ INPUTS
         Built by relocated `va_het.do` under do/va/heterogeneity/.
 
 OUTPUTS
-    Per-do-file log: $logdir/check_va_estimates.smcl + .log
+    Per-do-file log: $logdir/check/check_va_estimates.smcl + .log
     On `assert` failure: pipeline halts; partial outputs preserved.
 
 ROLE IN ADR-0021 SANDBOX
@@ -60,7 +60,9 @@ cap log close _all
 set linesize 120
 
 cap mkdir "$logdir"
-log using "$logdir/check_va_estimates.smcl", replace text
+
+cap mkdir "$logdir/check"
+log using "$logdir/check/check_va_estimates.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "check_va_estimates.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -80,7 +82,7 @@ if _rc {
     di as text "             VA-estimation relocation (do/va/heterogeneity/va_het.do)."
     di as text "             Skipping check_va_estimates.do."
     cap log close
-    cap translate "$logdir/check_va_estimates.smcl" "$logdir/check_va_estimates.log", replace
+    cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
     exit 0
 }
 
@@ -100,7 +102,7 @@ foreach v of varlist va_ela_*_ct va_math_*_ct va_*_ct_p {
     if _rc {
         di as error "  FAIL: `v' mean = " %7.4f r(mean) " — outside |.| < 0.05 tolerance"
         cap log close
-        cap translate "$logdir/check_va_estimates.smcl" "$logdir/check_va_estimates.log", replace
+        cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
         exit _rc
     }
 }
@@ -113,7 +115,7 @@ if _rc {
     di as error "  FAIL: va_ela_b_sp_b_ct SD = " %7.4f r(sd) " — outside [0.05, 0.30]"
     di as error "        paper Tables 2-3 report ~0.10-0.15 σ"
     cap log close
-    cap translate "$logdir/check_va_estimates.smcl" "$logdir/check_va_estimates.log", replace
+    cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
     exit _rc
 }
 di as text "  PASS: va_ela_b_sp_b_ct SD ∈ [0.05, 0.30] (paper-reported envelope)"
@@ -126,7 +128,7 @@ foreach v of varlist n_g11_ela_*_sp n_g11_math_*_sp {
     if _rc {
         di as error "  FAIL: `v' has min student-year count = " %5.0f r(min) " — below CFR minimum 5"
         cap log close
-        cap translate "$logdir/check_va_estimates.smcl" "$logdir/check_va_estimates.log", replace
+        cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
         exit _rc
     }
 }
@@ -180,6 +182,6 @@ di as text "check_va_estimates.do — RUN END: `c(current_date)' `c(current_time
 di as text "{hline 80}"
 
 cap log close
-cap translate "$logdir/check_va_estimates.smcl" "$logdir/check_va_estimates.log", replace
+cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
 
 * end of file

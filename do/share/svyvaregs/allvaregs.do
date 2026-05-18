@@ -17,8 +17,8 @@ INPUTS (verified via grep on file body)
     $output_dir/xls/varegs/weighted/`svyname'/`svyname'_va_all_wt  (LEGACY)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
-    $logdir/allvaregs.smcl (via log using)
-    $logdir/allvaregs.smcl + $logdir/allvaregs.log (translate)
+    $logdir/share/svyvaregs/allvaregs.smcl (via log using)
+    $logdir/share/svyvaregs/allvaregs.smcl + $logdir/share/svyvaregs/allvaregs.log (translate)
     $output_dir/dta/varegs/`svyname'/`svyname'_va_all_nw
     $output_dir/dta/varegs/`svyname'/va_`va_outcome'_`sample'_sp_`control'_ct`peer'_nw ///
     $output_dir/dta/varegs/`svyname'/va_`va_outcome'_`sample'_sp_`control'_ct`peer'_wt ///
@@ -26,15 +26,15 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
 RELOCATION (per plan v3 §3.3 step 10 batch 10c, applied 2026-05-08)
     Source: caschls/do/share/svyvaregs/allvaregs.do
     Path repointing applied (script-based methodology):
-      $projdir/log/share/<sub>/* -> $logdir/* (CANONICAL; flattened from nested predecessor)
-      $projdir/out/txt/outcomesumstats/* -> $output_dir/txt/outcomesumstats/* (txt-format log destination for nsc_codebook)
+      $projdir/log/share/<sub>/<x> -> $logdir/<x> (CANONICAL; flattened from nested predecessor)
+      $projdir/out/txt/outcomesumstats/<x> -> $output_dir/txt/outcomesumstats/<x> (txt-format log destination for nsc_codebook)
       $projdir/dta/sibling* -> $datadir_clean/sibling* (CANONICAL chain — sibling crosswalks)
-      $projdir/dta/schoolchar/* -> $datadir_clean/schoolchar/* (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
-      $caschls_projdir/dta/buildanalysisdata/analysisready/* -> $datadir_clean/calschls/analysisready/* (CHAIN read from Step 9f poolingdata producers; was LEGACY pre-flight-D fix 2026-05-16)
-      $projdir/dta/<other>/* -> $caschls_projdir/dta/<other>/* (LEGACY-static raw reads)
-      $projdir/out/* -> $output_dir/* (intermediate CANONICAL)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
-      /home/research/ca_ed_lab/msnaven/* (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
+      $projdir/dta/schoolchar/<x> -> $datadir_clean/schoolchar/<x> (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
+      $caschls_projdir/dta/buildanalysisdata/analysisready/<x> -> $datadir_clean/calschls/analysisready/<x> (CHAIN read from Step 9f poolingdata producers; was LEGACY pre-flight-D fix 2026-05-16)
+      $projdir/dta/<other>/<x> -> $caschls_projdir/dta/<other>/<x> (LEGACY-static raw reads)
+      $projdir/out/<x> -> $output_dir/<x> (intermediate CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
+      /home/research/ca_ed_lab/msnaven/<x> (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
     Predecessor's `log using' upgraded to consolidated convention.
 
 REFERENCES
@@ -76,6 +76,8 @@ set scheme s1color
 set seed 1984
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/share"
+cap mkdir "$logdir/share/svyvaregs"
 cap mkdir "$output_dir"
 cap mkdir "$output_dir/dta"
 cap mkdir "$output_dir/dta/varegs"
@@ -90,7 +92,7 @@ foreach svyname in parent sec staff elem {
 }
 
 
-log using "$logdir/allvaregs.smcl", replace text
+log using "$logdir/share/svyvaregs/allvaregs.smcl", replace text
 
 
 /* create a local macro for secondary qoi numbers  */
@@ -271,4 +273,4 @@ set trace off
 
 
 log close
-translate $logdir/allvaregs.smcl $logdir/allvaregs.log, replace
+translate $logdir/share/svyvaregs/allvaregs.smcl $logdir/share/svyvaregs/allvaregs.log, replace

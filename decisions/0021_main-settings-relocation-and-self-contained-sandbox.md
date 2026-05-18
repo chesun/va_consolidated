@@ -89,3 +89,23 @@ Both apply to all relocated files in Phase 1a §3.3, plus the existing pre-draft
 - `.claude/rules/phase-1-review.md` (per-commit self-check + dispatch matrix — extended)
 - `.claude/rules/stata-code-conventions.md` (will be amended with description + sandbox-write rules)
 - 2026-04-29 conversation between Christina and Claude where the three refinements landed together.
+
+## Amendment 2026-05-17 — comment-bug sweep + log-dir mirror
+
+**Context.** The M4 acceptance run on 2026-05-17 halted mid-Phase-1 with `sec1415.dta` not produced. Root cause: Stata's parser counts `/*` opens greedily — path-globs like `prepare/*` inside header description blocks (this ADR's description convention) created unmatched opens, pushing ~70% of pipeline behavior into runaway block comments. 89 of 129 active `.do` / `.doh` files were affected.
+
+**Amendment.** Two conventions are added without changing the description-block requirement:
+
+1. **Wildcards in comments** — inside any Stata comment context (`/* ... */` block, `*`-prefixed line, `//`-prefixed line), `*` is NOT allowed as a path-glob wildcard. Use `<x>` (or `<file>` / `<filename>`) as the placeholder. The character sequence `/*` is reserved for legitimate block-comment opens.
+
+2. **Per-file logging structure** — each `.do` at `do/<reldir>/<name>.do` writes its log to `$logdir/<reldir>/<name>.smcl` (mirroring do/ structure). The existing per-file log convention persists; only the path is nested.
+
+**Codification.** Both conventions live in `.claude/rules/stata-code-conventions.md` ("Wildcards in comments" and "Per-file logging structure" sections). The commit-time check lives in `.claude/rules/phase-1-review.md` §2 Tier-1 (two new checklist items: `/*` balance + log path mirror).
+
+**Sweep.** One-time mechanical sweep applied via `py/sweep_comments_and_logdirs.py` on 2026-05-17 across the active tree (excluding `_archive/`). Single bundled commit per the comprehensive plan in `quality_reports/plans/2026-05-17_comment-bug-sweep.md` v3.
+
+**Cross-references.**
+
+- `quality_reports/plans/2026-05-17_comment-bug-sweep.md` v3 — plan and bug analysis.
+- `MEMORY.md` `[LEARN:stata]` 2026-05-17 — discovery summary.
+- `do/check/check_logs.do` — walker updated for nested log structure.

@@ -28,7 +28,7 @@ INPUTS
 OUTPUTS
     CANONICAL:
       $tables_dir/va_cfr_all_v[12]/fb_test/fb_<outcome>_all.dta — appended summary rows
-      $logdir/va_out_fb_test_tab.smcl + .log
+      $logdir/va/va_out_fb_test_tab.smcl + .log
 
 ROLE IN ADR-0021 SANDBOX
     Reads CANONICAL FB ster + LEGACY predicted-score variants.
@@ -101,11 +101,12 @@ cap mkdir "$tables_dir/va_cfr_all_v2/fb_test"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
 cd $vaprojdir
 
 log close _all
 
-log using "$logdir/va_out_fb_test_tab.smcl", replace text
+log using "$logdir/va/va_out_fb_test_tab.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "va_out_fb_test_tab.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -258,8 +259,8 @@ timer clear 1
 
 
 cap log close
-cap translate "$logdir/va_out_fb_test_tab.smcl" ///
-  "$logdir/va_out_fb_test_tab.log", replace
+cap translate "$logdir/va/va_out_fb_test_tab.smcl" ///
+  "$logdir/va/va_out_fb_test_tab.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

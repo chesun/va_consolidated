@@ -58,7 +58,7 @@ OUTPUTS
       $estimates_dir/va_cfr_all_v[12]/spec_test/spec_<...>.ster — 4 spec-test ster
       $estimates_dir/va_cfr_all_v[12]/va_est_dta/va_<outcome>_<sample>_sp_<va_ctrl>_ct.dta
                                           — collapsed school-year VA estimates
-      $logdir/va_out_all.smcl + .log      — per-do-file log
+      $logdir/va/va_out_all.smcl + .log      — per-do-file log
 
 ROLE IN ADR-0021 SANDBOX
     Reads CANONICAL sample dtas + CANONICAL score-VA estimates (produced by
@@ -134,11 +134,12 @@ cap mkdir "$estimates_dir/va_cfr_all_v2/va_est_dta"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
  cd $vaprojdir
 
  log close _all
 
- log using "$logdir/va_out_all.smcl", replace text
+ log using "$logdir/va/va_out_all.smcl", replace text
 
  di as text _n "{hline 80}"
  di as text "va_out_all.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -320,8 +321,8 @@ timer clear 1
 
 cap log close
 
-cap translate "$logdir/va_out_all.smcl" ///
-  "$logdir/va_out_all.log", replace
+cap translate "$logdir/va/va_out_all.smcl" ///
+  "$logdir/va/va_out_all.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

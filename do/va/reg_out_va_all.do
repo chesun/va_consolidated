@@ -23,17 +23,17 @@ OUTPUTS (CANONICAL)
     $estimates_dir/va_cfr_all_v[12]/reg_out_va/reg_<...>.ster + _m.ster — regression estimates
     $estimates_dir/va_cfr_all_v[12]/reg_out_va/reg_<...>_m.dta — regsave summary
     $estimates_dir/va_cfr_all_v[12]/reg_out_va/het_reg_<...>.ster — heterogeneity estimates
-    $logdir/reg_out_va_all.smcl + .log
+    $logdir/va/reg_out_va_all.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 3 batch 3c2, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/sbac/reg_out_va_all.do
     Path repointing applied via script-based sed pass:
-      - $vaprojdir/log_files/sbac/* -> $logdir/* (CANONICAL)
+      - $vaprojdir/log_files/sbac/<x> -> $logdir/<x> (CANONICAL)
       - $vaprojdir/data/va_samples_* -> $datadir_clean/va_samples_*
-      - $vaprojdir/data/sbac/* -> $datadir_clean/sbac/*
-      - $vaprojdir/estimates/* -> $estimates_dir/*
+      - $vaprojdir/data/sbac/<x> -> $datadir_clean/sbac/<x>
+      - $vaprojdir/estimates/<x> -> $estimates_dir/<x>
       - $vaprojdir/do_files/sbac/{macros_va,macros_va_all_samples_controls,drift_limit}.doh
-        -> $consolidated_dir/do/va/helpers/* (absolute per batch 2c convention)
+        -> $consolidated_dir/do/va/helpers/<x> (absolute per batch 2c convention)
       - $vaprojdir/data/public_access/clean/cde/charter_status.dta KEPT LEGACY (Step 9 CDE data deferred)
 
 ADRs: 0004 (canonical pipeline), 0009 (v1 canonical), 0021 (sandbox; description convention)
@@ -78,11 +78,12 @@ cap mkdir "$estimates_dir/va_cfr_all_v2/reg_out_va"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
 cd $vaprojdir
 
 cap log close _all
 
-log using "$logdir/reg_out_va_all.smcl", replace text
+log using "$logdir/va/reg_out_va_all.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "reg_out_va_all.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -452,8 +453,8 @@ di "Start date time /reg_out_va_all.do: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
 cap log close
-cap translate "$logdir/reg_out_va_all.smcl" ///
-  "$logdir/reg_out_va_all.log", replace
+cap translate "$logdir/va/reg_out_va_all.smcl" ///
+  "$logdir/va/reg_out_va_all.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

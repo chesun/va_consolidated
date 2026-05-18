@@ -54,7 +54,7 @@ INPUTS
 OUTPUTS
     CANONICAL (write per ADR-0021 sandbox principle):
       $datadir_clean/sbac/va_samples.dta — touse_* crosswalk by merge_id
-      $logdir/touse_va.smcl + .log       — per-do-file log
+      $logdir/samples/touse_va.smcl + .log       — per-do-file log
 
 ROLE IN ADR-0021 SANDBOX
     Reads LEGACY paths (restricted-access K12 data; Matt's merge .doh; Christina's
@@ -72,7 +72,7 @@ RELOCATION HISTORY (per plan v3 §3.3 step 2 batch 2b, applied 2026-05-07)
         absolute paths — but other helpers historically relied on relative-CWD
         behavior; preserve for parity); `cd "$consolidated_dir"' restored at end.
       - L30 log target: relative `log_files/sbac/touse_va.smcl'
-                     -> CANONICAL `$logdir/touse_va.smcl' (per plan v3 §5.1 step 2)
+                     -> CANONICAL `$logdir/samples/touse_va.smcl' (per plan v3 §5.1 step 2)
       - L45 `include do_files/sbac/macros_va.doh'
          -> `include $consolidated_dir/do/va/helpers/macros_va.doh' (relocated 2026-04-30 helpers batch)
       - L115 `do do_files/merge_k12_postsecondary.doh'
@@ -145,13 +145,14 @@ cap mkdir "$datadir_clean/sbac"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/samples"
 * The predecessor cd'd to $vaprojdir before downstream merges (some helpers
 * may rely on relative paths).  Preserved here for behavior parity; restored
 * to $consolidated_dir at end of file so subsequent main.do invocations see
 * the canonical CWD.
 cd $vaprojdir
 
-log using "$logdir/touse_va.smcl", replace text
+log using "$logdir/samples/touse_va.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "touse_va.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -328,7 +329,7 @@ timer off 1
 timer list
 
 cap log close
-cap translate "$logdir/touse_va.smcl" "$logdir/touse_va.log", replace
+cap translate "$logdir/samples/touse_va.smcl" "$logdir/samples/touse_va.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

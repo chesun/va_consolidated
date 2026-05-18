@@ -19,14 +19,14 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
 RELOCATION (per plan v3 §3.3 step 10 batch 10c, applied 2026-05-08)
     Source: caschls/do/share/outcomesumstats/nsc2019new/k12_nsc2019_merge.doh
     Path repointing applied (script-based methodology):
-      $projdir/log/share/<sub>/* -> $logdir/* (CANONICAL; flattened from nested predecessor)
-      $projdir/out/txt/outcomesumstats/* -> $output_dir/txt/outcomesumstats/* (txt-format log destination for nsc_codebook)
+      $projdir/log/share/<sub>/<x> -> $logdir/<x> (CANONICAL; flattened from nested predecessor)
+      $projdir/out/txt/outcomesumstats/<x> -> $output_dir/txt/outcomesumstats/<x> (txt-format log destination for nsc_codebook)
       $projdir/dta/sibling* -> $datadir_clean/sibling* (CANONICAL chain — sibling crosswalks)
-      $projdir/dta/schoolchar/* -> $datadir_clean/schoolchar/* (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
-      $projdir/dta/<other>/* -> $caschls_projdir/dta/<other>/* (LEGACY-static raw reads)
-      $projdir/out/* -> $output_dir/* (intermediate CANONICAL)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
-      /home/research/ca_ed_lab/msnaven/* (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
+      $projdir/dta/schoolchar/<x> -> $datadir_clean/schoolchar/<x> (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
+      $projdir/dta/<other>/<x> -> $caschls_projdir/dta/<other>/<x> (LEGACY-static raw reads)
+      $projdir/out/<x> -> $output_dir/<x> (intermediate CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
+      /home/research/ca_ed_lab/msnaven/<x> (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
     Predecessor's `log using' upgraded to consolidated convention.
 
 REFERENCES

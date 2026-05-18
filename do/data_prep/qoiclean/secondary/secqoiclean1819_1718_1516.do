@@ -17,8 +17,8 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/calschls/qoiclean/secondary/secqoiclean`year'
-    $logdir/secqoiclean1819_1718_1516.smcl (via log using)
-    $logdir/secqoiclean1819_1718_1516.smcl + $logdir/secqoiclean1819_1718_1516.log (translate)
+    $logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.smcl (via log using)
+    $logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.smcl + $logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
     Source: caschls/do/build/buildanalysisdata/qoiclean/secondary/secqoiclean1819_1718_1516.do
@@ -29,7 +29,7 @@ RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
         -> $datadir_clean/calschls/qoiclean/<sub>/<x>  (CANONICAL chain output)
       $clndtadir/<sub>/<x> (read) -> $datadir_clean/calschls/<sub>/<x>
         (CHAIN read; produced by renamedata batch 9d in same Stata session)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
 
 REFERENCES
     ADRs:   0021 (sandbox; description convention)
@@ -54,12 +54,15 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/qoiclean"
+cap mkdir "$logdir/data_prep/qoiclean/secondary"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/secondary"
 
-log using "$logdir/secqoiclean1819_1718_1516.smcl", replace text
+log using "$logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.smcl", replace text
 
 /* ssc install elabel, replace //install the elabel package for easy renaming of labels
 ssc install labutil2, replace //package to help with managing value labels because stata sucks in that regard
@@ -279,4 +282,4 @@ save $datadir_clean/calschls/qoiclean/secondary/secqoiclean`year', replace
 }
 
 log close
-translate $logdir/secqoiclean1819_1718_1516.smcl $logdir/secqoiclean1819_1718_1516.log, replace
+translate $logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.smcl $logdir/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.log, replace

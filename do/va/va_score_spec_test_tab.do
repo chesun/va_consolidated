@@ -48,7 +48,7 @@ OUTPUTS
                                           — appended spec-test summary; 4 rows
                                             per (subject, va_ctrl, sample) cell
                                             (no-peer × with-peer × CFR × predicted-score)
-      $logdir/va_score_spec_test_tab.smcl + .log
+      $logdir/va/va_score_spec_test_tab.smcl + .log
 
 ROLE IN ADR-0021 SANDBOX
     Reads CANONICAL (samples + CFR estimates) + LEGACY (vam ado + predicted-score
@@ -137,11 +137,12 @@ cap mkdir "$tables_dir/va_cfr_all_v2/spec_test"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
 cd $vaprojdir
 
 log close _all
 
-log using "$logdir/va_score_spec_test_tab.smcl", replace text
+log using "$logdir/va/va_score_spec_test_tab.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "va_score_spec_test_tab.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -177,9 +178,9 @@ foreach version in v1 v2 {
       foreach sample of local `va_ctrl'_ctrl_samples {
         di "sample: `sample'"
 
-        //****************************
+        // ****************************
         // get SD of VA from VAM variance output
-        //****************************
+        // ****************************
         use "$datadir_clean/va_samples_`version'/score_`sample'" if touse_g11_`subject'==1, clear
         preserve
 
@@ -314,8 +315,8 @@ timer list
 timer clear 1
 
 cap log close
-cap translate "$logdir/va_score_spec_test_tab.smcl" ///
-  "$logdir/va_score_spec_test_tab.log", replace
+cap translate "$logdir/va/va_score_spec_test_tab.smcl" ///
+  "$logdir/va/va_score_spec_test_tab.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

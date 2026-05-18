@@ -15,18 +15,18 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/survey_va/imputedallsvyqoimeans.dta — imputed dataset for downstream indexing
-    $logdir/imputation.smcl + .log
+    $logdir/survey_va/imputation.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 7, applied 2026-05-08)
     Source: caschls/do/share/factoranalysis/imputation.do
     Path repointing applied via script-based sed pass:
-      $projdir/log/share/factoranalysis/* -> $logdir/*
+      $projdir/log/share/factoranalysis/<x> -> $logdir/<x>
       $projdir/dta/allsvyfactor/imputedallsvyqoimeans -> $datadir_clean/survey_va/imputedallsvyqoimeans (chain output)
-      $projdir/dta/allsvyfactor/categoryindex/* -> $datadir_clean/survey_va/categoryindex/* (chain output)
-      $projdir/out/dta/factor/* -> $estimates_dir/survey_va/factor/* (CANONICAL chain estimates)
-      $projdir/out/csv/factoranalysis/* -> $output_dir/csv/factoranalysis/* (intermediate exploratory; not paper-shipping)
-      $projdir/out/graph/factoranalysis/* -> $output_dir/graph/factoranalysis/* (intermediate exploratory)
-      $projdir/dta/<other>/* -> $caschls_projdir/dta/<other>/* (LEGACY-static reads from caschls predecessor)
+      $projdir/dta/allsvyfactor/categoryindex/<x> -> $datadir_clean/survey_va/categoryindex/<x> (chain output)
+      $projdir/out/dta/factor/<x> -> $estimates_dir/survey_va/factor/<x> (CANONICAL chain estimates)
+      $projdir/out/csv/factoranalysis/<x> -> $output_dir/csv/factoranalysis/<x> (intermediate exploratory; not paper-shipping)
+      $projdir/out/graph/factoranalysis/<x> -> $output_dir/graph/factoranalysis/<x> (intermediate exploratory)
+      $projdir/dta/<other>/<x> -> $caschls_projdir/dta/<other>/<x> (LEGACY-static reads from caschls predecessor)
       $projdir/do/share/factoranalysis/<x>.do[h] -> $consolidated_dir/do/survey_va/<x>.do[h] (within-batch relocations)
 
 ADRs: 0010 (paper alpha 9/15/4), 0011 (sums→means Phase 1b deferred),
@@ -56,7 +56,8 @@ cap mkdir "$datadir_clean/survey_va"
 cap mkdir "$logdir"
 
 
-log using "$logdir/imputation.smcl", replace text
+cap mkdir "$logdir/survey_va"
+log using "$logdir/survey_va/imputation.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "imputation.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -180,4 +181,4 @@ foreach i of local motivationvars {
 save $datadir_clean/survey_va/imputedallsvyqoimeans, replace
 
 cap log close
-translate $logdir/imputation.smcl $logdir/imputation.log, replace
+translate $logdir/survey_va/imputation.smcl $logdir/survey_va/imputation.log, replace

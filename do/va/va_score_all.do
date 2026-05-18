@@ -59,7 +59,7 @@ OUTPUTS
                                           — specification test estimates (with peer)
       $estimates_dir/va_cfr_all_v[12]/va_est_dta/va_<subject>_<sample>_sp_<va_ctrl>_ct.dta
                                           — collapsed school-year VA estimates
-      $logdir/va_score_all.smcl + .log    — per-do-file log
+      $logdir/va/va_score_all.smcl + .log    — per-do-file log
 
 ROLE IN ADR-0021 SANDBOX
     Reads CANONICAL sample dtas (from batch 2b output) + LEGACY `vam' ado.
@@ -75,7 +75,7 @@ RELOCATION HISTORY (per plan v3 §3.3 step 3 batch 3a, applied 2026-05-07)
         Per batch 2c convention: any consolidated `include' after `cd $vaprojdir'
         MUST use absolute `$consolidated_dir/do/...' prefix.
       - L32 log target: $vaprojdir/log_files/sbac/va_score_all.smcl
-                     -> CANONICAL `$logdir/va_score_all.smcl'
+                     -> CANONICAL `$logdir/va/va_score_all.smcl'
       - L42 `include $vaprojdir/do_files/sbac/macros_va.doh'
          -> `include $consolidated_dir/do/va/helpers/macros_va.doh'
       - L47 `include $vaprojdir/do_files/sbac/drift_limit.doh'
@@ -149,11 +149,12 @@ cap mkdir "$estimates_dir/va_cfr_all_v2/va_est_dta"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
  cd $vaprojdir
 
  log close _all
 
- log using "$logdir/va_score_all.smcl", replace text
+ log using "$logdir/va/va_score_all.smcl", replace text
 
  di as text _n "{hline 80}"
  di as text "va_score_all.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -266,8 +267,8 @@ timer clear 1
 
 cap log close
 
-cap translate "$logdir/va_score_all.smcl" ///
-  "$logdir/va_score_all.log", replace
+cap translate "$logdir/va/va_score_all.smcl" ///
+  "$logdir/va/va_score_all.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

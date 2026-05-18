@@ -15,7 +15,7 @@ INPUTS
     (built by relocated sample-construction scripts under do/samples/).
 
 OUTPUTS
-    Per-do-file log: $logdir/check_samples.smcl + .log
+    Per-do-file log: $logdir/check/check_samples.smcl + .log
     On `assert` failure: pipeline halts; partial outputs preserved.
 
 ROLE IN ADR-0021 SANDBOX
@@ -54,7 +54,9 @@ cap log close _all
 set linesize 120
 
 cap mkdir "$logdir"
-log using "$logdir/check_samples.smcl", replace text
+
+cap mkdir "$logdir/check"
+log using "$logdir/check/check_samples.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "check_samples.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -76,7 +78,7 @@ if _rc {
     di as text "             relocated sample-construction scripts under do/samples/."
     di as text "             Skipping check_samples.do."
     cap log close
-    cap translate "$logdir/check_samples.smcl" "$logdir/check_samples.log", replace
+    cap translate "$logdir/check/check_samples.smcl" "$logdir/check/check_samples.log", replace
     exit 0
 }
 
@@ -125,7 +127,7 @@ if _rc {
     di as error "  FAIL: race dummies (eth_asian/hispanic/black/white/other) not orthogonal."
     qui tab `eth_sum', missing
     cap log close
-    cap translate "$logdir/check_samples.smcl" "$logdir/check_samples.log", replace
+    cap translate "$logdir/check/check_samples.smcl" "$logdir/check/check_samples.log", replace
     exit _rc
 }
 di as text "  PASS: race dummies orthogonal (rowtotal ∈ {0, 1})"
@@ -139,7 +141,7 @@ foreach v in econ_disadvantage male limited_eng_prof disabled                 //
         di as error "  FAIL: binary-coded var `v' has values outside {0, 1, .}"
         qui tab `v', missing
         cap log close
-        cap translate "$logdir/check_samples.smcl" "$logdir/check_samples.log", replace
+        cap translate "$logdir/check/check_samples.smcl" "$logdir/check/check_samples.log", replace
         exit _rc
     }
 }
@@ -182,6 +184,6 @@ di as text "check_samples.do — RUN END: `c(current_date)' `c(current_time)'"
 di as text "{hline 80}"
 
 cap log close
-cap translate "$logdir/check_samples.smcl" "$logdir/check_samples.log", replace
+cap translate "$logdir/check/check_samples.smcl" "$logdir/check/check_samples.log", replace
 
 * end of file

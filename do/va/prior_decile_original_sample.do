@@ -49,7 +49,7 @@ OUTPUTS
                                           — student-level prior deciles + race/sex/econ
       $datadir_clean/sbac/census_income_decile_a_sample.dta
                                           — student-level census income deciles
-      $logdir/prior_decile_original_sample.smcl + .log
+      $logdir/va/prior_decile_original_sample.smcl + .log
 
 ROLE IN ADR-0021 SANDBOX
     Reads CANONICAL sample dtas + LEGACY caschls helper.  Writes ONLY to
@@ -120,6 +120,7 @@ cap mkdir "$datadir_clean/sbac"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
 clear all
 graph drop _all
 set more off
@@ -132,7 +133,7 @@ cap log close _all
 
 
 //starting log file
-log using "$logdir/prior_decile_original_sample.smcl", replace text
+log using "$logdir/va/prior_decile_original_sample.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "prior_decile_original_sample.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -232,8 +233,8 @@ timer list
 set trace off
 
 cap log close
-cap translate "$logdir/prior_decile_original_sample.smcl" ///
-  "$logdir/prior_decile_original_sample.log", replace
+cap translate "$logdir/va/prior_decile_original_sample.smcl" ///
+  "$logdir/va/prior_decile_original_sample.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

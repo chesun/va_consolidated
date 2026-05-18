@@ -13,19 +13,19 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/enrollment/schoollevel/`enrdata'
-    $logdir/enrollmentclean.smcl (via log using)
-    $logdir/enrollmentclean.smcl + $logdir/enrollmentclean.log (translate)
+    $logdir/data_prep/prepare/enrollmentclean.smcl (via log using)
+    $logdir/data_prep/prepare/enrollmentclean.smcl + $logdir/data_prep/prepare/enrollmentclean.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9d, applied 2026-05-08)
     Source: caschls/do/build/prepare/enrollmentclean.do
     Path repointing applied (script-based methodology):
-      $projdir/log/build/prepare/*                    -> $logdir/*  (CANONICAL)
-      $projdir/dta/enrollment/schoollevel/* (read OR write) -> $datadir_clean/enrollment/schoollevel/*  (CANONICAL chain)
-      $projdir/dta/enrollment/raw/* (read)             -> $caschls_projdir/dta/enrollment/raw/*  (LEGACY raw)
+      $projdir/log/build/prepare/<x>                    -> $logdir/<x>  (CANONICAL)
+      $projdir/dta/enrollment/schoollevel/<x> (read OR write) -> $datadir_clean/enrollment/schoollevel/<x>  (CANONICAL chain)
+      $projdir/dta/enrollment/raw/<x> (read)             -> $caschls_projdir/dta/enrollment/raw/<x>  (LEGACY raw)
       $clndtadir/<sub>/<x> (write only)                -> $datadir_clean/calschls/<sub>/<x>  (CANONICAL chain)
       $clndtadir/<sub>/<x> (read of pre-existing)      -> kept LEGACY (e.g., $clndtadir/staff/staff0414)
-      $rawdtadir/* (read)                              -> kept LEGACY (CalSCHLS survey raw inputs)
-      translate (multi-line OR single-line)            -> translate $logdir/*  (CANONICAL)
+      $rawdtadir/<x> (read)                              -> kept LEGACY (CalSCHLS survey raw inputs)
+      translate (multi-line OR single-line)            -> translate $logdir/<x>  (CANONICAL)
     Predecessor's `log using' upgraded to consolidated convention with
     double-quotes + `text' flag (per Step 7 indexalpha precedent).
     `name(...)' suffix (used by poolgr11enr/enrollmentclean/renamedata/
@@ -36,7 +36,7 @@ SETTINGS REQUISITE
     `$rawdtadir' (CalSCHLS restricted raw survey data) and `$clndtadir'
     (CalSCHLS restricted clean data, pre-existing — used for read of
     staff0414 in splitstaff0414.do).  No write-eligible target via
-    those globals; writes go to $datadir_clean/calschls/* CANONICAL.
+    those globals; writes go to $datadir_clean/calschls/<x> CANONICAL.
 
 REFERENCES
     ADRs:   0021 (sandbox; description convention)
@@ -59,11 +59,13 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/prepare"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/enrollment"
 cap mkdir "$datadir_clean/enrollment/schoollevel"
 
-log using "$logdir/enrollmentclean.smcl", replace text name(enrollmentclean)
+log using "$logdir/data_prep/prepare/enrollmentclean.smcl", replace text name(enrollmentclean)
 
 local enrdtaname `" "enr1415" "enr1516" "enr1617" "enr1718" "enr1819" "'  //create a local macro for raw enrollment dataset names
 
@@ -264,4 +266,4 @@ save $datadir_clean/enrollment/schoollevel/`enrdata', replace
 /* if enrollment for ethnicity and sex combination is desired: new var gradexasianfemale = gradex if female and asian */
 
 log close enrollmentclean
-translate $logdir/enrollmentclean.smcl $logdir/enrollmentclean.log, replace 
+translate $logdir/data_prep/prepare/enrollmentclean.smcl $logdir/data_prep/prepare/enrollmentclean.log, replace 

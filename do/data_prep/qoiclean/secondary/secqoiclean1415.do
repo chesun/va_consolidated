@@ -17,8 +17,8 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/calschls/qoiclean/secondary/secqoiclean1415
-    $logdir/secqoiclean1415.smcl (via log using)
-    $logdir/secqoiclean1415.smcl + $logdir/secqoiclean1415.log (translate)
+    $logdir/data_prep/qoiclean/secondary/secqoiclean1415.smcl (via log using)
+    $logdir/data_prep/qoiclean/secondary/secqoiclean1415.smcl + $logdir/data_prep/qoiclean/secondary/secqoiclean1415.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
     Source: caschls/do/build/buildanalysisdata/qoiclean/secondary/secqoiclean1415.do
@@ -29,7 +29,7 @@ RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
         -> $datadir_clean/calschls/qoiclean/<sub>/<x>  (CANONICAL chain output)
       $clndtadir/<sub>/<x> (read) -> $datadir_clean/calschls/<sub>/<x>
         (CHAIN read; produced by renamedata batch 9d in same Stata session)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
 
 REFERENCES
     ADRs:   0021 (sandbox; description convention)
@@ -37,11 +37,11 @@ REFERENCES
     Sister files (this batch): 9 other qoiclean files (parent×4, secondary×3, staff×3)
 
 ORIGINAL HEADER preserved verbatim below.
-------------------------------------------------------------------------------*/
+------------------------------------------------------------------------------<x>
 
 
 ********************************************************************************
-/* rename and clean secondary (high school) 1415 survey questions of interest */
+/<x> rename and clean secondary (high school) 1415 survey questions of interest <x>
 ********************************************************************************
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
@@ -52,12 +52,15 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/qoiclean"
+cap mkdir "$logdir/data_prep/qoiclean/secondary"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/secondary"
 
-log using "$logdir/secqoiclean1415.smcl", replace text
+log using "$logdir/data_prep/qoiclean/secondary/secqoiclean1415.smcl", replace text
 
 use $datadir_clean/calschls/secondary/sec1415, clear
 //shorten the var names for the vars we will deal with to make subsequent operations easier
@@ -67,14 +70,14 @@ keep cdscode a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28
 //rename value labels to be consistent with var names
 elabel rename (a#_a#) (a#)
 //rename questions of interest and rename value labels using question numbers in 1819 as standard
-/* Note: 1415 dataset does not have qoi 27-30 */
-/* 14-18 correspond to qoi 22-26 */
+/<x> Note: 1415 dataset does not have qoi 27-30 <x>
+/<x> 14-18 correspond to qoi 22-26 <x>
 foreach i of numlist 14/18 {
   local j = `i' + 8
   rename a`i' qoi`j'
   elabel rename a`i' qoi`j'
 }
-/* 19=28 correspond to qoi 31-40 */
+/<x> 19=28 correspond to qoi 31-40 <x>
 foreach i of numlist 19/28 {
   local j = `i' + 12
   rename a`i' qoi`j'
@@ -250,4 +253,4 @@ gen year = 1415
   save $datadir_clean/calschls/qoiclean/secondary/secqoiclean1415, replace
 
 log close
-translate $logdir/secqoiclean1415.smcl $logdir/secqoiclean1415.log, replace 
+translate $logdir/data_prep/qoiclean/secondary/secqoiclean1415.smcl $logdir/data_prep/qoiclean/secondary/secqoiclean1415.log, replace 

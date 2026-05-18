@@ -28,7 +28,7 @@ OUTPUTS
     $output_dir/m4_diff_summary.txt — exportable text summary, one line per
         comparison plus a tally block at the end.  Format:
             <STATUS>  <tier>  <filetype>  <consolidated_relpath>  <details>
-    $logdir/m4_golden_master.smcl + .log — full Stata log per stata-code
+    $logdir/check/m4_golden_master.smcl + .log — full Stata log per stata-code
         conventions (log routing).
 
 ROLE IN ADR-0021 SANDBOX
@@ -105,7 +105,10 @@ include do/settings.do
 
 
 cap mkdir "$logdir"
-log using "$logdir/m4_golden_master.smcl", replace text
+
+
+cap mkdir "$logdir/check"
+log using "$logdir/check/m4_golden_master.smcl", replace text
 
 
 /*==============================================================================
@@ -405,7 +408,7 @@ capture confirm file "`matrix_csv'"
 if _rc {
     di as error "  FATAL: path matrix not found at `matrix_csv'"
     cap log close
-    cap translate "$logdir/m4_golden_master.smcl" "$logdir/m4_golden_master.log", replace
+    cap translate "$logdir/check/m4_golden_master.smcl" "$logdir/check/m4_golden_master.log", replace
     exit _rc
 }
 
@@ -413,7 +416,7 @@ if _rc {
 if !inlist("`tier_filter'", "smoke", "paper", "full") {
     di as error "  FATAL: tier_filter must be smoke|paper|full, got `tier_filter'"
     cap log close
-    cap translate "$logdir/m4_golden_master.smcl" "$logdir/m4_golden_master.log", replace
+    cap translate "$logdir/check/m4_golden_master.smcl" "$logdir/check/m4_golden_master.log", replace
     exit 198
 }
 
@@ -459,7 +462,7 @@ di as text "  rows after tier filter: `n_rows'"
 if `n_rows' == 0 {
     di as error "  FATAL: zero rows after tier filter — check CSV or tier_filter"
     cap log close
-    cap translate "$logdir/m4_golden_master.smcl" "$logdir/m4_golden_master.log", replace
+    cap translate "$logdir/check/m4_golden_master.smcl" "$logdir/check/m4_golden_master.log", replace
     exit 198
 }
 
@@ -665,6 +668,6 @@ di as text "{hline 80}"
 di as text _n "m4_golden_master.do — RUN END: `c(current_date)' `c(current_time)'"
 
 cap log close
-cap translate "$logdir/m4_golden_master.smcl" "$logdir/m4_golden_master.log", replace
+cap translate "$logdir/check/m4_golden_master.smcl" "$logdir/check/m4_golden_master.log", replace
 
 * end of file

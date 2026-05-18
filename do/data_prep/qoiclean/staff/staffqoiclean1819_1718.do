@@ -17,8 +17,8 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/calschls/qoiclean/staff/staffqoiclean`year'
-    $logdir/staffqoiclean1819_1718.smcl (via log using)
-    $logdir/staffqoiclean1819_1718.smcl + $logdir/staffqoiclean1819_1718.log (translate)
+    $logdir/data_prep/qoiclean/staff/staffqoiclean1819_1718.smcl (via log using)
+    $logdir/data_prep/qoiclean/staff/staffqoiclean1819_1718.smcl + $logdir/data_prep/qoiclean/staff/staffqoiclean1819_1718.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
     Source: caschls/do/build/buildanalysisdata/qoiclean/staff/staffqoiclean1819_1718.do
@@ -29,7 +29,7 @@ RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
         -> $datadir_clean/calschls/qoiclean/<sub>/<x>  (CANONICAL chain output)
       $clndtadir/<sub>/<x> (read) -> $datadir_clean/calschls/<sub>/<x>
         (CHAIN read; produced by renamedata batch 9d in same Stata session)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
 
 REFERENCES
     ADRs:   0021 (sandbox; description convention)
@@ -53,12 +53,15 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/qoiclean"
+cap mkdir "$logdir/data_prep/qoiclean/staff"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/staff"
 
-log using "$logdir/staffqoiclean1819_1718.smcl", replace text
+log using "$logdir/data_prep/qoiclean/staff/staffqoiclean1819_1718.smcl", replace text
 
 /* the code for cleaning 1819 and 1718 is exactly the same, so use loop */
 local years `" "1718" "1819" "'
@@ -268,4 +271,4 @@ foreach year of local years {
 }
 
 log close
-translate $logdir/staffqoiclean1819_1718.smcl $logdir/staffqoiclean1819_1718.log, replace 
+translate $logdir/data_prep/qoiclean/staff/staffqoiclean1819_1718.smcl $logdir/data_prep/qoiclean/staff/staffqoiclean1819_1718.log, replace 

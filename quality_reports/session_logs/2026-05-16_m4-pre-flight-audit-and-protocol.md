@@ -97,3 +97,100 @@ Surgical 2-line edit applied: `.ster` FAIL details now use status strings ("coef
 - **Tree:** dirty (M4 infrastructure unstaged); HEAD at `6d5981d` in sync with origin.
 - **ADR ledger:** 21 Decided. No new ADRs this session.
 - **Coder-critic audit trail (today):** 5 dispatches — 4 pre-flight (A 92/B 73→88/C 91/D 78→93) + 1 M4 infra (82/100). 1 escalation strike on B, 1 on D, 0 on A/C/M4. All resolved at round 2.
+
+---
+
+# Continuation — 2026-05-17
+
+## Headline (continued)
+
+Christina ran smoke on Scribe (correctly identified 5 MISSING_CONSOLIDATED — expected since main.do hadn't been run). Surfaced 4 additional Christina-caught bugs in main.do + m4_golden_master.do that the per-batch coder-critics had missed because main.do was never end-to-end-tested during Phase 1a §3.3. All 4 fixed; 3 additional deferred Major latent issues fixed in scope reopen. Repo now M4-ready pending Christina launching the acceptance run with `m4_acceptance_run = 1`.
+
+## Per-step rollup (2026-05-17)
+
+### Air-gap rule clarification + M3 revert
+
+Christina clarified: the air-gap rule applies to raw row-level restricted data only, NOT to derived summaries (coefficient deltas, counts, p-values, summary stats — all paper-class content). Round-1 critic's M3 deduction was misapplied. Dispatched two coders in parallel: (a) revert M3 in `m4_golden_master.do` (restore `max|db|` / `max|dSE|` magnitudes to FAIL details + augment PASS details for triage symmetry); (b) tighten `.claude/rules/air-gapped-workflow.md` with explicit "What IS OK to Export" / "What IS Air-Gapped" sections + one-line bright-line test "Counts, magnitudes, and estimates are derived." Round-2 coder-critic PASS 85/100 (was 82 with M3 misapplied). Committed `07b8f80`.
+
+### Smoke run on Scribe + matrix-path verification
+
+Christina ran smoke (~1 sec, 0% CPU); all 5 rows MISSING_CONSOLIDATED. **First Christina catch**: I conflated runner-smoke (verifies the script works) with behavior-smoke (verifies the consolidated pipeline produces equivalent outputs). The latter requires main.do to be run first to produce consolidated outputs. My fault — protocol doc didn't explicitly state this prerequisite.
+
+**Second Christina catch**: in walking through path verification, I reconstructed a predecessor path from memory (`/home/.../caschls/dta/buildanalysisdata/poolingdata/sec/sec1718.dta`) and asked her to verify. She corrected: that directory structure doesn't exist; `poolingdata/` directly contains only 3 .dta files. Violation of `derive-dont-guess.md` — I should have grep'd `m4_path_matrix.csv` directly for the exact stored path. Apologized; pasted the 5 smoke predecessor paths verbatim from CSV; she confirmed all 5 exist.
+
+### M4_ACCEPTANCE_RUN flag (commit `c2d208c`)
+
+Investigated `do/main.do` properly — phase-level toggles default 1 but THREE sub-toggles inside Phase 2/3 default 0 (`do_touse_va`, `do_create_samples`, `do_va`) per the run-once-cached pattern from predecessor `do_all.do`. ADR-0018 acceptance criterion requires "all toggles ON" but flipping three separate sub-toggles is error-prone. Dispatched coder to add a top-level master flag `local m4_acceptance_run = 0` that overrides all three to 1 when set to 1. Default 0 preserves cached-iteration dev pattern. Display line logs ENABLED/DISABLED state to master log.
+
+Coder-critic round 1: PASS 94/100. 3 Minor discretionary (status-line tense, override-block locality, defensive run_data_checks assert) deferred non-blocking.
+
+**Third Christina catch — bundled in same commit**: `m4_golden_master.do` shipped (commit `567b01d`) WITHOUT `include do/settings.do`. `cap mkdir "$logdir"` and `log using "$logdir/..."` would have run with empty globals on Scribe. Christina added the include manually on Scribe; `git blame` confirmed lines 104-106 were uncommitted working-tree changes — the commit itself shipped buggy. Bundled fix into `c2d208c`.
+
+### Two more main.do bugs (commit `55b0c13`)
+
+**Fourth Christina catch**: Phase 7 (`do/main.do:455-474`, DATA CHECKS) had all 6 `do do/check/*.do` calls commented out as `*` prefix from the original Phase 1c §5.3 TODO. With `run_data_checks=1` default, the phase printed its header and did nothing. ADR-0018 requires checks to fire on the acceptance run. All 6 check files exist on disk.
+
+**Fifth Christina catch — bigger bug**: 4 `*`-prefixed comment lines in `do/main.do` contain `/*` inside path-glob text (lines 182, 387, 388, 389). Stata's parser treats `/*` as block-comment start regardless of leading `*` context. Impact:
+- Line 182's `/*` matched `*/` at line 209 → swallowed 9 data-prep do-calls (batches 9g + 9f) AND Phase 1's closing `}` at line 204
+- Line 387's `/*` matched `*/` at line 408 → swallowed all 11 Phase 5 do-calls AND Phase 5's closing `}` at line 405
+
+Net: 2 unmatched `{` braces → Stata `do` errors mid-run or skips eaten phases entirely. The bug had been latent in main.do since drafting (2026-04-28); never surfaced because main.do was never end-to-end-run-tested during Phase 1a §3.3.
+
+Dispatched coder to fix both: uncomment Phase 7 (6 lines) + replace `/*` with `/<x>` in 4 sites (6 substitutions; matches existing `<sub>/<year>` placeholder convention). Coder-critic round 1 PASS 94/100. Brace balance restored 43/43.
+
+### 3 M4-blocking latent issues fixed (commit `5782189`)
+
+Christina reopened scope: "dispatch coder to fix the latent issues". I scoped to 3 M4-blocking deferred Majors from Partition B pre-flight (deferred 2026-05-16 as post-smoke or Phase 1c §5.4; promoted to fix-now since they'd silently degrade M4 quality):
+
+1. **Mj-1**: `check_survey_indices.do:197` reader path `$estimates_dir/calschls/categoryindex/` → `$datadir_clean/survey_va/categoryindex/`. Was silent-skipping via `capture confirm file` shim. Header INPUTS + ROLE IN SANDBOX blocks also updated for internal consistency.
+
+2. **Mj-2**: `t1_empirical_tests.do` archived to `do/_archive/check/` via `git mv` (history preserved). New `do/_archive/check/README.md` mirrors existing `_archive/exploratory/` + `_archive/siblingvaregs/` conventions. Resolves orphan-breaks-check_logs-invariant AND orthogonal Minor about its log routing (since archived files are excluded from `check_logs.do:76`'s filelist enumeration).
+
+3. **Mj-3**: 12 relative `include do/samples/X.doh` lines across 6 `create_va_g11_*.doh` files → absolute via `$consolidated_dir/do/samples/X.doh`. RELOCATION HISTORY blocks carry dated 2026-05-17 amendment per audit-trail precedent.
+
+Coder-critic round 1 PASS 96/100. 2 trivial Minor advisories (m4_path_matrix_README informational mention; archive README style symmetry preference). TODO Backlog lines 86, 87, 88, 92 marked `[x] RESOLVED 2026-05-17`.
+
+### Scope deferred (still in Backlog)
+
+- **6 cosmetic/Phase 1c §5.4 items** (TODO Backlog lines 89-91, 93-95): dead-code hardcoded paths in dormant gates, missing ledger rows, CONVENTIONS-section sweep, process-rule codification. Zero runtime impact on M4.
+- **5 post-smoke M4-runner improvement items** (lines 96-100): `.ster` colname check, `cf` row-count reclassify, PDF timestamp tolerance, csv/xlsx smoke coverage, MISSING_BOTH status. Need actual smoke output to surface them; fixing speculatively would be premature.
+
+## Today's commits (2026-05-17)
+
+```
+07b8f80 docs: 2026-05-17 M4 protocol doc + air-gap rule tightened + reviews + session log
+c2d208c phase-1a(§3.5): M4_ACCEPTANCE_RUN flag + fix missing settings include
+55b0c13 phase-1a(§3.5): fix two main.do bugs before M4 acceptance run
+5782189 phase-1a(§3.5): fix 3 M4-blocking latent issues from Partition B pre-flight
+```
+
+(Plus 2026-05-16 commits already logged in original section above: `6607445`, `6d5981d`, `567b01d`.)
+
+## Process learnings (cumulative)
+
+5. **main.do was never end-to-end-tested before today**. All 5 Christina catches (settings include in M4 runner, M4_ACCEPTANCE_RUN sub-toggle bug, Phase 7 commented-out checks, `/*` block-comment bug, path-reconstruction fabrication) were latent for weeks because the per-batch Phase 1a §3.3 coder-critics each saw their batch in isolation and never the union of main.do's wiring. **The pre-flight Tier-2 audit caught chain regressions but didn't run main.do** — that's a gap. Future Phase 1a-equivalent consolidations should include an end-to-end syntax-check of the orchestration file before declaring §3.3 complete.
+
+6. **Stata parser ambiguity: `/*` inside `*`-prefixed lines is a block-comment-start**. Documented in `.claude/rules/anti-ai-prose.md`? No — this is a Stata-specific gotcha, deserves a `[LEARN:stata]` entry. The pattern `<path>/*` in path-glob comments is common and silently dangerous. Mitigation: use `<x>` placeholder convention.
+
+7. **Air-gap rule must explicitly enumerate exportable content** to prevent over-correction. Originally `air-gapped-workflow.md` had a one-line aside "Claude CAN work with: summary stats". Both a coder-critic and the orchestrator misread that as covering only categorical metadata, not derived numbers like coefficient deltas. Tightened rule with explicit "What IS OK to Export" / "What IS Air-Gapped" sections + bright-line test "Counts, magnitudes, and estimates are derived."
+
+8. **Derive-don't-guess violation on path reconstruction**. When verifying a predecessor path with Christina, I should have grep'd `m4_path_matrix.csv` first to get the exact stored path, not reconstructed from memory. Christina explicitly reprimanded ("how many times do I need to tell you — no guessing!!!"). Rule reinforced.
+
+## Next session pickup (updated)
+
+1. **Christina syncs latest commits to Scribe** (FileZilla/scp/git pull). Most recent: `5782189`. Files to sync: `do/main.do`, `do/check/check_survey_indices.do`, `do/check/t1_empirical_tests.do` (deletion), `do/_archive/check/` (new dir + README + relocated file), `do/samples/create_va_g11_*.doh` (6 files).
+2. **Christina sets `m4_acceptance_run = 1`** at `do/main.do:115`.
+3. **Christina launches acceptance run on Scribe**: `nohup stata-mp -b do do/main.do &` (confirmed appropriate vs screen; difference is just whether you want reattach capability).
+4. **Monitor**: `tail -f log/main_*.smcl` for orchestration-level progress.
+5. **Runtime estimate**: multi-hour (~1-2 days based on VA estimation overhead — 5,236 .ster files via CFR shrinkage).
+6. **When run completes** (or hits a runtime error): pull `log/` + `output/` back to local. Triage from the master log + (if run completed) the data-check assertions in Phase 7. Then re-run M4 smoke (`tier_filter = "smoke"`) to verify the 5 representative pairs match. If smoke PASS → paper tier (~30-60 min). If paper PASS → full tier (multi-hour again).
+7. **Post-smoke iteration**: address the 5 deferred M4-runner items (TODO Backlog lines 96-100) once we see actual smoke output indicating which manifest. Defer all 6 cosmetic items (lines 89-95) to Phase 1c §5.4 polish per the original orchestrator scope decision.
+
+## Status (end of 2026-05-17)
+
+- **Phase 1a §3.5 (M4):** infrastructure complete and pushed. All 5 Christina-caught bugs fixed. 3 M4-blocking latent issues closed. **Awaiting Scribe acceptance run.**
+- **Tree:** clean (`log/`, `output/`, `master_supporting_docs/codebooks/` untracked but pre-existing or generated; not for commit).
+- **HEAD:** `5782189` in sync with origin.
+- **ADR ledger:** 21 Decided. No new ADRs this session.
+- **Coder-critic audit trail (2026-05-17):** 5 dispatches — M4 round 2 PASS 85/100; main.do M4-flag PASS 94/100; main.do bugfix bundle PASS 94/100; M4-blocking-fixes PASS 96/100. 0 BLOCK verdicts; 0 escalation strikes.
+- **TODO Backlog:** 14 items at session start; 4 marked `[x] RESOLVED` (lines 86, 87, 88, 92); 10 remain (6 cosmetic Phase 1c §5.4; 5 post-smoke M4 runner — one item span both via line numbering).

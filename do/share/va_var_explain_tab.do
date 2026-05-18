@@ -7,10 +7,10 @@ PURPOSE
 
 INVOKED FROM
     `do/main.do' Phase 6 (PAPER OUTPUTS) under flag `do_paper_outputs'.
-    Reads CHAIN VA outputs from $estimates_dir/va_cfr_all_<version>/*
+    Reads CHAIN VA outputs from $estimates_dir/va_cfr_all_<version>/<x>
     (Step 3 batches 3a-3d) + sample data from LEGACY $vaprojdir/data/
-    va_samples_v1/* (sample data not yet relocated; out of Step 10 scope).
-    Writes paper-shipping outputs to $tables_dir/share/* + $figures_dir/share/*
+    va_samples_v1/<x> (sample data not yet relocated; out of Step 10 scope).
+    Writes paper-shipping outputs to $tables_dir/share/<x> + $figures_dir/share/<x>
     (CANONICAL).
 
 INPUTS (verified via grep on file body)
@@ -21,8 +21,8 @@ INPUTS (verified via grep on file body)
     $estimates_dir/va_cfr_all_`version'/reg_out_va/reg_va_`outcome'_va_both_all.dta  (LEGACY)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
-    $logdir/va_var_explain_tab.smcl (via log using)
-    $logdir/va_var_explain_tab.smcl + $logdir/va_var_explain_tab.log (translate)
+    $logdir/share/va_var_explain_tab.smcl (via log using)
+    $logdir/share/va_var_explain_tab.smcl + $logdir/share/va_var_explain_tab.log (translate)
     $tables_dir/share/va/check/va_var_explain_`version'.tex
     $tables_dir/share/va/pub/va_var_explain_`version'.tex
 
@@ -33,12 +33,12 @@ RELOCATION (per plan v3 §3.3 step 10 batch 10a, applied 2026-05-08)
       log_files/share/<x>.smcl (rel + abs forms)         -> $logdir/<x>.smcl  (CANONICAL)
       include $vaprojdir/do_files/sbac/<x>.doh           -> include $consolidated_dir/do/{va/helpers,samples}/<x>.doh
         (per Step 1/2 helper relocation; covers macros_va, drift_limit, create_diff_school_prop, create_prior_scores_v1/v2, merge_loscore, merge_sib, merge_lag2_ela, merge_va_smp_acs, create_va_g11_sample_v1/v2, create_va_g11_out_sample_v1/v2)
-      $estimates_dir/va_cfr_all_<v>/* -> $estimates_dir/va_cfr_all_<v>/* (CHAIN read from Step 3)
-      $estimates_dir/va_cfr_all_<v>/* -> $estimates_dir/va_cfr_all_<v>/* (CHAIN read; predecessor stored intermediate regsave dtas under tables/, consolidated relocates under $estimates_dir/)
-      $vaprojdir/figures/share/* -> $figures_dir/share/* (CANONICAL paper-shipping)
-      $vaprojdir/tables/share/* -> $tables_dir/share/* (CANONICAL paper-shipping)
-      $vaprojdir/data/va_samples_v1/* -> kept LEGACY (sample data; out of Step 10 scope)
-      translate (multi-line ABS form) -> $logdir/* (CANONICAL)
+      $estimates_dir/va_cfr_all_<v>/<x> -> $estimates_dir/va_cfr_all_<v>/<x> (CHAIN read from Step 3)
+      $estimates_dir/va_cfr_all_<v>/<x> -> $estimates_dir/va_cfr_all_<v>/<x> (CHAIN read; predecessor stored intermediate regsave dtas under tables/, consolidated relocates under $estimates_dir/)
+      $vaprojdir/figures/share/<x> -> $figures_dir/share/<x> (CANONICAL paper-shipping)
+      $vaprojdir/tables/share/<x> -> $tables_dir/share/<x> (CANONICAL paper-shipping)
+      $vaprojdir/data/va_samples_v1/<x> -> kept LEGACY (sample data; out of Step 10 scope)
+      translate (multi-line ABS form) -> $logdir/<x> (CANONICAL)
     Predecessor's `log using' upgraded to consolidated convention.
 
 REFERENCES
@@ -75,6 +75,7 @@ set trace on
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/share"
 cap mkdir "$tables_dir"
 cap mkdir "$tables_dir/share"
 cap mkdir "$tables_dir/share/va"
@@ -82,7 +83,7 @@ cap mkdir "$tables_dir/share/va/check"
 cap mkdir "$tables_dir/share/va/pub"
 cap mkdir "$estimates_dir"
 
- log using "$logdir/va_var_explain_tab.smcl", replace text
+ log using "$logdir/share/va_var_explain_tab.smcl", replace text
 
  graph drop _all
  set more off
@@ -199,4 +200,4 @@ set trace off
  di "End date time: `date2' `time2'"
 
  log close
- translate $logdir/va_var_explain_tab.smcl $logdir/va_var_explain_tab.log, replace
+ translate $logdir/share/va_var_explain_tab.smcl $logdir/share/va_var_explain_tab.log, replace

@@ -12,12 +12,12 @@ PURPOSE
     halting the pipeline for.
 
 INPUTS
-    Filesystem only.  Reads `do/**/*.do` and `$logdir/*.smcl`.  No Stata data.
+    Filesystem only.  Reads `do/<x><x>/<x>.do` and `$logdir/<x>.smcl`.  No Stata data.
     Requires the `filelist` ssc package (used to enumerate `.do` files
     recursively across the do/ tree).
 
 OUTPUTS
-    Per-do-file log: $logdir/check_logs.smcl + .log
+    Per-do-file log: $logdir/check/check_logs.smcl + .log
     On `assert` failure: pipeline halts; partial outputs preserved.
 
 ROLE IN ADR-0021 SANDBOX
@@ -25,7 +25,7 @@ ROLE IN ADR-0021 SANDBOX
     $logdir (CANONICAL).  Compliant with sandbox principle.
 
 INVARIANTS (per design memo §7)
-    - Every `do/**/*.do` (excluding `do/_archive/**`) has a matching
+    - Every `do/<x><x>/<x>.do` (excluding `do/_archive/<x>*`) has a matching
       `$logdir/<basename-without-extension>.smcl`.
     - Failure = listing of missing logs + halt.
 
@@ -43,7 +43,8 @@ set linesize 120
 
 * Per-do-file log per stata-code-conventions.md.
 cap mkdir "$logdir"
-log using "$logdir/check_logs.smcl", replace text
+cap mkdir "$logdir/check"
+log using "$logdir/check/check_logs.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "check_logs.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -66,7 +67,7 @@ capture which filelist
 if _rc {
     di as error "  ERROR: filelist (ssc) is required.  Run: ssc install filelist"
     cap log close
-    cap translate "$logdir/check_logs.smcl" "$logdir/check_logs.log", replace
+    cap translate "$logdir/check/check_logs.smcl" "$logdir/check/check_logs.log", replace
     exit 198
 }
 
@@ -82,7 +83,7 @@ count
 if r(N) == 0 {
     di as error "  ERROR: no .do files found under $consolidated_dir/do — pipeline state surprising."
     cap log close
-    cap translate "$logdir/check_logs.smcl" "$logdir/check_logs.log", replace
+    cap translate "$logdir/check/check_logs.smcl" "$logdir/check/check_logs.log", replace
     exit 459
 }
 
@@ -116,7 +117,7 @@ if `n_missing' > 0 {
     di as error "  Missing logs:"
     list dirname filename if log_exists == 0, clean noobs
     cap log close
-    cap translate "$logdir/check_logs.smcl" "$logdir/check_logs.log", replace
+    cap translate "$logdir/check/check_logs.smcl" "$logdir/check/check_logs.log", replace
     * Halt the pipeline — assertion failure semantics per design memo §8.
     exit 9
 }
@@ -132,6 +133,6 @@ di as text "check_logs.do — RUN END: `c(current_date)' `c(current_time)'"
 di as text "{hline 80}"
 
 cap log close
-cap translate "$logdir/check_logs.smcl" "$logdir/check_logs.log", replace
+cap translate "$logdir/check/check_logs.smcl" "$logdir/check/check_logs.log", replace
 
 * end of file

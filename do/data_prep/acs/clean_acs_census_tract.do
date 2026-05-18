@@ -19,17 +19,17 @@ INPUTS (verified via grep on file body)
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/acs/acs_ca_census_tract_clean_<year>.dta  (4 yearly files)
     $datadir_clean/acs/acs_ca_census_tract_clean.dta         (combined panel)
-    $logdir/clean_acs_census_tract.smcl + .log
+    $logdir/data_prep/acs/clean_acs_census_tract.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9a, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/acs/clean_acs_census_tract.do
     Path repointing applied via sed pass + targeted Edit:
       cd $vaprojdir                                       -> removed (absolute paths used; per [LEARN:workflow] batch 2c)
-      log_files/acs/*                                     -> $logdir/*  (CANONICAL)
+      log_files/acs/<x>                                     -> $logdir/<x>  (CANONICAL)
       include do_files/sbac/macros_va.doh                 -> include $consolidated_dir/do/va/helpers/macros_va.doh  (CANONICAL — macros_va.doh relocated step 1)
-      using data/public_access/raw/acs/*                  -> using $vaprojdir/data/public_access/raw/acs/*  (LEGACY raw, absolute)
-      data/public_access/clean/acs/*                      -> $datadir_clean/acs/*  (CANONICAL chain)
-      translate log_files/acs/*                           -> translate $logdir/*  (CANONICAL)
+      using data/public_access/raw/acs/<x>                  -> using $vaprojdir/data/public_access/raw/acs/<x>  (LEGACY raw, absolute)
+      data/public_access/clean/acs/<x>                      -> $datadir_clean/acs/<x>  (CANONICAL chain)
+      translate log_files/acs/<x>                           -> translate $logdir/<x>  (CANONICAL)
     Predecessor's commented-out `$projdir/dta/common_core_va/acs/...` save
     line (line 346 of original; now line ~352) preserved verbatim per
     ADR-0021 (commented; not active code).
@@ -74,10 +74,12 @@ cap log close _all
 
 * --- output-directory prep (CANONICAL) -------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/acs"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/acs"
 
-log using "$logdir/clean_acs_census_tract.smcl", replace text
+log using "$logdir/data_prep/acs/clean_acs_census_tract.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "clean_acs_census_tract.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -422,4 +424,4 @@ save $datadir_clean/acs/acs_ca_census_tract_clean.dta, replace
 timer off 1
 timer list
 log close
-translate $logdir/clean_acs_census_tract.smcl $logdir/clean_acs_census_tract.log, replace
+translate $logdir/data_prep/acs/clean_acs_census_tract.smcl $logdir/data_prep/acs/clean_acs_census_tract.log, replace

@@ -27,13 +27,13 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $output_dir/csv/acs/2017/acs_2017_<S>_dict.csv  (4 dictionary csv files)
         — Diagnostic / lookup; not paper-shipping; per `gph_files'-routing
           convention generalized to intermediate output ([LEARN:workflow]).
-    $logdir/acs_2017_gen_dict.smcl + .log
+    $logdir/data_prep/acs/acs_2017_gen_dict.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9a, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/acs/acs_2017_gen_dict.do
     Path repointing applied:
-      $projdir/out/csv/acs/2017/* -> $output_dir/csv/acs/2017/*  (intermediate diagnostic)
-      $vaprojdir/data/public_access/raw/acs/* -> kept LEGACY (raw inputs)
+      $projdir/out/csv/acs/2017/<x> -> $output_dir/csv/acs/2017/<x>  (intermediate diagnostic)
+      $vaprojdir/data/public_access/raw/acs/<x> -> kept LEGACY (raw inputs)
     Predecessor had no `log using' / `translate'; consolidated convention
     adds them per ADR-0021 description-convention precedent (Step 7 batch).
 
@@ -84,7 +84,9 @@ ssc install descsave, replace  */
  cap mkdir "$output_dir/csv/acs/2017"
  cap mkdir "$logdir"
 
- log using "$logdir/acs_2017_gen_dict.smcl", replace text
+ cap mkdir "$logdir/data_prep"
+ cap mkdir "$logdir/data_prep/acs"
+ log using "$logdir/data_prep/acs/acs_2017_gen_dict.smcl", replace text
 
  di as text _n "{hline 80}"
  di as text "acs_2017_gen_dict.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -111,4 +113,4 @@ ssc install descsave, replace  */
    /* export delimited using $vaprojdir/data/public_access/raw/acs/subject_tables/2017/acs_2017_`subject'_dict.csv, replace */
 
 cap log close
-translate $logdir/acs_2017_gen_dict.smcl $logdir/acs_2017_gen_dict.log, replace
+translate $logdir/data_prep/acs/acs_2017_gen_dict.smcl $logdir/data_prep/acs/acs_2017_gen_dict.log, replace

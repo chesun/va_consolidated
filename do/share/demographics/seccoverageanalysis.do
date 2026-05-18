@@ -14,8 +14,8 @@ INPUTS (verified via grep on file body)
     $caschls_projdir/dta/demographics/analysis/secondary/secdemo`year'analysis  (LEGACY)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
-    $logdir/seccoverageanalysis.smcl (via log using)
-    $logdir/seccoverageanalysis.smcl + $logdir/seccoverageanalysis.log (translate)
+    $logdir/share/demographics/seccoverageanalysis.smcl (via log using)
+    $logdir/share/demographics/seccoverageanalysis.smcl + $logdir/share/demographics/seccoverageanalysis.log (translate)
     $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/asiangr`i'dif.png
     $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/blackgr`i'dif.png
     $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/femalegr`i'dif.png
@@ -30,10 +30,10 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
 RELOCATION (per plan v3 §3.3 step 10 batch 10b, applied 2026-05-08)
     Source: caschls/do/share/demographics/seccoverageanalysis.do
     Path repointing applied (script-based methodology):
-      $projdir/log/share/demographics/* -> $logdir/*  (CANONICAL)
-      $projdir/dta/demographics/*       -> $caschls_projdir/dta/demographics/*  (LEGACY-static raw demographics)
-      $projdir/out/graph/*              -> $output_dir/graph/*  (CANONICAL intermediate diagnostic; not paper-shipping)
-      translate (single-line ABS form)  -> $logdir/*  (CANONICAL)
+      $projdir/log/share/demographics/<x> -> $logdir/<x>  (CANONICAL)
+      $projdir/dta/demographics/<x>       -> $caschls_projdir/dta/demographics/<x>  (LEGACY-static raw demographics)
+      $projdir/out/graph/<x>              -> $output_dir/graph/<x>  (CANONICAL intermediate diagnostic; not paper-shipping)
+      translate (single-line ABS form)  -> $logdir/<x>  (CANONICAL)
     Predecessor's `log using' upgraded to consolidated convention with
     double-quotes + `text' flag; `name(...)' suffix preserved if present.
 
@@ -60,13 +60,15 @@ clear
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/share"
+cap mkdir "$logdir/share/demographics"
 cap mkdir "$output_dir"
 cap mkdir "$output_dir/graph"
 cap mkdir "$output_dir/graph/svycoverage"
 cap mkdir "$output_dir/graph/svycoverage/seccoverage"
 
 
-log using "$logdir/seccoverageanalysis.smcl", replace text
+log using "$logdir/share/demographics/seccoverageanalysis.smcl", replace text
 
 local years `" "1415" "1516" "1617" "1718" "1819" "' //local macro for elementary dataset years
 
@@ -112,4 +114,4 @@ foreach year of local years {
 grstyle clear // sets off grstyle
 
 log close
-translate $logdir/seccoverageanalysis.smcl $logdir/seccoverageanalysis.log, replace 
+translate $logdir/share/demographics/seccoverageanalysis.smcl $logdir/share/demographics/seccoverageanalysis.log, replace 

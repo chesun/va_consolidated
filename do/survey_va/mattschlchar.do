@@ -19,20 +19,20 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/schoolchar/elprop
     $datadir_clean/schoolchar/mattschlchar
     $datadir_clean/schoolchar/schlcharpooledmeans
-    $logdir/mattschlchar.smcl (via log using)
-    $logdir/mattschlchar.smcl + $logdir/mattschlchar.log (translate)
+    $logdir/survey_va/mattschlchar.smcl (via log using)
+    $logdir/survey_va/mattschlchar.smcl + $logdir/survey_va/mattschlchar.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 10 batch 10c, applied 2026-05-08)
     Source: caschls/do/share/factoranalysis/mattschlchar.do
     Path repointing applied (script-based methodology):
-      $projdir/log/share/<sub>/* -> $logdir/* (CANONICAL; flattened from nested predecessor)
-      $projdir/out/txt/outcomesumstats/* -> $output_dir/txt/outcomesumstats/* (txt-format log destination for nsc_codebook)
+      $projdir/log/share/<sub>/<x> -> $logdir/<x> (CANONICAL; flattened from nested predecessor)
+      $projdir/out/txt/outcomesumstats/<x> -> $output_dir/txt/outcomesumstats/<x> (txt-format log destination for nsc_codebook)
       $projdir/dta/sibling* -> $datadir_clean/sibling* (CANONICAL chain — sibling crosswalks)
-      $projdir/dta/schoolchar/* -> $datadir_clean/schoolchar/* (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
-      $projdir/dta/<other>/* -> $caschls_projdir/dta/<other>/* (LEGACY-static raw reads)
-      $projdir/out/* -> $output_dir/* (intermediate CANONICAL)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
-      /home/research/ca_ed_lab/msnaven/* (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
+      $projdir/dta/schoolchar/<x> -> $datadir_clean/schoolchar/<x> (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
+      $projdir/dta/<other>/<x> -> $caschls_projdir/dta/<other>/<x> (LEGACY-static raw reads)
+      $projdir/out/<x> -> $output_dir/<x> (intermediate CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
+      /home/research/ca_ed_lab/msnaven/<x> (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
     Predecessor's `log using' upgraded to consolidated convention.
 
 REFERENCES
@@ -57,11 +57,12 @@ clear all
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/survey_va"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/schoolchar"
 
 
-log using "$logdir/mattschlchar.smcl", replace text
+log using "$logdir/survey_va/mattschlchar.smcl", replace text
 
 // a macro toggle for cleaning the raw data from Matt's folder
 local clean = 0
@@ -152,4 +153,4 @@ save $datadir_clean/schoolchar/schlcharpooledmeans, replace
 
 
 log close
-translate $logdir/mattschlchar.smcl $logdir/mattschlchar.log, replace
+translate $logdir/survey_va/mattschlchar.smcl $logdir/survey_va/mattschlchar.log, replace

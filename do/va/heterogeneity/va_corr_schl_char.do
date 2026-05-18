@@ -19,16 +19,16 @@ INPUTS (verified via grep)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on the file body)
     $estimates_dir/va_cfr_all_v[12]/va_het/va_<outcome>_het_<het_char>_<sample>_sp_<va_ctrl>_ct[_p].ster
-    $logdir/va_corr_schl_char.smcl + .log
+    $logdir/va/heterogeneity/va_corr_schl_char.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 4, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/va_het/va_corr_schl_char.do
     Path repointing applied via script-based sed pass:
-      $vaprojdir/log_files/va_het/* -> $logdir/*
-      $vaprojdir/estimates/* -> $estimates_dir/*
-      $vaprojdir/tables/* -> $tables_dir/*
-      $vaprojdir/figures/* -> $figures_dir/*
-      $vaprojdir/do_files/sbac/macros_va*.doh -> $consolidated_dir/do/va/helpers/* (absolute per batch 2c)
+      $vaprojdir/log_files/va_het/<x> -> $logdir/<x>
+      $vaprojdir/estimates/<x> -> $estimates_dir/<x>
+      $vaprojdir/tables/<x> -> $tables_dir/<x>
+      $vaprojdir/figures/<x> -> $figures_dir/<x>
+      $vaprojdir/do_files/sbac/macros_va*.doh -> $consolidated_dir/do/va/helpers/<x> (absolute per batch 2c)
       $vaprojdir/data/sch_char[_2018].dta KEPT LEGACY (Step 9 CDE data deferred)
 
 ADRs: 0004 (canonical pipeline), 0009 (v1 canonical), 0021 (sandbox; description convention)
@@ -62,11 +62,13 @@ cap mkdir "$estimates_dir/va_cfr_all_v2/va_het"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
+cap mkdir "$logdir/va/heterogeneity"
 cd $vaprojdir
 
 log close _all
 
-log using "$logdir/va_corr_schl_char.smcl", replace text
+log using "$logdir/va/heterogeneity/va_corr_schl_char.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "va_corr_schl_char.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -173,8 +175,8 @@ di "do file start time: `date1' `time1' "
 di "do file end time: `date2' `time2' "
 
 cap log close
-cap translate "$logdir/va_corr_schl_char.smcl" ///
-    "$logdir/va_corr_schl_char.log", replace
+cap translate "$logdir/va/heterogeneity/va_corr_schl_char.smcl" ///
+    "$logdir/va/heterogeneity/va_corr_schl_char.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

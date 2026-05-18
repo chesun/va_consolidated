@@ -41,7 +41,7 @@ OUTPUTS
                                           — per-outcome merged estimates (5 outcomes × 2 versions)
       $estimates_dir/va_cfr_all_v[12]/va_est_dta/va_all.dta
                                           — super-master across all 5 outcomes
-      $logdir/merge_va_est.smcl + .log    — per-do-file log
+      $logdir/va/merge_va_est.smcl + .log    — per-do-file log
 
 ROLE IN ADR-0021 SANDBOX
     Reads CANONICAL .dta only.  Writes ONLY to CANONICAL `$estimates_dir/...`
@@ -102,11 +102,12 @@ cap mkdir "$estimates_dir/va_cfr_all_v2/va_est_dta"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
  cd $vaprojdir
 
  log close _all
 
- log using "$logdir/merge_va_est.smcl", replace text
+ log using "$logdir/va/merge_va_est.smcl", replace text
 
  di as text _n "{hline 80}"
  di as text "merge_va_est.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -190,8 +191,8 @@ di "End date time: `date2_va_scatter_plot' `time2_va_scatter_plot'"
 
 
 cap log close
-cap translate "$logdir/merge_va_est.smcl" ///
-  "$logdir/merge_va_est.log", replace
+cap translate "$logdir/va/merge_va_est.smcl" ///
+  "$logdir/va/merge_va_est.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

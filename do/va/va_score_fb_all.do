@@ -51,7 +51,7 @@ OUTPUTS
                                           — FB test estimates (no peer)
       $estimates_dir/va_cfr_all_v[12]/fb_test/fb_p_<subject>_<sample>_sp_<va_ctrl>_ct_<fb_var>_lv.ster
                                           — FB test estimates (with peer)
-      $logdir/va_score_fb_all.smcl + .log — per-do-file log
+      $logdir/va/va_score_fb_all.smcl + .log — per-do-file log
 
       Note: the no-FB estimation (lines 83-90, 132-140) is INTENTIONALLY NOT
       saved — its sole purpose is to produce `score_r' (residual) for the
@@ -138,11 +138,12 @@ cap mkdir "$estimates_dir/va_cfr_all_v2/fb_test"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
  cd $vaprojdir
 
  log close _all
 
- log using "$logdir/va_score_fb_all.smcl", replace text
+ log using "$logdir/va/va_score_fb_all.smcl", replace text
 
  di as text _n "{hline 80}"
  di as text "va_score_fb_all.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -302,8 +303,8 @@ timer list
 timer clear 1
 
 cap log close
-cap translate "$logdir/va_score_fb_all.smcl" ///
-  "$logdir/va_score_fb_all.log", replace
+cap translate "$logdir/va/va_score_fb_all.smcl" ///
+  "$logdir/va/va_score_fb_all.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

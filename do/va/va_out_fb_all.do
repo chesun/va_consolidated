@@ -62,7 +62,7 @@ OUTPUTS
                                           — DK FB test (no peer)
       $estimates_dir/va_cfr_all_v[12]/fb_test/dk_fb_p_<outcome>_<sample>_sp_<va_ctrl>_ct_<fb_var>_lv.ster
                                           — DK FB test (with peer)
-      $logdir/va_out_fb_all.smcl + .log   — per-do-file log
+      $logdir/va/va_out_fb_all.smcl + .log   — per-do-file log
 
 ROLE IN ADR-0021 SANDBOX
     Reads CANONICAL sample dtas + score-VA estimates + LEGACY `vam' ado.
@@ -136,11 +136,12 @@ cap mkdir "$estimates_dir/va_cfr_all_v2/fb_test"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
 cd $vaprojdir
 
 log close _all
 
-log using "$logdir/va_out_fb_all.smcl", replace text
+log using "$logdir/va/va_out_fb_all.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "va_out_fb_all.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -425,8 +426,8 @@ timer clear 1
 
 cap log close
 
-cap translate "$logdir/va_out_fb_all.smcl" ///
-  "$logdir/va_out_fb_all.log", replace
+cap translate "$logdir/va/va_out_fb_all.smcl" ///
+  "$logdir/va/va_out_fb_all.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

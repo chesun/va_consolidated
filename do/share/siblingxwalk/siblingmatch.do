@@ -15,20 +15,20 @@ INPUTS (verified via grep on file body)
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/siblingxwalk/k12_xwalk_name_address
     $datadir_clean/siblingxwalk/k12_xwalk_name_address_year
-    $logdir/siblingmatch.smcl (via log using)
-    $logdir/siblingmatch.smcl + $logdir/siblingmatch.log (translate)
+    $logdir/share/siblingxwalk/siblingmatch.smcl (via log using)
+    $logdir/share/siblingxwalk/siblingmatch.smcl + $logdir/share/siblingxwalk/siblingmatch.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 10 batch 10c, applied 2026-05-08)
     Source: caschls/do/share/siblingxwalk/siblingmatch.do
     Path repointing applied (script-based methodology):
-      $projdir/log/share/<sub>/* -> $logdir/* (CANONICAL; flattened from nested predecessor)
-      $projdir/out/txt/outcomesumstats/* -> $output_dir/txt/outcomesumstats/* (txt-format log destination for nsc_codebook)
+      $projdir/log/share/<sub>/<x> -> $logdir/<x> (CANONICAL; flattened from nested predecessor)
+      $projdir/out/txt/outcomesumstats/<x> -> $output_dir/txt/outcomesumstats/<x> (txt-format log destination for nsc_codebook)
       $projdir/dta/sibling* -> $datadir_clean/sibling* (CANONICAL chain — sibling crosswalks)
-      $projdir/dta/schoolchar/* -> $datadir_clean/schoolchar/* (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
-      $projdir/dta/<other>/* -> $caschls_projdir/dta/<other>/* (LEGACY-static raw reads)
-      $projdir/out/* -> $output_dir/* (intermediate CANONICAL)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
-      /home/research/ca_ed_lab/msnaven/* (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
+      $projdir/dta/schoolchar/<x> -> $datadir_clean/schoolchar/<x> (CANONICAL — mattschlchar outputs consumed by Table 8 producers)
+      $projdir/dta/<other>/<x> -> $caschls_projdir/dta/<other>/<x> (LEGACY-static raw reads)
+      $projdir/out/<x> -> $output_dir/<x> (intermediate CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
+      /home/research/ca_ed_lab/msnaven/<x> (mattschlchar dormant rebuild) -> kept verbatim per ADR-0013 + ADR-0021
     Predecessor's `log using' upgraded to consolidated convention.
 
 REFERENCES
@@ -53,11 +53,13 @@ clear all
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/share"
+cap mkdir "$logdir/share/siblingxwalk"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/siblingxwalk"
 
 
-log using "$logdir/siblingmatch.smcl", replace text
+log using "$logdir/share/siblingxwalk/siblingmatch.smcl", replace text
 
 //append all years of CST datasets, from 2004 to 2013
 foreach year of numlist 2004 (1) 2013 {
@@ -153,4 +155,4 @@ if `matchacrossyears' == 1 {
 }
 
 log close
-translate $logdir/siblingmatch.smcl $logdir/siblingmatch.log, replace 
+translate $logdir/share/siblingxwalk/siblingmatch.smcl $logdir/share/siblingxwalk/siblingmatch.log, replace 

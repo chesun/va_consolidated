@@ -17,8 +17,8 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/calschls/qoiclean/secondary/secqoiclean1617
-    $logdir/secqoiclean1617.smcl (via log using)
-    $logdir/secqoiclean1617.smcl + $logdir/secqoiclean1617.log (translate)
+    $logdir/data_prep/qoiclean/secondary/secqoiclean1617.smcl (via log using)
+    $logdir/data_prep/qoiclean/secondary/secqoiclean1617.smcl + $logdir/data_prep/qoiclean/secondary/secqoiclean1617.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
     Source: caschls/do/build/buildanalysisdata/qoiclean/secondary/secqoiclean1617.do
@@ -29,7 +29,7 @@ RELOCATION (per plan v3 §3.3 step 9 batch 9e, applied 2026-05-08)
         -> $datadir_clean/calschls/qoiclean/<sub>/<x>  (CANONICAL chain output)
       $clndtadir/<sub>/<x> (read) -> $datadir_clean/calschls/<sub>/<x>
         (CHAIN read; produced by renamedata batch 9d in same Stata session)
-      translate (single-line ABS form) -> $logdir/* (CANONICAL)
+      translate (single-line ABS form) -> $logdir/<x> (CANONICAL)
 
 REFERENCES
     ADRs:   0021 (sandbox; description convention)
@@ -37,11 +37,11 @@ REFERENCES
     Sister files (this batch): 9 other qoiclean files (parent×4, secondary×3, staff×3)
 
 ORIGINAL HEADER preserved verbatim below.
-------------------------------------------------------------------------------*/
+------------------------------------------------------------------------------<x>
 
 
 ********************************************************************************
-/* rename and clean secondary (high school) 1617 survey questions of interest */
+/<x> rename and clean secondary (high school) 1617 survey questions of interest <x>
 ********************************************************************************
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
@@ -52,12 +52,15 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/qoiclean"
+cap mkdir "$logdir/data_prep/qoiclean/secondary"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/qoiclean"
 cap mkdir "$datadir_clean/calschls/qoiclean/secondary"
 
-log using "$logdir/secqoiclean1617.smcl", replace text
+log using "$logdir/data_prep/qoiclean/secondary/secqoiclean1617.smcl", replace text
 
 use $datadir_clean/calschls/secondary/sec1617, clear
 keep cdscode a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 //only keep questions of interest
@@ -238,4 +241,4 @@ gen year = 1617
 
 
 log close
-translate $logdir/secqoiclean1617.smcl $logdir/secqoiclean1617.log, replace 
+translate $logdir/data_prep/qoiclean/secondary/secqoiclean1617.smcl $logdir/data_prep/qoiclean/secondary/secqoiclean1617.log, replace 

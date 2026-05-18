@@ -36,7 +36,7 @@ OUTPUTS
     CANONICAL:
       $tables_dir/va_cfr_all_v[12]/combined/fb_spec_<outcome>.csv
                                           — paper-shipping CSV; one per outcome × version
-      $logdir/va_spec_fb_tab.smcl + .log
+      $logdir/va/va_spec_fb_tab.smcl + .log
 
 ROLE IN ADR-0021 SANDBOX
     Reads CANONICAL .ster only (no LEGACY reads — predecessor doesn't include
@@ -107,11 +107,12 @@ cap mkdir "$tables_dir/va_cfr_all_v2/combined"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
  cd $vaprojdir
 
  log close _all
 
- log using "$logdir/va_spec_fb_tab.smcl", replace text
+ log using "$logdir/va/va_spec_fb_tab.smcl", replace text
 
  di as text _n "{hline 80}"
  di as text "va_spec_fb_tab.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -360,8 +361,8 @@ di "Do file va_spec_fb_tab.do start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
 cap log close
-cap translate "$logdir/va_spec_fb_tab.smcl" ///
-  "$logdir/va_spec_fb_tab.log", replace
+cap translate "$logdir/va/va_spec_fb_tab.smcl" ///
+  "$logdir/va/va_spec_fb_tab.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

@@ -28,7 +28,7 @@ INPUTS
 OUTPUTS
     No .dta / .csv on disk (correlations printed to log).
     CANONICAL:
-      $logdir/va_corr.smcl + .log         — per-do-file log (this is where corrs land)
+      $logdir/va/va_corr.smcl + .log         — per-do-file log (this is where corrs land)
 
 ROLE IN ADR-0021 SANDBOX
     Reads CANONICAL only.  Writes ONLY to `$logdir/`.  Sandbox-clean.
@@ -86,11 +86,12 @@ v2: same prior score controls for ELA and math
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
  cd $vaprojdir
 
  log close _all
 
- log using "$logdir/va_corr.smcl", replace text
+ log using "$logdir/va/va_corr.smcl", replace text
 
  di as text _n "{hline 80}"
  di as text "va_corr.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -157,8 +158,8 @@ local time2 = c(current_time)
 
 cap log close
 
-cap translate "$logdir/va_corr.smcl" ///
-  "$logdir/va_corr.log", replace
+cap translate "$logdir/va/va_corr.smcl" ///
+  "$logdir/va/va_corr.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

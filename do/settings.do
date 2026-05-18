@@ -145,7 +145,7 @@ global nscdtadir_oldformat  "$nscdtadir/oldformat"
 global mattxwalks       "/home/research/ca_ed_lab/users/msnaven/data/restricted_access/clean/crosswalks"
 
 * Christina-owned k12-to-postsecondary distance data (LEGACY for raw inputs;
-* relocated batch 9c writes outputs to $datadir_clean/k12_postsec_distance/clean/*).
+* relocated batch 9c writes outputs to $datadir_clean/k12_postsec_distance/clean/<x>).
 * Predecessor settings.do (do_files/settings.do:52) bound this to the same path.
 global distance_dtadir  "$vaprojdir/data/k12_postsec_distance"
 
@@ -153,7 +153,7 @@ global distance_dtadir  "$vaprojdir/data/k12_postsec_distance"
 * settings.do binds these to absolute Scribe paths outside both repos.  Used
 * for raw-survey reads in batch 9d (renamedata.do, splitstaff0414.do) and
 * batch 9e (qoiclean year-by-year files).  Writes from those batches go to
-* CANONICAL $datadir_clean/calschls/* per ADR-0021 sandbox-write principle.
+* CANONICAL $datadir_clean/calschls/<x> per ADR-0021 sandbox-write principle.
 * $rawdtadir holds .dta-format raw surveys (most years); $rawcsvdir holds
 * the pre-2014 .csv-format secondary surveys.  $clndtadir is currently used
 * only by qoiclean (batch 9e) for legacy-clean reads — splitstaff0414 was

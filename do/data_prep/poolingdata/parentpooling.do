@@ -23,8 +23,8 @@ INPUTS (verified via grep on file body)
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/calschls/analysisready/parentanalysisready
     $datadir_clean/calschls/poolingdata/parentpooledstats
-    $logdir/parentpooling.smcl (via log using)
-    $logdir/parentpooling.smcl + $logdir/parentpooling.log (translate)
+    $logdir/data_prep/poolingdata/parentpooling.smcl (via log using)
+    $logdir/data_prep/poolingdata/parentpooling.smcl + $logdir/data_prep/poolingdata/parentpooling.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 9 batch 9f — extension batch added 2026-05-08)
     Source: caschls/do/build/buildanalysisdata/poolingdata/parentpooling.do
@@ -36,7 +36,7 @@ RELOCATION (per plan v3 §3.3 step 9 batch 9f — extension batch added 2026-05-
       $projdir/dta/buildanalysisdata/poolingdata/<x> -> $datadir_clean/calschls/poolingdata/<x>  (CANONICAL chain output)
       $projdir/dta/buildanalysisdata/analysisready/<x> -> $datadir_clean/calschls/analysisready/<x>  (CANONICAL chain output; consumed by survey-VA in do/survey_va/)
       $projdir/dta/buildanalysisdata/va/<x> -> $datadir_clean/calschls/va/<x>  (CANONICAL chain output)
-      translate (single + multi-line forms; predecessor `clean_va.do' had `build//buildanalysisdata' double-slash) -> $logdir/* (CANONICAL)
+      translate (single + multi-line forms; predecessor `clean_va.do' had `build//buildanalysisdata' double-slash) -> $logdir/<x> (CANONICAL)
     Predecessor's `log using' upgraded to consolidated convention.
 
 REFERENCES
@@ -61,12 +61,14 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/data_prep"
+cap mkdir "$logdir/data_prep/poolingdata"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/calschls"
 cap mkdir "$datadir_clean/calschls/poolingdata"
 cap mkdir "$datadir_clean/calschls/analysisready"
 
-log using "$logdir/parentpooling.smcl", replace text
+log using "$logdir/data_prep/poolingdata/parentpooling.smcl", replace text
 
 /* first append all years to make a pnael dataset to calculate pooled stats */
 use $datadir_clean/calschls/qoiclean/parent/parentqoiclean1819, clear
@@ -153,4 +155,4 @@ save $datadir_clean/calschls/analysisready/parentanalysisready, replace
 
 
 log close
-translate $logdir/parentpooling.smcl $logdir/parentpooling.log, replace 
+translate $logdir/data_prep/poolingdata/parentpooling.smcl $logdir/data_prep/poolingdata/parentpooling.log, replace 

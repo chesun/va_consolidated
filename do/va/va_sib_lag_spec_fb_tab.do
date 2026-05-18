@@ -15,7 +15,7 @@ INVOKED FROM
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified by grep at L114, L155, L125, L168)
     $tables_dir/va_cfr_all_v[12]/spec_test/spec_sib_lag.dta — regsave-appended spec-test summary
     $tables_dir/va_cfr_all_v[12]/fb_test/fb_sib_lag.dta — regsave-appended FB-test summary
-    $logdir/va_sib_lag_spec_fb_tab.smcl + .log
+    $logdir/va/va_sib_lag_spec_fb_tab.smcl + .log
 
     Note: writes ONLY to spec_test/ and fb_test/ subdirs (also written by
     batch 3b's va_*_spec_test_tab.do + va_*_fb_test_tab.do).  The mkdir prep
@@ -25,12 +25,12 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified by grep at L114, L155, L125, L
 RELOCATION (per plan v3 §3.3 step 3 batch 3d, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/sbac/va_sib_lag_spec_fb_tab.do
     Path repointing applied via script-based sed pass (same as batch 3c2):
-      $vaprojdir/log_files/sbac/* -> $logdir/*
+      $vaprojdir/log_files/sbac/<x> -> $logdir/<x>
       $vaprojdir/data/va_samples_* -> $datadir_clean/va_samples_*
-      $vaprojdir/estimates/* -> $estimates_dir/*
-      $vaprojdir/tables/* -> $tables_dir/*
+      $vaprojdir/estimates/<x> -> $estimates_dir/<x>
+      $vaprojdir/tables/<x> -> $tables_dir/<x>
       $vaprojdir/do_files/sbac/{macros_va,macros_va_all_samples_controls,drift_limit}.doh
-        -> $consolidated_dir/do/va/helpers/* (absolute per batch 2c convention)
+        -> $consolidated_dir/do/va/helpers/<x> (absolute per batch 2c convention)
 
 ADRs: 0004 (canonical pipeline), 0009 (v1 canonical), 0021 (sandbox; description convention)
 ORIGINAL CHANGE LOG preserved verbatim below.
@@ -64,11 +64,12 @@ cap mkdir "$tables_dir/va_cfr_all_v2/combined"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
 cd $vaprojdir
 
 cap log close _all
 
-log using "$logdir/va_sib_lag_spec_fb_tab.smcl", replace text
+log using "$logdir/va/va_sib_lag_spec_fb_tab.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "va_sib_lag_spec_fb_tab.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -188,8 +189,8 @@ di "Start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
 cap log close
-cap translate "$logdir/va_sib_lag_spec_fb_tab.smcl" ///
-  "$logdir/va_sib_lag_spec_fb_tab.log", replace
+cap translate "$logdir/va/va_sib_lag_spec_fb_tab.smcl" ///
+  "$logdir/va/va_sib_lag_spec_fb_tab.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

@@ -21,16 +21,16 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on the file body)
     $estimates_dir/va_cfr_all_v[12]/va_est_dta/va_all_schl_char.dta (merged VA + school-char dataset)
       $estimates_dir/va_cfr_all_v[12]/va_het/{district_<type>_<spec>_<wt>, corr_<char>_va_<spec>_<wt>}.dta
       $tables_dir/share/va/{check,pub}/va_het/{var_across_district_<wt>_v[12], corr_char_<wt>_v[12]}.tex (paper-shipping LaTeX fragments)
-    $logdir/va_het.smcl + .log
+    $logdir/va/heterogeneity/va_het.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 4, applied 2026-05-08)
     Source: cde_va_project_fork/do_files/va_het/va_het.do
     Path repointing applied via script-based sed pass:
-      $vaprojdir/log_files/va_het/* -> $logdir/*
-      $vaprojdir/estimates/* -> $estimates_dir/*
-      $vaprojdir/tables/* -> $tables_dir/*
-      $vaprojdir/figures/* -> $figures_dir/*
-      $vaprojdir/do_files/sbac/macros_va*.doh -> $consolidated_dir/do/va/helpers/* (absolute per batch 2c)
+      $vaprojdir/log_files/va_het/<x> -> $logdir/<x>
+      $vaprojdir/estimates/<x> -> $estimates_dir/<x>
+      $vaprojdir/tables/<x> -> $tables_dir/<x>
+      $vaprojdir/figures/<x> -> $figures_dir/<x>
+      $vaprojdir/do_files/sbac/macros_va*.doh -> $consolidated_dir/do/va/helpers/<x> (absolute per batch 2c)
       $vaprojdir/data/sch_char[_2018].dta KEPT LEGACY (Step 9 CDE data deferred)
 
 ADRs: 0004 (canonical pipeline), 0009 (v1 canonical), 0021 (sandbox; description convention)
@@ -64,11 +64,13 @@ cap mkdir "$tables_dir/share/va/pub/va_het"
 cap mkdir "$logdir"
 
 
+cap mkdir "$logdir/va"
+cap mkdir "$logdir/va/heterogeneity"
 cd $vaprojdir
 
 log close _all
 
-log using "$logdir/va_het.smcl", replace text
+log using "$logdir/va/heterogeneity/va_het.smcl", replace text
 
 di as text _n "{hline 80}"
 di as text "va_het.do — RUN START: `c(current_date)' `c(current_time)'"
@@ -295,8 +297,8 @@ foreach version in v1 v2 {
 
 
 cap log close
-cap translate "$logdir/va_het.smcl" ///
-    "$logdir/va_het.log", replace
+cap translate "$logdir/va/heterogeneity/va_het.smcl" ///
+    "$logdir/va/heterogeneity/va_het.log", replace
 
 * Restore CWD to $consolidated_dir for subsequent main.do invocations.
 cd "$consolidated_dir"

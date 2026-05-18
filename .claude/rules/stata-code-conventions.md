@@ -47,3 +47,44 @@ When new package used: save `[LEARN:stata] New package: name — purpose` to MEM
 - `ivreghdfe` for IV with high-dimensional FE
 - `regsave` for saving results to datasets
 - Cluster SEs at appropriate level (document why)
+
+## Wildcards in comments (per 2026-05-17 sweep)
+
+Inside any Stata comment context — `/* ... */` block, `*`-prefixed line, or `//`-prefixed line — do **not** use `*` as a path-glob wildcard. Use `<x>` (or `<file>`, `<filename>`) as the placeholder.
+
+The character sequence `/*` is reserved for legitimate block-comment opens. Stata's parser counts `/*` opens greedily and treats them as state transitions regardless of context — including inside an existing `/* ... */` block, inside a `//` line comment, and inside a `*`-prefixed line comment. An extra `/*` from a path-glob like `prepare/*` inside a header description creates a runaway nested block comment that silently swallows large portions of the file.
+
+| Before (bug pattern) | After (fixed) |
+|---|---|
+| `$logdir/*` | `$logdir/<x>` |
+| `prepare/*` | `prepare/<x>` |
+| `do/**/*.do` | `do/<x>/<x>.do` |
+| `$datadir_clean/calschls/{a,b}/*` | `$datadir_clean/calschls/{a,b}/<x>` |
+
+The fix tool (one-time): `py/sweep_comments_and_logdirs.py` ran across the active tree on 2026-05-17 and applied the rewrite mechanically. Going forward, the rule applies to every new `.do` / `.doh` file. The commit-time check in `.claude/rules/phase-1-review.md` §2 Tier-1 enforces it via `grep -c '/\*'` vs `grep -c '\*/'` per file.
+
+See `quality_reports/plans/2026-05-17_comment-bug-sweep.md` v3 for the bug analysis and the rationale for Option B (path-glob `*` placeholder) over Option A (header-block restructure).
+
+## Per-file logging structure (per 2026-05-17 sweep)
+
+Each `.do` file under `do/<reldir>/<name>.do` writes its log to `$logdir/<reldir>/<name>.smcl` — i.e., the log directory mirrors the do/ directory structure.
+
+Required boilerplate:
+
+```stata
+* --- output-directory prep (CANONICAL) ---------------------------------------
+cap mkdir "$logdir"
+cap mkdir "$logdir/<first-level-parent>"
+cap mkdir "$logdir/<first-level-parent>/<second-level-parent>"
+...                                              // one mkdir per intermediate path component
+log using "$logdir/<reldir>/<name>.smcl", replace text
+...
+cap log close
+cap translate "$logdir/<reldir>/<name>.smcl" "$logdir/<reldir>/<name>.log", replace
+```
+
+Top-level files (`do/main.do`, `do/settings.do`) are exempt: `main.do` opens a timestamped master log; `settings.do` is `include`'d and doesn't open its own log.
+
+`do/check/check_logs.do` walks the structure and asserts every active `.do` file under `do/` (excluding `do/_archive/`) produced a matching log. The walker computes the expected log path from the file's relative directory under `do/`.
+
+The commit-time check in `.claude/rules/phase-1-review.md` §2 Tier-1 enforces the log-path convention.

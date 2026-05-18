@@ -427,7 +427,7 @@ if `run_paper_outputs' {
     do do/share/va_var_explain_tab.do               // variance-explained table from var-explain regression results
     do do/share/va_spec_fb_tab_all.do               // VA specification + forecast-bias test summary table (all-outcomes combined)
     do do/share/reg_out_va_tab.do                   // outcome-on-VA regression coefficient table
-    do do/share/svyindex_tab.do                     // survey-VA index regression table (Table 8 panels); reads CHAIN $estimates_dir/survey_va/factor/* (Step 7)
+    do do/share/svyindex_tab.do                     // survey-VA index regression table (Table 8 panels); reads CHAIN $estimates_dir/survey_va/factor/<x> (Step 7)
     do do/share/check/corr_dk_score_va.do           // diagnostic: correlation between drift-knot (DK) score and VA estimates
 
     * Step 10 batch 10b — caschls/share/demographics (4 files): LANDED 2026-05-08

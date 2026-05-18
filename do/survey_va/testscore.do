@@ -19,17 +19,17 @@ INPUTS (verified via grep on file body)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/schoolchar/testscorecontrols
-    $logdir/testscore.smcl + .log
+    $logdir/survey_va/testscore.smcl + .log
 
 RELOCATION (per plan v3 §3.3 step 11 — extension batch added 2026-05-08)
     Source: caschls/do/share/factoranalysis/testscore.do
     Path repointing applied:
-      $projdir/log/share/factoranalysis/* -> $logdir/* (CANONICAL)
-      $projdir/dta/allsvyfactor/* -> $datadir_clean/survey_va/* (CANONICAL chain — consumed by Step 7)
-      $projdir/dta/schoolchar/* -> $datadir_clean/schoolchar/* (CANONICAL chain — consumed by Step 7)
-      $projdir/dta/buildanalysisdata/analysisready/* -> $datadir_clean/calschls/analysisready/* (CANONICAL chain from Step 9f)
-      $projdir/dta/<other>/* -> $caschls_projdir/dta/<other>/* (LEGACY-static raw)
-      translate -> $logdir/* (CANONICAL)
+      $projdir/log/share/factoranalysis/<x> -> $logdir/<x> (CANONICAL)
+      $projdir/dta/allsvyfactor/<x> -> $datadir_clean/survey_va/<x> (CANONICAL chain — consumed by Step 7)
+      $projdir/dta/schoolchar/<x> -> $datadir_clean/schoolchar/<x> (CANONICAL chain — consumed by Step 7)
+      $projdir/dta/buildanalysisdata/analysisready/<x> -> $datadir_clean/calschls/analysisready/<x> (CANONICAL chain from Step 9f)
+      $projdir/dta/<other>/<x> -> $caschls_projdir/dta/<other>/<x> (LEGACY-static raw)
+      translate -> $logdir/<x> (CANONICAL)
 
 CROSS-STEP CHAIN COORDINATION
     Step 7 files updated to read CHAIN paths:
@@ -57,10 +57,11 @@ set more off
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
+cap mkdir "$logdir/survey_va"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/schoolchar"
 
-log using "$logdir/testscore.smcl", replace text
+log using "$logdir/survey_va/testscore.smcl", replace text
 
 
 // load up the subsample of students Matt is using. This includes grade 11 students in year 2015-2017 (year of the spring semester)
@@ -98,4 +99,4 @@ save $datadir_clean/schoolchar/testscorecontrols, replace
 
 
 log close
-translate $logdir/testscore.smcl $logdir/testscore.log, replace
+translate $logdir/survey_va/testscore.smcl $logdir/survey_va/testscore.log, replace
