@@ -186,7 +186,7 @@ c2d208c phase-1a(§3.5): M4_ACCEPTANCE_RUN flag + fix missing settings include
 6. **When run completes** (or hits a runtime error): pull `log/` + `output/` back to local. Triage from the master log + (if run completed) the data-check assertions in Phase 7. Then re-run M4 smoke (`tier_filter = "smoke"`) to verify the 5 representative pairs match. If smoke PASS → paper tier (~30-60 min). If paper PASS → full tier (multi-hour again).
 7. **Post-smoke iteration**: address the 5 deferred M4-runner items (TODO Backlog lines 96-100) once we see actual smoke output indicating which manifest. Defer all 6 cosmetic items (lines 89-95) to Phase 1c §5.4 polish per the original orchestrator scope decision.
 
-## Status (end of 2026-05-17)
+## Status (mid-2026-05-17)
 
 - **Phase 1a §3.5 (M4):** infrastructure complete and pushed. All 5 Christina-caught bugs fixed. 3 M4-blocking latent issues closed. **Awaiting Scribe acceptance run.**
 - **Tree:** clean (`log/`, `output/`, `master_supporting_docs/codebooks/` untracked but pre-existing or generated; not for commit).
@@ -194,3 +194,94 @@ c2d208c phase-1a(§3.5): M4_ACCEPTANCE_RUN flag + fix missing settings include
 - **ADR ledger:** 21 Decided. No new ADRs this session.
 - **Coder-critic audit trail (2026-05-17):** 5 dispatches — M4 round 2 PASS 85/100; main.do M4-flag PASS 94/100; main.do bugfix bundle PASS 94/100; M4-blocking-fixes PASS 96/100. 0 BLOCK verdicts; 0 escalation strikes.
 - **TODO Backlog:** 14 items at session start; 4 marked `[x] RESOLVED` (lines 86, 87, 88, 92); 10 remain (6 cosmetic Phase 1c §5.4; 5 post-smoke M4 runner — one item span both via line numbering).
+
+---
+
+# Continuation — 2026-05-17 (late afternoon / evening)
+
+## Headline
+
+Christina launched the M4 acceptance run, immediately discovered the M4 flag was 0 (had been synced as default), reset, and on the next attempt hit a different failure: `secqoiclean1415.do` errored with `sort cdscode: r(111) "no variables defined"`. She caught the root cause: **`/*` parser bug**. Stata's parser counts `/*` opens greedily regardless of context, so path-glob `*` in `<path>/*` patterns inside `/* ... */` header description blocks create runaway block comments. 89 of 129 active files affected. Comprehensive dual-sweep fix landed (commit `eededa0`), followed by T2 idempotence + portable field guide (commit `b261918`). m4_acceptance_run toggled to 1 locally for the next Scribe attempt.
+
+## Per-step rollup (2026-05-17 evening)
+
+### M4 acceptance run attempt #1 — failed at secqoiclean1415
+
+Christina ran `stata-mp -b do do/main.do` on Scribe. Master log at `log/main_17-May-2026_17-23-02.smcl` showed:
+- Phase 1 entered; nested .do files source-echoed through `end of do-file` markers
+- ZERO "file saved" messages across 6,588 lines
+- Halted at `secqoiclean1415.do` line 85: `sort cdscode` with `r(111) "no variables defined"`
+- Cascading r(111) propagated through remaining Phase 1 scripts and ended main.do after Phase 1's closing `}`
+
+Christina pointed out: `sec1415.dta` doesn't exist on Scribe, AND no per-file logs were produced in `log/`. Diagnostic implications: **nested .do file commands weren't actually executed** despite source-echo through to "end of do-file". Master log showed M4 flag was at default 0 (Christina forgot to flip; sync carried the default).
+
+Then Christina opened `renamedata.do` in the IDE and saw the body rendered as commented out. Diagnosis: same `/*` parser bug as main.do line 182 from the pre-flight session, but now widespread.
+
+### Quantified the scope
+
+`grep -c '/\*'` vs `grep -c '\*/'` per file across active tree: **89 of 129 files (69%) had unbalanced counts**. Top offenders: `staffqoiclean1617_1516.do` (40/39), `base_sum_stats_tab.do` (39/25), `allvaregs.do` (29/15). renamedata.do itself: 16 opens / 7 closes → depth 9 at EOF, meaning most of the body was inside an accidental block comment.
+
+### Comprehensive dual sweep — commit `eededa0`
+
+Plan drafted at `quality_reports/plans/2026-05-17_comment-bug-sweep.md`. Three iterations on the design:
+
+1. **v1**: Option A (eliminate /* */ blocks) vs B (path-glob fix) vs C (hybrid)
+2. **v2** (per Christina): drop C (makes no sense); drop runtime check_comments.do (belongs at agent/commit layer, not Stata runtime; coder-critic uses command-line grep)
+3. **v3** (per Christina): bundle log-directory mirror — `do/<reldir>/<name>.do` → `log/<reldir>/<name>.smcl`. Both transforms in one Python helper.
+
+Coder wrote `py/sweep_comments_and_logdirs.py` — state-machine forward walk with depth-counting + string-literal protection. 6 edge cases handled (`*/<sub>` continuations, lone `*` trailing globs, `//****` decorative-banner overlap, fake-nested-comment pattern, orphan `*/` strip, multi-char output-list bug). Applied 842 T1 replacements + 680 T2 updates across 111 files. Convention codified in `.claude/rules/stata-code-conventions.md` (Wildcards in comments + Per-file logging structure) + `.claude/rules/phase-1-review.md` §2 Tier-1 (two new checklist items) + ADR-0021 amendment + `MEMORY.md` `[LEARN:stata]` entry.
+
+### Coder-critic round 1 — BLOCK 62/100
+
+Critical finding C1: pre-pass regex `r'/\*[ \t]*\n'` was too narrow — only matched lone `/*\n` openers, missed `/*<text>\n`. Result: **5 files had inner `*/` left verbatim**, prematurely closing outer blocks and **activating previously-dormant code** (e.g., `parentqoiclean1415.do` lines 152-158 `rangestat` would OVERWRITE the simple `egen` mean from line 146). Would have produced semantic divergence vs predecessor that M4 golden-master would have caught later.
+
+### Coder round 2 + Coder-critic round 2 — PASS 90/100
+
+Coder replaced narrow regex with state-machine forward walk (depth-counted matching for every `/*` at depth-zero). Caught **4 additional dormant-code activation sites** beyond the original 5. Critic verified balance tree-wide (1104 `/*` = 1104 `*/`). Found one Major M-T2: T2 (log-path mirror) non-idempotent on re-run; deferred to follow-up.
+
+### T2 idempotence fix + field guide — commit `b261918`
+
+- T2 fix: `_expand_mkdir` callback now checks whether expected `cap mkdir` cascade lines already present before inserting. Verified 0 changes on re-run.
+- Helper docstring polish: "ONE-SHOT INTENT, IDEMPOTENT BY CONSTRUCTION" warning + per-process_file comment.
+- Plan doc Phase 2 amendment: round-2 addendum describing regex→state-machine evolution.
+- **Portable field guide** at `master_supporting_docs/stata-block-comment-bug-field-guide.md` (561 lines, 8 sections): 7 bug variants enumerated with concrete examples + grep detection + fix patterns. Self-contained for circulation to other Stata projects via `claude-config`.
+
+### M4 acceptance run attempt #2 — IN PROGRESS
+
+After syncing the dual sweep + T2 fix to Scribe, Christina toggled `m4_acceptance_run = 1` locally and launched `nohup stata-mp -b do do/main.do &`. As of mid-session, Phase 1 batch 9a (ACS census tract cleaning) is producing thousands of lines of `destring` output (Census Bureau `*`/`-` placeholder removal — benign). Runtime expected to be multi-hour; the bottleneck will be Phase 3 VA estimation (5,236 .ster files via CFR shrinkage).
+
+## Today's commits (2026-05-17 evening)
+
+```
+b261918 phase-1a(§3.5): T2 idempotence fix + sweep-helper polish + portable field guide
+eededa0 phase-1a(§3.5): dual sweep -- /* comment-bug fix + log-dir mirror across 111 files
+```
+
+(Plus earlier commits from morning/afternoon: `07b8f80`, `c2d208c`, `55b0c13`, `5782189`.)
+
+## Process learnings (cumulative — append)
+
+9. **Stata parser counts `/*` opens greedily, even inside open block comments**. Empirical evidence: 89 files with unbalanced counts behaved correctly under our nesting model (depth = opens - closes) but not under a "no-nesting" assumption. The IDE's syntax-highlighter rendering ("renamedata.do is all commented out") matched the empirical pipeline behavior (no per-file logs created, no `.dta` files saved, silent halt at first executable script downstream). The convention rule "never use `*` as path-glob wildcard in comments" is necessary and sufficient.
+
+10. **Adversarial pairing is doing exactly what it's designed for**. Coder applied 842 T1 + 680 T2 transforms; coder-critic caught 5 files where the transform would have silently changed pipeline behavior (C1 dormant-code activation). Coder round 2 caught 4 additional sites the critic hadn't flagged. Net: 9 latent semantic-divergence sites prevented from making it to commit. Without the worker-critic separation, those would have been caught only by the M4 golden-master diff hours later.
+
+11. **Per-file-log directory mirror is a structural improvement worth bundling**. Even without the bug fix, the flat `$logdir/` was getting unwieldy for ~110 nested do files. Mirroring `do/<reldir>/` → `log/<reldir>/` makes per-script logs trivially locatable. Marginal cost was small since we were already touching every file.
+
+12. **Forgetting to flip the M4 flag is recoverable but expensive**. Christina's attempt #1 ran with `m4_acceptance_run = 0` (sync carried the default). Phase 2/3 sub-toggles defaulted off → no samples produced, no VA estimates. Phase 1 still ran but then immediately hit the comment bug. Costs ~30 min to discover. Next attempt: flag committed to repo at = 1 so sync to Scribe carries the right state.
+
+## Next session pickup (updated)
+
+1. **Acceptance run on Scribe in progress.** Christina launched `nohup stata-mp -b do do/main.do &` with the M4 flag at 1. Phase 1 ACS cleanup currently producing destring output. Expected multi-hour runtime.
+2. **When run completes** (or errors): pull `log/` + `output/` back. Triage from master log + Phase 7 data-check assertions.
+3. **If main.do completes cleanly**: run M4 smoke with `tier_filter = "smoke"` on `do/check/m4_golden_master.do`. Pull `output/m4_diff_summary.txt` back.
+4. **Then paper tier** (~30-60 min). **Then full tier** (multi-hour).
+5. **Post-smoke iteration**: address the 5 deferred M4-runner items (TODO Backlog) once we see actual smoke output indicating which manifest.
+6. **Phase 1c §5.4 polish**: 6 cosmetic items still deferred (CONVENTIONS-section sweep, dead-code hardcoded paths in dormant gates, missing ledger rows). + 1 follow-up: T2 helper idempotence (now resolved by commit `b261918`).
+
+## Status (end of 2026-05-17)
+
+- **Phase 1a §3.5 (M4):** infrastructure 100% in place. Comment-bug + log-dir-mirror dual sweep landed. Field guide ready for `claude-config` circulation. **Acceptance run currently executing on Scribe** with M4 flag = 1.
+- **Tree:** clean post-commit `b261918`; HEAD at `b261918` in sync with origin. m4_acceptance_run toggled to 1 in `do/main.do:115` for the active run (committed in this session's wrap-up).
+- **ADR ledger:** 21 Decided + 1 amendment to 0021 (2026-05-17). No new ADRs.
+- **Coder-critic audit trail (2026-05-17 evening):** 4 dispatches — dual-sweep round 1 BLOCK 62/100, dual-sweep round 2 PASS 90/100, T2-polish + field guide PASS. 1 escalation strike on the dual sweep round 1; resolved at round 2.
+- **TODO Backlog:** 4 items resolved today; T2 follow-up resolved this session; 9 items remain (6 cosmetic Phase 1c §5.4 + 5 post-smoke M4-runner items minus 1 resolved).

@@ -112,7 +112,7 @@ ACCEPTANCE-RUN MASTER OVERRIDE  (per ADR-0018)
     See ADR-0018 acceptance criteria + plan v3 §3.5 golden-master verification.
 ==============================================================================*/
 
-local m4_acceptance_run  0    // CHANGE ME to 1 for full acceptance / M4 run
+local m4_acceptance_run  1   // CHANGE ME to 1 for full acceptance / M4 run
 
 di as text _n "M4 acceptance-run override: " ///
     cond(`m4_acceptance_run', "ENABLED — sub-toggles do_touse_va, do_create_samples, do_va will be forced to 1", "DISABLED — sub-toggles use cached-defaults")
