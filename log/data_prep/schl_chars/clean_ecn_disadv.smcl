@@ -1,0 +1,36 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  clean_ecn_disadv
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_ecn_disadv.smc
+> l
+  log type:  text
+ opened on:  18 May 2026, 00:03:04
+
+. 
+. /* import sbac data */
+. use cdscode year econ_disadvantage ///
+>     using $vaprojdir/data/restricted_access/clean/k12_test_scores/k12_test_scores_clean ///
+>     if year >= 2015, clear
+(CST/SBAC Student Test Score Samples)
+
+. 
+. collapse econ_disadvantage, by(cdscode year)
+
+. 
+. rename econ_disadvantage prop_ecn_disadv
+
+. label var prop_ecn_disadv "Proportion of economic disadvantaged students"
+
+. 
+. 
+. compress 
+  (0 bytes saved)
+
+. save $datadir_clean/cde/ecn_disadv.dta, replace 
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/ecn_disadv.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/ecn_disadv.dta saved
+
+. 
+. 
+. 
+. 
+. cap log close clean_ecn_disadv

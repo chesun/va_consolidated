@@ -37,11 +37,11 @@ REFERENCES
     Sister files (this batch): 9 other qoiclean files (parent×4, secondary×3, staff×3)
 
 ORIGINAL HEADER preserved verbatim below.
-------------------------------------------------------------------------------<x>
+------------------------------------------------------------------------------*/
 
 
 ********************************************************************************
-/<x> rename and clean secondary (high school) 1415 survey questions of interest <x>
+/* rename and clean secondary (high school) 1415 survey questions of interest */
 ********************************************************************************
 ********************************************************************************
 *************** written by Che Sun. Email: ucsun@ucdavis.edu ********************
@@ -70,21 +70,21 @@ keep cdscode a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28
 //rename value labels to be consistent with var names
 elabel rename (a#_a#) (a#)
 //rename questions of interest and rename value labels using question numbers in 1819 as standard
-/<x> Note: 1415 dataset does not have qoi 27-30 <x>
-/<x> 14-18 correspond to qoi 22-26 <x>
+/* Note: 1415 dataset does not have qoi 27-30 */
+/* 14-18 correspond to qoi 22-26 */
 foreach i of numlist 14/18 {
   local j = `i' + 8
   rename a`i' qoi`j'
   elabel rename a`i' qoi`j'
 }
-/<x> 19=28 correspond to qoi 31-40 <x>
+/* 19=28 correspond to qoi 31-40 */
 foreach i of numlist 19/28 {
   local j = `i' + 12
   rename a`i' qoi`j'
   elabel rename a`i' qoi`j'
 }
 
-* count the total number of responses in each school */
+* count the total number of responses in each school <x>
 sort cdscode
 by cdscode: gen totalresp = _N
 label var totalresp "total number of responses at each school including missing"

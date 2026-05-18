@@ -1,0 +1,799 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  parentqoiclean1819_1718
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/qoiclean/parent/parentqoiclean1
+> 819_1718.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:08:33
+
+. 
+. /* the code for cleaning 1819 and 1718 is exactly the same, so use loop */
+. local years `" "1718" "1819" "'
+
+. 
+. foreach year of local years {
+  2. use $datadir_clean/calschls/parent/parent`year', clear
+  3. //only keep questions of interest
+. keep cdscode p9 p15 p16 p17 p27 p30 p31 p32 p33 p34 p64
+  4. //rename questions of interest using question numbers in 1819 as standard
+. foreach i of numlist 9 15/17 27 30/34 64 {
+  5.   rename p`i' qoi`i'
+  6. }
+  7. //relabel the value labels to be consistent with var name
+. elabel rename (p*) (qoi*)
+  8. //delete all value labels not associated with variables
+. labdu , delete
+  9. 
+. /* count the total number of responses in each school */
+. sort cdscode
+ 10. by cdscode: gen totalresp = _N
+ 11. label var totalresp "total number of responses at each school including mi
+> ssing"
+ 12. 
+. 
+. *****************************************************************************
+> ***
+. /* qoi 9, 15-17, 27, 30-34 have the same response options, so clean them in t
+> he
+> same batch */
+. 
+. /* value labels for qoi 9, 15-17, 27, 30-34:
+> 1 strongly agree
+> 2 agree
+> 3 disagree
+> 4 strongly disagree
+> 5 don't know/NA
+> 
+> Recode:
+> -2 strongly disagree
+> -1 disagree
+> 0 neutral
+> 1 agree
+> 2 strongly agree
+> */
+. 
+. /* recode qoi 9, 15-17, 27, 30-34 */
+. foreach i of numlist 9 15/17 27 30/34 {
+ 13.   gen qoi`i'temp = .
+ 14.   replace qoi`i'temp = -2 if qoi`i' == 4
+ 15.   replace qoi`i'temp = -1 if qoi`i' == 3
+ 16.   replace qoi`i'temp =  0 if qoi`i' == 5
+ 17.   replace qoi`i'temp =  1 if qoi`i' == 2
+ 18.   replace qoi`i'temp =  2 if qoi`i' == 1
+ 19. 
+.   drop qoi`i'
+ 20.   rename qoi`i'temp qoi`i'
+ 21. }
+ 22. 
+. /* generate dummies for each response option and missing for qoi 9, 15-17, 27
+> , 30-34 */
+. foreach i of numlist 9 15/17 27 30/34 {
+ 23.   gen stragree`i' = 0
+ 24.   replace stragree`i' = 1 if qoi`i' == 2
+ 25. 
+.   gen agree`i' = 0
+ 26.   replace agree`i' = 1 if qoi`i' == 1
+ 27. 
+.   gen disagree`i' = 0
+ 28.   replace disagree`i' = 1 if qoi`i' == -1
+ 29. 
+.   gen strdisagree`i' = 0
+ 30.   replace strdisagree`i' = 1 if qoi`i' == -2
+ 31. 
+.   gen dontknow`i' = 0
+ 32.   replace dontknow`i' = 1 if qoi`i' == 0
+ 33. 
+.   gen missing`i' = 0
+ 34.   replace missing`i' = 1 if missing(qoi`i')
+ 35. }
+ 36. 
+. *****************************************************************************
+> ***
+. /* clean qoi 64 as it has different resonse options */
+. 
+. /* value labels for qoi64:
+> 1 very well
+> 2 just okay
+> 3 not very well
+> 4 does not do it at all
+> 5 don't know/NA
+> 
+> recode:
+> -2 does not do it at all
+> -1 not very well
+> 0 dont know
+> 1 just okay
+> 2 very well
+>  */
+. 
+. /* recode qoi 64 */
+.  gen qoi64temp = .
+ 37.  replace qoi64temp = -2 if qoi64 == 4
+ 38.  replace qoi64temp = -1 if qoi64 == 3
+ 39.  replace qoi64temp =  0 if qoi64 == 5
+ 40.  replace qoi64temp =  1 if qoi64 == 2
+ 41.  replace qoi64temp =  2 if qoi64 == 1
+ 42. 
+.  drop qoi64
+ 43.  rename qoi64temp qoi64
+ 44. 
+.  gen verywell64 = 0
+ 45.  replace verywell64 = 1 if qoi64 == 2
+ 46. 
+.  gen justokay64 = 0
+ 47.  replace justokay64 = 1 if qoi64 == 1
+ 48. 
+.  gen notwell64 = 0
+ 49.  replace notwell64 = 1 if qoi64 == -1
+ 50. 
+.  gen doesnotdo64 = 0
+ 51.  replace doesnotdo64 = 1 if qoi64 == -2
+ 52. 
+.  gen dontknow64 = 0
+ 53.  replace dontknow64 = 1 if qoi64 == 0
+ 54. 
+.  gen missing64 = 0
+ 55.  replace missing64 = 1 if missing(qoi64)
+ 56. 
+. 
+. /* generate means for the qoi  */
+. foreach i of numlist 9 15/17 27 30/34 64 {
+ 57.   egen qoi`i'mean = mean(qoi`i'), by(cdscode)
+ 58. }
+ 59. 
+. 
+. /* This is old code before the recoding of qoi values
+>  /<x> generate mean of vars, excluding don't know. <x>
+>  //generate temp vars for low and high bounds to use with rangestat
+>  gen lowbound = 1
+>  gen highbound = 4
+> foreach i of numlist 9 15/17 27 30/34 64 {
+>   rangestat (mean) qoi`i', interval(qoi`i' lowbound highbound) by(cdscode)
+>   rename qoi`i'_mean qoi`i'mean //rename the generated mean vars
+> }
+> /<x> Note: don't worry about missing values generated because it does not mat
+> ter
+> after collapsing dataset <x>
+> drop lowbound highbound //drop the temp vars */
+. 
+. 
+. 
+. /* collapse the dataset, resulting dataset has mean for each qoi, total numbe
+> r
+> of responses, and number of responses for each option in each question */
+. collapse (mean) qoi*mean totalresp (sum) stragree* agree* disagree* strdisagr
+> ee* dontknow* missing* verywell64 justoka
+> y64 notwell64 doesnotdo64, by(cdscode)
+ 60. //some schools have missing means because they have very low number of res
+> ponses and with either don't know or miss
+> ing
+. 
+. 
+. **************************** relabel the vars *******************************
+> ***
+. /* label mean vars */
+. label var qoi9mean "Mean (excluding don't know) of Q: promotes academic succe
+> ss for all students"
+ 61. label var qoi15mean "Mean (excluding don't know) of Q: provides quality co
+> unseling or other ways..."
+ 62. label var qoi16mean "Mean (excluding don't know) of Q: is a supportive and
+>  inviting place..."
+ 63. label var qoi17mean "Mean (excluding don't know) of Q: allows input and we
+> lcomes parents'..."
+ 64. label var qoi27mean "Mean (excluding don't know) of Q: encourages me to be
+>  an active partner..."
+ 65. label var qoi30mean "Mean (excluding don't know) of Q: provides high quali
+> ty instruction..."
+ 66. label var qoi31mean "Mean (excluding don't know) of Q: motivates students 
+> to learn"
+ 67. label var qoi32mean "Mean (excluding don't know) of Q: has teachers who go
+>  out of their way..."
+ 68. label var qoi33mean "Mean (excluding don't know) of Q: has adults who real
+> ly care about students"
+ 69. label var qoi34mean "Mean (excluding don't know) of Q: has high expectatio
+> ns for all students"
+ 70. label var qoi64mean "Mean (excluding don't know) of Q: provoding informati
+> on on how to help..."
+ 71. 
+. label var totalresp "total number of responses in the school including missin
+> g"
+ 72. 
+. /* label vars for the number of response for each option */
+. foreach i of numlist 9 15/17 27 30/34 {
+ 73.   label var stragree`i' "number of people choosing strongly agree for qoi`
+> i'"
+ 74.   label var agree`i' "number of people choosing agree for qoi`i'"
+ 75.   label var disagree`i' "number of people choosing disagree for qoi`i'"
+ 76.   label var strdisagree`i' "number of people choosing strongly disagree fo
+> r qoi`i'"
+ 77.   label var dontknow`i' "number of people choosing don't know for qoi`i'"
+ 78.   label var missing`i' "number of missing responses for qoi`i'"
+ 79. }
+ 80. 
+. label var verywell64 "number of people choosing very well for qoi64"
+ 81. label var justokay64 "number of people choosing just okay for qoi64"
+ 82. label var notwell64 "number of people choosing not very well for qoi64"
+ 83. label var doesnotdo64 "number of people choosing does not do it at all for
+>  qoi64"
+ 84. label var dontknow64 "number of people choosing don't know for qoi64"
+ 85. label var missing64 "number of missing responses for qoi64"
+ 86. 
+. ********************* generate percentage agree/disagree etc ****************
+> ***
+. /* first, generate the net total responses for each question excluding missin
+> g */
+. foreach i of numlist 9 15/17 27 30/34 64 {
+ 87.   gen nettotalresp`i' = totalresp - missing`i'
+ 88.   label var nettotalresp`i' "net total responses for qoi`i' excluding miss
+> ing "
+ 89. }
+ 90. 
+. /* generate percent disagree/agree for qoi 9 15/17 27 30/34 */
+. foreach i of numlist 9 15/17 27 30/34 {
+ 91.   gen pctdisagree`i' = (strdisagree`i' + disagree`i')/nettotalresp`i'
+ 92.   label var pctdisagree`i' "percent strongly disagree or disagree in qoi`i
+> '"
+ 93.   gen pctagree`i' = (stragree`i' + agree`i')/nettotalresp`i'
+ 94.   label var pctagree`i' "percent strongly agree or agree in qoi`i'"
+ 95.   gen pctdontknow`i' = dontknow`i'/nettotalresp`i'
+ 96.   label var pctdontknow`i' "percent don't know in qoi`i'"
+ 97. }
+ 98. 
+. /* generate percent well/not well for qoi64 */
+. gen pctwell64 = verywell64/nettotalresp64
+ 99. label var pctwell64 "percent very well in qoi64"
+100. gen pctokay64 = justokay64/nettotalresp64
+101. label var pctokay64 "percent just okay in qoi64"
+102. gen pctnotwell64 = (notwell64 + doesnotdo64)/nettotalresp64
+103. label var pctnotwell64 "percent not well or does not do at all in qoi64"
+104. gen pctdontknow64 = dontknow64/nettotalresp64
+105. label var pctdontknow64 "percent don't know in qoi64"
+106. 
+. /* generate a year var to prepare for constructing a panel */
+. gen year = `year'
+107. 
+. 
+. label data "cleaned parent `year' survey questions of interest with percent d
+> isagree/agree etc."
+108. compress
+109. save $datadir_clean/calschls/qoiclean/parent/parentqoiclean`year', replace
+110. }
+(2017-18 Parent CSPS Data)
+(152,241 missing values generated)
+(2,252 real changes made)
+(6,135 real changes made)
+(4,512 real changes made)
+(67,449 real changes made)
+(59,713 real changes made)
+(152,241 missing values generated)
+(4,892 real changes made)
+(11,157 real changes made)
+(30,380 real changes made)
+(52,433 real changes made)
+(43,695 real changes made)
+(152,241 missing values generated)
+(2,425 real changes made)
+(6,816 real changes made)
+(3,901 real changes made)
+(68,685 real changes made)
+(58,215 real changes made)
+(152,241 missing values generated)
+(3,215 real changes made)
+(8,433 real changes made)
+(9,581 real changes made)
+(66,442 real changes made)
+(54,589 real changes made)
+(152,241 missing values generated)
+(2,832 real changes made)
+(8,649 real changes made)
+(5,898 real changes made)
+(66,380 real changes made)
+(58,718 real changes made)
+(152,241 missing values generated)
+(2,275 real changes made)
+(8,908 real changes made)
+(4,752 real changes made)
+(70,764 real changes made)
+(51,585 real changes made)
+(152,241 missing values generated)
+(2,145 real changes made)
+(7,900 real changes made)
+(4,490 real changes made)
+(68,159 real changes made)
+(58,009 real changes made)
+(152,241 missing values generated)
+(2,526 real changes made)
+(8,051 real changes made)
+(7,722 real changes made)
+(51,858 real changes made)
+(52,130 real changes made)
+(152,241 missing values generated)
+(2,026 real changes made)
+(6,047 real changes made)
+(8,397 real changes made)
+(65,485 real changes made)
+(58,807 real changes made)
+(152,241 missing values generated)
+(2,164 real changes made)
+(8,306 real changes made)
+(9,837 real changes made)
+(63,366 real changes made)
+(54,588 real changes made)
+(59,713 real changes made)
+(67,449 real changes made)
+(6,135 real changes made)
+(2,252 real changes made)
+(4,512 real changes made)
+(12,180 real changes made)
+(43,695 real changes made)
+(52,433 real changes made)
+(11,157 real changes made)
+(4,892 real changes made)
+(30,380 real changes made)
+(9,684 real changes made)
+(58,215 real changes made)
+(68,685 real changes made)
+(6,816 real changes made)
+(2,425 real changes made)
+(3,901 real changes made)
+(12,199 real changes made)
+(54,589 real changes made)
+(66,442 real changes made)
+(8,433 real changes made)
+(3,215 real changes made)
+(9,581 real changes made)
+(9,981 real changes made)
+(58,718 real changes made)
+(66,380 real changes made)
+(8,649 real changes made)
+(2,832 real changes made)
+(5,898 real changes made)
+(9,764 real changes made)
+(51,585 real changes made)
+(70,764 real changes made)
+(8,908 real changes made)
+(2,275 real changes made)
+(4,752 real changes made)
+(13,957 real changes made)
+(58,009 real changes made)
+(68,159 real changes made)
+(7,900 real changes made)
+(2,145 real changes made)
+(4,490 real changes made)
+(11,538 real changes made)
+(52,130 real changes made)
+(51,858 real changes made)
+(8,051 real changes made)
+(2,526 real changes made)
+(7,722 real changes made)
+(29,954 real changes made)
+(58,807 real changes made)
+(65,485 real changes made)
+(6,047 real changes made)
+(2,026 real changes made)
+(8,397 real changes made)
+(11,479 real changes made)
+(54,588 real changes made)
+(63,366 real changes made)
+(8,306 real changes made)
+(2,164 real changes made)
+(9,837 real changes made)
+(13,980 real changes made)
+(152,241 missing values generated)
+(13,866 real changes made)
+(11,960 real changes made)
+(30,565 real changes made)
+(32,077 real changes made)
+(46,164 real changes made)
+(46,164 real changes made)
+(32,077 real changes made)
+(11,960 real changes made)
+(13,866 real changes made)
+(30,565 real changes made)
+(17,609 real changes made)
+(2,548 missing values generated)
+(10 missing values generated)
+(2,548 missing values generated)
+(10 missing values generated)
+(10 missing values generated)
+(2,550 missing values generated)
+(13 missing values generated)
+(19,538 missing values generated)
+(13 missing values generated)
+(2,550 missing values generated)
+(2,799 missing values generated)
+(38 missing values generated)
+(38 missing values generated)
+(38 missing values generated)
+(8 missing values generated)
+(8 missing values generated)
+(8 missing values generated)
+(38 missing values generated)
+(38 missing values generated)
+(38 missing values generated)
+(8 missing values generated)
+(8 missing values generated)
+(8 missing values generated)
+(8 missing values generated)
+(8 missing values generated)
+(8 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(125 missing values generated)
+(125 missing values generated)
+(125 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(44 missing values generated)
+(44 missing values generated)
+(44 missing values generated)
+(44 missing values generated)
+note: label truncated to 80 characters
+  variable totalresp was float now int
+  variable nettotalresp9 was float now int
+  variable nettotalresp15 was float now int
+  variable nettotalresp16 was float now int
+  variable nettotalresp17 was float now int
+  variable nettotalresp27 was float now int
+  variable nettotalresp30 was float now int
+  variable nettotalresp31 was float now int
+  variable nettotalresp32 was float now int
+  variable nettotalresp33 was float now int
+  variable nettotalresp34 was float now int
+  variable nettotalresp64 was float now int
+  variable year was float now int
+  variable stragree9 was double now int
+  variable stragree15 was double now int
+  variable stragree16 was double now int
+  variable stragree17 was double now int
+  variable stragree27 was double now int
+  variable stragree30 was double now int
+  variable stragree31 was double now int
+  variable stragree32 was double now int
+  variable stragree33 was double now int
+  variable stragree34 was double now int
+  variable agree9 was double now int
+  variable agree15 was double now int
+  variable agree16 was double now int
+  variable agree17 was double now int
+  variable agree27 was double now int
+  variable agree30 was double now int
+  variable agree31 was double now int
+  variable agree32 was double now int
+  variable agree33 was double now int
+  variable agree34 was double now int
+  variable disagree9 was double now byte
+  variable disagree15 was double now int
+  variable disagree16 was double now byte
+  variable disagree17 was double now int
+  variable disagree27 was double now int
+  variable disagree30 was double now int
+  variable disagree31 was double now int
+  variable disagree32 was double now int
+  variable disagree33 was double now byte
+  variable disagree34 was double now int
+  variable strdisagree9 was double now byte
+  variable strdisagree15 was double now byte
+  variable strdisagree16 was double now byte
+  variable strdisagree17 was double now byte
+  variable strdisagree27 was double now byte
+  variable strdisagree30 was double now byte
+  variable strdisagree31 was double now byte
+  variable strdisagree32 was double now byte
+  variable strdisagree33 was double now byte
+  variable strdisagree34 was double now byte
+  variable dontknow9 was double now byte
+  variable dontknow15 was double now int
+  variable dontknow16 was double now byte
+  variable dontknow17 was double now int
+  variable dontknow27 was double now int
+  variable dontknow30 was double now byte
+  variable dontknow31 was double now int
+  variable dontknow32 was double now int
+  variable dontknow33 was double now int
+  variable dontknow34 was double now int
+  variable dontknow64 was double now int
+  variable missing9 was double now int
+  variable missing15 was double now int
+  variable missing16 was double now int
+  variable missing17 was double now int
+  variable missing27 was double now int
+  variable missing30 was double now int
+  variable missing31 was double now int
+  variable missing32 was double now int
+  variable missing33 was double now int
+  variable missing34 was double now int
+  variable missing64 was double now int
+  variable verywell64 was double now int
+  variable justokay64 was double now int
+  variable notwell64 was double now int
+  variable doesnotdo64 was double now int
+  (778,764 bytes saved)
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/qoiclean/parent/parentqoiclean
+    > 1718.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/qoiclean/parent/parentqoiclean
+    > 1718.dta saved
+(2018-19 Parent CSPS Data)
+(165,609 missing values generated)
+(2,341 real changes made)
+(5,988 real changes made)
+(4,632 real changes made)
+(71,645 real changes made)
+(66,831 real changes made)
+(165,609 missing values generated)
+(4,670 real changes made)
+(11,083 real changes made)
+(31,814 real changes made)
+(56,872 real changes made)
+(49,973 real changes made)
+(165,609 missing values generated)
+(2,348 real changes made)
+(6,895 real changes made)
+(4,152 real changes made)
+(73,242 real changes made)
+(64,867 real changes made)
+(165,609 missing values generated)
+(3,034 real changes made)
+(8,191 real changes made)
+(10,357 real changes made)
+(71,423 real changes made)
+(61,070 real changes made)
+(165,609 missing values generated)
+(2,685 real changes made)
+(8,355 real changes made)
+(6,350 real changes made)
+(71,711 real changes made)
+(65,282 real changes made)
+(165,609 missing values generated)
+(2,299 real changes made)
+(9,034 real changes made)
+(5,115 real changes made)
+(75,668 real changes made)
+(57,362 real changes made)
+(165,609 missing values generated)
+(2,157 real changes made)
+(7,814 real changes made)
+(4,849 real changes made)
+(72,820 real changes made)
+(64,621 real changes made)
+(165,609 missing values generated)
+(2,590 real changes made)
+(8,695 real changes made)
+(9,363 real changes made)
+(63,210 real changes made)
+(65,460 real changes made)
+(165,609 missing values generated)
+(1,961 real changes made)
+(5,761 real changes made)
+(9,287 real changes made)
+(70,256 real changes made)
+(65,079 real changes made)
+(165,609 missing values generated)
+(2,162 real changes made)
+(8,288 real changes made)
+(10,413 real changes made)
+(68,373 real changes made)
+(60,221 real changes made)
+(66,831 real changes made)
+(71,645 real changes made)
+(5,988 real changes made)
+(2,341 real changes made)
+(4,632 real changes made)
+(14,172 real changes made)
+(49,973 real changes made)
+(56,872 real changes made)
+(11,083 real changes made)
+(4,670 real changes made)
+(31,814 real changes made)
+(11,197 real changes made)
+(64,867 real changes made)
+(73,242 real changes made)
+(6,895 real changes made)
+(2,348 real changes made)
+(4,152 real changes made)
+(14,105 real changes made)
+(61,070 real changes made)
+(71,423 real changes made)
+(8,191 real changes made)
+(3,034 real changes made)
+(10,357 real changes made)
+(11,534 real changes made)
+(65,282 real changes made)
+(71,711 real changes made)
+(8,355 real changes made)
+(2,685 real changes made)
+(6,350 real changes made)
+(11,226 real changes made)
+(57,362 real changes made)
+(75,668 real changes made)
+(9,034 real changes made)
+(2,299 real changes made)
+(5,115 real changes made)
+(16,131 real changes made)
+(64,621 real changes made)
+(72,820 real changes made)
+(7,814 real changes made)
+(2,157 real changes made)
+(4,849 real changes made)
+(13,348 real changes made)
+(65,460 real changes made)
+(63,210 real changes made)
+(8,695 real changes made)
+(2,590 real changes made)
+(9,363 real changes made)
+(16,291 real changes made)
+(65,079 real changes made)
+(70,256 real changes made)
+(5,761 real changes made)
+(1,961 real changes made)
+(9,287 real changes made)
+(13,265 real changes made)
+(60,221 real changes made)
+(68,373 real changes made)
+(8,288 real changes made)
+(2,162 real changes made)
+(10,413 real changes made)
+(16,152 real changes made)
+(165,609 missing values generated)
+(14,233 real changes made)
+(12,443 real changes made)
+(32,623 real changes made)
+(34,221 real changes made)
+(51,816 real changes made)
+(51,816 real changes made)
+(34,221 real changes made)
+(12,443 real changes made)
+(14,233 real changes made)
+(32,623 real changes made)
+(20,273 real changes made)
+(2,918 missing values generated)
+(11 missing values generated)
+(2,918 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(2,920 missing values generated)
+(13 missing values generated)
+(2,919 missing values generated)
+(13 missing values generated)
+(2,920 missing values generated)
+(2,921 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(11 missing values generated)
+(41 missing values generated)
+(41 missing values generated)
+(41 missing values generated)
+(12 missing values generated)
+(12 missing values generated)
+(12 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(40 missing values generated)
+(12 missing values generated)
+(12 missing values generated)
+(12 missing values generated)
+(41 missing values generated)
+(41 missing values generated)
+(41 missing values generated)
+(42 missing values generated)
+(42 missing values generated)
+(42 missing values generated)
+(42 missing values generated)
+note: label truncated to 80 characters
+  variable totalresp was float now int
+  variable nettotalresp9 was float now int
+  variable nettotalresp15 was float now int
+  variable nettotalresp16 was float now int
+  variable nettotalresp17 was float now int
+  variable nettotalresp27 was float now int
+  variable nettotalresp30 was float now int
+  variable nettotalresp31 was float now int
+  variable nettotalresp32 was float now int
+  variable nettotalresp33 was float now int
+  variable nettotalresp34 was float now int
+  variable nettotalresp64 was float now int
+  variable year was float now int
+  variable stragree9 was double now int
+  variable stragree15 was double now int
+  variable stragree16 was double now int
+  variable stragree17 was double now int
+  variable stragree27 was double now int
+  variable stragree30 was double now int
+  variable stragree31 was double now int
+  variable stragree32 was double now int
+  variable stragree33 was double now int
+  variable stragree34 was double now int
+  variable agree9 was double now int
+  variable agree15 was double now int
+  variable agree16 was double now int
+  variable agree17 was double now int
+  variable agree27 was double now int
+  variable agree30 was double now int
+  variable agree31 was double now int
+  variable agree32 was double now int
+  variable agree33 was double now int
+  variable agree34 was double now int
+  variable disagree9 was double now byte
+  variable disagree15 was double now int
+  variable disagree16 was double now byte
+  variable disagree17 was double now int
+  variable disagree27 was double now int
+  variable disagree30 was double now byte
+  variable disagree31 was double now int
+  variable disagree32 was double now int
+  variable disagree33 was double now byte
+  variable disagree34 was double now int
+  variable strdisagree9 was double now byte
+  variable strdisagree15 was double now byte
+  variable strdisagree16 was double now byte
+  variable strdisagree17 was double now byte
+  variable strdisagree27 was double now byte
+  variable strdisagree30 was double now byte
+  variable strdisagree31 was double now byte
+  variable strdisagree32 was double now byte
+  variable strdisagree33 was double now byte
+  variable strdisagree34 was double now byte
+  variable dontknow9 was double now byte
+  variable dontknow15 was double now int
+  variable dontknow16 was double now byte
+  variable dontknow17 was double now int
+  variable dontknow27 was double now int
+  variable dontknow30 was double now byte
+  variable dontknow31 was double now byte
+  variable dontknow32 was double now int
+  variable dontknow33 was double now int
+  variable dontknow34 was double now int
+  variable dontknow64 was double now int
+  variable missing9 was double now int
+  variable missing15 was double now int
+  variable missing16 was double now int
+  variable missing17 was double now int
+  variable missing27 was double now int
+  variable missing30 was double now int
+  variable missing31 was double now int
+  variable missing32 was double now int
+  variable missing33 was double now int
+  variable missing34 was double now int
+  variable missing64 was double now int
+  variable verywell64 was double now int
+  variable justokay64 was double now int
+  variable notwell64 was double now int
+  variable doesnotdo64 was double now int
+  (737,440 bytes saved)
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/qoiclean/parent/parentqoiclean
+    > 1819.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/qoiclean/parent/parentqoiclean
+    > 1819.dta saved
+
+. 
+. 
+. cap log close parentqoiclean1819_1718

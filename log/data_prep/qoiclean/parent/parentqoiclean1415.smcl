@@ -1,0 +1,328 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  parentqoiclean1415
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/qoiclean/parent/parentqoiclean1
+> 415.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:08:30
+
+. 
+. use $datadir_clean/calschls/parent/parent1415, clear
+( )
+
+. 
+. //only keep questions of interest. 1415 dataset does not have qoi30 32 34 64
+. keep cdscode q7 q13 q14 q15 q26 q39 q41
+
+. //delete all value labels not associated with variables
+. labdu , delete
+
+. //rename questions of interest using question numbers in 1819 as standard
+. rename q7 qoi9
+
+. elabel rename q7 qoi9
+
+. rename q13 qoi15
+
+. elabel rename q13 qoi15
+
+. rename q14 qoi16
+
+. elabel rename q14 qoi16
+
+. rename q15 qoi17
+
+. elabel rename q15 qoi17
+
+. rename q26 qoi27
+
+. elabel rename q26 qoi27
+
+. rename q39 qoi31
+
+. elabel rename q39 qoi31
+
+. rename q41 qoi33
+
+. elabel rename q41 qoi33
+
+. 
+. /* count the total number of responses in each school */
+. sort cdscode
+
+. by cdscode: gen totalresp = _N
+
+. label var totalresp "total number of responses at each school including missing"
+
+. 
+. 
+. ********************************************************************************
+. /* generate dummies for each response option and missing for qoi 9 15-17 27 31 33 */
+. 
+. /* value labels for qoi 9 15-17 27 31 33:
+> 1 strongly agree
+> 2 agree
+> 3 disagree
+> 4 strongly disagree
+> 5 don't know/NA
+> 
+> Recode:
+> -2 strongly disagree
+> -1 disagree
+> 0 neutral
+> 1 agree
+> 2 strongly agree
+> */
+. 
+. /* recode qoi 9 15/17 27 31 33 */
+. foreach i of numlist 9 15/17 27 31 33 {
+  2.   gen qoi`i'temp = .
+  3.   replace qoi`i'temp = -2 if qoi`i' == 4
+  4.   replace qoi`i'temp = -1 if qoi`i' == 3
+  5.   replace qoi`i'temp =  0 if qoi`i' == 5
+  6.   replace qoi`i'temp =  1 if qoi`i' == 2
+  7.   replace qoi`i'temp =  2 if qoi`i' == 1
+  8. 
+.   drop qoi`i'
+  9.   rename qoi`i'temp qoi`i'
+ 10. }
+(43,106 missing values generated)
+(870 real changes made)
+(2,318 real changes made)
+(1,494 real changes made)
+(20,510 real changes made)
+(15,993 real changes made)
+(43,106 missing values generated)
+(1,610 real changes made)
+(3,876 real changes made)
+(7,432 real changes made)
+(16,375 real changes made)
+(11,928 real changes made)
+(43,106 missing values generated)
+(2,555 real changes made)
+(2,584 real changes made)
+(1,711 real changes made)
+(18,445 real changes made)
+(15,825 real changes made)
+(43,106 missing values generated)
+(2,664 real changes made)
+(2,735 real changes made)
+(2,968 real changes made)
+(17,612 real changes made)
+(15,020 real changes made)
+(43,106 missing values generated)
+(1,120 real changes made)
+(2,917 real changes made)
+(1,671 real changes made)
+(18,898 real changes made)
+(16,373 real changes made)
+(43,106 missing values generated)
+(690 real changes made)
+(2,082 real changes made)
+(896 real changes made)
+(17,176 real changes made)
+(14,823 real changes made)
+(43,106 missing values generated)
+(839 real changes made)
+(1,898 real changes made)
+(1,500 real changes made)
+(15,779 real changes made)
+(15,569 real changes made)
+
+. 
+. foreach i of numlist 9 15/17 27 31 33 {
+  2.   gen stragree`i' = 0
+  3.   replace stragree`i' = 1 if qoi`i' == 2
+  4. 
+.   gen agree`i' = 0
+  5.   replace agree`i' = 1 if qoi`i' == 1
+  6. 
+.   gen disagree`i' = 0
+  7.   replace disagree`i' = 1 if qoi`i' == -1
+  8. 
+.   gen strdisagree`i' = 0
+  9.   replace strdisagree`i' = 1 if qoi`i' == -2
+ 10. 
+.   gen dontknow`i' = 0
+ 11.   replace dontknow`i' = 1 if qoi`i' == 0
+ 12. 
+.   gen missing`i' = 0
+ 13.   replace missing`i' = 1 if missing(qoi`i')
+ 14. }
+(15,993 real changes made)
+(20,510 real changes made)
+(2,318 real changes made)
+(870 real changes made)
+(1,494 real changes made)
+(1,921 real changes made)
+(11,928 real changes made)
+(16,375 real changes made)
+(3,876 real changes made)
+(1,610 real changes made)
+(7,432 real changes made)
+(1,885 real changes made)
+(15,825 real changes made)
+(18,445 real changes made)
+(2,584 real changes made)
+(2,555 real changes made)
+(1,711 real changes made)
+(1,986 real changes made)
+(15,020 real changes made)
+(17,612 real changes made)
+(2,735 real changes made)
+(2,664 real changes made)
+(2,968 real changes made)
+(2,107 real changes made)
+(16,373 real changes made)
+(18,898 real changes made)
+(2,917 real changes made)
+(1,120 real changes made)
+(1,671 real changes made)
+(2,127 real changes made)
+(14,823 real changes made)
+(17,176 real changes made)
+(2,082 real changes made)
+(690 real changes made)
+(896 real changes made)
+(7,439 real changes made)
+(15,569 real changes made)
+(15,779 real changes made)
+(1,898 real changes made)
+(839 real changes made)
+(1,500 real changes made)
+(7,521 real changes made)
+
+. 
+. /* generate means for the qoi  */
+. foreach i of numlist 9 15/17 27 31 33 {
+  2.   egen qoi`i'mean = mean(qoi`i'), by(cdscode)
+  3. }
+(5 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(1,595 missing values generated)
+(1,595 missing values generated)
+
+. 
+. 
+. /* This is old code before the recoding of qoi values
+>  /<x> generate mean of vars, excluding don't know. <x>
+>  //generate temp vars for low and high bounds to use with rangestat
+>  gen lowbound = 1
+>  gen highbound = 4
+> foreach i of numlist 9 15/17 27 30/34 64 {
+>   rangestat (mean) qoi`i', interval(qoi`i' lowbound highbound) by(cdscode)
+>   rename qoi`i'_mean qoi`i'mean //rename the generated mean vars
+> }
+> /<x> Note: don't worry about missing values generated because it does not matter
+> after collapsing dataset <x>
+> drop lowbound highbound //drop the temp vars */
+. 
+. 
+. /* collapse the dataset, resulting dataset has mean for each qoi, total number
+> of responses, and number of responses for each option in each question */
+. collapse (mean) qoi*mean totalresp (sum) stragree* agree* disagree* strdisagree* dontknow* missing*, by(cdscode)
+
+. //some schools have missing means because they have very low number of responses and with either don't know or missing
+. 
+. **************************** relabel the vars **********************************
+. /* label mean vars */
+. label var qoi9mean "Mean (excluding don't know) of Q: promotes academic success for all students"
+
+. 
+. label var qoi15mean "Mean (excluding don't know) of Q: provides quality counseling or other ways..."
+
+. label var qoi16mean "Mean (excluding don't know) of Q: is a supportive and inviting place..."
+
+. label var qoi17mean "Mean (excluding don't know) of Q: allows input and welcomes parents'..."
+
+. 
+. label var qoi27mean "Mean (excluding don't know) of Q: encourages me to be an active partner..."
+
+. 
+. label var qoi31mean "Mean (excluding don't know) of Q: motivates students to learn"
+
+. 
+. label var qoi33mean "Mean (excluding don't know) of Q: has adults who really care about students"
+
+. 
+. label var totalresp "total number of responses in the school including missing"
+
+. 
+. /* label vars for the number of response for each option */
+. foreach i of numlist 9 15/17 27 31 33 {
+  2.   label var stragree`i' "number of people choosing strongly agree for qoi`i'"
+  3.   label var agree`i' "number of people choosing agree for qoi`i'"
+  4.   label var disagree`i' "number of people choosing disagree for qoi`i'"
+  5.   label var strdisagree`i' "number of people choosing strongly disagree for qoi`i'"
+  6.   label var dontknow`i' "number of people choosing don't know for qoi`i'"
+  7.   label var missing`i' "number of missing responses for qoi`i'"
+  8. }
+
+. 
+. /* generate a year var to prepare for constructing a panel */
+. gen year = 1415
+
+. 
+. label data "cleaned parent 1415 survey questions of interest with percent disagree/agree etc."
+note: label truncated to 80 characters
+
+. compress
+  variable totalresp was float now int
+  variable year was float now int
+  variable stragree9 was double now int
+  variable stragree15 was double now int
+  variable stragree16 was double now int
+  variable stragree17 was double now int
+  variable stragree27 was double now int
+  variable stragree31 was double now int
+  variable stragree33 was double now int
+  variable agree9 was double now int
+  variable agree15 was double now int
+  variable agree16 was double now int
+  variable agree17 was double now int
+  variable agree27 was double now int
+  variable agree31 was double now int
+  variable agree33 was double now int
+  variable disagree9 was double now byte
+  variable disagree15 was double now int
+  variable disagree16 was double now int
+  variable disagree17 was double now int
+  variable disagree27 was double now byte
+  variable disagree31 was double now byte
+  variable disagree33 was double now byte
+  variable strdisagree9 was double now byte
+  variable strdisagree15 was double now byte
+  variable strdisagree16 was double now int
+  variable strdisagree17 was double now int
+  variable strdisagree27 was double now byte
+  variable strdisagree31 was double now byte
+  variable strdisagree33 was double now byte
+  variable dontknow9 was double now byte
+  variable dontknow15 was double now int
+  variable dontknow16 was double now int
+  variable dontknow17 was double now int
+  variable dontknow27 was double now byte
+  variable dontknow31 was double now byte
+  variable dontknow33 was double now byte
+  variable missing9 was double now byte
+  variable missing15 was double now byte
+  variable missing16 was double now byte
+  variable missing17 was double now byte
+  variable missing27 was double now int
+  variable missing31 was double now int
+  variable missing33 was double now int
+  (234,507 bytes saved)
+
+. save $datadir_clean/calschls/qoiclean/parent/parentqoiclean1415, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/parent/parentqoiclean
+    > 1415.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/parent/parentqoiclean
+    > 1415.dta saved
+
+. 
+. 
+. cap log close parentqoiclean1415

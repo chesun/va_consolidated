@@ -50,7 +50,7 @@ Going forward, add a commit-time check: `grep -c '/\*' <file>` must equal `grep 
 
 ---
 
-## Section 2 — The 7 bug variants
+## Section 2 — The 8 bug variants
 
 Each variant gets: name, severity, code example showing the bug as written and the parser's depth interpretation, a grep (or state-machine) detection command, and a fix.
 
@@ -333,6 +333,130 @@ grep -rnE '//\*' . --include='*.do' --include='*.doh'
 
 Semantically equivalent to Stata (`//` opens the line comment regardless of trailing space); restores grep-balance.
 
+### Variant 8 — Over-flatten bug in fix-tool pre-pass (round-2 trap)
+
+**Severity:** Silent. The variant is *introduced* by an incorrect Variant-4 fix tool, not by the source code itself. After the fix-tool sweep runs, formerly-correct files become broken: legitimate `/* ... */` body blocks lose their close markers, and the file enters a runaway block comment for everything downstream of the failed close. The pipeline appears to have been "swept clean" yet still fails — often more confusingly than the original Variant 1 failure, because the file's grep-balance check still PASSES post-sweep (the bug preserves balance — it just shifts WHERE close happens).
+
+This variant is the round-2 failure mode of a Variant-4 fix tool. It happens when the tool's depth-counted matcher (used to find "multi-line outer blocks") naively treats every `/*` and `*/` digraph as a real block marker — including path-glob fragments. In files where the outer header `/* ... */` contains path-glob substrings (e.g., `$logdir/*.smcl`, `prepare/*`, `do/**/<sub>`), the inflated depth count walks past the real header close. The tool then declares some later `*/` (typically a stray inside a `*` line-comment further down the file) the "matching close" — and blanket-rewrites every digraph in the over-extended inner span.
+
+**Code as written (pre-sweep — already correct):**
+
+```stata
+/*------------------------------------------------------------------------------
+ * PURPOSE:  clean qoi for one year; outputs go to $logdir/* and $datadir/*
+ * INPUTS:   $datadir_clean/calschls/secondary/sec1415  (CHAIN read)
+ * OUTPUTS:  $logdir/data_prep/qoiclean/secondary/secqoiclean1415.smcl
+ *------------------------------------------------------------------------------*/
+
+log using "$logdir/data_prep/qoiclean/secondary/secqoiclean1415.smcl", ...
+use $datadir_clean/calschls/secondary/sec1415, clear
+
+/* Note: 1415 dataset does not have qoi 27-30 */
+foreach i of numlist 14/18 {
+  local j = `i' + 8
+  rename a`i' qoi`j'
+}
+
+* count the total number of responses in each school */
+sort cdscode
+by cdscode: gen totalresp = _N
+```
+
+Stata's parser handles this correctly (the `*/` at the end of line `* count ...` line-comment is harmless — line-comment terminates at newline).
+
+**Buggy post-sweep (over-flattened — the tool over-walked):**
+
+```stata
+/*------------------------------------------------------------------------------
+ * PURPOSE:  clean qoi for one year; outputs go to $logdir/<x> and $datadir/<x>
+ * INPUTS:   $datadir_clean/calschls/secondary/sec1415  (CHAIN read)
+ * OUTPUTS:  $logdir/data_prep/qoiclean/secondary/secqoiclean1415.smcl
+ *------------------------------------------------------------------<x>     <-- header close LOST
+
+log using ...                          (now inside runaway block)
+use ... sec1415, clear                 (now inside runaway block)
+
+/<x> Note: 1415 dataset does not have qoi 27-30 <x>      <-- body comment broken
+foreach i of numlist 14/18 {           (now inside runaway block)
+  ...
+}
+
+* count the total number of responses in each school <x>
+sort cdscode
+by cdscode: gen totalresp = _N         <-- never executes; OR if prior script left totalresp defined, errors r(110)
+```
+
+The header close at line 40 became `<x>` (the trailing `*/` got blanket-rewritten). Lines 44, 73, 74, 80 — all legitimate single-line `/* ... */` body blocks — got mangled into `/<x> ... <x>` non-comment syntax. Stata sees the runaway block, treats lines 2-87 as one giant block comment, then exits the block at line 87 (the stray `*/` that the depth-counter had landed on) and tries to execute line 88+ in an inherited dataset state. Result: `gen totalresp` errors at r(110) "totalresp already defined" — because the prior script in the pipeline left totalresp in memory, and the supposed `clear all` + `use` of THIS script never ran.
+
+**Detection:**
+
+```bash
+# Files where the fix tool over-flattened: balance check still PASSES, but
+# header close markers have been mangled. Symptom 1: header separators ending
+# in <x> instead of */.
+grep -rnE '^-+<x>$' . --include='*.do' --include='*.doh'
+
+# Symptom 2: lone <x> on otherwise-empty line (legitimate single-line body
+# block whose close got blanket-rewritten).
+grep -rnE '^[[:space:]]*<x>[[:space:]]*$' . --include='*.do' --include='*.doh'
+
+# Both should return 0 hits in a correctly-swept tree.
+```
+
+The tree-wide `/*` vs `*/` balance check **still passes** after this bug fires — the tool preserves digraph counts; it just shifts where the close happens. So per-file balance is not sufficient. The two grep patterns above catch the placeholder artifacts the over-flatten leaves behind.
+
+**Root cause:** the fix tool's pre-pass used greedy depth-counted matching to find "multi-line outer blocks", then blanket replaced every `/*` and `*/` digraph in the inner span via `inner.replace("/*", "/<x>").replace("*/", "<x>")`. The depth counter saw path-glob `/*` inside the outer header (e.g., `$logdir/*` on the OUTPUTS doc-line) and incremented past zero when the real header close arrived. The matcher then walked forward to a "deeper" close — typically a stray `*/` further down (e.g., the line-end of `* count ... */`). The blanket replace inside that over-extended span then destroyed legitimate body block markers.
+
+**Fix pattern:** distinguish path-glob digraphs (`/*` preceded by a path-continuation char, `*/` followed by a path-continuation char) from real block markers (whitespace-/punctuation-/EOF-adjacent). Two predicates:
+
+```python
+_PATH_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_<>${}.-"
+
+def _is_path_glob_open(text, i):
+    """/* at position i is a path-glob iff the char before it is a path char."""
+    if i == 0:
+        return False
+    return text[i - 1] in _PATH_CHARS
+
+def _is_path_glob_close(text, i):
+    """*/ at position i is a path-glob iff the char after it is a path char."""
+    if i + 2 >= len(text):
+        return False
+    return text[i + 2] in _PATH_CHARS
+```
+
+Apply in two places:
+
+1. **Depth-counted matcher:** skip path-glob digraphs when counting depth. Only real block-comment opens / closes change depth. This fixes the matcher overshooting into a stray `*/` further down the file.
+2. **Inner rewriter:** replace blanket `inner.replace("/*", "/<x>").replace("*/", "<x>")` with a context-aware walker that distinguishes path-glob from real block markers and leaves path-glob fragments intact (the main pass downstream handles them via its own state machine).
+
+```python
+def _rewrite_inner_block_markers(inner):
+    """Walk inner char-by-char; rewrite ONLY genuine block /* and */ markers."""
+    n = len(inner)
+    out, i = [], 0
+    while i < n:
+        if i + 1 < n and inner[i] == "/" and inner[i+1] == "*":
+            out.append("/*" if _is_path_glob_open(inner, i) else "/<x>")
+            i += 2
+            continue
+        if i + 1 < n and inner[i] == "*" and inner[i+1] == "/":
+            out.append("*/" if _is_path_glob_close(inner, i) else "<x>")
+            i += 2
+            continue
+        out.append(inner[i])
+        i += 1
+    return "".join(out)
+```
+
+**Reference implementation:** `py/sweep_comments_and_logdirs.py` evolution captures the three rounds:
+
+- **Round 1 (2026-05-17):** narrow pre-pass regex `r'/\*[ \t]*\n'` matched only lone `/*\n` openers. Missed 5 files with `/* <text>\n` outer openers. Variant 4 dormant code activated.
+- **Round 2 (2026-05-17):** state-machine pre-pass replaced the narrow regex, but used greedy depth-counting + blanket `inner.replace(...)`. Closed Round 1's miss, but introduced Variant 8 on 2 files (sec1415, sec1617) where path-globs in the outer header inflated the depth.
+- **Round 3 (2026-05-18):** path-glob-aware depth-counting in `_find_matching_close` + context-aware inner rewriter in `_rewrite_inner_block_markers`. Closes Variant 8.
+
+The lesson: a Variant-4 fix tool must distinguish path-glob `/*` and `*/` from real block markers EVERYWHERE — both in the depth-counted matcher AND in the inner-rewrite. Blanket replacement is the trap.
+
 ---
 
 ## Section 3 — Detection at scale (cross-project sweep)
@@ -364,9 +488,13 @@ grep -rnE '\*/[A-Za-z0-9_<${]' . --include='*.do' --include='*.doh'
 
 # Variant 7 — //* decorative banner overlap
 grep -rE '//\*' . --include='*.do' --include='*.doh'
+
+# Variant 8 — over-flatten artifacts left by a buggy Variant-4 fix tool
+grep -rnE '^-+<x>$' . --include='*.do' --include='*.doh'
+grep -rnE '^[[:space:]]*<x>[[:space:]]*$' . --include='*.do' --include='*.doh'
 ```
 
-Combine the outputs to triage. Variants 1, 2, 3, 6 are subclasses of the same root cause (path-glob `*` in comment context). Variants 4 and 5 require attention regardless of whether Variants 1-3 are present. Variant 7 is cosmetic but worth fixing for grep-balance hygiene.
+Combine the outputs to triage. Variants 1, 2, 3, 6 are subclasses of the same root cause (path-glob `*` in comment context). Variants 4 and 5 require attention regardless of whether Variants 1-3 are present. Variant 7 is cosmetic but worth fixing for grep-balance hygiene. Variant 8 is post-sweep regression detection — run after applying a Variant-4 fix tool to confirm the tool didn't over-flatten.
 
 ---
 
@@ -392,12 +520,19 @@ The helper has three passes:
 walk text forward
 state = code | string
 at every depth-0 /* open in code state:
-    use depth-counting (every /* +1, every */ -1) to find matching */
+    use PATH-GLOB-AWARE depth-counting:
+      - every real /* (not a path-glob fragment) → +1
+      - every real */ (not a path-glob fragment) → -1
+    to find matching */
     inner = text between open_end and close_start
     if inner spans multiple lines AND contains nested /* or */:
-        rewrite every interior /* to /<x>
-        rewrite every interior */ to <x>
+        walk inner char-by-char, rewriting ONLY genuine block markers:
+          - real /* → /<x>
+          - real */ → <x>
+          - path-glob /* and */ → leave intact
 ```
+
+Critical Variant-8 prevention: both the depth-counted matcher AND the inner rewriter must distinguish path-glob digraphs from real block markers. Blanket `inner.replace("/*", X).replace("*/", Y)` is the wrong pattern; it over-flattens legitimate body block markers when the depth counter has overshot.
 
 **Main pass: rewrite path-globs in comment state**
 
@@ -436,17 +571,27 @@ An early implementation of the reference tool used a narrow pre-pass regex (`r'/
 
 The correct approach: forward-walk in `code` state, and at every depth-0 `/*` open, use depth-counted matching to find the closer. Inspect the inner span verbatim. Don't try to anchor on the form of the opener line.
 
+### Why the depth-counted matcher and the inner rewriter must both be path-glob aware
+
+A round-2 implementation correctly switched to the state-machine pre-pass, but kept naive depth counting (every `/*` and `*/` digraph counted as a depth change). In files where the outer header contained path-glob substrings (e.g., `$logdir/*`, `prepare/*`), the depth counter inflated past zero when the real header close arrived. The matcher then walked forward looking for a "deeper" close and landed on a stray `*/` further down the file. The inner rewriter, which used blanket `inner.replace("/*", "/<x>").replace("*/", "<x>")`, then destroyed legitimate `*/` body block closes in the over-extended span.
+
+The Variant 8 fix: both the matcher and the rewriter must use the same path-glob predicates. Real block markers are whitespace-/punctuation-/EOF-adjacent; path-glob fragments are surrounded by path-continuation chars. The two predicates `_is_path_glob_open` and `_is_path_glob_close` encode the heuristic; the matcher skips them when counting depth; the rewriter leaves them intact (the main pass downstream rewrites them correctly via its own state machine).
+
 ### Critical invariants
 
 - **String-literal protection.** `/*` and `*/` inside `"..."` are literal characters and must not transition state. Track string state in both the pre-pass and the main pass.
 - **Process in reverse for in-place rewrite.** When the pre-pass collects spans `(inner_start, inner_end)`, apply rewrites in reverse so earlier rewrites don't invalidate later offsets.
 - **Multi-line filter on pre-pass.** Single-line `/* foo */` blocks have no nesting risk; the pre-pass should only flatten blocks where the inner span (a) spans multiple lines AND (b) contains nested `/*` or `*/`.
+- **Path-glob awareness in BOTH matcher and rewriter.** See "Why the depth-counted matcher and the inner rewriter must both be path-glob aware" above. Missing this in either place produces Variant 8.
 
 ### Reference implementation
 
 The full Python implementation is at `py/sweep_comments_and_logdirs.py` in the va_consolidated project (≈700 lines). The load-bearing functions:
 
-- `_find_matching_close(text, open_end) -> int` — depth-counting matcher
+- `_is_path_glob_open(text, i) -> bool` — path-glob predicate (open)
+- `_is_path_glob_close(text, i) -> bool` — path-glob predicate (close)
+- `_find_matching_close(text, open_end) -> int` — depth-counting matcher (path-glob aware as of round 3)
+- `_rewrite_inner_block_markers(inner) -> str` — context-aware inner rewriter (replaces blanket `inner.replace(...)` as of round 3)
 - `_flatten_lone_block_opens(text) -> (text, n_rewrites)` — pre-pass
 - `transform_comment_globs(text) -> (text, n_replacements)` — main pass
 - `strip_orphan_block_closes(text) -> (text, n_stripped)` — post-pass
@@ -514,6 +659,7 @@ Patterns to avoid based on real-world attempts:
 | **Treat `*/` in `block` state as always-close** | Misses Variant 6 (`*/<sub>` is a path-glob fragment, not a close). The fix tool must heuristically distinguish via the character following `*/`. |
 | **Replace only inner `/*` with `/<x>` in pre-pass** | Half-rewrite — leaves orphan `*/`. The pre-pass must rewrite **both** the inner open and the inner close to maintain depth-counter equivalence. |
 | **One-pass solution** | All three passes (pre-pass flattening, main-pass rewriting, post-pass orphan strip) are needed. Single-pass solutions miss at least one variant. |
+| **Pre-pass that finds multi-line outer block via greedy depth-counting + blanket `inner.replace("/*", X).replace("*/", Y)`** | Over-flattens (Variant 8). Catches legitimate `*/` block closes and `/* ... */` single-line body blocks. The depth counter overshoots when path-glob `/*` substrings live inside the outer header; the blanket replace then destroys legitimate body block markers in the over-extended inner span. Result: runaway block comment AFTER the supposedly-corrective sweep, with grep-balance still passing. Use a context-aware walker (path-glob-aware depth count + path-glob-aware inner rewriter) instead. |
 
 ---
 
@@ -529,8 +675,9 @@ The va_consolidated project (an applied-econ research codebase, ~129 active `.do
 - **Five files contained Variant 4** (dormant code that a naive Variant-1 fix would have silently activated). The Variant-4 fix preserved the predecessor's intended behavior: the dormant code (a `rangestat`-bounded mean) would have overwritten a simple `egen` mean computed earlier in the same file, changing saved variable values.
 - After the state-machine sweep plus the new convention rules, the full pipeline ran clean: every file produced, no errors.
 - Final commit touched 122 files with ~2,700 lines of changes.
+- **Variant 8 hit during round-2 sweep:** a state-machine pre-pass that replaced the narrow round-1 regex, but used greedy depth-counting + blanket `inner.replace(...)`, over-flattened **2 files** (`secqoiclean1415.do`, `secqoiclean1617.do`) whose outer headers contained path-glob substrings. M4 acceptance run #3 errored at `secqoiclean1415.do:89` with `r(110) totalresp already defined` — the script's `clear all` + `use` never ran inside the runaway block. Surgical line restoration (7 edits across 2 files) plus a path-glob-aware depth-counter and inner rewriter (round-3) closed the variant.
 
-The lesson: **balance counts alone are necessary but not sufficient.** Variant 4 leaves balance intact while still hiding a semantic regression risk. A state-machine sweep is the only fix that handles all variants safely.
+The lesson: **balance counts alone are necessary but not sufficient.** Variant 4 leaves balance intact while still hiding a semantic regression risk. Variant 8 ALSO leaves balance intact — it preserves digraph counts and merely shifts where the close happens. A state-machine sweep that distinguishes path-glob from real block markers in BOTH the matcher and the inner rewriter is the only fix that handles all variants safely.
 
 ---
 
@@ -538,7 +685,7 @@ The lesson: **balance counts alone are necessary but not sufficient.** Variant 4
 
 ### Reference implementation
 
-- `py/sweep_comments_and_logdirs.py` in this project — full Python implementation of the three-pass algorithm. Approximately 700 lines including extensive docstrings documenting the design rationale and round-1/round-2 fix history.
+- `py/sweep_comments_and_logdirs.py` in this project — full Python implementation of the three-pass algorithm. Approximately 700 lines including extensive docstrings documenting the design rationale and round-1/round-2/round-3 fix history.
 
 ### Convention rules
 
@@ -558,4 +705,5 @@ If you are adapting this guide for a new project: run the Section 3 detection co
 ### Document history
 
 - 2026-05-17 — Initial bug discovery and sweep (89 of 129 files affected; 5 Variant-4 instances)
-- Field guide synthesized from project plan, two coder-critic reviews, and reference implementation
+- 2026-05-18 — Variant 8 (over-flatten round-2 trap) discovered + fixed; field guide extended with new variant, detection commands, Section 4 path-glob-awareness invariant, Section 6 false-fix row, and Section 7 case-study addendum
+- Field guide synthesized from project plan, two coder-critic reviews, reference implementation, and 2026-05-18 round-3 fix

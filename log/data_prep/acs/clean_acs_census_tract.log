@@ -1,19 +1,26 @@
-------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+> -----------------------------------------
       name:  clean_acs_census_tract
-       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/acs/clean_acs_census_tract.smcl
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/acs/clean_acs_census_tract.smcl
   log type:  text
  opened on:  17 May 2026, 22:26:27
 
 . 
-. di as text _n "{hline 80}"
+. di as text _n "--------------------------------------------------------------
+------------------"
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+> -
 
-. di as text "clean_acs_census_tract.do — RUN START: `c(current_date)' `c(current_time)'"
+. di as text "clean_acs_census_tract.do — RUN START: `c(current_date)' `c(curre
+> nt_time)'"
 clean_acs_census_tract.do — RUN START: 17 May 2026 22:26:27
 
-. di as text "{hline 80}"
---------------------------------------------------------------------------------
+. di as text "-----------------------------------------------------------------
+---------------"
+-------------------------------------------------------------------------------
+> -
 
 . 
 . 
@@ -27,9 +34,11 @@ clean_acs_census_tract.do — RUN START: 17 May 2026 22:26:27
 . //include the VA project macros do helper file
 . include $consolidated_dir/do/va/helpers/macros_va.doh
 
-. /*------------------------------------------------------------------------------
+. /*---------------------------------------------------------------------------
+> ---
 > do/va/helpers/macros_va.doh — VA project file paths, dates, controls, strings
-> ================================================================================
+> =============================================================================
+> ===
 > 
 > PURPOSE
 >     Define the canonical VA-pipeline locals consumed across Phase 3+
@@ -40,13 +49,16 @@ clean_acs_census_tract.do — RUN START: 17 May 2026 22:26:27
 >     - Outcome strings (ELA, Math, enrollment).
 >     - Control-variable groupings (school, demographic, score, peer, census,
 >       sibling, distance, scrhat — predicted-score variants).
->     - Per-spec control combinations (b/l/a/s/la/ls/as/las and their `d'-augmented
+>     - Per-spec control combinations (b/l/a/s/la/ls/as/las and their `d'-augme
+> nted
 >       variants per ADR-0009 + 2023-04-30 distance addition).
 >     - String labels for sample × control display.
->     - School-characteristics + demographic-characteristics + expenditure groups.
+>     - School-characteristics + demographic-characteristics + expenditure grou
+> ps.
 > 
 > INCLUDED FROM
->     Phase 3+ VA estimation/table/figure scripts under `do/va/' and `do/share/va/'.
+>     Phase 3+ VA estimation/table/figure scripts under `do/va/' and `do/share/
+> va/'.
 >     Typically the FIRST helper-include in any consuming script (sets up the
 >     parent-scope locals consumed by `drift_limit.doh' and
 >     `macros_va_all_samples_controls.doh').
@@ -74,7 +86,8 @@ clean_acs_census_tract.do — RUN START: 17 May 2026 22:26:27
 >     Destination: do/va/helpers/macros_va.doh
 >     Path repointing per ADR-0021 sandbox amendment ("paths only; analysis
 >     logic preserved verbatim"):
->       - L29-31: `$projdir/dta/siblingxwalk/<file>' -> `$caschls_projdir/dta/siblingxwalk/<file>'
+>       - L29-31: `$projdir/dta/siblingxwalk/<file>' -> `$caschls_projdir/dta/s
+> iblingxwalk/<file>'
 >         (3 references: siblingxwalk, ufamilyxwalk, sibling_out_xwalk)
 >         Reason: $projdir is NOT defined in do/settings.do; $caschls_projdir
 >         is the explicit-named global per the LEGACY PATHS comment block.
@@ -106,7 +119,8 @@ clean_acs_census_tract.do — RUN START: 17 May 2026 22:26:27
 >     Audit:   chunk-2 (file structure verification); chunk-3 (control
 >              specifications cross-checked against paper Tables 2-3)
 >     MEMORY:  [LEARN:stata] 2026-04-30 ($projdir explicit-rename pattern)
-> ------------------------------------------------------------------------------*/
+> -----------------------------------------------------------------------------
+> -*/
 . 
 . 
 . /* CHANGE LOG
@@ -135,13 +149,16 @@ delimiter now ;
 . local vaprojdofiles "$vaprojdir/do_files"
 > local ca_ed_lab "/home/research/ca_ed_lab" ;
 
-. local k12_test_scores "$vaprojdir/data/restricted_access/clean/k12_test_scores" ;
+. local k12_test_scores "$vaprojdir/data/restricted_access/clean/k12_test_score
+> s" ;
 
 . local public_access "$vaprojdir/data/public_access" ;
 
-. local k12_public_schools "$vaprojdir/data/public_access/clean/k12_public_schools" ;
+. local k12_public_schools "$vaprojdir/data/public_access/clean/k12_public_scho
+> ols" ;
 
-. local k12_test_scores_public "$vaprojdir/data/public_access/clean/k12_test_scores" ;
+. local k12_test_scores_public "$vaprojdir/data/public_access/clean/k12_test_sc
+> ores" ;
 
 . local siblingxwalk "$caschls_projdir/dta/siblingxwalk/siblingpairxwalk";
 
@@ -235,24 +252,29 @@ delimiter now ;
 >         ;
 
 . local ela_score_controls
->         i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
+>         i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score
+> )
 >         ;
 
 . // controls using predicted lag 1 ELA scores
 > local ela_scrhat_controls
->         i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
+>         i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela
+> _z_score_hat)
 >         ;
 
 . local math_score_controls
->         i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score)
+>         i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_sc
+> ore)
 >         ;
 
 . local peer_ela_score_controls
->         i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
+>         i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_pr
+> ior_ela_z_score)
 >         ;
 
 . local peer_math_score_controls
->         i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score)
+>         i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_
+> prior_math_z_score)
 >         ;
 
 . local peer_demographic_controls
@@ -275,7 +297,8 @@ delimiter now ;
 >         ;
 
 . local census_controls
->         /*eth_white_pct*/ eth_asian_pct eth_hispanic_pct eth_black_pct /*eth_other_pct*/
+>         /*eth_white_pct*/ eth_asian_pct eth_hispanic_pct eth_black_pct /*eth_
+> other_pct*/
 >         educ_hs_dropout_prop /*educ_deg_2year_prop*/ educ_deg_4year_plus_prop
 >         pov_fam_child_lt18_pct
 >         inc_median_hh
@@ -316,7 +339,8 @@ delimiter now ;
 >         ;
 
 . **********************************************  ;
-. *** macros for STANDALONE control vars for running loops over all samples and specifications ;
+. *** macros for STANDALONE control vars for running loops over all samples and
+>  specifications ;
 . //base specification controls ;
 > local b_controls
 >         `school_controls'
@@ -418,7 +442,8 @@ delimiter now ;
   4.         }
 >         ;
 
-. *** macros for control var COMBINATIONS for running loops over all samples and specifications ;
+. *** macros for control var COMBINATIONS for running loops over all samples an
+> d specifications ;
 . //base specification controls ;
 > local b_spec_controls
 >         `school_controls'
@@ -750,44 +775,68 @@ delimiter now cr
 . macro list
 cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
 clndtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/calschls
-rawcsvdir:      /home/research/ca_ed_lab/data/restricted_access/raw/calschls/csv
-rawdtadir:      /home/research/ca_ed_lab/data/restricted_access/raw/calschls/stata
+rawcsvdir:      /home/research/ca_ed_lab/data/restricted_access/raw/calschls/cs
+> v
+rawdtadir:      /home/research/ca_ed_lab/data/restricted_access/raw/calschls/st
+> ata
 distance_dtadir:
-                /home/research/ca_ed_lab/projects/common_core_va/data/k12_postsec_distance
-mattxwalks:     /home/research/ca_ed_lab/users/msnaven/data/restricted_access/clean/crosswalks
+                /home/research/ca_ed_lab/projects/common_core_va/data/k12_posts
+> ec_distance
+mattxwalks:     /home/research/ca_ed_lab/users/msnaven/data/restricted_access/c
+> lean/crosswalks
 nscdtadir_oldformat:
-                /home/research/ca_ed_lab/data/restricted_access/clean/cde_nsc/oldformat
+                /home/research/ca_ed_lab/data/restricted_access/clean/cde_nsc/o
+> ldformat
 nscdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde_nsc
 caschls_projdir:
                 /home/research/ca_ed_lab/users/chesun/gsr/caschls
-vaprojxwalks:   /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks
+vaprojxwalks:   /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks
 vaprojdir:      /home/research/ca_ed_lab/projects/common_core_va
 matt_files_dir: /home/research/ca_ed_lab/projects/common_core_va/do_files
-figures_dir:    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures
-tables_dir:     /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables
-datadir_raw:    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/raw
-datadir_clean:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
-logdir:         /home/research/ca_ed_lab/projects/common_core_va/consolidated/log
-output_dir:     /home/research/ca_ed_lab/projects/common_core_va/consolidated/output
-estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates
-datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/data
+figures_dir:    /home/research/ca_ed_lab/projects/common_core_va/consolidated/f
+> igures
+tables_dir:     /home/research/ca_ed_lab/projects/common_core_va/consolidated/t
+> ables
+datadir_raw:    /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
+> ata/raw
+datadir_clean:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
+> ata/cleaned
+logdir:         /home/research/ca_ed_lab/projects/common_core_va/consolidated/l
+> og
+output_dir:     /home/research/ca_ed_lab/projects/common_core_va/consolidated/o
+> utput
+estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/e
+> stimates
+datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
+> ata
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
-cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/csu_outcomes_cr
+cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
-cb_k12_csu_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/k12_csu_crosswa
+cb_k12_csu_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/k12_csu_crosswa
                 > lk.dta
-cb_ccc:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/ccc_outcomes_cr
+cb_ccc:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/ccc_outcomes_cr
                 > osswalk.dta
-cb_k12_ccc_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/k12_ccc_crosswa
+cb_k12_ccc_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/k12_ccc_crosswa
                 > lk.dta
-cb_nsc:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/nsc_outcomes_cr
+cb_nsc:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/nsc_outcomes_cr
                 > osswalk_ssid.dta
-cb_sch_char:    /home/research/ca_ed_lab/projects/common_core_va/data/sch_char.dta
-cb_k12_pre_va:  /home/research/ca_ed_lab/projects/common_core_va/data/va_samples_v1/score_b.dta
-cb_k12_main:    /home/research/ca_ed_lab/projects/common_core_va/estimates/va_cfr_all_v1/va_est_dta/va_all_schl_char.dta
-cb_calschls_2:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfactor/allsvyqoimeans
-cb_calschls_1:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfactor/imputedallsvyqoimeans
+cb_sch_char:    /home/research/ca_ed_lab/projects/common_core_va/data/sch_char.
+> dta
+cb_k12_pre_va:  /home/research/ca_ed_lab/projects/common_core_va/data/va_sample
+> s_v1/score_b.dta
+cb_k12_main:    /home/research/ca_ed_lab/projects/common_core_va/estimates/va_c
+> fr_all_v1/va_est_dta/va_all_schl_char.dta
+cb_calschls_2:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfac
+> tor/allsvyqoimeans
+cb_calschls_1:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfac
+> tor/imputedallsvyqoimeans
 vadtadir:       /home/research/ca_ed_lab/projects/common_core_va/data/sbac
 projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 S_level:        95
@@ -802,17 +851,24 @@ S_CONSOLE:      console
 S_OS:           Unix
 S_MACH:         PC (64-bit x86-64)
 _sch_char_control_vars:
-                fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop male_prop enr_male_prop
-                eth_minority_prop enr_minority_prop enr_total frpm_prop el_prop expenditures_instr_pc
-                expenditures3000_pc expenditures4000_pc expenditures_other_pc expenditures7000_pc
+                fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop
+>  male_prop enr_male_prop
+                eth_minority_prop enr_minority_prop enr_total frpm_prop el_prop
+>  expenditures_instr_pc
+                expenditures3000_pc expenditures4000_pc expenditures_other_pc e
+> xpenditures7000_pc
 _expenditure_vars:
-                expenditures_instr_pc expenditures3000_pc expenditures4000_pc expenditures_other_pc expenditures7000_pc
-_expenditures:  expenditures_instr_pc expenditures3000_pc expenditures4000_pc expenditures_other_pc expenditures7000_pc
+                expenditures_instr_pc expenditures3000_pc expenditures4000_pc e
+> xpenditures_other_pc expenditures7000_pc
+_expenditures:  expenditures_instr_pc expenditures3000_pc expenditures4000_pc e
+> xpenditures_other_pc expenditures7000_pc
 _dem_char_vars: enr_male_prop enr_minority_prop frpm_prop el_prop enr_total
 _dem_chars:     enr_male_prop enr_minority_prop frpm_prop el_prop enr_total
-_sch_char_vars: fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop male_prop enr_male_prop
+_sch_char_vars: fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop
+>  male_prop enr_male_prop
                 eth_minority_prop enr_minority_prop enr_total
-_sch_chars:     fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop c.male_prop##c.enr_male_prop
+_sch_chars:     fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop
+>  c.male_prop##c.enr_male_prop
                 c.eth_minority_prop##c.enr_minority_prop enr_total
 _enr_black_hisp_prop_str:
                 Proportion of Black and Hispanic Enrollment
@@ -843,337 +899,566 @@ _l_str:         leave out score
 _bd_str:        base
 _b_str:         base
 _lasd_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore eth_asian_pct
-                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct
-                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year mindist_any_nonprof_4yr
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling
+> _enr_4year mindist_any_nonprof_4yr
                 mindist_ccc
 _lasd_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore eth_asian_pct
-                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct
-                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year mindist_any_nonprof_4yr
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling
+> _enr_4year mindist_any_nonprof_4yr
                 mindist_ccc
 _las_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore eth_asian_pct
-                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct
-                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling
+> _enr_4year
 _las_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore eth_asian_pct
-                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct
-                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling
+> _enr_4year
 _asd_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) eth_asian_pct eth_hispanic_pct
-                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct inc_median_hh
-                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_ccc
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
 _asd_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) eth_asian_pct eth_hispanic_pct
-                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct inc_median_hh
-                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_ccc
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
 _as_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) eth_asian_pct eth_hispanic_pct
-                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct inc_median_hh
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
                 i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
 _as_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) eth_asian_pct eth_hispanic_pct
-                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct inc_median_hh
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
                 i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
 _lsd_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore
-                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_ccc
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
 _lsd_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore
-                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_ccc
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
 _ls_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
                 i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
 _ls_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
                 i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
 _lad_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore eth_asian_pct
-                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
                 inc_median_hh mindist_any_nonprof_4yr mindist_ccc
 _lad_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore eth_asian_pct
-                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
                 inc_median_hh mindist_any_nonprof_4yr mindist_ccc
 _la_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore eth_asian_pct
-                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
                 inc_median_hh
 _la_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore eth_asian_pct
-                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
                 inc_median_hh
 _sd_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) i.has_older_sibling_enr_2year
-                i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_ccc
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) i.has_older_sibling_enr_2year
+                i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_c
+> cc
 _sd_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) i.has_older_sibling_enr_2year
-                i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_ccc
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) i.has_older_sibling_enr_2year
+                i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_c
+> cc
 _s_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) i.has_older_sibling_enr_2year
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) i.has_older_sibling_enr_2year
                 i.has_older_sibling_enr_4year
 _s_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) i.has_older_sibling_enr_2year
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) i.has_older_sibling_enr_2year
                 i.has_older_sibling_enr_4year
 _ad_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) eth_asian_pct eth_hispanic_pct
-                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct inc_median_hh
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
                 mindist_any_nonprof_4yr mindist_ccc
 _ad_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) eth_asian_pct eth_hispanic_pct
-                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct inc_median_hh
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
                 mindist_any_nonprof_4yr mindist_ccc
 _a_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) eth_asian_pct eth_hispanic_pct
-                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct inc_median_hh
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
 _a_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) eth_asian_pct eth_hispanic_pct
-                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov_fam_child_lt18_pct inc_median_hh
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
 _ld_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
                 mindist_any_nonprof_4yr mindist_ccc
 _ld_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
                 mindist_any_nonprof_4yr mindist_ccc
 _l_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
 _l_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) loscore
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
 _bd_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) mindist_any_nonprof_4yr
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) mindist_any_nonprof_4yr
                 mindist_ccc
 _bd_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) mindist_any_nonprof_4yr
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) mindist_any_nonprof_4yr
                 mindist_ccc
 _b_scrhat_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score)
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score)
 _b_spec_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score)
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score)
 _peer_lasd_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian_pct peer_eth_hispanic_pct
-                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct
-                peer_inc_median_hh peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4year
-_lasd_controls: loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop
-                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian
+> _pct peer_eth_hispanic_pct
+                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4yea
+> r_plus_prop peer_pov_fam_child_lt18_pct
+                peer_inc_median_hh peer_has_older_sibling_enr_2year peer_has_ol
+> der_sibling_enr_4year
+_lasd_controls: loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dr
+> opout_prop educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2y
+> ear i.has_older_sibling_enr_4year
                 mindist_any_nonprof_4yr mindist_ccc
 _peer_asd_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth_hispanic_pct peer_eth_black_pct
-                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct peer_inc_median_hh
-                peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4year
-_asd_controls:  eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop
-                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth
+> _hispanic_pct peer_eth_black_pct
+                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_po
+> v_fam_child_lt18_pct peer_inc_median_hh
+                peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4ye
+> ar
+_asd_controls:  eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2y
+> ear i.has_older_sibling_enr_4year
                 mindist_any_nonprof_4yr mindist_ccc
 _peer_lsd_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_loscore peer_has_older_sibling_enr_2year
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_has_older
+> _sibling_enr_2year
                 peer_has_older_sibling_enr_4year
-_lsd_controls:  loscore i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_ccc
+_lsd_controls:  loscore i.has_older_sibling_enr_2year i.has_older_sibling_enr_4
+> year mindist_any_nonprof_4yr mindist_ccc
 _peer_lad_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian_pct peer_eth_hispanic_pct
-                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian
+> _pct peer_eth_hispanic_pct
+                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4yea
+> r_plus_prop peer_pov_fam_child_lt18_pct
                 peer_inc_median_hh
-_lad_controls:  loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop
-                pov_fam_child_lt18_pct inc_median_hh mindist_any_nonprof_4yr mindist_ccc
+_lad_controls:  loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dr
+> opout_prop educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh mindist_any_nonprof_4yr mi
+> ndist_ccc
 _peer_sd_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4year
-_sd_controls:   i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_ccc
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_has_older_sibling_enr_
+> 2year peer_has_older_sibling_enr_4year
+_sd_controls:   i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
 _peer_ad_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth_hispanic_pct peer_eth_black_pct
-                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct peer_inc_median_hh
-_ad_controls:   eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop
-                pov_fam_child_lt18_pct inc_median_hh mindist_any_nonprof_4yr mindist_ccc
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth
+> _hispanic_pct peer_eth_black_pct
+                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_po
+> v_fam_child_lt18_pct peer_inc_median_hh
+_ad_controls:   eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh mindist_any_nonprof_4yr mi
+> ndist_ccc
 _peer_ld_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
                 peer_limited_eng_prof peer_disabled peer_loscore
 _ld_controls:   loscore mindist_any_nonprof_4yr mindist_ccc
 _peer_bd_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
                 peer_limited_eng_prof peer_disabled
-_bd_controls:   age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score) mindist_any_nonprof_4yr
+_bd_controls:   age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) mindist_any_nonprof_4yr
                 mindist_ccc
 _peer_las_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian_pct peer_eth_hispanic_pct
-                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct
-                peer_inc_median_hh peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4year
-_las_controls:  loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop
-                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian
+> _pct peer_eth_hispanic_pct
+                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4yea
+> r_plus_prop peer_pov_fam_child_lt18_pct
+                peer_inc_median_hh peer_has_older_sibling_enr_2year peer_has_ol
+> der_sibling_enr_4year
+_las_controls:  loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dr
+> opout_prop educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2y
+> ear i.has_older_sibling_enr_4year
 _peer_as_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth_hispanic_pct peer_eth_black_pct
-                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct peer_inc_median_hh
-                peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4year
-_as_controls:   eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop
-                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth
+> _hispanic_pct peer_eth_black_pct
+                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_po
+> v_fam_child_lt18_pct peer_inc_median_hh
+                peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4ye
+> ar
+_as_controls:   eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2y
+> ear i.has_older_sibling_enr_4year
 _peer_ls_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_loscore peer_has_older_sibling_enr_2year
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_has_older
+> _sibling_enr_2year
                 peer_has_older_sibling_enr_4year
-_ls_controls:   loscore i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+_ls_controls:   loscore i.has_older_sibling_enr_2year i.has_older_sibling_enr_4
+> year
 _peer_la_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian_pct peer_eth_hispanic_pct
-                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian
+> _pct peer_eth_hispanic_pct
+                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4yea
+> r_plus_prop peer_pov_fam_child_lt18_pct
                 peer_inc_median_hh
-_la_controls:   loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop
+_la_controls:   loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dr
+> opout_prop educ_deg_4year_plus_prop
                 pov_fam_child_lt18_pct inc_median_hh
 _peer_s_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4year
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_has_older_sibling_enr_
+> 2year peer_has_older_sibling_enr_4year
 _s_controls:    i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
 _peer_a_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
-                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth_hispanic_pct peer_eth_black_pct
-                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct peer_inc_median_hh
-_a_controls:    eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth
+> _hispanic_pct peer_eth_black_pct
+                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_po
+> v_fam_child_lt18_pct peer_inc_median_hh
+_a_controls:    eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
                 pov_fam_child_lt18_pct inc_median_hh
 _peer_l_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
                 peer_limited_eng_prof peer_disabled peer_loscore
 _l_controls:    loscore
 _peer_b_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score) peer_age
-                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
                 peer_limited_eng_prof peer_disabled
-_b_controls:    age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
-                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score)
+_b_controls:    age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score)
 _d_controls:    mindist_any_nonprof_4yr mindist_ccc
 _sib_lag2_controls:
                 old2_sib_enr_2year old2_sib_enr_4year
 _sib_lag1_controls:
                 old1_sib_enr_2year old1_sib_enr_4year
 _peer_sibling_controls:
-                peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4year
+                peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4ye
+> ar
 _sibling_controls:
                 i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
 _peer_census_controls:
-                peer_eth_asian_pct peer_eth_hispanic_pct peer_eth_black_pct peer_educ_hs_dropout_prop
-                peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct peer_inc_median_hh
+                peer_eth_asian_pct peer_eth_hispanic_pct peer_eth_black_pct pee
+> r_educ_hs_dropout_prop
+                peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct peer_
+> inc_median_hh
 _census_controls:
-                eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop
+                eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
                 pov_fam_child_lt18_pct inc_median_hh
 _census_grade:  6
 _va_control_vars:
-                age male eth_asian eth_hispanic eth_black eth_other econ_disadvantage limited_eng_prof disabled
+                age male eth_asian eth_hispanic eth_black eth_other econ_disadv
+> antage limited_eng_prof disabled
 _peer_demographic_controls:
-                peer_age peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other peer_econ_disadvantage
+                peer_age peer_male peer_eth_asian peer_eth_hispanic peer_eth_bl
+> ack peer_eth_other peer_econ_disadvantage
                 peer_limited_eng_prof peer_disabled
 _peer_math_score_controls:
-                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score)
 _peer_ela_score_controls:
-                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
 _math_score_controls:
-                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score)
 _ela_scrhat_controls:
-                i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.pri
+> or_ela_z_score_hat)
 _ela_score_controls:
-                i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
+                i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z
+> _score)
 _demographic_controls:
-                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i.econ_disadvantage i.limited_eng_prof
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
                 i.disabled
 _both_str:      Original + Census + Sibling
 _sib_str:       Original + Sibling
@@ -1199,18 +1484,26 @@ _test_score_max_year:
 _test_score_min_year:
                 2015
 _sibling_out_xwalk:
-                /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/siblingxwalk/sibling_out_xwal
+                /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
+> ata/cleaned/siblingxwalk/sibling_out_xwal
                 > k
-_ufamilyxwalk:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/siblingxwalk/ufamilyxwalk
-_siblingxwalk:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/siblingxwalk/siblingpairxwalk
+_ufamilyxwalk:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/siblingxw
+> alk/ufamilyxwalk
+_siblingxwalk:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/siblingxw
+> alk/siblingpairxwalk
 _k12_test_scores_public:
-                /home/research/ca_ed_lab/projects/common_core_va/data/public_access/clean/k12_test_scores
+                /home/research/ca_ed_lab/projects/common_core_va/data/public_ac
+> cess/clean/k12_test_scores
 _k12_public_schools:
-                /home/research/ca_ed_lab/projects/common_core_va/data/public_access/clean/k12_public_schools
-_public_access: /home/research/ca_ed_lab/projects/common_core_va/data/public_access
+                /home/research/ca_ed_lab/projects/common_core_va/data/public_ac
+> cess/clean/k12_public_schools
+_public_access: /home/research/ca_ed_lab/projects/common_core_va/data/public_ac
+> cess
 _k12_test_scores:
-                /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/k12_test_scores
-_vaprojdofiles: /home/research/ca_ed_lab/projects/common_core_va/do_files" local ca_ed_lab "/home/research/ca_ed_lab
+                /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/k12_test_scores
+_vaprojdofiles: /home/research/ca_ed_lab/projects/common_core_va/do_files" loca
+> l ca_ed_lab "/home/research/ca_ed_lab
 _home:          /home/research/ca_ed_lab/projects/common_core_va
 
 . 
@@ -1220,11 +1513,14 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
 . 
 . foreach year in 2010 2011 2012 2013 {
   2. 
-.   ******************************************************************************
+.   ***************************************************************************
+> ***
 .   * Education: Subject Table S1501 *
-.   ******************************************************************************
+.   ***************************************************************************
+> ***
 . 
-.   import delimited using $vaprojdir/data/public_access/raw/acs/subject_tables/`year'/5yr/ACSST5Y`year'.S1501_data_with
+.   import delimited using $vaprojdir/data/public_access/raw/acs/subject_tables
+> /`year'/5yr/ACSST5Y`year'.S1501_data_with
 > _overlays.csv, clear varnames(1) case(lower)
   3. 
 .   //assigning var labels using the second row
@@ -1234,14 +1530,17 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
   6.   }
   7.   drop if _n==1
   8. 
-.   //convert to numeric variables, and remove non-numeric characters specified in the ignore() option
+.   //convert to numeric variables, and remove non-numeric characters specified
+>  in the ignore() option
 .   foreach v of varlist s* {
   9.         destring `v', replace ignore(",+(X)-*null")
  10.   }
  11. 
 .   *** Education level proportions
-.   // proportion of high school dropouts in 25 years and over population: (less than 9th grade + 9-12th grade)/total
-.   gen educ_hs_dropout_prop = (s1501_c01_007e + s1501_c01_008e) / s1501_c01_006e
+.   // proportion of high school dropouts in 25 years and over population: (les
+> s than 9th grade + 9-12th grade)/total
+.   gen educ_hs_dropout_prop = (s1501_c01_007e + s1501_c01_008e) / s1501_c01_00
+> 6e
  12.   // proportion of high school graduates
 .   gen educ_deg_hs_prop = s1501_c01_009e / s1501_c01_006e
  13.   // proportion of some college, no degree
@@ -1253,11 +1552,13 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
  16.   // proportion of graduate or professional degree
 .   gen educ_deg_grad_prop = s1501_c01_013e / s1501_c01_006e
  17.   // proportion of 4 year degree or more
-.   gen educ_deg_4year_plus_prop = (s1501_c01_012e + s1501_c01_013e) / s1501_c01_006e
+.   gen educ_deg_4year_plus_prop = (s1501_c01_012e + s1501_c01_013e) / s1501_c0
+> 1_006e
  18. 
 .   // temp var to check whether the data add up
 .   tempvar tot_prop
- 19.   gen `tot_prop' = (s1501_c01_007e + s1501_c01_008e + s1501_c01_009e + s1501_c01_010e + s1501_c01_011e + s1501_c01_
+ 19.   gen `tot_prop' = (s1501_c01_007e + s1501_c01_008e + s1501_c01_009e + s15
+> 01_c01_010e + s1501_c01_011e + s1501_c01_
 > 012e + s1501_c01_012e + s1501_c01_013e) / s1501_c01_006e
  20.   sum `tot_prop'
  21. 
@@ -1265,7 +1566,8 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
  22.   rename geo_id geoid
  23.   //generate the geoid2 var which is the last 11 digits of geoid
 .   gen geoid2 = substr(geoid, 10, 11)
- 24.   // the name var is the same as the old geodisplaylabel var, keep var name consistency
+ 24.   // the name var is the same as the old geodisplaylabel var, keep var nam
+> e consistency
 .   rename name geodisplaylabel
  25.   gen year = `year'
  26.   order geoid geoid2 geodisplaylabel year
@@ -1275,10 +1577,13 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
  29.   save `education_`year''
  30. 
 . 
-.   ******************************************************************************
+.   ***************************************************************************
+> ***
 .   * Poverty: Subject Table S1702 *
-.   ******************************************************************************
-.   import delimited using $vaprojdir/data/public_access/raw/acs/subject_tables/`year'/5yr/ACSST5Y`year'.S1702_data_with
+.   ***************************************************************************
+> ***
+.   import delimited using $vaprojdir/data/public_access/raw/acs/subject_tables
+> /`year'/5yr/ACSST5Y`year'.S1702_data_with
 > _overlays.csv, clear varnames(1) case(lower)
  31. 
 .   foreach v of varlist * {
@@ -1293,7 +1598,8 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
  39. 
 .   // total number of families with children under 18 years
 .   gen fam_child_lt18_tot = s1702_c01_002e
- 40.   // proportion of families with children under 18 years below poverty level
+ 40.   // proportion of families with children under 18 years below poverty lev
+> el
 .   gen pov_fam_child_lt18_pct = s1702_c02_002e
  41. 
 .   keep geo_id name fam_child_lt18_tot pov_fam_child_lt18_pct
@@ -1308,10 +1614,13 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
  49.   save `poverty_`year''
  50. 
 . 
-.   ******************************************************************************
+.   ***************************************************************************
+> ***
 .   * Income: Subject Table S1901 *
-.   ******************************************************************************
-.   import delimited using $vaprojdir/data/public_access/raw/acs/subject_tables/`year'/5yr/ACSST5Y`year'.S1901_data_with
+.   ***************************************************************************
+> ***
+.   import delimited using $vaprojdir/data/public_access/raw/acs/subject_tables
+> /`year'/5yr/ACSST5Y`year'.S1901_data_with
 > _overlays.csv, clear varnames(1) case(lower)
  51. 
 .   foreach v of varlist * {
@@ -1332,22 +1641,29 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
  60.   //percept of households with income < $15k
 .   egen inc_lt15k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e), mi
  61.   //percent of households with income < $25k
-.   egen inc_lt25k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_004e), mi
+.   egen inc_lt25k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_00
+> 4e), mi
  62.   //percent of households with income < $35k
-.   egen inc_lt35k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_004e s1901_c01_005e), mi
+.   egen inc_lt35k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_00
+> 4e s1901_c01_005e), mi
  63.   //percent of households with income < $50k
-.   egen inc_lt50k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_004e s1901_c01_005e s1901_c01_006e), mi
+.   egen inc_lt50k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_00
+> 4e s1901_c01_005e s1901_c01_006e), mi
  64.   //percent of households with income < $75k
-.   egen inc_lt75k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_004e s1901_c01_005e s1901_c01_006e s1901_c0
+.   egen inc_lt75k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_00
+> 4e s1901_c01_005e s1901_c01_006e s1901_c0
 > 1_007e), mi
  65.   //percent of households with income < $100k
-.   egen inc_lt100k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_004e s1901_c01_005e s1901_c01_006e s1901_c
+.   egen inc_lt100k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_0
+> 04e s1901_c01_005e s1901_c01_006e s1901_c
 > 01_007e s1901_c01_008e), mi
  66.   //percent of households with income < $150k
-.   egen inc_lt150k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_004e s1901_c01_005e s1901_c01_006e s1901_c
+.   egen inc_lt150k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_0
+> 04e s1901_c01_005e s1901_c01_006e s1901_c
 > 01_007e s1901_c01_008e s1901_c01_009e), mi
  67.   //percent of households with income < $200k
-.   egen inc_lt200k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_004e s1901_c01_005e s1901_c01_006e s1901_c
+.   egen inc_lt200k_hh_pct = rowtotal(s1901_c01_002e s1901_c01_003e s1901_c01_0
+> 04e s1901_c01_005e s1901_c01_006e s1901_c
 > 01_007e s1901_c01_008e s1901_c01_009e s1901_c01_010e), mi
  68. 
 .   //household median income
@@ -1362,22 +1678,29 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
  71.   //percent of families with income less than $15k
 .   egen inc_lt15k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e), mi
  72.   //percent of families with income less than $25k
-.   egen inc_lt25k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_004e), mi
+.   egen inc_lt25k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_0
+> 04e), mi
  73.   //percent of families with income < $35k
-.   egen inc_lt35k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_004e s1901_c02_005e), mi
+.   egen inc_lt35k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_0
+> 04e s1901_c02_005e), mi
  74.   //percent of families with income < $50k
-.   egen inc_lt50k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_004e s1901_c02_005e s1901_c02_006e), mi
+.   egen inc_lt50k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_0
+> 04e s1901_c02_005e s1901_c02_006e), mi
  75.   //percent of families with income < $75k
-.   egen inc_lt75k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_004e s1901_c02_005e s1901_c02_006e s1901_c
+.   egen inc_lt75k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_0
+> 04e s1901_c02_005e s1901_c02_006e s1901_c
 > 02_007e), mi
  76.   //percent of families with income < $100k
-.   egen inc_lt100k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_004e s1901_c02_005e s1901_c02_006e s1901_
+.   egen inc_lt100k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_
+> 004e s1901_c02_005e s1901_c02_006e s1901_
 > c02_007e s1901_c02_008e), mi
  77.   //percent of families with income < $150k
-.   egen inc_lt150k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_004e s1901_c02_005e s1901_c02_006e s1901_
+.   egen inc_lt150k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_
+> 004e s1901_c02_005e s1901_c02_006e s1901_
 > c02_007e s1901_c02_008e s1901_c02_009e), mi
  78.   //percent of families with income < $200k
-.   egen inc_lt200k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_004e s1901_c02_005e s1901_c02_006e s1901_
+.   egen inc_lt200k_fam_pct = rowtotal(s1901_c02_002e s1901_c02_003e s1901_c02_
+> 004e s1901_c02_005e s1901_c02_006e s1901_
 > c02_007e s1901_c02_008e s1901_c02_009e s1901_c02_010e), mi
  79. 
 .   //families median income
@@ -1392,22 +1715,29 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
  82.   //percent of married-couple families with income less than $15k
 .   egen inc_lt15k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e), mi
  83.   //percent of married-couple families with income less than $25k
-.   egen inc_lt25k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03_004e), mi
+.   egen inc_lt25k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03
+> _004e), mi
  84.   //percent of married-couple families with income < $35k
-.   egen inc_lt35k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03_004e s1901_c03_005e), mi
+.   egen inc_lt35k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03
+> _004e s1901_c03_005e), mi
  85.   //percent of married-couple families with income < $50k
-.   egen inc_lt50k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03_004e s1901_c03_005e s1901_c03_006e), mi
+.   egen inc_lt50k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03
+> _004e s1901_c03_005e s1901_c03_006e), mi
  86.   //percent of married-couple families with income < $75k
-.   egen inc_lt75k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03_004e s1901_c03_005e s1901_c03_006e s1901
+.   egen inc_lt75k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03
+> _004e s1901_c03_005e s1901_c03_006e s1901
 > _c03_007e), mi
  87.   //percent of married-couple families with income < $100k
-.   egen inc_lt100k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03_004e s1901_c03_005e s1901_c03_006e s190
+.   egen inc_lt100k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c0
+> 3_004e s1901_c03_005e s1901_c03_006e s190
 > 1_c03_007e s1901_c03_008e), mi
  88.   //percent of married-couple families with income < $150k
-.   egen inc_lt150k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03_004e s1901_c03_005e s1901_c03_006e s190
+.   egen inc_lt150k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c0
+> 3_004e s1901_c03_005e s1901_c03_006e s190
 > 1_c03_007e s1901_c03_008e s1901_c03_009e), mi
  89.   //percent of married-couple families with income < $200k
-.   egen inc_lt200k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c03_004e s1901_c03_005e s1901_c03_006e s190
+.   egen inc_lt200k_mcfam_pct = rowtotal(s1901_c03_002e s1901_c03_003e s1901_c0
+> 3_004e s1901_c03_005e s1901_c03_006e s190
 > 1_c03_007e s1901_c03_008e s1901_c03_009e s1901_c03_010e), mi
  90. 
 .   //married-couple families median income
@@ -1422,23 +1752,30 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
  93.   //percent of non-family households with income less than $15k
 .   egen inc_lt15k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e), mi
  94.   //percent of non-family households with income less than $25k
-.   egen inc_lt25k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_c04_004e), mi
+.   egen inc_lt25k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_
+> c04_004e), mi
  95.   //percent of non-family households with income < $35k
-.   egen inc_lt35k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_c04_004e s1901_c04_005e), mi
+.   egen inc_lt35k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_
+> c04_004e s1901_c04_005e), mi
  96.   //percent of non-family households with income < $50k
-.   egen inc_lt50k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_c04_004e s1901_c04_005e s1901_c04_006e), 
+.   egen inc_lt50k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_
+> c04_004e s1901_c04_005e s1901_c04_006e), 
 > mi
  97.   //percent of non-family households with income < $75k
-.   egen inc_lt75k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_c04_004e s1901_c04_005e s1901_c04_006e s1
+.   egen inc_lt75k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_
+> c04_004e s1901_c04_005e s1901_c04_006e s1
 > 901_c04_007e), mi
  98.   //percent of non-family households with income < $100k
-.   egen inc_lt100k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_c04_004e s1901_c04_005e s1901_c04_006e s
+.   egen inc_lt100k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901
+> _c04_004e s1901_c04_005e s1901_c04_006e s
 > 1901_c04_007e s1901_c04_008e), mi
  99.   //percent of non-family households with income < $150k
-.   egen inc_lt150k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_c04_004e s1901_c04_005e s1901_c04_006e s
+.   egen inc_lt150k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901
+> _c04_004e s1901_c04_005e s1901_c04_006e s
 > 1901_c04_007e s1901_c04_008e s1901_c04_009e), mi
 100.   //percent of non-family households with income < $200k
-.   egen inc_lt200k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901_c04_004e s1901_c04_005e s1901_c04_006e s
+.   egen inc_lt200k_nonfamhh_pct = rowtotal(s1901_c04_002e s1901_c04_003e s1901
+> _c04_004e s1901_c04_005e s1901_c04_006e s
 > 1901_c04_007e s1901_c04_008e s1901_c04_009e s1901_c04_010e), mi
 101. 
 .   //non-family households median income
@@ -1459,10 +1796,13 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
 112. 
 . 
 . 
-.   ******************************************************************************
+.   ***************************************************************************
+> ***
 .   * Population: Subject Table S0601 *
-.   ******************************************************************************
-.   import delimited using $vaprojdir/data/public_access/raw/acs/subject_tables/`year'/5yr/ACSST5Y`year'.S0601_data_with
+.   ***************************************************************************
+> ***
+.   import delimited using $vaprojdir/data/public_access/raw/acs/subject_tables
+> /`year'/5yr/ACSST5Y`year'.S0601_data_with
 > _overlays.csv, clear varnames(1) case(lower)
 113. 
 .   foreach v of varlist * {
@@ -1478,23 +1818,27 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
 120.         destring `v', replace ignore(",+(X)-*Nnull")
 121.   }
 122. 
-.   //total population between 5 and 17 years old = total population * percent between 5-17
+.   //total population between 5 and 17 years old = total population * percent 
+> between 5-17
 .   gen pop_517_tot = s0601_c01_001e * (s0601_c01_003e / 100)
 123.   //total population less than 18 years old
-.   gen pop_lt18_tot = (s0601_c01_001e * (s0601_c01_002e / 100)) + (s0601_c01_001e * (s0601_c01_003e / 100))
+.   gen pop_lt18_tot = (s0601_c01_001e * (s0601_c01_002e / 100)) + (s0601_c01_0
+> 01e * (s0601_c01_003e / 100))
 124.   //total native populaiton
 .   gen pop_native_tot = s0601_c02_001e + s0601_c03_001e + s0601_c04_001e
 125.   //proportion of native population
 .   gen pop_native_prop = pop_native_tot / s0601_c01_001e
 126. 
 .   //total native population between 5 and 17 years old
-.   gen pop_517_native_tot = (s0601_c02_001e * (s0601_c02_003e / 100)) + (s0601_c03_001e * (s0601_c03_003e / 100)) + (s0
+.   gen pop_517_native_tot = (s0601_c02_001e * (s0601_c02_003e / 100)) + (s0601
+> _c03_001e * (s0601_c03_003e / 100)) + (s0
 > 601_c04_001e * (s0601_c04_003e / 100))
 127.   //proportion of native in the population between 5 and 17
 .   gen pop_517_native_prop = pop_517_native_tot / pop_517_tot
 128. 
 .   //total native population less than 18 years old
-.   gen pop_lt18_native_tot = pop_517_native_tot + (s0601_c02_001e * (s0601_c02_002e / 100)) + (s0601_c03_001e * (s0601_
+.   gen pop_lt18_native_tot = pop_517_native_tot + (s0601_c02_001e * (s0601_c02
+> _002e / 100)) + (s0601_c03_001e * (s0601_
 > c03_002e / 100)) + (s0601_c04_001e * (s0601_c04_002e / 100))
 129.   //proportion of native in the population less than 18
 .   gen pop_lt18_native_prop = pop_lt18_native_tot / pop_lt18_tot
@@ -1505,9 +1849,11 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
 .   gen eth_white_pct = s0601_c01_014e
 132.   //percentage of black
 .   gen eth_black_pct = s0601_c01_015e
-133.   //percentage of other race: lumping together American Indian, Native Hawaiian, one race- some other race, and two
+133.   //percentage of other race: lumping together American Indian, Native Haw
+> aiian, one race- some other race, and two
 >  or more races
-.   egen eth_other_pct = rowtotal(s0601_c01_016e s0601_c01_018e s0601_c01_019e s0601_c01_020e)
+.   egen eth_other_pct = rowtotal(s0601_c01_016e s0601_c01_018e s0601_c01_019e 
+> s0601_c01_020e)
 134.   //percentage of Asian
 .   gen eth_asian_pct = s0601_c01_017e
 135.   //percentage of Hispanic
@@ -1528,9 +1874,11 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
 146. 
 . 
 . 
-.   ******************************************************************************
+.   ***************************************************************************
+> ***
 .   * Merge all the subject tables of each year *
-.   ******************************************************************************
+.   ***************************************************************************
+> ***
 .   use `population_`year'', clear
 147.   merge 1:1 geoid using `education_`year'', keep(3)
 148.   drop _merge
@@ -1543,7 +1891,8 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
 154.   order geoid geoid2 geodisplaylabel year
 155.   sort geoid geoid2 year
 156.   /* //save to my own folder while waiting for write access
->   save $projdir/dta/common_core_va/acs/acs_ca_census_tract_clean_`year'.dta, replace */
+>   save $projdir/dta/common_core_va/acs/acs_ca_census_tract_clean_`year'.dta, 
+> replace */
 .   save $datadir_clean/acs/acs_ca_census_tract_clean_`year'.dta, replace
 157. 
 . }
@@ -4979,9 +5328,11 @@ file /home/tmp/St48258.000004 saved as .dta format
   variable fam_child_lt18_tot was float now int
   (296,008 bytes saved)
 (file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean_2010.dta
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> acs/acs_ca_census_tract_clean_2010.dta
     not found)
-file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean_2010.dta
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /acs/acs_ca_census_tract_clean_2010.dta
     saved
 (encoding automatically selected: ISO-8859-1)
 (230 vars, 74,135 obs)
@@ -8646,9 +8997,11 @@ file /home/tmp/St48258.000008 saved as .dta format
   variable fam_child_lt18_tot was float now int
   (296,536 bytes saved)
 (file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean_2011.dta
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> acs/acs_ca_census_tract_clean_2011.dta
     not found)
-file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean_2011.dta
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /acs/acs_ca_census_tract_clean_2011.dta
     saved
 (encoding automatically selected: ISO-8859-1)
 (230 vars, 74,002 obs)
@@ -12088,9 +12441,11 @@ file /home/tmp/St48258.00000c saved as .dta format
   variable fam_child_lt18_tot was float now int
   (296,004 bytes saved)
 (file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean_2012.dta
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> acs/acs_ca_census_tract_clean_2012.dta
     not found)
-file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean_2012.dta
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /acs/acs_ca_census_tract_clean_2012.dta
     saved
 (encoding automatically selected: ISO-8859-1)
 (230 vars, 74,002 obs)
@@ -15576,9 +15931,11 @@ file /home/tmp/St48258.00000g saved as .dta format
   variable fam_child_lt18_tot was float now int
   (296,004 bytes saved)
 (file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean_2013.dta
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> acs/acs_ca_census_tract_clean_2013.dta
     not found)
-file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean_2013.dta
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /acs/acs_ca_census_tract_clean_2013.dta
     saved
 
 . 
@@ -15586,16 +15943,19 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . use $datadir_clean/acs/acs_ca_census_tract_clean_2010.dta, clear
 
 . append using $datadir_clean/acs/acs_ca_census_tract_clean_2011.dta
-(variable geodisplaylabel was str63, now str94 to accommodate using data's values)
+(variable geodisplaylabel was str63, now str94 to accommodate using data's valu
+> es)
 
 . append using $datadir_clean/acs/acs_ca_census_tract_clean_2012.dta
 
 . append using $datadir_clean/acs/acs_ca_census_tract_clean_2013.dta
 
 . save $datadir_clean/acs/acs_ca_census_tract_clean.dta, replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean.dta not
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/acs/acs_ca_census_tract_clean.dta not
     found)
-file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/acs/acs_ca_census_tract_clean.dta
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /acs/acs_ca_census_tract_clean.dta
     saved
 
 . 

@@ -74,12 +74,69 @@ from pathlib import Path
 # Transform 1 — state-machine `/*` rewrite
 # ---------------------------------------------------------------------------
 
+# Path-continuation chars: chars that precede `/*` or follow `*/` in a
+# path-glob context (e.g., `prepare/*`, `$logdir/*`, `do/<x><x>/*.do`).
+# Used by `_is_path_glob_open` and `_is_path_glob_close` below.
+_PATH_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_<>${}.-"
+
+
+def _is_path_glob_open(text: str, i: int) -> bool:
+    """
+    Return True if `text[i:i+2] == '/*'` is a path-glob fragment (e.g., the
+    `/*` in `prepare/*` or `$logdir/*`), False if it is a genuine
+    block-comment open token.
+
+    Heuristic — `/*` is a path-glob fragment iff the char immediately
+    BEFORE the `/` is a path-continuation char.  Otherwise (start-of-text,
+    whitespace, newline, punctuation, `*` for `**/`, `"` etc.) it is a
+    block-comment open.
+    """
+    if i == 0:
+        return False
+    prev = text[i - 1]
+    return prev in _PATH_CHARS
+
+
+def _is_path_glob_close(text: str, i: int) -> bool:
+    """
+    Return True if `text[i:i+2] == '*/'` is a path-glob fragment (e.g., the
+    `*/` in `**/<sub>` or `/foo/*/bar`), False if it is a genuine
+    block-comment close token.
+
+    Heuristic — `*/` is a path-glob fragment iff the char immediately
+    AFTER the `/` (at position i+2) is a path-continuation char.  Otherwise
+    (EOF, whitespace, newline, punctuation) it is a block-comment close.
+    """
+    n = len(text)
+    if i + 2 >= n:
+        return False
+    after = text[i + 2]
+    return after in _PATH_CHARS
+
+
 def _find_matching_close(text: str, open_end: int) -> int:
     """
     Given a position `open_end` immediately after a `/*` open token, scan
     forward using Stata-parser semantics (depth-counting: every `/*` adds
     depth, every `*/` removes depth) and return the position of the `*/`
     close that brings depth back to 0.
+
+    PATH-GLOB AWARE: path-glob substrings `/*` (e.g., `$logdir/*`) and `*/`
+    (e.g., `**/<sub>`) are NOT counted as block-comment opens/closes.  Bug
+    fix 2026-05-18: the original implementation counted every `/*` and `*/`
+    digraph as a depth-change regardless of context.  In files with
+    path-glob substrings INSIDE a multi-line outer block-comment header
+    (e.g., `$logdir/*` on line 32 of secqoiclean1415.do, inside a `/* ...
+    */` header spanning lines 1-40), the depth count was inflated past 0
+    when the real header `*/` close was reached, and `_find_matching_close`
+    walked forward looking for a deeper match.  The next legitimate `*/`
+    found (line 87's stray `*/` in a `*` line-comment) was then declared
+    the "matching close", and `_flatten_lone_block_opens` blanket-rewrote
+    every digraph in the over-extended inner span — including the real
+    header close and legitimate single-line `/* ... */` body blocks
+    (sec1415: lines 40, 44, 73, 74, 80).  Stata's resulting source had no
+    header close → runaway block comment swallowing lines 2-87 → M4
+    acceptance run errored at `gen totalresp = _N → r(110)`.
 
     Returns the START position of the matching `*/`, or -1 if no match.
     """
@@ -88,17 +145,77 @@ def _find_matching_close(text: str, open_end: int) -> int:
     i = open_end
     while i < n - 1:
         if text[i] == "/" and text[i + 1] == "*":
-            depth += 1
+            # Only count as a real block-open if NOT a path-glob fragment.
+            if not _is_path_glob_open(text, i):
+                depth += 1
             i += 2
             continue
         if text[i] == "*" and text[i + 1] == "/":
-            depth -= 1
-            if depth == 0:
-                return i
+            # Only count as a real block-close if NOT a path-glob fragment.
+            if not _is_path_glob_close(text, i):
+                depth -= 1
+                if depth == 0:
+                    return i
             i += 2
             continue
         i += 1
     return -1
+
+
+def _rewrite_inner_block_markers(inner: str) -> str:
+    """
+    Rewrite real block-comment `/*` and `*/` digraphs INSIDE an outer
+    multi-line block-comment span to `/<x>` and `<x>` respectively, while
+    leaving path-glob fragments intact (Transform 1 handles those
+    correctly via its state machine downstream).
+
+    Bug fix 2026-05-18 sibling: the original `_flatten_lone_block_opens`
+    used `inner.replace("/*", "/<x>").replace("*/", "<x>")`, which
+    blanket-rewrote every digraph regardless of context.  Combined with the
+    over-greedy depth-counting in `_find_matching_close` (now fixed
+    separately), this produced the M4-blocking over-flatten on lines 40
+    (header close), 44, 73, 74, 80 of secqoiclean1415.do.
+
+    Now we walk the inner char-by-char and distinguish:
+      - REAL block-open `/*` (start-of-text / whitespace-preceded / etc.):
+        rewrite to `/<x>` so Transform 1's state machine sees no inner
+        block opens and stays in outer-block state until the real outer
+        close.
+      - REAL block-close `*/` (whitespace/newline/EOF-followed): rewrite
+        to `<x>` for the same reason.
+      - PATH-GLOB `/*` and `*/`: leave intact.  Transform 1's state machine
+        will rewrite them correctly via the path-continuation-char heuristic.
+
+    NOTE: `_is_path_glob_open` and `_is_path_glob_close` operate on the
+    INNER span only when called from here, so the prev/next char checks
+    use `inner` rather than the full original `text`.  This is correct
+    for path-glob detection because path chars are local; an inner `/*`
+    preceded by a path char in the inner span IS a path-glob regardless
+    of the outer context.
+
+    Returns the rewritten inner string.
+    """
+    n = len(inner)
+    out: list[str] = []
+    i = 0
+    while i < n:
+        if i + 1 < n and inner[i] == "/" and inner[i + 1] == "*":
+            if _is_path_glob_open(inner, i):
+                out.append("/*")
+            else:
+                out.append("/<x>")
+            i += 2
+            continue
+        if i + 1 < n and inner[i] == "*" and inner[i + 1] == "/":
+            if _is_path_glob_close(inner, i):
+                out.append("*/")
+            else:
+                out.append("<x>")
+            i += 2
+            continue
+        out.append(inner[i])
+        i += 1
+    return "".join(out)
 
 
 def _flatten_lone_block_opens(text: str) -> tuple[str, int]:
@@ -125,11 +242,44 @@ def _flatten_lone_block_opens(text: str) -> tuple[str, int]:
 
     Fix (round-2): walk forward state-machine-style finding EVERY
     multi-line `/* ... */` block (depth-counted), not just lone `/*\n`
-    opens.  For each multi-line block whose inner span contains `/*` or
-    `*/` digraphs, rewrite every interior `/*` -> `/<x>` and every interior
-    `*/` -> `<x>` so the outer block becomes a single flat
+    opens.  For each multi-line block whose inner span contains REAL `/*`
+    or `*/` block markers, rewrite every interior `/*` -> `/<x>` and every
+    interior `*/` -> `<x>` so the outer block becomes a single flat
     `/*<text>\n ... */` with no inner digraphs that could confuse Stata's
     depth-counting parser after Transform 1.
+
+    Fix (round-3, 2026-05-18): both the depth-counting in
+    `_find_matching_close` AND the inner-rewrite are now path-glob aware.
+
+    Bug class addressed:
+        Before round-3, `_find_matching_close` counted every `/*` and `*/`
+        digraph as a depth change.  In files where a path-glob substring
+        (e.g., `$logdir/*` in a header docstring) appeared INSIDE a
+        multi-line outer block, depth got inflated past 0 when the real
+        header `*/` close was reached.  The function then walked forward
+        seeking a "deeper" match, and landed on a stray `*/` token much
+        later in the file (e.g., line 87 of secqoiclean1415.do — a `*`
+        line-comment with stray `*/` text the predecessor parser-bug
+        had been masking).  Subsequently `inner.replace("/*", "/<x>")
+        .replace("*/", "<x>")` blanket-rewrote every digraph in the
+        over-extended inner span, destroying:
+          - the real header `*/` close (turning `------*/` into
+            `------<x>`, so the header never closed and Stata treated
+            lines 2-87 as one runaway block comment);
+          - legitimate single-line `/* ... */` body blocks (turning
+            them into `/<x> ... <x>` non-comment syntax).
+        Empirical evidence: M4 attempt #3 errored at
+        `secqoiclean1415.do:89 (gen totalresp = _N → r(110))` because
+        `use sec1415` (line 65) never ran inside the runaway comment.
+
+    Both pieces of the fix:
+        1. `_find_matching_close` now uses `_is_path_glob_open` and
+           `_is_path_glob_close` to skip path-glob digraphs when
+           depth-counting.
+        2. `_rewrite_inner_block_markers` replaces the previous blanket
+           `.replace()` call.  It walks the inner char-by-char and rewrites
+           ONLY genuine block markers; path-glob digraphs are left intact
+           and get rewritten downstream by Transform 1's state machine.
 
     String-literal protection: `/*` inside `"..."` is not treated as a
     block open.  The state machine tracks `code`/`string` and only enters
@@ -182,16 +332,29 @@ def _flatten_lone_block_opens(text: str) -> tuple[str, int]:
     if not spans:
         return text, 0
 
-    # Rewrite interior `/*` and `*/` in reverse order so offsets remain valid.
+    # Rewrite interior REAL block markers in reverse order so offsets remain valid.
+    # Bug fix 2026-05-18: path-glob `/*` and `*/` are NOT rewritten here — they
+    # remain in place and get handled by Transform 1's state machine.  Only
+    # genuine block-open `/*` and block-close `*/` (the LEGITIMATE inner
+    # fake-nested-comment pair) are rewritten to `/<x>` and `<x>`.
     new_text = text
     rewrites = 0
     for s_start, s_end in reversed(spans):
         inner = new_text[s_start:s_end]
-        n_open = inner.count("/*")
-        n_close = inner.count("*/")
-        inner_new = inner.replace("/*", "/<x>").replace("*/", "<x>")
+        inner_new = _rewrite_inner_block_markers(inner)
         if inner_new != inner:
-            rewrites += n_open + n_close
+            # Count actual rewrites (chars changed) by counting digraph diffs.
+            n_open_before = sum(
+                1 for i in range(len(inner) - 1)
+                if inner[i] == "/" and inner[i + 1] == "*"
+                and not _is_path_glob_open(inner, i)
+            )
+            n_close_before = sum(
+                1 for i in range(len(inner) - 1)
+                if inner[i] == "*" and inner[i + 1] == "/"
+                and not _is_path_glob_close(inner, i)
+            )
+            rewrites += n_open_before + n_close_before
             new_text = new_text[:s_start] + inner_new + new_text[s_end:]
 
     return new_text, rewrites

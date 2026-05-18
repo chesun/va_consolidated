@@ -1,0 +1,138 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  splitstaff0414
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/prepare/splitstaff0414.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:08:26
+
+. 
+. use $datadir_clean/calschls/staff/staff0414, clear  // CHAIN read from rename
+> data.do (same-batch producer; see plan v3
+>  §3.3 step 9 batch 9d invocation order)
+(2004-2014 CSSS Staff Data)
+
+. 
+. gen str tempyear = "" //generate a temp string var for ease of writing short 
+> file names
+(392,858 missing values generated)
+
+. replace tempyear = "0405" if schlyear == 2004.2005
+variable tempyear was str1 now str4
+(19,312 real changes made)
+
+. replace tempyear = "0506" if schlyear == 2005.2006
+(57,037 real changes made)
+
+. replace tempyear = "0607" if schlyear == 2006.2007
+(26,400 real changes made)
+
+. replace tempyear = "0708" if schlyear == 2007.2008
+(60,720 real changes made)
+
+. replace tempyear = "0809" if schlyear == 2008.2009
+(33,363 real changes made)
+
+. replace tempyear = "0910" if schlyear == 2009.2010
+(65,656 real changes made)
+
+. replace tempyear = "1011" if schlyear == 2010.2011
+(29,608 real changes made)
+
+. replace tempyear = "1112" if schlyear == 2011.2012
+(39,153 real changes made)
+
+. replace tempyear = "1213" if schlyear == 2012.2013
+(23,179 real changes made)
+
+. replace tempyear = "1314" if schlyear == 2013.2014
+(38,430 real changes made)
+
+. 
+. local years `" "0405" "0506" "0607" "0708" "0809" "0910" "1011" "1112" "1213"
+>  "1314" "' //a local macro for storing ye
+> ars
+
+. 
+. preserve //write a copy of the data in memory to disk to restore later
+
+. 
+. foreach i of local years {
+  2.   keep if tempyear == "`i'"
+  3.   save $datadir_clean/calschls/staff/staff`i', replace
+  4.   restore, preserve //retore the data without erasing the backup copy on d
+> isk
+  5. }
+(373,546 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff0405.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff0405.dta saved
+(335,821 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff0506.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff0506.dta saved
+(366,458 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff0607.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff0607.dta saved
+(332,138 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff0708.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff0708.dta saved
+(359,495 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff0809.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff0809.dta saved
+(327,202 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff0910.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff0910.dta saved
+(363,250 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff1011.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff1011.dta saved
+(353,705 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff1112.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff1112.dta saved
+(369,679 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff1213.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff1213.dta saved
+(354,428 observations deleted)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/calschls/staff/staff1314.dta not
+    found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/staff/staff1314.dta saved
+
+. 
+. restore
+
+. 
+. log close splitstaff0414 //close the current log file for this do file
+      name:  splitstaff0414
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/prepare/splitstaff0414.smcl
+  log type:  text
+ closed on:  18 May 2026, 00:08:30
+-------------------------------------------------------------------------------
+> -----------------------------------------

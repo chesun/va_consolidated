@@ -1,0 +1,2071 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  enrollmentclean
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/prepare/enrollmentclean.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:04:56
+
+. 
+. local enrdtaname `" "enr1415" "enr1516" "enr1617" "enr1718" "enr1819" "'  //create a local macro for raw enrollment da
+> taset names
+
+. 
+. foreach enrdata of local enrdtaname {
+  2. 
+. use $caschls_projdir/dta/enrollment/raw/`enrdata', clear
+  3. 
+. /* set trace on //turn on trace for debugging */
+. 
+. gen byte female = 0 //generate a dummy var female to replace string var gender
+  4. replace female = 1 if gender == "F"
+  5. 
+. 
+. local grades 1 2 3 4 5 6 7 8 9 10 11 12 //generate a local macro for grades
+  6. 
+. 
+. /* generate total enrollment by grade for each school */
+. sort cdscode
+  7. foreach i of local grades {
+  8.   by cdscode: egen gr`i'enr = total(gr`i'enrl) //generate var for total grade i enrollment in each school
+  9.   label var gr`i'enr "total enrollment in grade `i'"
+ 10. }
+ 11. 
+. /* generate total enrollment by grade and sex for each school */
+. foreach i of local grades {
+ 12.   bysort cdscode female: egen gr`i'enrsex = total(gr`i'enrl) //gnerate a temp variable for group total enrollment b
+> y grade for each school and sex combination
+ 13. 
+.   gen gr`i'femaleenrtemp = 0 //generate a tewmp var for total female enrollment in grade i, this var is 0 if the femal
+> e var == 0
+ 14.   replace gr`i'femaleenrtemp = gr`i'enrsex if female == 1
+ 15. 
+.   gen gr`i'maleenrtemp = 0  //generate a temp var for total male enrollment in grade i, this var is = if the female va
+> r == 1
+ 16.   replace gr`i'maleenrtemp = gr`i'enrsex if female == 0
+ 17. 
+. 
+.   bysort cdscode: egen gr`i'femaleenr = max(gr`i'femaleenrtemp) //generate a var for female enrollment in grade i for 
+> each school by populating 0 entries in the temp female enrollment var above
+ 18.   label var gr`i'femaleenr "total female enrollment in grade `i'"
+ 19. 
+.   bysort cdscode: egen gr`i'maleenr = max(gr`i'maleenrtemp) //generate a var for male enrollment in grade i for each s
+> chool by populating 0 entries in the temp male enrollment var above
+ 20.   label var gr`i'maleenr "total female enrollment in grade `i'"
+ 21. }
+ 22. 
+. /* generate total enrollment by grade and ethnicity for each school
+> value label for ethnicity:
+> Code 0 = Not reported
+> Code 1 = American Indian or Alaska Native, Not Hispanic
+> Code 2 = Asian, Not Hispanic
+> Code 3 = Pacific Islander, Not Hispanic
+> Code 4 = Filipino, Not Hispanic
+> Code 5 = Hispanic or Latino
+> Code 6 = African American, not Hispanic
+> Code 7 = White, not Hispanic
+> Code 8 = Two or More Races, Not Hispanic */
+. 
+. foreach i of local grades {
+ 23.   bysort cdscode ethnicity: egen gr`i'enrethnic = total(gr`i'enrl) //gnerate a temp variable for group total enroll
+> ment by grade for each school and ethnicity combination
+ 24. 
+.   gen gr`i'noethnicenrtemp = 0 //generate a temp var for total enrollment for unreported ethnicity in grade i
+ 25.   replace gr`i'noethnicenrtemp = gr`i'enrethnic if ethnicity == 0
+ 26. 
+.   gen gr`i'nativeenrtemp = 0 //generate a temp var for total enrollment for native american (American Indian or Alaska
+>  Native, Not Hispanic) in grade i
+ 27.   replace gr`i'nativeenrtemp = gr`i'enrethnic if ethnicity == 1
+ 28. 
+.   gen gr`i'asianenrtemp = 0 //gemerate a temp var for total enrollment of asian students in grade i
+ 29.   replace gr`i'asianenrtemp = gr`i'enrethnic if ethnicity == 2
+ 30. 
+.   gen gr`i'pacificenrtemp = 0 //generate a temp var for total enrollment of pacific islanders in grade i
+ 31.   replace gr`i'pacificenrtemp = gr`i'enrethnic if ethnicity == 3
+ 32. 
+.   gen gr`i'filipinoenrtemp = 0 //generate a temp var for total enrollment of Filipinos in grade i
+ 33.   replace gr`i'filipinoenrtemp = gr`i'enrethnic if ethnicity == 4
+ 34. 
+.   gen gr`i'hispanicenrtemp = 0 //generate a temp var for total enrollment of Hispanics in grade i
+ 35.   replace gr`i'hispanicenrtemp = gr`i'enrethnic if ethnicity == 5
+ 36. 
+.   gen gr`i'blackenrtemp = 0 //generate a temp var for total enrollment of African Americans in grade i
+ 37.   replace gr`i'blackenrtemp = gr`i'enrethnic if ethnicity == 6
+ 38. 
+.   gen gr`i'whiteenrtemp = 0 //generate a temp var for total enrollment of whites in grade i
+ 39.   replace gr`i'whiteenrtemp = gr`i'enrethnic if ethnicity == 7
+ 40. 
+.   gen gr`i'mixedenrtemp = 0 //generate a temp var for total enrollment of two or more races (not hispanic) ion grade i
+ 41.   replace gr`i'mixedenrtemp = gr`i'enrethnic if ethnicity == 8
+ 42. 
+.   bysort cdscode: egen gr`i'noethnicenr = max(gr`i'noethnicenrtemp) //generate a var for enrollment of unreported ethn
+> icity in grade i for each school by populating 0 entries in the temp var of no ethnicity enrollment above
+ 43.   bysort cdscode: egen gr`i'nativeenr = max(gr`i'nativeenrtemp) //generate a var for enrollment of native americans
+>  in grade i for each school by populating 0 entries in the temp var of native american enrollment above
+ 44.   bysort cdscode: egen gr`i'asianenr = max(gr`i'asianenrtemp) //generate a var for enrollment of Asians in grade i 
+> for each school
+ 45.   bysort cdscode: egen gr`i'pacificenr = max(gr`i'pacificenrtemp) //generate a var for enrollment of Pacific Island
+> ers in grade i for each school
+ 46.   bysort cdscode: egen gr`i'filipinoenr = max( gr`i'filipinoenrtemp) //generate a var for enrollment of Filipinos i
+> n grade i for each school
+ 47.   bysort cdscode: egen gr`i'hispanicenr = max(gr`i'hispanicenrtemp) //generate a var for enrollment of Hispanics in
+>  grade i for each school
+ 48.   bysort cdscode: egen gr`i'blackenr = max(gr`i'blackenrtemp) //generate a var for enrollment of African Americans 
+> in grade i for each school
+ 49.   bysort cdscode: egen gr`i'whiteenr = max(gr`i'whiteenrtemp) //generate a var for enrollment of Whites in grade i 
+> for each school
+ 50.   bysort cdscode: egen gr`i'mixedenr = max(gr`i'mixedenrtemp) //generate a var for enrollment of students of two or
+>  more races (not Hispanic) in grade i for each school
+ 51. 
+. 
+.   label var gr`i'noethnicenr "total enrollment of unreported ethnicity in grade `i'"
+ 52.   label var gr`i'nativeenr "total enrollment of Native American in grade `i'"
+ 53.   label var gr`i'asianenr "total enrollment of Asians in grade `i'"
+ 54.   label var gr`i'pacificenr "total enrollment of Pacific Islanders in grade `i'"
+ 55.   label var gr`i'filipinoenr "total enrollment of Filipinos in grade `i'"
+ 56.   label var gr`i'hispanicenr "total enrollment of Hispanics in grade `i'"
+ 57.   label var gr`i'blackenr "total enrollment of African Americans in grade `i'"
+ 58.   label var gr`i'whiteenr "total enrollment of Whites in grade `i'"
+ 59.   label var gr`i'mixedenr "total enrollment of students of two or more races (not Hispanic) in grade `i'"
+ 60. 
+. }
+ 61. 
+. 
+. //grop vars not needed for collapsing dataset
+. drop county district school ethnicity gender kdgtnenrl ///
+> gr1enrl gr2enrl gr3enrl gr4enrl gr5enrl gr6enrl gr7enrl gr8enrl ungrelemenrl gr9enrl gr10enrl gr11enrl gr12enrl ungrse
+> cenrl totalenrl adult female ///
+> gr1enrsex gr1femaleenrtemp gr1maleenrtemp ///
+> gr2enrsex gr2femaleenrtemp gr2maleenrtemp ///
+> gr3enrsex gr3femaleenrtemp gr3maleenrtemp ///
+> gr4enrsex gr4femaleenrtemp gr4maleenrtemp ///
+> gr5enrsex gr5femaleenrtemp gr5maleenrtemp ///
+> gr6enrsex gr6femaleenrtemp gr6maleenrtemp ///
+> gr7enrsex gr7femaleenrtemp gr7maleenrtemp ///
+> gr8enrsex gr8femaleenrtemp gr8maleenrtemp ///
+> gr9enrsex gr9femaleenrtemp gr9maleenrtemp ///
+> gr10enrsex gr10femaleenrtemp gr10maleenrtemp ///
+> gr11enrsex gr11femaleenrtemp gr11maleenrtemp ///
+> gr12enrsex gr12femaleenrtemp gr12maleenrtemp ///
+> gr1enrethnic gr1noethnicenrtemp gr1nativeenrtemp gr1asianenrtemp gr1pacificenrtemp gr1filipinoenrtemp gr1hispanicenrte
+> mp gr1blackenrtemp gr1whiteenrtemp gr1mixedenrtemp ///
+> gr2enrethnic gr2noethnicenrtemp gr2nativeenrtemp gr2asianenrtemp gr2pacificenrtemp gr2filipinoenrtemp gr2hispanicenrte
+> mp gr2blackenrtemp gr2whiteenrtemp gr2mixedenrtemp ///
+> gr3enrethnic gr3noethnicenrtemp gr3nativeenrtemp gr3asianenrtemp gr3pacificenrtemp gr3filipinoenrtemp gr3hispanicenrte
+> mp gr3blackenrtemp gr3whiteenrtemp gr3mixedenrtemp ///
+> gr4enrethnic gr4noethnicenrtemp gr4nativeenrtemp gr4asianenrtemp gr4pacificenrtemp gr4filipinoenrtemp gr4hispanicenrte
+> mp gr4blackenrtemp gr4whiteenrtemp gr4mixedenrtemp ///
+> gr5enrethnic gr5noethnicenrtemp gr5nativeenrtemp gr5asianenrtemp gr5pacificenrtemp gr5filipinoenrtemp gr5hispanicenrte
+> mp gr5blackenrtemp gr5whiteenrtemp gr5mixedenrtemp ///
+> gr6enrethnic gr6noethnicenrtemp gr6nativeenrtemp gr6asianenrtemp gr6pacificenrtemp gr6filipinoenrtemp gr6hispanicenrte
+> mp gr6blackenrtemp gr6whiteenrtemp gr6mixedenrtemp ///
+> gr7enrethnic gr7noethnicenrtemp gr7nativeenrtemp gr7asianenrtemp gr7pacificenrtemp gr7filipinoenrtemp gr7hispanicenrte
+> mp gr7blackenrtemp gr7whiteenrtemp gr7mixedenrtemp ///
+> gr8enrethnic gr8noethnicenrtemp gr8nativeenrtemp gr8asianenrtemp gr8pacificenrtemp gr8filipinoenrtemp gr8hispanicenrte
+> mp gr8blackenrtemp gr8whiteenrtemp gr8mixedenrtemp ///
+> gr9enrethnic gr9noethnicenrtemp gr9nativeenrtemp gr9asianenrtemp gr9pacificenrtemp gr9filipinoenrtemp gr9hispanicenrte
+> mp gr9blackenrtemp gr9whiteenrtemp gr9mixedenrtemp ///
+> gr10enrethnic gr10noethnicenrtemp gr10nativeenrtemp gr10asianenrtemp gr10pacificenrtemp gr10filipinoenrtemp gr10hispan
+> icenrtemp gr10blackenrtemp gr10whiteenrtemp gr10mixedenrtemp ///
+> gr11enrethnic gr11noethnicenrtemp gr11nativeenrtemp gr11asianenrtemp gr11pacificenrtemp gr11filipinoenrtemp gr11hispan
+> icenrtemp gr11blackenrtemp gr11whiteenrtemp gr11mixedenrtemp ///
+> gr12enrethnic gr12noethnicenrtemp gr12nativeenrtemp gr12asianenrtemp gr12pacificenrtemp gr12filipinoenrtemp gr12hispan
+> icenrtemp gr12blackenrtemp gr12whiteenrtemp gr12mixedenrtemp
+ 62. 
+. /* This block of code copies each variable label to a local macro for every variable in the dataset */
+. foreach v of var * {
+ 63.   local l`v' : variable label `v'
+ 64.       if `"`l`v''"' == "" {
+ 65.         local l`v' "`v'"
+ 66.         }
+ 67.  }
+ 68. 
+. 
+. ds cdscode, not //list all variables except for cdscode so that I can call local macro r(varlist) in the following col
+> lapse command
+ 69. 
+. collapse (mean) `r(varlist)', by(cdscode) //collapse all variables listed above in the dataset to get school level enr
+> ollment numbers
+ 70. 
+. /* This block of code relabels the variables using the previous local macro that holds the variable labels*/
+. foreach v of var * {
+ 71.         label var `v' "`l`v''"
+ 72.  }
+ 73. 
+. // generate vars for total female and male enrollment in the school
+. gen femaleenrtotal = 0
+ 74. foreach i of local grades {
+ 75.   replace femaleenrtotal = femaleenrtotal + gr`i'femaleenr
+ 76. }
+ 77. 
+. gen maleenrtotal = 0
+ 78. foreach i of local grades {
+ 79.   replace maleenrtotal = maleenrtotal + gr`i'maleenr
+ 80. }
+ 81. 
+. label var femaleenrtotal "total female enrollment from grade 1 to 12"
+ 82. label var maleenrtotal "total male enrollment from grade 1 to 12"
+ 83. 
+. 
+. //generate vars for total black, white, and hispanic enrollment in the school
+. gen blackenrtotal = 0
+ 84. foreach i of local grades {
+ 85.   replace blackenrtotal = blackenrtotal + gr`i'blackenr
+ 86. }
+ 87. 
+. gen whiteenrtotal = 0
+ 88. foreach i of local grades {
+ 89.   replace whiteenrtotal = whiteenrtotal + gr`i'whiteenr
+ 90. }
+ 91. 
+. gen hispanicenrtotal = 0
+ 92. foreach i of local grades {
+ 93.   replace hispanicenrtotal = hispanicenrtotal + gr`i'hispanicenr
+ 94. }
+ 95. 
+. label var blackenrtotal "total black enrollment from grade 1 to 12"
+ 96. label var whiteenrtotal "total white enrollment from grade 1 to 12"
+ 97. label var hispanicenrtotal "total hispanic enrollment from grade 1 to 12"
+ 98. 
+. 
+. 
+. compress //compress dataset to save space
+ 99. save $datadir_clean/enrollment/schoollevel/`enrdata', replace
+100. 
+. }
+(63,549 real changes made)
+(39,067 real changes made)
+(39,874 real changes made)
+(39,037 real changes made)
+(40,119 real changes made)
+(39,155 real changes made)
+(40,283 real changes made)
+(39,123 real changes made)
+(40,326 real changes made)
+(39,126 real changes made)
+(40,526 real changes made)
+(29,040 real changes made)
+(30,280 real changes made)
+(18,564 real changes made)
+(19,802 real changes made)
+(18,685 real changes made)
+(19,849 real changes made)
+(13,624 real changes made)
+(14,742 real changes made)
+(14,534 real changes made)
+(15,707 real changes made)
+(15,034 real changes made)
+(16,255 real changes made)
+(15,024 real changes made)
+(16,225 real changes made)
+(2,540 real changes made)
+(2,386 real changes made)
+(7,879 real changes made)
+(2,360 real changes made)
+(5,259 real changes made)
+(11,813 real changes made)
+(7,777 real changes made)
+(10,841 real changes made)
+(0 real changes made)
+(2,268 real changes made)
+(2,569 real changes made)
+(7,881 real changes made)
+(2,504 real changes made)
+(5,420 real changes made)
+(11,803 real changes made)
+(7,896 real changes made)
+(10,907 real changes made)
+(0 real changes made)
+(2,066 real changes made)
+(2,661 real changes made)
+(8,005 real changes made)
+(2,578 real changes made)
+(5,615 real changes made)
+(11,893 real changes made)
+(8,078 real changes made)
+(10,951 real changes made)
+(0 real changes made)
+(1,904 real changes made)
+(2,684 real changes made)
+(7,972 real changes made)
+(2,563 real changes made)
+(5,641 real changes made)
+(11,851 real changes made)
+(8,048 real changes made)
+(10,859 real changes made)
+(0 real changes made)
+(1,920 real changes made)
+(2,717 real changes made)
+(8,092 real changes made)
+(2,679 real changes made)
+(5,737 real changes made)
+(11,942 real changes made)
+(8,169 real changes made)
+(10,915 real changes made)
+(0 real changes made)
+(1,755 real changes made)
+(2,461 real changes made)
+(5,913 real changes made)
+(2,202 real changes made)
+(4,336 real changes made)
+(8,822 real changes made)
+(6,101 real changes made)
+(8,175 real changes made)
+(0 real changes made)
+(1,354 real changes made)
+(2,094 real changes made)
+(3,634 real changes made)
+(1,698 real changes made)
+(2,896 real changes made)
+(5,778 real changes made)
+(4,004 real changes made)
+(5,462 real changes made)
+(0 real changes made)
+(1,309 real changes made)
+(2,149 real changes made)
+(3,562 real changes made)
+(1,695 real changes made)
+(2,861 real changes made)
+(5,845 real changes made)
+(4,022 real changes made)
+(5,492 real changes made)
+(0 real changes made)
+(1,165 real changes made)
+(1,842 real changes made)
+(2,479 real changes made)
+(1,460 real changes made)
+(2,074 real changes made)
+(4,312 real changes made)
+(3,103 real changes made)
+(3,930 real changes made)
+(0 real changes made)
+(1,081 real changes made)
+(1,917 real changes made)
+(2,565 real changes made)
+(1,418 real changes made)
+(2,166 real changes made)
+(4,711 real changes made)
+(3,299 real changes made)
+(4,308 real changes made)
+(0 real changes made)
+(1,044 real changes made)
+(2,090 real changes made)
+(2,759 real changes made)
+(1,643 real changes made)
+(2,207 real changes made)
+(4,992 real changes made)
+(3,561 real changes made)
+(4,702 real changes made)
+(0 real changes made)
+(979 real changes made)
+(2,110 real changes made)
+(2,995 real changes made)
+(1,702 real changes made)
+(2,388 real changes made)
+(5,020 real changes made)
+(3,645 real changes made)
+(4,707 real changes made)
+(0 real changes made)
+gr1enr        gr4femaleenr  gr1noethni~r  gr3noethni~r  gr5noethni~r  gr7noethni~r  gr9noethni~r  gr11noethn~r
+gr2enr        gr4maleenr    gr1nativeenr  gr3nativeenr  gr5nativeenr  gr7nativeenr  gr9nativeenr  gr11native~r
+gr3enr        gr5femaleenr  gr1asianenr   gr3asianenr   gr5asianenr   gr7asianenr   gr9asianenr   gr11asianenr
+gr4enr        gr5maleenr    gr1pacific~r  gr3pacific~r  gr5pacific~r  gr7pacific~r  gr9pacific~r  gr11pacifi~r
+gr5enr        gr6femaleenr  gr1filipin~r  gr3filipin~r  gr5filipin~r  gr7filipin~r  gr9filipin~r  gr11filipi~r
+gr6enr        gr6maleenr    gr1hispani~r  gr3hispani~r  gr5hispani~r  gr7hispani~r  gr9hispani~r  gr11hispan~r
+gr7enr        gr7femaleenr  gr1blackenr   gr3blackenr   gr5blackenr   gr7blackenr   gr9blackenr   gr11blackenr
+gr8enr        gr7maleenr    gr1whiteenr   gr3whiteenr   gr5whiteenr   gr7whiteenr   gr9whiteenr   gr11whiteenr
+gr9enr        gr8femaleenr  gr1mixedenr   gr3mixedenr   gr5mixedenr   gr7mixedenr   gr9mixedenr   gr11mixedenr
+gr10enr       gr8maleenr    gr2noethni~r  gr4noethni~r  gr6noethni~r  gr8noethni~r  gr10noethn~r  gr12noethn~r
+gr11enr       gr9femaleenr  gr2nativeenr  gr4nativeenr  gr6nativeenr  gr8nativeenr  gr10native~r  gr12native~r
+gr12enr       gr9maleenr    gr2asianenr   gr4asianenr   gr6asianenr   gr8asianenr   gr10asianenr  gr12asianenr
+gr1femaleenr  gr10female~r  gr2pacific~r  gr4pacific~r  gr6pacific~r  gr8pacific~r  gr10pacifi~r  gr12pacifi~r
+gr1maleenr    gr10maleenr   gr2filipin~r  gr4filipin~r  gr6filipin~r  gr8filipin~r  gr10filipi~r  gr12filipi~r
+gr2femaleenr  gr11female~r  gr2hispani~r  gr4hispani~r  gr6hispani~r  gr8hispani~r  gr10hispan~r  gr12hispan~r
+gr2maleenr    gr11maleenr   gr2blackenr   gr4blackenr   gr6blackenr   gr8blackenr   gr10blackenr  gr12blackenr
+gr3femaleenr  gr12female~r  gr2whiteenr   gr4whiteenr   gr6whiteenr   gr8whiteenr   gr10whiteenr  gr12whiteenr
+gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixedenr   gr10mixedenr  gr12mixedenr
+(6,012 real changes made)
+(5,996 real changes made)
+(6,019 real changes made)
+(6,005 real changes made)
+(6,013 real changes made)
+(4,472 real changes made)
+(2,913 real changes made)
+(2,973 real changes made)
+(2,148 real changes made)
+(2,410 real changes made)
+(2,549 real changes made)
+(2,551 real changes made)
+(6,045 real changes made)
+(6,093 real changes made)
+(6,146 real changes made)
+(6,147 real changes made)
+(6,208 real changes made)
+(4,658 real changes made)
+(3,134 real changes made)
+(3,183 real changes made)
+(2,319 real changes made)
+(2,535 real changes made)
+(2,676 real changes made)
+(2,683 real changes made)
+(3,972 real changes made)
+(4,035 real changes made)
+(4,130 real changes made)
+(4,119 real changes made)
+(4,188 real changes made)
+(3,133 real changes made)
+(2,059 real changes made)
+(2,072 real changes made)
+(1,600 real changes made)
+(1,718 real changes made)
+(1,866 real changes made)
+(1,923 real changes made)
+(5,447 real changes made)
+(5,486 real changes made)
+(5,508 real changes made)
+(5,459 real changes made)
+(5,494 real changes made)
+(4,133 real changes made)
+(2,772 real changes made)
+(2,795 real changes made)
+(1,999 real changes made)
+(2,198 real changes made)
+(2,409 real changes made)
+(2,421 real changes made)
+(5,915 real changes made)
+(5,910 real changes made)
+(5,964 real changes made)
+(5,942 real changes made)
+(5,991 real changes made)
+(4,429 real changes made)
+(2,909 real changes made)
+(2,960 real changes made)
+(2,189 real changes made)
+(2,398 real changes made)
+(2,544 real changes made)
+(2,556 real changes made)
+  variable gr1enr was float now int
+  variable gr2enr was float now int
+  variable gr3enr was float now int
+  variable gr4enr was float now int
+  variable gr5enr was float now int
+  variable gr6enr was float now int
+  variable gr7enr was float now int
+  variable gr8enr was float now int
+  variable gr9enr was float now int
+  variable gr10enr was float now int
+  variable gr11enr was float now int
+  variable gr12enr was float now int
+  variable gr1femaleenr was float now int
+  variable gr1maleenr was float now int
+  variable gr2femaleenr was float now int
+  variable gr2maleenr was float now int
+  variable gr3femaleenr was float now int
+  variable gr3maleenr was float now int
+  variable gr4femaleenr was float now int
+  variable gr4maleenr was float now int
+  variable gr5femaleenr was float now int
+  variable gr5maleenr was float now int
+  variable gr6femaleenr was float now int
+  variable gr6maleenr was float now int
+  variable gr7femaleenr was float now int
+  variable gr7maleenr was float now int
+  variable gr8femaleenr was float now int
+  variable gr8maleenr was float now int
+  variable gr9femaleenr was float now int
+  variable gr9maleenr was float now int
+  variable gr10femaleenr was float now int
+  variable gr10maleenr was float now int
+  variable gr11femaleenr was float now int
+  variable gr11maleenr was float now int
+  variable gr12femaleenr was float now int
+  variable gr12maleenr was float now int
+  variable gr1noethnicenr was float now int
+  variable gr1nativeenr was float now byte
+  variable gr1asianenr was float now int
+  variable gr1pacificenr was float now byte
+  variable gr1filipinoenr was float now byte
+  variable gr1hispanicenr was float now int
+  variable gr1blackenr was float now int
+  variable gr1whiteenr was float now int
+  variable gr1mixedenr was float now byte
+  variable gr2noethnicenr was float now int
+  variable gr2nativeenr was float now byte
+  variable gr2asianenr was float now int
+  variable gr2pacificenr was float now byte
+  variable gr2filipinoenr was float now byte
+  variable gr2hispanicenr was float now int
+  variable gr2blackenr was float now int
+  variable gr2whiteenr was float now int
+  variable gr2mixedenr was float now byte
+  variable gr3noethnicenr was float now int
+  variable gr3nativeenr was float now byte
+  variable gr3asianenr was float now int
+  variable gr3pacificenr was float now byte
+  variable gr3filipinoenr was float now byte
+  variable gr3hispanicenr was float now int
+  variable gr3blackenr was float now byte
+  variable gr3whiteenr was float now int
+  variable gr3mixedenr was float now byte
+  variable gr4noethnicenr was float now int
+  variable gr4nativeenr was float now byte
+  variable gr4asianenr was float now int
+  variable gr4pacificenr was float now byte
+  variable gr4filipinoenr was float now byte
+  variable gr4hispanicenr was float now int
+  variable gr4blackenr was float now byte
+  variable gr4whiteenr was float now int
+  variable gr4mixedenr was float now byte
+  variable gr5noethnicenr was float now int
+  variable gr5nativeenr was float now byte
+  variable gr5asianenr was float now int
+  variable gr5pacificenr was float now byte
+  variable gr5filipinoenr was float now byte
+  variable gr5hispanicenr was float now int
+  variable gr5blackenr was float now byte
+  variable gr5whiteenr was float now int
+  variable gr5mixedenr was float now byte
+  variable gr6noethnicenr was float now byte
+  variable gr6nativeenr was float now byte
+  variable gr6asianenr was float now int
+  variable gr6pacificenr was float now byte
+  variable gr6filipinoenr was float now int
+  variable gr6hispanicenr was float now int
+  variable gr6blackenr was float now int
+  variable gr6whiteenr was float now int
+  variable gr6mixedenr was float now byte
+  variable gr7noethnicenr was float now byte
+  variable gr7nativeenr was float now byte
+  variable gr7asianenr was float now int
+  variable gr7pacificenr was float now byte
+  variable gr7filipinoenr was float now int
+  variable gr7hispanicenr was float now int
+  variable gr7blackenr was float now int
+  variable gr7whiteenr was float now int
+  variable gr7mixedenr was float now byte
+  variable gr8noethnicenr was float now byte
+  variable gr8nativeenr was float now byte
+  variable gr8asianenr was float now int
+  variable gr8pacificenr was float now byte
+  variable gr8filipinoenr was float now int
+  variable gr8hispanicenr was float now int
+  variable gr8blackenr was float now int
+  variable gr8whiteenr was float now int
+  variable gr8mixedenr was float now byte
+  variable gr9noethnicenr was float now int
+  variable gr9nativeenr was float now byte
+  variable gr9asianenr was float now int
+  variable gr9pacificenr was float now byte
+  variable gr9filipinoenr was float now int
+  variable gr9hispanicenr was float now int
+  variable gr9blackenr was float now int
+  variable gr9whiteenr was float now int
+  variable gr9mixedenr was float now byte
+  variable gr10noethnicenr was float now byte
+  variable gr10nativeenr was float now byte
+  variable gr10asianenr was float now int
+  variable gr10pacificenr was float now byte
+  variable gr10filipinoenr was float now int
+  variable gr10hispanicenr was float now int
+  variable gr10blackenr was float now int
+  variable gr10whiteenr was float now int
+  variable gr10mixedenr was float now byte
+  variable gr11noethnicenr was float now byte
+  variable gr11nativeenr was float now byte
+  variable gr11asianenr was float now int
+  variable gr11pacificenr was float now byte
+  variable gr11filipinoenr was float now int
+  variable gr11hispanicenr was float now int
+  variable gr11blackenr was float now int
+  variable gr11whiteenr was float now int
+  variable gr11mixedenr was float now byte
+  variable gr12noethnicenr was float now int
+  variable gr12nativeenr was float now byte
+  variable gr12asianenr was float now int
+  variable gr12pacificenr was float now byte
+  variable gr12filipinoenr was float now int
+  variable gr12hispanicenr was float now int
+  variable gr12blackenr was float now int
+  variable gr12whiteenr was float now int
+  variable gr12mixedenr was float now byte
+  variable femaleenrtotal was float now int
+  variable maleenrtotal was float now int
+  variable blackenrtotal was float now int
+  variable whiteenrtotal was float now int
+  variable hispanicenrtotal was float now int
+  (3,615,393 bytes saved)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1415.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1415.dta
+    saved
+(63,770 real changes made)
+(39,196 real changes made)
+(40,155 real changes made)
+(39,329 real changes made)
+(40,294 real changes made)
+(39,345 real changes made)
+(40,456 real changes made)
+(39,362 real changes made)
+(40,551 real changes made)
+(39,311 real changes made)
+(40,855 real changes made)
+(29,270 real changes made)
+(30,502 real changes made)
+(18,968 real changes made)
+(19,946 real changes made)
+(18,851 real changes made)
+(20,103 real changes made)
+(13,623 real changes made)
+(14,708 real changes made)
+(14,654 real changes made)
+(15,811 real changes made)
+(15,156 real changes made)
+(16,440 real changes made)
+(15,152 real changes made)
+(16,420 real changes made)
+(2,796 real changes made)
+(2,263 real changes made)
+(7,799 real changes made)
+(2,227 real changes made)
+(5,425 real changes made)
+(11,876 real changes made)
+(7,628 real changes made)
+(11,012 real changes made)
+(0 real changes made)
+(2,420 real changes made)
+(2,348 real changes made)
+(7,873 real changes made)
+(2,401 real changes made)
+(5,403 real changes made)
+(11,933 real changes made)
+(7,878 real changes made)
+(10,952 real changes made)
+(0 real changes made)
+(2,273 real changes made)
+(2,484 real changes made)
+(7,918 real changes made)
+(2,472 real changes made)
+(5,509 real changes made)
+(11,916 real changes made)
+(8,015 real changes made)
+(11,000 real changes made)
+(0 real changes made)
+(2,185 real changes made)
+(2,609 real changes made)
+(8,067 real changes made)
+(2,503 real changes made)
+(5,711 real changes made)
+(11,992 real changes made)
+(8,130 real changes made)
+(11,035 real changes made)
+(0 real changes made)
+(2,058 real changes made)
+(2,596 real changes made)
+(8,071 real changes made)
+(2,560 real changes made)
+(5,736 real changes made)
+(12,051 real changes made)
+(8,102 real changes made)
+(10,971 real changes made)
+(0 real changes made)
+(1,658 real changes made)
+(2,381 real changes made)
+(5,884 real changes made)
+(2,187 real changes made)
+(4,191 real changes made)
+(8,947 real changes made)
+(6,086 real changes made)
+(8,259 real changes made)
+(0 real changes made)
+(1,366 real changes made)
+(1,985 real changes made)
+(3,700 real changes made)
+(1,715 real changes made)
+(2,923 real changes made)
+(5,861 real changes made)
+(4,034 real changes made)
+(5,533 real changes made)
+(0 real changes made)
+(1,311 real changes made)
+(2,069 real changes made)
+(3,648 real changes made)
+(1,675 real changes made)
+(2,904 real changes made)
+(5,942 real changes made)
+(4,065 real changes made)
+(5,586 real changes made)
+(0 real changes made)
+(1,196 real changes made)
+(1,745 real changes made)
+(2,489 real changes made)
+(1,396 real changes made)
+(2,081 real changes made)
+(4,326 real changes made)
+(3,024 real changes made)
+(3,923 real changes made)
+(0 real changes made)
+(1,135 real changes made)
+(1,924 real changes made)
+(2,595 real changes made)
+(1,479 real changes made)
+(2,155 real changes made)
+(4,764 real changes made)
+(3,304 real changes made)
+(4,306 real changes made)
+(0 real changes made)
+(1,061 real changes made)
+(1,908 real changes made)
+(2,798 real changes made)
+(1,498 real changes made)
+(2,283 real changes made)
+(5,024 real changes made)
+(3,518 real changes made)
+(4,681 real changes made)
+(0 real changes made)
+(1,020 real changes made)
+(2,114 real changes made)
+(2,928 real changes made)
+(1,725 real changes made)
+(2,405 real changes made)
+(5,055 real changes made)
+(3,672 real changes made)
+(4,727 real changes made)
+(0 real changes made)
+gr1enr        gr4femaleenr  gr1noethni~r  gr3noethni~r  gr5noethni~r  gr7noethni~r  gr9noethni~r  gr11noethn~r
+gr2enr        gr4maleenr    gr1nativeenr  gr3nativeenr  gr5nativeenr  gr7nativeenr  gr9nativeenr  gr11native~r
+gr3enr        gr5femaleenr  gr1asianenr   gr3asianenr   gr5asianenr   gr7asianenr   gr9asianenr   gr11asianenr
+gr4enr        gr5maleenr    gr1pacific~r  gr3pacific~r  gr5pacific~r  gr7pacific~r  gr9pacific~r  gr11pacifi~r
+gr5enr        gr6femaleenr  gr1filipin~r  gr3filipin~r  gr5filipin~r  gr7filipin~r  gr9filipin~r  gr11filipi~r
+gr6enr        gr6maleenr    gr1hispani~r  gr3hispani~r  gr5hispani~r  gr7hispani~r  gr9hispani~r  gr11hispan~r
+gr7enr        gr7femaleenr  gr1blackenr   gr3blackenr   gr5blackenr   gr7blackenr   gr9blackenr   gr11blackenr
+gr8enr        gr7maleenr    gr1whiteenr   gr3whiteenr   gr5whiteenr   gr7whiteenr   gr9whiteenr   gr11whiteenr
+gr9enr        gr8femaleenr  gr1mixedenr   gr3mixedenr   gr5mixedenr   gr7mixedenr   gr9mixedenr   gr11mixedenr
+gr10enr       gr8maleenr    gr2noethni~r  gr4noethni~r  gr6noethni~r  gr8noethni~r  gr10noethn~r  gr12noethn~r
+gr11enr       gr9femaleenr  gr2nativeenr  gr4nativeenr  gr6nativeenr  gr8nativeenr  gr10native~r  gr12native~r
+gr12enr       gr9maleenr    gr2asianenr   gr4asianenr   gr6asianenr   gr8asianenr   gr10asianenr  gr12asianenr
+gr1femaleenr  gr10female~r  gr2pacific~r  gr4pacific~r  gr6pacific~r  gr8pacific~r  gr10pacifi~r  gr12pacifi~r
+gr1maleenr    gr10maleenr   gr2filipin~r  gr4filipin~r  gr6filipin~r  gr8filipin~r  gr10filipi~r  gr12filipi~r
+gr2femaleenr  gr11female~r  gr2hispani~r  gr4hispani~r  gr6hispani~r  gr8hispani~r  gr10hispan~r  gr12hispan~r
+gr2maleenr    gr11maleenr   gr2blackenr   gr4blackenr   gr6blackenr   gr8blackenr   gr10blackenr  gr12blackenr
+gr3femaleenr  gr12female~r  gr2whiteenr   gr4whiteenr   gr6whiteenr   gr8whiteenr   gr10whiteenr  gr12whiteenr
+gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixedenr   gr10mixedenr  gr12mixedenr
+(6,013 real changes made)
+(6,046 real changes made)
+(6,051 real changes made)
+(6,058 real changes made)
+(6,049 real changes made)
+(4,519 real changes made)
+(2,981 real changes made)
+(3,007 real changes made)
+(2,153 real changes made)
+(2,430 real changes made)
+(2,564 real changes made)
+(2,586 real changes made)
+(6,114 real changes made)
+(6,135 real changes made)
+(6,170 real changes made)
+(6,199 real changes made)
+(6,274 real changes made)
+(4,724 real changes made)
+(3,175 real changes made)
+(3,234 real changes made)
+(2,305 real changes made)
+(2,555 real changes made)
+(2,678 real changes made)
+(2,697 real changes made)
+(3,888 real changes made)
+(4,024 real changes made)
+(4,093 real changes made)
+(4,156 real changes made)
+(4,160 real changes made)
+(3,123 real changes made)
+(2,085 real changes made)
+(2,095 real changes made)
+(1,563 real changes made)
+(1,716 real changes made)
+(1,838 real changes made)
+(1,947 real changes made)
+(5,539 real changes made)
+(5,506 real changes made)
+(5,530 real changes made)
+(5,561 real changes made)
+(5,518 real changes made)
+(4,179 real changes made)
+(2,811 real changes made)
+(2,840 real changes made)
+(2,001 real changes made)
+(2,203 real changes made)
+(2,399 real changes made)
+(2,438 real changes made)
+(5,948 real changes made)
+(5,981 real changes made)
+(5,971 real changes made)
+(6,015 real changes made)
+(6,052 real changes made)
+(4,503 real changes made)
+(2,953 real changes made)
+(3,008 real changes made)
+(2,187 real changes made)
+(2,423 real changes made)
+(2,561 real changes made)
+(2,588 real changes made)
+  variable gr1enr was float now int
+  variable gr2enr was float now int
+  variable gr3enr was float now int
+  variable gr4enr was float now int
+  variable gr5enr was float now int
+  variable gr6enr was float now int
+  variable gr7enr was float now int
+  variable gr8enr was float now int
+  variable gr9enr was float now int
+  variable gr10enr was float now int
+  variable gr11enr was float now int
+  variable gr12enr was float now int
+  variable gr1femaleenr was float now int
+  variable gr1maleenr was float now int
+  variable gr2femaleenr was float now int
+  variable gr2maleenr was float now int
+  variable gr3femaleenr was float now int
+  variable gr3maleenr was float now int
+  variable gr4femaleenr was float now int
+  variable gr4maleenr was float now int
+  variable gr5femaleenr was float now int
+  variable gr5maleenr was float now int
+  variable gr6femaleenr was float now int
+  variable gr6maleenr was float now int
+  variable gr7femaleenr was float now int
+  variable gr7maleenr was float now int
+  variable gr8femaleenr was float now int
+  variable gr8maleenr was float now int
+  variable gr9femaleenr was float now int
+  variable gr9maleenr was float now int
+  variable gr10femaleenr was float now int
+  variable gr10maleenr was float now int
+  variable gr11femaleenr was float now int
+  variable gr11maleenr was float now int
+  variable gr12femaleenr was float now int
+  variable gr12maleenr was float now int
+  variable gr1noethnicenr was float now byte
+  variable gr1nativeenr was float now byte
+  variable gr1asianenr was float now int
+  variable gr1pacificenr was float now byte
+  variable gr1filipinoenr was float now byte
+  variable gr1hispanicenr was float now int
+  variable gr1blackenr was float now int
+  variable gr1whiteenr was float now int
+  variable gr1mixedenr was float now byte
+  variable gr2noethnicenr was float now byte
+  variable gr2nativeenr was float now byte
+  variable gr2asianenr was float now int
+  variable gr2pacificenr was float now byte
+  variable gr2filipinoenr was float now byte
+  variable gr2hispanicenr was float now int
+  variable gr2blackenr was float now int
+  variable gr2whiteenr was float now int
+  variable gr2mixedenr was float now byte
+  variable gr3noethnicenr was float now byte
+  variable gr3nativeenr was float now byte
+  variable gr3asianenr was float now int
+  variable gr3pacificenr was float now byte
+  variable gr3filipinoenr was float now byte
+  variable gr3hispanicenr was float now int
+  variable gr3blackenr was float now int
+  variable gr3whiteenr was float now int
+  variable gr3mixedenr was float now byte
+  variable gr4noethnicenr was float now byte
+  variable gr4nativeenr was float now byte
+  variable gr4asianenr was float now int
+  variable gr4pacificenr was float now byte
+  variable gr4filipinoenr was float now byte
+  variable gr4hispanicenr was float now int
+  variable gr4blackenr was float now byte
+  variable gr4whiteenr was float now int
+  variable gr4mixedenr was float now byte
+  variable gr5noethnicenr was float now byte
+  variable gr5nativeenr was float now byte
+  variable gr5asianenr was float now int
+  variable gr5pacificenr was float now byte
+  variable gr5filipinoenr was float now byte
+  variable gr5hispanicenr was float now int
+  variable gr5blackenr was float now int
+  variable gr5whiteenr was float now int
+  variable gr5mixedenr was float now byte
+  variable gr6noethnicenr was float now int
+  variable gr6nativeenr was float now byte
+  variable gr6asianenr was float now int
+  variable gr6pacificenr was float now byte
+  variable gr6filipinoenr was float now int
+  variable gr6hispanicenr was float now int
+  variable gr6blackenr was float now int
+  variable gr6whiteenr was float now int
+  variable gr6mixedenr was float now byte
+  variable gr7noethnicenr was float now int
+  variable gr7nativeenr was float now byte
+  variable gr7asianenr was float now int
+  variable gr7pacificenr was float now byte
+  variable gr7filipinoenr was float now int
+  variable gr7hispanicenr was float now int
+  variable gr7blackenr was float now int
+  variable gr7whiteenr was float now int
+  variable gr7mixedenr was float now byte
+  variable gr8noethnicenr was float now int
+  variable gr8nativeenr was float now byte
+  variable gr8asianenr was float now int
+  variable gr8pacificenr was float now byte
+  variable gr8filipinoenr was float now int
+  variable gr8hispanicenr was float now int
+  variable gr8blackenr was float now int
+  variable gr8whiteenr was float now int
+  variable gr8mixedenr was float now byte
+  variable gr9noethnicenr was float now int
+  variable gr9nativeenr was float now byte
+  variable gr9asianenr was float now int
+  variable gr9pacificenr was float now byte
+  variable gr9filipinoenr was float now int
+  variable gr9hispanicenr was float now int
+  variable gr9blackenr was float now int
+  variable gr9whiteenr was float now int
+  variable gr9mixedenr was float now byte
+  variable gr10noethnicenr was float now byte
+  variable gr10nativeenr was float now byte
+  variable gr10asianenr was float now int
+  variable gr10pacificenr was float now byte
+  variable gr10filipinoenr was float now int
+  variable gr10hispanicenr was float now int
+  variable gr10blackenr was float now int
+  variable gr10whiteenr was float now int
+  variable gr10mixedenr was float now byte
+  variable gr11noethnicenr was float now byte
+  variable gr11nativeenr was float now byte
+  variable gr11asianenr was float now int
+  variable gr11pacificenr was float now byte
+  variable gr11filipinoenr was float now int
+  variable gr11hispanicenr was float now int
+  variable gr11blackenr was float now int
+  variable gr11whiteenr was float now int
+  variable gr11mixedenr was float now byte
+  variable gr12noethnicenr was float now byte
+  variable gr12nativeenr was float now byte
+  variable gr12asianenr was float now int
+  variable gr12pacificenr was float now byte
+  variable gr12filipinoenr was float now int
+  variable gr12hispanicenr was float now int
+  variable gr12blackenr was float now int
+  variable gr12whiteenr was float now int
+  variable gr12mixedenr was float now byte
+  variable femaleenrtotal was float now int
+  variable maleenrtotal was float now int
+  variable blackenrtotal was float now int
+  variable whiteenrtotal was float now int
+  variable hispanicenrtotal was float now int
+  (3,640,428 bytes saved)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1516.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1516.dta
+    saved
+(63,899 real changes made)
+(39,349 real changes made)
+(40,091 real changes made)
+(39,436 real changes made)
+(40,327 real changes made)
+(39,409 real changes made)
+(40,451 real changes made)
+(39,468 real changes made)
+(40,507 real changes made)
+(39,723 real changes made)
+(40,845 real changes made)
+(29,311 real changes made)
+(30,470 real changes made)
+(19,019 real changes made)
+(20,243 real changes made)
+(19,170 real changes made)
+(20,450 real changes made)
+(13,825 real changes made)
+(14,766 real changes made)
+(14,591 real changes made)
+(15,829 real changes made)
+(15,235 real changes made)
+(16,404 real changes made)
+(15,278 real changes made)
+(16,489 real changes made)
+(2,934 real changes made)
+(2,309 real changes made)
+(7,859 real changes made)
+(2,195 real changes made)
+(5,367 real changes made)
+(11,956 real changes made)
+(7,746 real changes made)
+(11,095 real changes made)
+(0 real changes made)
+(2,732 real changes made)
+(2,211 real changes made)
+(7,895 real changes made)
+(2,201 real changes made)
+(5,485 real changes made)
+(11,985 real changes made)
+(7,753 real changes made)
+(11,079 real changes made)
+(0 real changes made)
+(2,463 real changes made)
+(2,297 real changes made)
+(7,968 real changes made)
+(2,352 real changes made)
+(5,480 real changes made)
+(12,053 real changes made)
+(8,000 real changes made)
+(10,987 real changes made)
+(0 real changes made)
+(2,320 real changes made)
+(2,402 real changes made)
+(7,996 real changes made)
+(2,419 real changes made)
+(5,581 real changes made)
+(12,034 real changes made)
+(8,059 real changes made)
+(10,997 real changes made)
+(0 real changes made)
+(2,278 real changes made)
+(2,520 real changes made)
+(8,113 real changes made)
+(2,453 real changes made)
+(5,761 real changes made)
+(12,157 real changes made)
+(8,166 real changes made)
+(11,079 real changes made)
+(0 real changes made)
+(1,702 real changes made)
+(2,234 real changes made)
+(5,847 real changes made)
+(2,073 real changes made)
+(4,199 real changes made)
+(9,016 real changes made)
+(6,029 real changes made)
+(8,233 real changes made)
+(0 real changes made)
+(1,368 real changes made)
+(1,971 real changes made)
+(3,740 real changes made)
+(1,702 real changes made)
+(2,847 real changes made)
+(5,969 real changes made)
+(4,026 real changes made)
+(5,595 real changes made)
+(0 real changes made)
+(1,355 real changes made)
+(1,969 real changes made)
+(3,738 real changes made)
+(1,687 real changes made)
+(2,918 real changes made)
+(6,066 real changes made)
+(4,112 real changes made)
+(5,636 real changes made)
+(0 real changes made)
+(1,153 real changes made)
+(1,748 real changes made)
+(2,554 real changes made)
+(1,414 real changes made)
+(2,097 real changes made)
+(4,312 real changes made)
+(3,051 real changes made)
+(3,914 real changes made)
+(0 real changes made)
+(1,215 real changes made)
+(1,838 real changes made)
+(2,626 real changes made)
+(1,443 real changes made)
+(2,154 real changes made)
+(4,793 real changes made)
+(3,247 real changes made)
+(4,289 real changes made)
+(0 real changes made)
+(1,175 real changes made)
+(1,979 real changes made)
+(2,778 real changes made)
+(1,525 real changes made)
+(2,248 real changes made)
+(5,049 real changes made)
+(3,549 real changes made)
+(4,643 real changes made)
+(0 real changes made)
+(1,121 real changes made)
+(1,988 real changes made)
+(2,983 real changes made)
+(1,566 real changes made)
+(2,428 real changes made)
+(5,111 real changes made)
+(3,677 real changes made)
+(4,739 real changes made)
+(0 real changes made)
+gr1enr        gr4femaleenr  gr1noethni~r  gr3noethni~r  gr5noethni~r  gr7noethni~r  gr9noethni~r  gr11noethn~r
+gr2enr        gr4maleenr    gr1nativeenr  gr3nativeenr  gr5nativeenr  gr7nativeenr  gr9nativeenr  gr11native~r
+gr3enr        gr5femaleenr  gr1asianenr   gr3asianenr   gr5asianenr   gr7asianenr   gr9asianenr   gr11asianenr
+gr4enr        gr5maleenr    gr1pacific~r  gr3pacific~r  gr5pacific~r  gr7pacific~r  gr9pacific~r  gr11pacifi~r
+gr5enr        gr6femaleenr  gr1filipin~r  gr3filipin~r  gr5filipin~r  gr7filipin~r  gr9filipin~r  gr11filipi~r
+gr6enr        gr6maleenr    gr1hispani~r  gr3hispani~r  gr5hispani~r  gr7hispani~r  gr9hispani~r  gr11hispan~r
+gr7enr        gr7femaleenr  gr1blackenr   gr3blackenr   gr5blackenr   gr7blackenr   gr9blackenr   gr11blackenr
+gr8enr        gr7maleenr    gr1whiteenr   gr3whiteenr   gr5whiteenr   gr7whiteenr   gr9whiteenr   gr11whiteenr
+gr9enr        gr8femaleenr  gr1mixedenr   gr3mixedenr   gr5mixedenr   gr7mixedenr   gr9mixedenr   gr11mixedenr
+gr10enr       gr8maleenr    gr2noethni~r  gr4noethni~r  gr6noethni~r  gr8noethni~r  gr10noethn~r  gr12noethn~r
+gr11enr       gr9femaleenr  gr2nativeenr  gr4nativeenr  gr6nativeenr  gr8nativeenr  gr10native~r  gr12native~r
+gr12enr       gr9maleenr    gr2asianenr   gr4asianenr   gr6asianenr   gr8asianenr   gr10asianenr  gr12asianenr
+gr1femaleenr  gr10female~r  gr2pacific~r  gr4pacific~r  gr6pacific~r  gr8pacific~r  gr10pacifi~r  gr12pacifi~r
+gr1maleenr    gr10maleenr   gr2filipin~r  gr4filipin~r  gr6filipin~r  gr8filipin~r  gr10filipi~r  gr12filipi~r
+gr2femaleenr  gr11female~r  gr2hispani~r  gr4hispani~r  gr6hispani~r  gr8hispani~r  gr10hispan~r  gr12hispan~r
+gr2maleenr    gr11maleenr   gr2blackenr   gr4blackenr   gr6blackenr   gr8blackenr   gr10blackenr  gr12blackenr
+gr3femaleenr  gr12female~r  gr2whiteenr   gr4whiteenr   gr6whiteenr   gr8whiteenr   gr10whiteenr  gr12whiteenr
+gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixedenr   gr10mixedenr  gr12mixedenr
+(6,052 real changes made)
+(6,065 real changes made)
+(6,079 real changes made)
+(6,079 real changes made)
+(6,131 real changes made)
+(4,534 real changes made)
+(2,998 real changes made)
+(3,076 real changes made)
+(2,167 real changes made)
+(2,389 real changes made)
+(2,568 real changes made)
+(2,585 real changes made)
+(6,141 real changes made)
+(6,193 real changes made)
+(6,212 real changes made)
+(6,230 real changes made)
+(6,306 real changes made)
+(4,737 real changes made)
+(3,216 real changes made)
+(3,288 real changes made)
+(2,308 real changes made)
+(2,556 real changes made)
+(2,680 real changes made)
+(2,700 real changes made)
+(3,957 real changes made)
+(3,956 real changes made)
+(4,088 real changes made)
+(4,132 real changes made)
+(4,181 real changes made)
+(3,105 real changes made)
+(2,079 real changes made)
+(2,134 real changes made)
+(1,572 real changes made)
+(1,684 real changes made)
+(1,862 real changes made)
+(1,941 real changes made)
+(5,574 real changes made)
+(5,574 real changes made)
+(5,524 real changes made)
+(5,538 real changes made)
+(5,584 real changes made)
+(4,165 real changes made)
+(2,841 real changes made)
+(2,870 real changes made)
+(2,000 real changes made)
+(2,196 real changes made)
+(2,386 real changes made)
+(2,444 real changes made)
+(5,987 real changes made)
+(6,013 real changes made)
+(6,042 real changes made)
+(6,035 real changes made)
+(6,102 real changes made)
+(4,537 real changes made)
+(3,013 real changes made)
+(3,069 real changes made)
+(2,181 real changes made)
+(2,434 real changes made)
+(2,571 real changes made)
+(2,610 real changes made)
+  variable gr1enr was float now int
+  variable gr2enr was float now int
+  variable gr3enr was float now int
+  variable gr4enr was float now int
+  variable gr5enr was float now int
+  variable gr6enr was float now int
+  variable gr7enr was float now int
+  variable gr8enr was float now int
+  variable gr9enr was float now int
+  variable gr10enr was float now int
+  variable gr11enr was float now int
+  variable gr12enr was float now int
+  variable gr1femaleenr was float now int
+  variable gr1maleenr was float now int
+  variable gr2femaleenr was float now int
+  variable gr2maleenr was float now int
+  variable gr3femaleenr was float now int
+  variable gr3maleenr was float now int
+  variable gr4femaleenr was float now int
+  variable gr4maleenr was float now int
+  variable gr5femaleenr was float now int
+  variable gr5maleenr was float now int
+  variable gr6femaleenr was float now int
+  variable gr6maleenr was float now int
+  variable gr7femaleenr was float now int
+  variable gr7maleenr was float now int
+  variable gr8femaleenr was float now int
+  variable gr8maleenr was float now int
+  variable gr9femaleenr was float now int
+  variable gr9maleenr was float now int
+  variable gr10femaleenr was float now int
+  variable gr10maleenr was float now int
+  variable gr11femaleenr was float now int
+  variable gr11maleenr was float now int
+  variable gr12femaleenr was float now int
+  variable gr12maleenr was float now int
+  variable gr1noethnicenr was float now int
+  variable gr1nativeenr was float now byte
+  variable gr1asianenr was float now int
+  variable gr1pacificenr was float now byte
+  variable gr1filipinoenr was float now byte
+  variable gr1hispanicenr was float now int
+  variable gr1blackenr was float now int
+  variable gr1whiteenr was float now int
+  variable gr1mixedenr was float now byte
+  variable gr2noethnicenr was float now byte
+  variable gr2nativeenr was float now byte
+  variable gr2asianenr was float now int
+  variable gr2pacificenr was float now byte
+  variable gr2filipinoenr was float now byte
+  variable gr2hispanicenr was float now int
+  variable gr2blackenr was float now int
+  variable gr2whiteenr was float now int
+  variable gr2mixedenr was float now byte
+  variable gr3noethnicenr was float now byte
+  variable gr3nativeenr was float now byte
+  variable gr3asianenr was float now int
+  variable gr3pacificenr was float now byte
+  variable gr3filipinoenr was float now byte
+  variable gr3hispanicenr was float now int
+  variable gr3blackenr was float now int
+  variable gr3whiteenr was float now int
+  variable gr3mixedenr was float now byte
+  variable gr4noethnicenr was float now byte
+  variable gr4nativeenr was float now byte
+  variable gr4asianenr was float now int
+  variable gr4pacificenr was float now byte
+  variable gr4filipinoenr was float now byte
+  variable gr4hispanicenr was float now int
+  variable gr4blackenr was float now byte
+  variable gr4whiteenr was float now int
+  variable gr4mixedenr was float now byte
+  variable gr5noethnicenr was float now byte
+  variable gr5nativeenr was float now byte
+  variable gr5asianenr was float now int
+  variable gr5pacificenr was float now byte
+  variable gr5filipinoenr was float now byte
+  variable gr5hispanicenr was float now int
+  variable gr5blackenr was float now int
+  variable gr5whiteenr was float now int
+  variable gr5mixedenr was float now byte
+  variable gr6noethnicenr was float now byte
+  variable gr6nativeenr was float now byte
+  variable gr6asianenr was float now int
+  variable gr6pacificenr was float now byte
+  variable gr6filipinoenr was float now int
+  variable gr6hispanicenr was float now int
+  variable gr6blackenr was float now int
+  variable gr6whiteenr was float now int
+  variable gr6mixedenr was float now byte
+  variable gr7noethnicenr was float now byte
+  variable gr7nativeenr was float now byte
+  variable gr7asianenr was float now int
+  variable gr7pacificenr was float now byte
+  variable gr7filipinoenr was float now int
+  variable gr7hispanicenr was float now int
+  variable gr7blackenr was float now int
+  variable gr7whiteenr was float now int
+  variable gr7mixedenr was float now byte
+  variable gr8noethnicenr was float now byte
+  variable gr8nativeenr was float now byte
+  variable gr8asianenr was float now int
+  variable gr8pacificenr was float now byte
+  variable gr8filipinoenr was float now int
+  variable gr8hispanicenr was float now int
+  variable gr8blackenr was float now int
+  variable gr8whiteenr was float now int
+  variable gr8mixedenr was float now byte
+  variable gr9noethnicenr was float now byte
+  variable gr9nativeenr was float now byte
+  variable gr9asianenr was float now int
+  variable gr9pacificenr was float now byte
+  variable gr9filipinoenr was float now int
+  variable gr9hispanicenr was float now int
+  variable gr9blackenr was float now int
+  variable gr9whiteenr was float now int
+  variable gr9mixedenr was float now byte
+  variable gr10noethnicenr was float now int
+  variable gr10nativeenr was float now byte
+  variable gr10asianenr was float now int
+  variable gr10pacificenr was float now byte
+  variable gr10filipinoenr was float now int
+  variable gr10hispanicenr was float now int
+  variable gr10blackenr was float now int
+  variable gr10whiteenr was float now int
+  variable gr10mixedenr was float now byte
+  variable gr11noethnicenr was float now byte
+  variable gr11nativeenr was float now byte
+  variable gr11asianenr was float now int
+  variable gr11pacificenr was float now byte
+  variable gr11filipinoenr was float now int
+  variable gr11hispanicenr was float now int
+  variable gr11blackenr was float now int
+  variable gr11whiteenr was float now int
+  variable gr11mixedenr was float now byte
+  variable gr12noethnicenr was float now byte
+  variable gr12nativeenr was float now byte
+  variable gr12asianenr was float now int
+  variable gr12pacificenr was float now byte
+  variable gr12filipinoenr was float now int
+  variable gr12hispanicenr was float now int
+  variable gr12blackenr was float now int
+  variable gr12whiteenr was float now int
+  variable gr12mixedenr was float now byte
+  variable femaleenrtotal was float now int
+  variable maleenrtotal was float now int
+  variable blackenrtotal was float now int
+  variable whiteenrtotal was float now int
+  variable hispanicenrtotal was float now int
+  (3,669,050 bytes saved)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1617.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1617.dta
+    saved
+(64,157 real changes made)
+(39,604 real changes made)
+(40,273 real changes made)
+(39,642 real changes made)
+(40,447 real changes made)
+(39,624 real changes made)
+(40,645 real changes made)
+(39,635 real changes made)
+(40,743 real changes made)
+(39,912 real changes made)
+(41,012 real changes made)
+(29,360 real changes made)
+(30,463 real changes made)
+(19,310 real changes made)
+(20,350 real changes made)
+(19,399 real changes made)
+(20,606 real changes made)
+(13,935 real changes made)
+(14,884 real changes made)
+(14,763 real changes made)
+(15,840 real changes made)
+(15,381 real changes made)
+(16,423 real changes made)
+(15,467 real changes made)
+(16,469 real changes made)
+(3,250 real changes made)
+(2,217 real changes made)
+(7,968 real changes made)
+(2,179 real changes made)
+(5,422 real changes made)
+(12,005 real changes made)
+(7,684 real changes made)
+(11,066 real changes made)
+(0 real changes made)
+(3,004 real changes made)
+(2,268 real changes made)
+(7,916 real changes made)
+(2,218 real changes made)
+(5,503 real changes made)
+(12,031 real changes made)
+(7,830 real changes made)
+(11,112 real changes made)
+(0 real changes made)
+(2,841 real changes made)
+(2,134 real changes made)
+(7,905 real changes made)
+(2,203 real changes made)
+(5,604 real changes made)
+(12,045 real changes made)
+(7,775 real changes made)
+(11,109 real changes made)
+(0 real changes made)
+(2,587 real changes made)
+(2,281 real changes made)
+(8,042 real changes made)
+(2,382 real changes made)
+(5,554 real changes made)
+(12,087 real changes made)
+(7,967 real changes made)
+(11,011 real changes made)
+(0 real changes made)
+(2,472 real changes made)
+(2,442 real changes made)
+(8,076 real changes made)
+(2,437 real changes made)
+(5,651 real changes made)
+(12,185 real changes made)
+(8,178 real changes made)
+(11,024 real changes made)
+(0 real changes made)
+(1,941 real changes made)
+(2,296 real changes made)
+(5,838 real changes made)
+(2,036 real changes made)
+(4,209 real changes made)
+(9,023 real changes made)
+(6,020 real changes made)
+(8,168 real changes made)
+(0 real changes made)
+(1,456 real changes made)
+(1,956 real changes made)
+(3,753 real changes made)
+(1,663 real changes made)
+(2,842 real changes made)
+(6,059 real changes made)
+(4,042 real changes made)
+(5,557 real changes made)
+(0 real changes made)
+(1,381 real changes made)
+(2,010 real changes made)
+(3,719 real changes made)
+(1,702 real changes made)
+(2,855 real changes made)
+(6,173 real changes made)
+(4,054 real changes made)
+(5,650 real changes made)
+(0 real changes made)
+(1,316 real changes made)
+(1,698 real changes made)
+(2,597 real changes made)
+(1,400 real changes made)
+(2,103 real changes made)
+(4,367 real changes made)
+(3,023 real changes made)
+(3,911 real changes made)
+(0 real changes made)
+(1,259 real changes made)
+(1,788 real changes made)
+(2,673 real changes made)
+(1,416 real changes made)
+(2,155 real changes made)
+(4,799 real changes made)
+(3,251 real changes made)
+(4,289 real changes made)
+(0 real changes made)
+(1,308 real changes made)
+(1,878 real changes made)
+(2,801 real changes made)
+(1,520 real changes made)
+(2,276 real changes made)
+(5,117 real changes made)
+(3,474 real changes made)
+(4,629 real changes made)
+(0 real changes made)
+(1,227 real changes made)
+(2,022 real changes made)
+(3,034 real changes made)
+(1,591 real changes made)
+(2,402 real changes made)
+(5,114 real changes made)
+(3,656 real changes made)
+(4,768 real changes made)
+(0 real changes made)
+gr1enr        gr4femaleenr  gr1noethni~r  gr3noethni~r  gr5noethni~r  gr7noethni~r  gr9noethni~r  gr11noethn~r
+gr2enr        gr4maleenr    gr1nativeenr  gr3nativeenr  gr5nativeenr  gr7nativeenr  gr9nativeenr  gr11native~r
+gr3enr        gr5femaleenr  gr1asianenr   gr3asianenr   gr5asianenr   gr7asianenr   gr9asianenr   gr11asianenr
+gr4enr        gr5maleenr    gr1pacific~r  gr3pacific~r  gr5pacific~r  gr7pacific~r  gr9pacific~r  gr11pacifi~r
+gr5enr        gr6femaleenr  gr1filipin~r  gr3filipin~r  gr5filipin~r  gr7filipin~r  gr9filipin~r  gr11filipi~r
+gr6enr        gr6maleenr    gr1hispani~r  gr3hispani~r  gr5hispani~r  gr7hispani~r  gr9hispani~r  gr11hispan~r
+gr7enr        gr7femaleenr  gr1blackenr   gr3blackenr   gr5blackenr   gr7blackenr   gr9blackenr   gr11blackenr
+gr8enr        gr7maleenr    gr1whiteenr   gr3whiteenr   gr5whiteenr   gr7whiteenr   gr9whiteenr   gr11whiteenr
+gr9enr        gr8femaleenr  gr1mixedenr   gr3mixedenr   gr5mixedenr   gr7mixedenr   gr9mixedenr   gr11mixedenr
+gr10enr       gr8maleenr    gr2noethni~r  gr4noethni~r  gr6noethni~r  gr8noethni~r  gr10noethn~r  gr12noethn~r
+gr11enr       gr9femaleenr  gr2nativeenr  gr4nativeenr  gr6nativeenr  gr8nativeenr  gr10native~r  gr12native~r
+gr12enr       gr9maleenr    gr2asianenr   gr4asianenr   gr6asianenr   gr8asianenr   gr10asianenr  gr12asianenr
+gr1femaleenr  gr10female~r  gr2pacific~r  gr4pacific~r  gr6pacific~r  gr8pacific~r  gr10pacifi~r  gr12pacifi~r
+gr1maleenr    gr10maleenr   gr2filipin~r  gr4filipin~r  gr6filipin~r  gr8filipin~r  gr10filipi~r  gr12filipi~r
+gr2femaleenr  gr11female~r  gr2hispani~r  gr4hispani~r  gr6hispani~r  gr8hispani~r  gr10hispan~r  gr12hispan~r
+gr2maleenr    gr11maleenr   gr2blackenr   gr4blackenr   gr6blackenr   gr8blackenr   gr10blackenr  gr12blackenr
+gr3femaleenr  gr12female~r  gr2whiteenr   gr4whiteenr   gr6whiteenr   gr8whiteenr   gr10whiteenr  gr12whiteenr
+gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixedenr   gr10mixedenr  gr12mixedenr
+(6,082 real changes made)
+(6,090 real changes made)
+(6,092 real changes made)
+(6,107 real changes made)
+(6,156 real changes made)
+(4,529 real changes made)
+(3,034 real changes made)
+(3,080 real changes made)
+(2,179 real changes made)
+(2,395 real changes made)
+(2,562 real changes made)
+(2,587 real changes made)
+(6,144 real changes made)
+(6,177 real changes made)
+(6,228 real changes made)
+(6,245 real changes made)
+(6,302 real changes made)
+(4,701 real changes made)
+(3,237 real changes made)
+(3,308 real changes made)
+(2,321 real changes made)
+(2,543 real changes made)
+(2,685 real changes made)
+(2,700 real changes made)
+(3,926 real changes made)
+(4,010 real changes made)
+(3,970 real changes made)
+(4,077 real changes made)
+(4,213 real changes made)
+(3,081 real changes made)
+(2,091 real changes made)
+(2,099 real changes made)
+(1,567 real changes made)
+(1,690 real changes made)
+(1,818 real changes made)
+(1,920 real changes made)
+(5,566 real changes made)
+(5,591 real changes made)
+(5,593 real changes made)
+(5,546 real changes made)
+(5,558 real changes made)
+(4,134 real changes made)
+(2,829 real changes made)
+(2,876 real changes made)
+(1,990 real changes made)
+(2,191 real changes made)
+(2,365 real changes made)
+(2,452 real changes made)
+(6,013 real changes made)
+(6,030 real changes made)
+(6,039 real changes made)
+(6,064 real changes made)
+(6,112 real changes made)
+(4,539 real changes made)
+(3,060 real changes made)
+(3,134 real changes made)
+(2,212 real changes made)
+(2,433 real changes made)
+(2,601 real changes made)
+(2,602 real changes made)
+  variable gr1enr was float now int
+  variable gr2enr was float now int
+  variable gr3enr was float now int
+  variable gr4enr was float now int
+  variable gr5enr was float now int
+  variable gr6enr was float now int
+  variable gr7enr was float now int
+  variable gr8enr was float now int
+  variable gr9enr was float now int
+  variable gr10enr was float now int
+  variable gr11enr was float now int
+  variable gr12enr was float now int
+  variable gr1femaleenr was float now int
+  variable gr1maleenr was float now int
+  variable gr2femaleenr was float now int
+  variable gr2maleenr was float now int
+  variable gr3femaleenr was float now int
+  variable gr3maleenr was float now int
+  variable gr4femaleenr was float now int
+  variable gr4maleenr was float now int
+  variable gr5femaleenr was float now int
+  variable gr5maleenr was float now int
+  variable gr6femaleenr was float now int
+  variable gr6maleenr was float now int
+  variable gr7femaleenr was float now int
+  variable gr7maleenr was float now int
+  variable gr8femaleenr was float now int
+  variable gr8maleenr was float now int
+  variable gr9femaleenr was float now int
+  variable gr9maleenr was float now int
+  variable gr10femaleenr was float now int
+  variable gr10maleenr was float now int
+  variable gr11femaleenr was float now int
+  variable gr11maleenr was float now int
+  variable gr12femaleenr was float now int
+  variable gr12maleenr was float now int
+  variable gr1noethnicenr was float now int
+  variable gr1nativeenr was float now byte
+  variable gr1asianenr was float now int
+  variable gr1pacificenr was float now byte
+  variable gr1filipinoenr was float now byte
+  variable gr1hispanicenr was float now int
+  variable gr1blackenr was float now int
+  variable gr1whiteenr was float now int
+  variable gr1mixedenr was float now byte
+  variable gr2noethnicenr was float now byte
+  variable gr2nativeenr was float now byte
+  variable gr2asianenr was float now int
+  variable gr2pacificenr was float now byte
+  variable gr2filipinoenr was float now byte
+  variable gr2hispanicenr was float now int
+  variable gr2blackenr was float now int
+  variable gr2whiteenr was float now int
+  variable gr2mixedenr was float now byte
+  variable gr3noethnicenr was float now byte
+  variable gr3nativeenr was float now byte
+  variable gr3asianenr was float now int
+  variable gr3pacificenr was float now byte
+  variable gr3filipinoenr was float now byte
+  variable gr3hispanicenr was float now int
+  variable gr3blackenr was float now int
+  variable gr3whiteenr was float now int
+  variable gr3mixedenr was float now byte
+  variable gr4noethnicenr was float now byte
+  variable gr4nativeenr was float now byte
+  variable gr4asianenr was float now int
+  variable gr4pacificenr was float now byte
+  variable gr4filipinoenr was float now byte
+  variable gr4hispanicenr was float now int
+  variable gr4blackenr was float now byte
+  variable gr4whiteenr was float now int
+  variable gr4mixedenr was float now byte
+  variable gr5noethnicenr was float now byte
+  variable gr5nativeenr was float now byte
+  variable gr5asianenr was float now int
+  variable gr5pacificenr was float now byte
+  variable gr5filipinoenr was float now byte
+  variable gr5hispanicenr was float now int
+  variable gr5blackenr was float now byte
+  variable gr5whiteenr was float now int
+  variable gr5mixedenr was float now byte
+  variable gr6noethnicenr was float now int
+  variable gr6nativeenr was float now byte
+  variable gr6asianenr was float now int
+  variable gr6pacificenr was float now byte
+  variable gr6filipinoenr was float now int
+  variable gr6hispanicenr was float now int
+  variable gr6blackenr was float now int
+  variable gr6whiteenr was float now int
+  variable gr6mixedenr was float now byte
+  variable gr7noethnicenr was float now int
+  variable gr7nativeenr was float now byte
+  variable gr7asianenr was float now int
+  variable gr7pacificenr was float now byte
+  variable gr7filipinoenr was float now int
+  variable gr7hispanicenr was float now int
+  variable gr7blackenr was float now int
+  variable gr7whiteenr was float now int
+  variable gr7mixedenr was float now byte
+  variable gr8noethnicenr was float now int
+  variable gr8nativeenr was float now byte
+  variable gr8asianenr was float now int
+  variable gr8pacificenr was float now byte
+  variable gr8filipinoenr was float now int
+  variable gr8hispanicenr was float now int
+  variable gr8blackenr was float now int
+  variable gr8whiteenr was float now int
+  variable gr8mixedenr was float now byte
+  variable gr9noethnicenr was float now int
+  variable gr9nativeenr was float now byte
+  variable gr9asianenr was float now int
+  variable gr9pacificenr was float now byte
+  variable gr9filipinoenr was float now int
+  variable gr9hispanicenr was float now int
+  variable gr9blackenr was float now int
+  variable gr9whiteenr was float now int
+  variable gr9mixedenr was float now byte
+  variable gr10noethnicenr was float now int
+  variable gr10nativeenr was float now byte
+  variable gr10asianenr was float now int
+  variable gr10pacificenr was float now byte
+  variable gr10filipinoenr was float now int
+  variable gr10hispanicenr was float now int
+  variable gr10blackenr was float now int
+  variable gr10whiteenr was float now int
+  variable gr10mixedenr was float now byte
+  variable gr11noethnicenr was float now int
+  variable gr11nativeenr was float now byte
+  variable gr11asianenr was float now int
+  variable gr11pacificenr was float now byte
+  variable gr11filipinoenr was float now int
+  variable gr11hispanicenr was float now int
+  variable gr11blackenr was float now int
+  variable gr11whiteenr was float now int
+  variable gr11mixedenr was float now byte
+  variable gr12noethnicenr was float now int
+  variable gr12nativeenr was float now byte
+  variable gr12asianenr was float now int
+  variable gr12pacificenr was float now byte
+  variable gr12filipinoenr was float now int
+  variable gr12hispanicenr was float now int
+  variable gr12blackenr was float now int
+  variable gr12whiteenr was float now int
+  variable gr12mixedenr was float now byte
+  variable femaleenrtotal was float now int
+  variable maleenrtotal was float now int
+  variable blackenrtotal was float now int
+  variable whiteenrtotal was float now int
+  variable hispanicenrtotal was float now int
+  (3,613,875 bytes saved)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1718.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1718.dta
+    saved
+(64,154 real changes made)
+(39,578 real changes made)
+(40,258 real changes made)
+(39,595 real changes made)
+(40,595 real changes made)
+(39,618 real changes made)
+(40,587 real changes made)
+(39,671 real changes made)
+(40,815 real changes made)
+(39,845 real changes made)
+(41,051 real changes made)
+(29,589 real changes made)
+(30,736 real changes made)
+(19,559 real changes made)
+(20,683 real changes made)
+(19,669 real changes made)
+(20,783 real changes made)
+(14,189 real changes made)
+(15,134 real changes made)
+(14,944 real changes made)
+(16,035 real changes made)
+(15,537 real changes made)
+(16,669 real changes made)
+(15,685 real changes made)
+(16,740 real changes made)
+(3,491 real changes made)
+(2,147 real changes made)
+(8,024 real changes made)
+(2,221 real changes made)
+(5,473 real changes made)
+(12,044 real changes made)
+(7,745 real changes made)
+(10,984 real changes made)
+(0 real changes made)
+(3,134 real changes made)
+(2,267 real changes made)
+(7,955 real changes made)
+(2,181 real changes made)
+(5,532 real changes made)
+(12,131 real changes made)
+(7,885 real changes made)
+(11,108 real changes made)
+(0 real changes made)
+(2,963 real changes made)
+(2,257 real changes made)
+(7,969 real changes made)
+(2,257 real changes made)
+(5,636 real changes made)
+(12,105 real changes made)
+(7,935 real changes made)
+(11,172 real changes made)
+(0 real changes made)
+(2,766 real changes made)
+(2,179 real changes made)
+(8,004 real changes made)
+(2,238 real changes made)
+(5,690 real changes made)
+(12,180 real changes made)
+(7,918 real changes made)
+(11,148 real changes made)
+(0 real changes made)
+(2,601 real changes made)
+(2,236 real changes made)
+(8,071 real changes made)
+(2,449 real changes made)
+(5,702 real changes made)
+(12,285 real changes made)
+(8,087 real changes made)
+(11,120 real changes made)
+(0 real changes made)
+(1,810 real changes made)
+(2,291 real changes made)
+(5,805 real changes made)
+(2,047 real changes made)
+(4,147 real changes made)
+(9,113 real changes made)
+(6,052 real changes made)
+(8,284 real changes made)
+(0 real changes made)
+(1,529 real changes made)
+(1,971 real changes made)
+(3,755 real changes made)
+(1,625 real changes made)
+(2,945 real changes made)
+(6,188 real changes made)
+(4,073 real changes made)
+(5,629 real changes made)
+(0 real changes made)
+(1,454 real changes made)
+(1,968 real changes made)
+(3,805 real changes made)
+(1,642 real changes made)
+(2,885 real changes made)
+(6,242 real changes made)
+(4,127 real changes made)
+(5,731 real changes made)
+(0 real changes made)
+(1,333 real changes made)
+(1,710 real changes made)
+(2,605 real changes made)
+(1,394 real changes made)
+(2,140 real changes made)
+(4,446 real changes made)
+(3,038 real changes made)
+(4,039 real changes made)
+(0 real changes made)
+(1,363 real changes made)
+(1,796 real changes made)
+(2,734 real changes made)
+(1,436 real changes made)
+(2,197 real changes made)
+(4,858 real changes made)
+(3,285 real changes made)
+(4,332 real changes made)
+(0 real changes made)
+(1,365 real changes made)
+(1,840 real changes made)
+(2,897 real changes made)
+(1,486 real changes made)
+(2,313 real changes made)
+(5,175 real changes made)
+(3,547 real changes made)
+(4,708 real changes made)
+(0 real changes made)
+(1,370 real changes made)
+(1,959 real changes made)
+(3,093 real changes made)
+(1,604 real changes made)
+(2,511 real changes made)
+(5,234 real changes made)
+(3,684 real changes made)
+(4,835 real changes made)
+(0 real changes made)
+gr1enr        gr4femaleenr  gr1noethni~r  gr3noethni~r  gr5noethni~r  gr7noethni~r  gr9noethni~r  gr11noethn~r
+gr2enr        gr4maleenr    gr1nativeenr  gr3nativeenr  gr5nativeenr  gr7nativeenr  gr9nativeenr  gr11native~r
+gr3enr        gr5femaleenr  gr1asianenr   gr3asianenr   gr5asianenr   gr7asianenr   gr9asianenr   gr11asianenr
+gr4enr        gr5maleenr    gr1pacific~r  gr3pacific~r  gr5pacific~r  gr7pacific~r  gr9pacific~r  gr11pacifi~r
+gr5enr        gr6femaleenr  gr1filipin~r  gr3filipin~r  gr5filipin~r  gr7filipin~r  gr9filipin~r  gr11filipi~r
+gr6enr        gr6maleenr    gr1hispani~r  gr3hispani~r  gr5hispani~r  gr7hispani~r  gr9hispani~r  gr11hispan~r
+gr7enr        gr7femaleenr  gr1blackenr   gr3blackenr   gr5blackenr   gr7blackenr   gr9blackenr   gr11blackenr
+gr8enr        gr7maleenr    gr1whiteenr   gr3whiteenr   gr5whiteenr   gr7whiteenr   gr9whiteenr   gr11whiteenr
+gr9enr        gr8femaleenr  gr1mixedenr   gr3mixedenr   gr5mixedenr   gr7mixedenr   gr9mixedenr   gr11mixedenr
+gr10enr       gr8maleenr    gr2noethni~r  gr4noethni~r  gr6noethni~r  gr8noethni~r  gr10noethn~r  gr12noethn~r
+gr11enr       gr9femaleenr  gr2nativeenr  gr4nativeenr  gr6nativeenr  gr8nativeenr  gr10native~r  gr12native~r
+gr12enr       gr9maleenr    gr2asianenr   gr4asianenr   gr6asianenr   gr8asianenr   gr10asianenr  gr12asianenr
+gr1femaleenr  gr10female~r  gr2pacific~r  gr4pacific~r  gr6pacific~r  gr8pacific~r  gr10pacifi~r  gr12pacifi~r
+gr1maleenr    gr10maleenr   gr2filipin~r  gr4filipin~r  gr6filipin~r  gr8filipin~r  gr10filipi~r  gr12filipi~r
+gr2femaleenr  gr11female~r  gr2hispani~r  gr4hispani~r  gr6hispani~r  gr8hispani~r  gr10hispan~r  gr12hispan~r
+gr2maleenr    gr11maleenr   gr2blackenr   gr4blackenr   gr6blackenr   gr8blackenr   gr10blackenr  gr12blackenr
+gr3femaleenr  gr12female~r  gr2whiteenr   gr4whiteenr   gr6whiteenr   gr8whiteenr   gr10whiteenr  gr12whiteenr
+gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixedenr   gr10mixedenr  gr12mixedenr
+(6,116 real changes made)
+(6,116 real changes made)
+(6,122 real changes made)
+(6,130 real changes made)
+(6,170 real changes made)
+(4,593 real changes made)
+(3,091 real changes made)
+(3,149 real changes made)
+(2,228 real changes made)
+(2,445 real changes made)
+(2,592 real changes made)
+(2,643 real changes made)
+(6,171 real changes made)
+(6,237 real changes made)
+(6,242 real changes made)
+(6,292 real changes made)
+(6,351 real changes made)
+(4,760 real changes made)
+(3,274 real changes made)
+(3,345 real changes made)
+(2,360 real changes made)
+(2,593 real changes made)
+(2,726 real changes made)
+(2,759 real changes made)
+(3,971 real changes made)
+(4,041 real changes made)
+(4,064 real changes made)
+(4,051 real changes made)
+(4,152 real changes made)
+(3,105 real changes made)
+(2,112 real changes made)
+(2,142 real changes made)
+(1,570 real changes made)
+(1,708 real changes made)
+(1,865 real changes made)
+(1,951 real changes made)
+(5,528 real changes made)
+(5,585 real changes made)
+(5,620 real changes made)
+(5,612 real changes made)
+(5,602 real changes made)
+(4,187 real changes made)
+(2,858 real changes made)
+(2,921 real changes made)
+(2,064 real changes made)
+(2,213 real changes made)
+(2,413 real changes made)
+(2,488 real changes made)
+(6,030 real changes made)
+(6,078 real changes made)
+(6,068 real changes made)
+(6,111 real changes made)
+(6,164 real changes made)
+(4,586 real changes made)
+(3,125 real changes made)
+(3,162 real changes made)
+(2,247 real changes made)
+(2,471 real changes made)
+(2,632 real changes made)
+(2,668 real changes made)
+  variable gr1enr was float now int
+  variable gr2enr was float now int
+  variable gr3enr was float now int
+  variable gr4enr was float now int
+  variable gr5enr was float now int
+  variable gr6enr was float now int
+  variable gr7enr was float now int
+  variable gr8enr was float now int
+  variable gr9enr was float now int
+  variable gr10enr was float now int
+  variable gr11enr was float now int
+  variable gr12enr was float now int
+  variable gr1femaleenr was float now int
+  variable gr1maleenr was float now int
+  variable gr2femaleenr was float now int
+  variable gr2maleenr was float now int
+  variable gr3femaleenr was float now int
+  variable gr3maleenr was float now int
+  variable gr4femaleenr was float now int
+  variable gr4maleenr was float now int
+  variable gr5femaleenr was float now int
+  variable gr5maleenr was float now int
+  variable gr6femaleenr was float now int
+  variable gr6maleenr was float now int
+  variable gr7femaleenr was float now int
+  variable gr7maleenr was float now int
+  variable gr8femaleenr was float now int
+  variable gr8maleenr was float now int
+  variable gr9femaleenr was float now int
+  variable gr9maleenr was float now int
+  variable gr10femaleenr was float now int
+  variable gr10maleenr was float now int
+  variable gr11femaleenr was float now int
+  variable gr11maleenr was float now int
+  variable gr12femaleenr was float now int
+  variable gr12maleenr was float now int
+  variable gr1noethnicenr was float now byte
+  variable gr1nativeenr was float now byte
+  variable gr1asianenr was float now int
+  variable gr1pacificenr was float now byte
+  variable gr1filipinoenr was float now byte
+  variable gr1hispanicenr was float now int
+  variable gr1blackenr was float now int
+  variable gr1whiteenr was float now int
+  variable gr1mixedenr was float now byte
+  variable gr2noethnicenr was float now byte
+  variable gr2nativeenr was float now byte
+  variable gr2asianenr was float now int
+  variable gr2pacificenr was float now byte
+  variable gr2filipinoenr was float now byte
+  variable gr2hispanicenr was float now int
+  variable gr2blackenr was float now int
+  variable gr2whiteenr was float now int
+  variable gr2mixedenr was float now byte
+  variable gr3noethnicenr was float now byte
+  variable gr3nativeenr was float now byte
+  variable gr3asianenr was float now int
+  variable gr3pacificenr was float now byte
+  variable gr3filipinoenr was float now byte
+  variable gr3hispanicenr was float now int
+  variable gr3blackenr was float now byte
+  variable gr3whiteenr was float now int
+  variable gr3mixedenr was float now byte
+  variable gr4noethnicenr was float now byte
+  variable gr4nativeenr was float now byte
+  variable gr4asianenr was float now int
+  variable gr4pacificenr was float now byte
+  variable gr4filipinoenr was float now byte
+  variable gr4hispanicenr was float now int
+  variable gr4blackenr was float now byte
+  variable gr4whiteenr was float now int
+  variable gr4mixedenr was float now byte
+  variable gr5noethnicenr was float now byte
+  variable gr5nativeenr was float now byte
+  variable gr5asianenr was float now int
+  variable gr5pacificenr was float now byte
+  variable gr5filipinoenr was float now byte
+  variable gr5hispanicenr was float now int
+  variable gr5blackenr was float now byte
+  variable gr5whiteenr was float now int
+  variable gr5mixedenr was float now byte
+  variable gr6noethnicenr was float now byte
+  variable gr6nativeenr was float now byte
+  variable gr6asianenr was float now int
+  variable gr6pacificenr was float now byte
+  variable gr6filipinoenr was float now int
+  variable gr6hispanicenr was float now int
+  variable gr6blackenr was float now int
+  variable gr6whiteenr was float now int
+  variable gr6mixedenr was float now byte
+  variable gr7noethnicenr was float now byte
+  variable gr7nativeenr was float now byte
+  variable gr7asianenr was float now int
+  variable gr7pacificenr was float now byte
+  variable gr7filipinoenr was float now int
+  variable gr7hispanicenr was float now int
+  variable gr7blackenr was float now int
+  variable gr7whiteenr was float now int
+  variable gr7mixedenr was float now byte
+  variable gr8noethnicenr was float now byte
+  variable gr8nativeenr was float now byte
+  variable gr8asianenr was float now int
+  variable gr8pacificenr was float now byte
+  variable gr8filipinoenr was float now int
+  variable gr8hispanicenr was float now int
+  variable gr8blackenr was float now int
+  variable gr8whiteenr was float now int
+  variable gr8mixedenr was float now byte
+  variable gr9noethnicenr was float now int
+  variable gr9nativeenr was float now byte
+  variable gr9asianenr was float now int
+  variable gr9pacificenr was float now byte
+  variable gr9filipinoenr was float now int
+  variable gr9hispanicenr was float now int
+  variable gr9blackenr was float now int
+  variable gr9whiteenr was float now int
+  variable gr9mixedenr was float now byte
+  variable gr10noethnicenr was float now int
+  variable gr10nativeenr was float now byte
+  variable gr10asianenr was float now int
+  variable gr10pacificenr was float now byte
+  variable gr10filipinoenr was float now int
+  variable gr10hispanicenr was float now int
+  variable gr10blackenr was float now int
+  variable gr10whiteenr was float now int
+  variable gr10mixedenr was float now byte
+  variable gr11noethnicenr was float now int
+  variable gr11nativeenr was float now byte
+  variable gr11asianenr was float now int
+  variable gr11pacificenr was float now byte
+  variable gr11filipinoenr was float now int
+  variable gr11hispanicenr was float now int
+  variable gr11blackenr was float now int
+  variable gr11whiteenr was float now int
+  variable gr11mixedenr was float now byte
+  variable gr12noethnicenr was float now int
+  variable gr12nativeenr was float now byte
+  variable gr12asianenr was float now int
+  variable gr12pacificenr was float now byte
+  variable gr12filipinoenr was float now int
+  variable gr12hispanicenr was float now int
+  variable gr12blackenr was float now int
+  variable gr12whiteenr was float now int
+  variable gr12mixedenr was float now byte
+  variable femaleenrtotal was float now int
+  variable maleenrtotal was float now int
+  variable blackenrtotal was float now int
+  variable whiteenrtotal was float now int
+  variable hispanicenrtotal was float now int
+  (3,682,350 bytes saved)
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1819.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/enr1819.dta
+    saved
+
+. 
+. /* set trace off //turn off trace to end debugging */
+. 
+. /* if enrollment for ethnicity and sex combination is desired: new var gradexasianfemale = gradex if female and asian 
+> */
+. 
+. log close enrollmentclean
+      name:  enrollmentclean
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/prepare/enrollmentclean.smcl
+  log type:  text
+ closed on:  18 May 2026, 00:06:04
+------------------------------------------------------------------------------------------------------------------------

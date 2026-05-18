@@ -1,0 +1,526 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  parentqoiclean1516
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/qoiclean/parent/parentqoiclean1
+> 516.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:08:30
+
+. 
+. use $datadir_clean/calschls/parent/parent1516, clear
+(2015-16 Parent CSPS Data)
+
+. 
+. //only keep questions of interest
+. keep cdscode p9 p15 p16 p17 p27 p40 p42 p58
+
+. //delete all value labels not associated with variables
+. labdu , delete
+
+. //rename questions of interest using question numbers in 1819 as standard
+. rename p40 p31
+
+. elabel rename p40 p31
+
+. rename p42 p33
+
+. elabel rename p42 p33
+
+. rename p58 p64
+
+. elabel rename p58 p64
+
+. 
+. /* Note: 1516 dataset does not have qoi 30 32 34 */
+. foreach i of numlist 9 15/17 27 31 33 64 {
+  2.   rename p`i' qoi`i'
+  3.   elabel rename p`i' qoi`i' //rename the value labels to be consistent wit
+> h var name change
+  4. }
+
+. 
+. /* count the total number of responses in each school */
+. sort cdscode
+
+. by cdscode: gen totalresp = _N
+
+. label var totalresp "total number of responses at each school including missi
+> ng"
+
+. 
+. 
+. *****************************************************************************
+> ***
+. /* qoi 9, 15-17, 27, 30-34 have the same response options, so clean them in t
+> he
+> same batch */
+. 
+. /* value labels for qoi 9, 15-17, 27, 30-34:
+> 1 strongly agree
+> 2 agree
+> 3 disagree
+> 4 strongly disagree
+> 5 don't know/NA
+> 
+> Recode:
+> -2 strongly disagree
+> -1 disagree
+> 0 neutral
+> 1 agree
+> 2 strongly agree
+> */
+. 
+. /* recode qoi 9, 15-17, 27, 31 33 */
+. foreach i of numlist 9 15/17 27 31 33 {
+  2.   gen qoi`i'temp = .
+  3.   replace qoi`i'temp = -2 if qoi`i' == 4
+  4.   replace qoi`i'temp = -1 if qoi`i' == 3
+  5.   replace qoi`i'temp =  0 if qoi`i' == 5
+  6.   replace qoi`i'temp =  1 if qoi`i' == 2
+  7.   replace qoi`i'temp =  2 if qoi`i' == 1
+  8. 
+.   drop qoi`i'
+  9.   rename qoi`i'temp qoi`i'
+ 10. }
+(70,953 missing values generated)
+(1,084 real changes made)
+(3,072 real changes made)
+(2,177 real changes made)
+(33,177 real changes made)
+(28,321 real changes made)
+(70,953 missing values generated)
+(2,253 real changes made)
+(5,445 real changes made)
+(12,680 real changes made)
+(26,090 real changes made)
+(21,308 real changes made)
+(70,953 missing values generated)
+(1,162 real changes made)
+(3,397 real changes made)
+(1,571 real changes made)
+(33,641 real changes made)
+(28,077 real changes made)
+(70,953 missing values generated)
+(1,577 real changes made)
+(4,339 real changes made)
+(3,842 real changes made)
+(32,324 real changes made)
+(25,569 real changes made)
+(70,953 missing values generated)
+(1,571 real changes made)
+(4,418 real changes made)
+(2,636 real changes made)
+(31,803 real changes made)
+(26,872 real changes made)
+(70,953 missing values generated)
+(901 real changes made)
+(2,933 real changes made)
+(1,575 real changes made)
+(31,213 real changes made)
+(29,743 real changes made)
+(70,953 missing values generated)
+(1,038 real changes made)
+(2,924 real changes made)
+(2,554 real changes made)
+(29,416 real changes made)
+(30,046 real changes made)
+
+. 
+. /* generate dummies for each response option and missing for qoi 9 15/17 27 3
+> 1 33 */
+. foreach i of numlist 9 15/17 27 31 33 {
+  2.   gen stragree`i' = 0
+  3.   replace stragree`i' = 1 if qoi`i' == 2
+  4. 
+.   gen agree`i' = 0
+  5.   replace agree`i' = 1 if qoi`i' == 1
+  6. 
+.   gen disagree`i' = 0
+  7.   replace disagree`i' = 1 if qoi`i' == -1
+  8. 
+.   gen strdisagree`i' = 0
+  9.   replace strdisagree`i' = 1 if qoi`i' == -2
+ 10. 
+.   gen dontknow`i' = 0
+ 11.   replace dontknow`i' = 1 if qoi`i' == 0
+ 12. 
+.   gen missing`i' = 0
+ 13.   replace missing`i' = 1 if missing(qoi`i')
+ 14. }
+(28,321 real changes made)
+(33,177 real changes made)
+(3,072 real changes made)
+(1,084 real changes made)
+(2,177 real changes made)
+(3,122 real changes made)
+(21,308 real changes made)
+(26,090 real changes made)
+(5,445 real changes made)
+(2,253 real changes made)
+(12,680 real changes made)
+(3,177 real changes made)
+(28,077 real changes made)
+(33,641 real changes made)
+(3,397 real changes made)
+(1,162 real changes made)
+(1,571 real changes made)
+(3,105 real changes made)
+(25,569 real changes made)
+(32,324 real changes made)
+(4,339 real changes made)
+(1,577 real changes made)
+(3,842 real changes made)
+(3,302 real changes made)
+(26,872 real changes made)
+(31,803 real changes made)
+(4,418 real changes made)
+(1,571 real changes made)
+(2,636 real changes made)
+(3,653 real changes made)
+(29,743 real changes made)
+(31,213 real changes made)
+(2,933 real changes made)
+(901 real changes made)
+(1,575 real changes made)
+(4,588 real changes made)
+(30,046 real changes made)
+(29,416 real changes made)
+(2,924 real changes made)
+(1,038 real changes made)
+(2,554 real changes made)
+(4,975 real changes made)
+
+. 
+. *****************************************************************************
+> ***
+. /* clean qoi 64 as it has different resonse options */
+. 
+. /* value labels for qoi64:
+> 1 very well
+> 2 just okay
+> 3 not very well
+> 4 does not do it at all
+> 5 don't know/NA
+> 
+> recode:
+> -2 does not do it at all
+> -1 not very well
+> 0 dont know
+> 1 just okay
+> 2 very well
+>  */
+. 
+.  /* recode qoi 64 */
+.  gen qoi64temp = .
+(70,953 missing values generated)
+
+.  replace qoi64temp = -2 if qoi64 == 4
+(6,401 real changes made)
+
+.  replace qoi64temp = -1 if qoi64 == 3
+(6,752 real changes made)
+
+.  replace qoi64temp =  0 if qoi64 == 5
+(11,947 real changes made)
+
+.  replace qoi64temp =  1 if qoi64 == 2
+(17,806 real changes made)
+
+.  replace qoi64temp =  2 if qoi64 == 1
+(22,869 real changes made)
+
+. 
+.  drop qoi64
+
+.  rename qoi64temp qoi64
+
+.  gen verywell64 = 0
+
+.  replace verywell64 = 1 if qoi64 == 2
+(22,869 real changes made)
+
+. 
+.  gen justokay64 = 0
+
+.  replace justokay64 = 1 if qoi64 == 1
+(17,806 real changes made)
+
+. 
+.  gen notwell64 = 0
+
+.  replace notwell64 = 1 if qoi64 == -1
+(6,752 real changes made)
+
+. 
+.  gen doesnotdo64 = 0
+
+.  replace doesnotdo64 = 1 if qoi64 == -2
+(6,401 real changes made)
+
+. 
+.  gen dontknow64 = 0
+
+.  replace dontknow64 = 1 if qoi64 == 0
+(11,947 real changes made)
+
+. 
+.  gen missing64 = 0
+
+.  replace missing64 = 1 if missing(qoi64)
+(5,178 real changes made)
+
+. 
+. /* generate means for the qoi  */
+. foreach i of numlist 9 15/17 27 31 33 64 {
+  2.   egen qoi`i'mean = mean(qoi`i'), by(cdscode)
+  3. }
+(4 missing values generated)
+(4 missing values generated)
+(5 missing values generated)
+(6 missing values generated)
+(528 missing values generated)
+(10 missing values generated)
+(532 missing values generated)
+(532 missing values generated)
+
+. 
+. /* This is old cold before recoding of qoi values
+>  /<x> generate mean of vars, excluding don't know. <x>
+>  //generate temp vars for low and high bounds to use with rangestat
+>  gen lowbound = 1
+>  gen highbound = 4
+> foreach i of numlist 9 15/17 27 31 33 64 {
+>   rangestat (mean) qoi`i', interval(qoi`i' lowbound highbound) by(cdscode)
+>   rename qoi`i'_mean qoi`i'mean //rename the generated mean vars
+> }
+> 
+> /<x> Note: don't worry about missing values generated because it does not mat
+> ter
+> after collapsing dataset <x>
+> drop lowbound highbound //drop the temp vars
+>  */
+. 
+. 
+. /* collapse the dataset, resulting dataset has mean for each qoi, total numbe
+> r
+> of responses, and number of responses for each option in each question */
+. collapse (mean) qoi*mean totalresp (sum) stragree* agree* disagree* strdisagr
+> ee* dontknow* missing* verywell64 justoka
+> y64 notwell64 doesnotdo64, by(cdscode)
+
+. //some schools have missing means because they have very low number of respon
+> ses and with either don't know or missing
+. 
+. **************************** relabel the vars *******************************
+> ***
+. /* label mean vars */
+. label var qoi9mean "Mean (excluding don't know) of Q: promotes academic succe
+> ss for all students"
+
+. label var qoi15mean "Mean (excluding don't know) of Q: provides quality couns
+> eling or other ways..."
+
+. label var qoi16mean "Mean (excluding don't know) of Q: is a supportive and in
+> viting place..."
+
+. label var qoi17mean "Mean (excluding don't know) of Q: allows input and welco
+> mes parents'..."
+
+. label var qoi27mean "Mean (excluding don't know) of Q: encourages me to be an
+>  active partner..."
+
+. 
+. label var qoi31mean "Mean (excluding don't know) of Q: motivates students to 
+> learn"
+
+. 
+. label var qoi33mean "Mean (excluding don't know) of Q: has adults who really 
+> care about students"
+
+. 
+. label var qoi64mean "Mean (excluding don't know) of Q: provoding information 
+> on how to help..."
+
+. 
+. label var totalresp "total number of responses in the school including missin
+> g"
+
+. 
+. /* label vars for the number of response for each option */
+. foreach i of numlist 9 15/17 27 31 33 {
+  2.   label var stragree`i' "number of people choosing strongly agree for qoi`
+> i'"
+  3.   label var agree`i' "number of people choosing agree for qoi`i'"
+  4.   label var disagree`i' "number of people choosing disagree for qoi`i'"
+  5.   label var strdisagree`i' "number of people choosing strongly disagree fo
+> r qoi`i'"
+  6.   label var dontknow`i' "number of people choosing don't know for qoi`i'"
+  7.   label var missing`i' "number of missing responses for qoi`i'"
+  8. }
+
+. 
+. label var verywell64 "number of people choosing very well for qoi64"
+
+. label var justokay64 "number of people choosing just okay for qoi64"
+
+. label var notwell64 "number of people choosing not very well for qoi64"
+
+. label var doesnotdo64 "number of people choosing does not do it at all for qo
+> i64"
+
+. label var dontknow64 "number of people choosing don't know for qoi64"
+
+. label var missing64 "number of missing responses for qoi64"
+
+. 
+. 
+. ********************* generate percentage agree/disagree etc ****************
+> ***
+. /* first, generate the net total responses for each question excluding missin
+> g */
+. foreach i of numlist 9 15/17 27 31 33 64 {
+  2.   gen nettotalresp`i' = totalresp - missing`i'
+  3.   label var nettotalresp`i' "net total responses for qoi`i' excluding miss
+> ing "
+  4. }
+
+. 
+. /* generate percent disagree/agree for qoi 9 15/17 27 31 33 */
+. foreach i of numlist 9 15/17 27 31 33 {
+  2.   gen pctdisagree`i' = (strdisagree`i' + disagree`i')/nettotalresp`i'
+  3.   label var pctdisagree`i' "percent strongly disagree or disagree in qoi`i
+> '"
+  4.   gen pctagree`i' = (stragree`i' + agree`i')/nettotalresp`i'
+  5.   label var pctagree`i' "percent strongly agree or agree in qoi`i'"
+  6.   gen pctdontknow`i' = dontknow`i'/nettotalresp`i'
+  7.   label var pctdontknow`i' "percent don't know in qoi`i'"
+  8. }
+(4 missing values generated)
+(4 missing values generated)
+(4 missing values generated)
+(4 missing values generated)
+(4 missing values generated)
+(4 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(31 missing values generated)
+(31 missing values generated)
+(31 missing values generated)
+(7 missing values generated)
+(7 missing values generated)
+(7 missing values generated)
+(33 missing values generated)
+(33 missing values generated)
+(33 missing values generated)
+
+. 
+. /* generate percent well/not well for qoi64 */
+. gen pctwell64 = verywell64/nettotalresp64
+(33 missing values generated)
+
+. label var pctwell64 "percent very well in qoi64"
+
+. gen pctokay64 = justokay64/nettotalresp64
+(33 missing values generated)
+
+. label var pctokay64 "percent just okay in qoi64"
+
+. gen pctnotwell64 = (notwell64 + doesnotdo64)/nettotalresp64
+(33 missing values generated)
+
+. label var pctnotwell64 "percent not well or does not do at all in qoi64"
+
+. gen pctdontknow64 = dontknow64/nettotalresp64
+(33 missing values generated)
+
+. label var pctdontknow64 "percent don't know in qoi64"
+
+. 
+. 
+. /* generate a year var to prepare for constructing a panel */
+. gen year = 1516
+
+. 
+. label data "cleaned parent 1516 survey questions of interest with percent dis
+> agree/agree etc."
+note: label truncated to 80 characters
+
+. compress
+  variable totalresp was float now int
+  variable nettotalresp9 was float now int
+  variable nettotalresp15 was float now int
+  variable nettotalresp16 was float now int
+  variable nettotalresp17 was float now int
+  variable nettotalresp27 was float now int
+  variable nettotalresp31 was float now int
+  variable nettotalresp33 was float now int
+  variable nettotalresp64 was float now int
+  variable year was float now int
+  variable stragree9 was double now int
+  variable stragree15 was double now int
+  variable stragree16 was double now int
+  variable stragree17 was double now int
+  variable stragree27 was double now int
+  variable stragree31 was double now int
+  variable stragree33 was double now int
+  variable agree9 was double now int
+  variable agree15 was double now int
+  variable agree16 was double now int
+  variable agree17 was double now int
+  variable agree27 was double now int
+  variable agree31 was double now int
+  variable agree33 was double now int
+  variable disagree9 was double now byte
+  variable disagree15 was double now byte
+  variable disagree16 was double now byte
+  variable disagree17 was double now byte
+  variable disagree27 was double now byte
+  variable disagree31 was double now byte
+  variable disagree33 was double now byte
+  variable strdisagree9 was double now byte
+  variable strdisagree15 was double now byte
+  variable strdisagree16 was double now byte
+  variable strdisagree17 was double now byte
+  variable strdisagree27 was double now byte
+  variable strdisagree31 was double now byte
+  variable strdisagree33 was double now byte
+  variable dontknow9 was double now byte
+  variable dontknow15 was double now int
+  variable dontknow16 was double now byte
+  variable dontknow17 was double now byte
+  variable dontknow27 was double now byte
+  variable dontknow31 was double now byte
+  variable dontknow33 was double now int
+  variable dontknow64 was double now int
+  variable missing9 was double now byte
+  variable missing15 was double now byte
+  variable missing16 was double now byte
+  variable missing17 was double now byte
+  variable missing27 was double now int
+  variable missing31 was double now byte
+  variable missing33 was double now int
+  variable missing64 was double now int
+  variable verywell64 was double now int
+  variable justokay64 was double now int
+  variable notwell64 was double now int
+  variable doesnotdo64 was double now int
+  (345,944 bytes saved)
+
+. save $datadir_clean/calschls/qoiclean/parent/parentqoiclean1516, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/qoiclean/parent/parentqoiclean
+    > 1516.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/qoiclean/parent/parentqoiclean
+    > 1516.dta saved
+
+. 
+. 
+. cap log close parentqoiclean1516

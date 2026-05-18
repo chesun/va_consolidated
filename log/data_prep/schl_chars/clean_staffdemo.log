@@ -1,0 +1,3345 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  clean_staffdemo
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/schl_chars/clean_staffdemo.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:01:36
+
+. 
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. /* Color Order
+> color p       gs6
+> color p1      navy
+> color p2      maroon
+> color p3      forest_green
+> color p4      dkorange
+> color p5      teal
+> color p6      cranberry
+> color p7      lavender
+> color p8      khaki
+> color p9      sienna
+> color p10     emidblue
+> color p11     emerald
+> color p12     brown
+> color p13     erose
+> color p14     gold
+> color p15     bluishgray
+> */
+. /* Marker Symbol Order
+> circle             O
+> diamond            D
+> triangle           T
+> square             S
+> plus               +
+> X                  X
+> arrowf             A
+> arrow              a
+> pipe               |
+> V                  V
+> */
+. /* Line Pattern Order
+> solid
+> dash
+> dot
+> dash_dot
+> shortdash
+> shortdash_dot
+> longdash
+> longdash_dot
+> */
+. set seed 1984
+
+. 
+. 
+. 
+. 
+. 
+. **********
+. * Macros *
+. **********
+. include $consolidated_dir/do/va/helpers/macros_va.doh
+
+. /*---------------------------------------------------------------------------
+> ---
+> do/va/helpers/macros_va.doh — VA project file paths, dates, controls, strings
+> =============================================================================
+> ===
+> 
+> PURPOSE
+>     Define the canonical VA-pipeline locals consumed across Phase 3+
+>     estimation, table-producer, figure-producer, and heterogeneity scripts:
+>     - Restricted-access K12 data paths.
+>     - Sibling crosswalk paths (cross-references caschls predecessor).
+>     - Cohort-year ranges (test_score / star / caaspp / outcome).
+>     - Outcome strings (ELA, Math, enrollment).
+>     - Control-variable groupings (school, demographic, score, peer, census,
+>       sibling, distance, scrhat — predicted-score variants).
+>     - Per-spec control combinations (b/l/a/s/la/ls/as/las and their `d'-augme
+> nted
+>       variants per ADR-0009 + 2023-04-30 distance addition).
+>     - String labels for sample × control display.
+>     - School-characteristics + demographic-characteristics + expenditure grou
+> ps.
+> 
+> INCLUDED FROM
+>     Phase 3+ VA estimation/table/figure scripts under `do/va/' and `do/share/
+> va/'.
+>     Typically the FIRST helper-include in any consuming script (sets up the
+>     parent-scope locals consumed by `drift_limit.doh' and
+>     `macros_va_all_samples_controls.doh').
+> 
+>     Uses Stata's `#delimit ;' syntax (semicolons end statements) per the
+>     predecessor convention.  The closing `#delimit cr' restores default
+>     line-end semantics for the calling script.
+> 
+> ROLE IN ADR-0021 SANDBOX
+>     Pure local definitions; no save / export / log; sandbox-trivially clean.
+>     Reads from LEGACY paths via global expansion at include-time:
+>       - $vaprojdir/data/restricted_access/clean/k12_test_scores
+>         (LEGACY restricted-access K12 raw data)
+>       - $vaprojdir/data/public_access/...
+>         (LEGACY public-access subdirs)
+>       - $caschls_projdir/dta/siblingxwalk/{siblingpairxwalk,ufamilyxwalk}
+>         (LEGACY-static predecessor sibling-pair / unique-family crosswalks)
+>     Reads from CANONICAL paths:
+>       - $datadir_clean/siblingxwalk/sibling_out_xwalk
+>         (sibling-outcomes crosswalk built by relocated
+>          do/sibling_xwalk/siblingoutxwalk.do per ADR-0005; producer at L338)
+> 
+> RELOCATION HISTORY (per ADR-0005 + ADR-0021, applied 2026-04-30)
+>     Source:      cde_va_project_fork/do_files/sbac/macros_va.doh
+>     Destination: do/va/helpers/macros_va.doh
+>     Path repointing per ADR-0021 sandbox amendment ("paths only; analysis
+>     logic preserved verbatim"):
+>       - L29-31: `$projdir/dta/siblingxwalk/<file>' -> `$caschls_projdir/dta/s
+> iblingxwalk/<file>'
+>         (3 references: siblingxwalk, ufamilyxwalk, sibling_out_xwalk)
+>         Reason: $projdir is NOT defined in do/settings.do; $caschls_projdir
+>         is the explicit-named global per the LEGACY PATHS comment block.
+>         Repointing here eliminates the include-time `$projdir' alias-need
+>         for any future calling script (per the [LEARN:stata] 2026-04-30
+>         pattern surfaced in the siblingoutxwalk.do round-1 review).
+>       - $vaprojdir references (L22-28) preserved unchanged — $vaprojdir
+>         IS defined in do/settings.do as the predecessor cde_va_project_fork
+>         dir; LEGACY-static restricted-access K12 paths are READS-only
+>         per ADR-0021.
+>     Predecessor caller-update protocol: predecessor callers untouched in
+>     this commit per plan v3 §3.3 step 5 parenthetical.
+>     Analysis logic preserved verbatim (the cross-product of controls, the
+>     string labels, the cohort-year ranges, the school-char groupings — all
+>     byte-equivalent to the predecessor).
+> 
+> ORIGINAL CHANGE LOG (preserved from predecessor)
+>     2022-04-28: Added macro for sibling controls.
+>     2022-09-20: Added delimiter `;' after comments.
+>     2022-10-31: Changed naming convention for samples (b/l/a/s/la/ls/as/las).
+>     2023-05-31: Added distance control macros.
+>     2024-08-22: Added predicted ELA score spec controls (`scrhat' variants).
+> 
+> REFERENCES
+>     Plan v3 §3.3 step 1 (helpers/macros)
+>     ADRs:    0009 (v1 prior-score canonical), 0017 (Matt's files untouched —
+>              $vaprojdir paths are LEGACY-static reads), 0021 (description
+>              convention; sandbox-write rule; path-globals-only amendment)
+>     Audit:   chunk-2 (file structure verification); chunk-3 (control
+>              specifications cross-checked against paper Tables 2-3)
+>     MEMORY:  [LEARN:stata] 2026-04-30 ($projdir explicit-rename pattern)
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. 
+. /* CHANGE LOG
+> 4/28/2022: Added macro for sibling controls
+> 09/20/2022: Added delimiter : after comments
+> 10/31/2022: Changed naming convention for samples
+> b - base
+> l - loscore
+> a - acs
+> s - sibling
+> la - loscore and acs
+> ls - loscore and sibling
+> as - acs and sibling
+> las - loscore, acs and sibling
+> 
+> 05/31/2023: added distance control macros
+> 
+> 08/22/2024: added predicted ELA score spec controls
+> */
+. 
+. #delimit ;
+delimiter now ;
+. *** file paths ;
+. local home $vaprojdir ;
+
+. local vaprojdofiles "$vaprojdir/do_files"
+> local ca_ed_lab "/home/research/ca_ed_lab" ;
+
+. local k12_test_scores "$vaprojdir/data/restricted_access/clean/k12_test_score
+> s" ;
+
+. local public_access "$vaprojdir/data/public_access" ;
+
+. local k12_public_schools "$vaprojdir/data/public_access/clean/k12_public_scho
+> ols" ;
+
+. local k12_test_scores_public "$vaprojdir/data/public_access/clean/k12_test_sc
+> ores" ;
+
+. local siblingxwalk "$caschls_projdir/dta/siblingxwalk/siblingpairxwalk";
+
+. local ufamilyxwalk "$caschls_projdir/dta/siblingxwalk/ufamilyxwalk";
+
+. local sibling_out_xwalk "$datadir_clean/siblingxwalk/sibling_out_xwalk";
+
+. **** Dates ;
+. local test_score_min_year
+>         2015
+>         ;
+
+. local test_score_max_year
+>         2018
+>         ;
+
+. local star_min_year
+>         2003
+>         ;
+
+. local star_max_year
+>         2013
+>         ;
+
+. local caaspp_min_year
+>         2015
+>         ;
+
+. local caaspp_max_year
+>         2019
+>         ;
+
+. local outcome_min_year
+>         2015
+>         ;
+
+. local outcome_max_year
+>         2018
+>         ;
+
+. **** Outcome Strings ;
+. local ela_str
+>         "ELA"
+>         ;
+
+. local math_str
+>         "Math"
+>         ;
+
+. local enr_str
+>         "Overall Enrollment"
+>         ;
+
+. local enr_2year_str
+>         "2-Year Enrollment"
+>         ;
+
+. local enr_4year_str
+>         "4-Year Enrollment"
+>         ;
+
+. **** Sibling Census Restricted Sample Controls Strings ;
+. local og_str
+>         "Original Specification"
+>         ;
+
+. local acs_str
+>         "Original + Census"
+>         ;
+
+. local sib_str
+>         "Original + Sibling"
+>         ;
+
+. local both_str
+>         "Original + Census + Sibling"
+>         ;
+
+. **** Value Added ;
+. local school_controls
+>         /*cohort_size*/
+>         ;
+
+. local demographic_controls
+>         age
+>         i.male
+>         i.eth_asian i.eth_hispanic i.eth_black i.eth_other
+>         i.econ_disadvantage
+>         i.limited_eng_prof
+>         i.disabled
+>         ;
+
+. local ela_score_controls
+>         i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score
+> )
+>         ;
+
+. // controls using predicted lag 1 ELA scores
+> local ela_scrhat_controls
+>         i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela
+> _z_score_hat)
+>         ;
+
+. local math_score_controls
+>         i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_sc
+> ore)
+>         ;
+
+. local peer_ela_score_controls
+>         i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_pr
+> ior_ela_z_score)
+>         ;
+
+. local peer_math_score_controls
+>         i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_
+> prior_math_z_score)
+>         ;
+
+. local peer_demographic_controls
+>         peer_age
+>         peer_male
+>         peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other
+>         peer_econ_disadvantage
+>         peer_limited_eng_prof
+>         peer_disabled
+>         ;
+
+. local va_control_vars "`school_controls' `demographic_controls'" ;
+
+. local va_control_vars : subinstr local va_control_vars "i." "", all ;
+
+. local va_control_vars : list uniq va_control_vars ;
+
+. local census_grade
+>         6
+>         ;
+
+. local census_controls
+>         /*eth_white_pct*/ eth_asian_pct eth_hispanic_pct eth_black_pct /*eth_
+> other_pct*/
+>         educ_hs_dropout_prop /*educ_deg_2year_prop*/ educ_deg_4year_plus_prop
+>         pov_fam_child_lt18_pct
+>         inc_median_hh
+>         ;
+
+. local peer_census_controls
+>         peer_eth_asian_pct  peer_eth_hispanic_pct  peer_eth_black_pct
+>         peer_educ_hs_dropout_prop  peer_educ_deg_4year_plus_prop
+>         peer_pov_fam_child_lt18_pct      peer_inc_median_hh
+>         ;
+
+. local sibling_controls
+>         i.has_older_sibling_enr_2year
+>         i.has_older_sibling_enr_4year
+>         ;
+
+. local peer_sibling_controls
+>         peer_has_older_sibling_enr_2year
+>         peer_has_older_sibling_enr_4year
+>         ;
+
+. // lag 1 older sibling controls ;
+> local sib_lag1_controls
+>         old1_sib_enr_2year
+>         old1_sib_enr_4year
+>         ;
+
+. // lag 2 older sibling controls ;
+> local sib_lag2_controls
+>         old2_sib_enr_2year
+>         old2_sib_enr_4year
+>         ;
+
+. // postsecondary distance controls
+> local d_controls
+>         mindist_any_nonprof_4yr
+>         mindist_ccc
+>         ;
+
+. **********************************************  ;
+. *** macros for STANDALONE control vars for running loops over all samples and
+>  specifications ;
+. //base specification controls ;
+> local b_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. //peer base controls ;
+> local peer_b_controls
+>         `peer_ela_score_controls'
+>         `peer_math_score_controls'
+>         `peer_demographic_controls'
+>         ;
+
+. // leave out score controls ;
+> local l_controls
+>         loscore
+>         ;
+
+. // peer leave out score controls ;
+> local peer_l_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         ;
+
+. local a_controls
+>         `census_controls'
+>         ;
+
+. local peer_a_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         ;
+
+. local s_controls
+>         `sibling_controls'
+>         ;
+
+. local peer_s_controls
+>         `peer_b_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. // control var groups for looping ;
+> local la_controls
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local peer_la_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         ;
+
+. local ls_controls
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local peer_ls_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_sibling_controls'
+>         ;
+
+. local as_controls
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_as_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. local las_controls
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_las_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. foreach control in b l a s la ls as las {;
+  2.         local `control'd_controls
+>                 ``control'_controls' `d_controls'
+>                 ;
+  3.         local peer_`control'd_controls
+>                 `peer_`control'_controls'
+>                 ;
+  4.         }
+>         ;
+
+. *** macros for control var COMBINATIONS for running loops over all samples an
+> d specifications ;
+. //base specification controls ;
+> local b_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. // predicted score spec controls
+> local b_scrhat_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_scrhat_controls'
+>         `math_score_controls'
+>         ;
+
+. local bd_spec_controls
+>         `b_spec_controls'
+>         `d_controls'
+>         ;
+
+. local bd_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // leave out prior score controls ;
+> local l_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local l_scrhat_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local ld_spec_controls
+>         `l_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ld_scrhat_spec_controls
+>         `l_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // ACS
+> local a_spec_controls
+>         `b_spec_controls'
+>         `census_controls'
+>         ;
+
+. local a_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `census_controls'
+>         ;
+
+. local ad_spec_controls
+>         `a_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ad_scrhat_spec_controls
+>         `a_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // sibling
+> local s_spec_controls
+>         `b_spec_controls'
+>         `s_controls'
+>         ;
+
+. local s_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `s_controls'
+>         ;
+
+. local sd_spec_controls
+>         `s_spec_controls'
+>         `d_controls'
+>         ;
+
+. local sd_scrhat_spec_controls
+>         `s_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // loscores and acs
+> local la_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local la_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local lad_spec_controls
+>         `la_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lad_scrhat_spec_controls
+>         `la_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ls_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local ls_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local lsd_spec_controls
+>         `ls_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lsd_scrhat_spec_controls
+>         `ls_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local as_spec_controls
+>         `b_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local as_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local asd_spec_controls
+>         `as_spec_controls'
+>         `d_controls'
+>         ;
+
+. local asd_scrhat_spec_controls
+>         `as_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local las_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local las_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local lasd_spec_controls
+>         `las_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lasd_scrhat_spec_controls
+>         `las_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // strings for all sample and control combinations ;
+> 
+> local b_str
+>         "base"
+>         ;
+
+. local bd_str
+>         `b_str'
+>         ;
+
+. local l_str
+>         "leave out score"
+>         ;
+
+. local ld_str
+>         `l_str'
+>         ;
+
+. local a_str
+>         "ACS"
+>         ;
+
+. local ad_str
+>         `a_str'
+>         ;
+
+. local s_str
+>         "sibling"
+>         ;
+
+. local sd_str
+>         `s_str'
+>         ;
+
+. local la_str
+>         "leave out score & ACS"
+>         ;
+
+. local lad_str
+>         `la_str'
+>         ;
+
+. local ls_str
+>         "leave out score & sibling"
+>         ;
+
+. local lsd_str
+>         `ls_str'
+>         ;
+
+. local as_str
+>         "ACS & sibling"
+>         ;
+
+. local asd_str
+>         `as_str'
+>         ;
+
+. local las_str
+>         "leave out score & ACS & sibling"
+>         ;
+
+. local lasd_str
+>         `las_str'
+>         ;
+
+. local d_str
+>         "postsecondary distance"
+>         ;
+
+. // strings for heterogeneity in persistence vars ;
+> local race_str
+>         "Race"
+>         ;
+
+. local male_str "Male";
+
+. local econ_disadvantage_str "Economically Disadvantaged";
+
+. local prop_ecn_disadv_str "Proportion Economically Disadvantaged" ;
+
+. local charter_str "Charter Status" ;
+
+. local inc_median_hh_xtile_str "Census Tract Median Household Income Decile";
+
+. local enr_black_hisp_prop_str "Proportion of Black and Hispanic Enrollment";
+
+. **** School Characteristics ;
+. local sch_chars
+>         fte_teach_pc fte_pupil_pc /*fte_admin_pc*/
+>         /*eng_learner_staff_pc*/
+>         new_teacher_prop
+>         /*educ_grad_sch_prop educ_associate_prop*/
+>         /*status_tenured_prop*/
+>         credential_full_prop
+>         /*authorization_stem_prop authorization_ela_prop*/
+>         c.male_prop##c.enr_male_prop
+>         c.eth_minority_prop##c.enr_minority_prop
+>         enr_total
+>         ;
+
+. local sch_char_vars "`sch_chars'" ;
+
+. local sch_char_vars : subinstr local sch_char_vars "i." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "c." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "##" " ", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "#" " ", all ;
+
+. local sch_char_vars : list uniq sch_char_vars ;
+
+. local dem_chars
+>         enr_male_prop
+>         enr_minority_prop
+>         frpm_prop el_prop
+>         enr_total
+>         ;
+
+. local dem_char_vars "`dem_chars'" ;
+
+. local dem_char_vars : list uniq dem_char_vars ;
+
+. local expenditures
+>         expenditures_instr_pc
+>         expenditures3000_pc
+>         expenditures4000_pc
+>         expenditures_other_pc
+>         expenditures7000_pc
+>         ;
+
+. local expenditure_vars "`expenditures'" ;
+
+. local expenditure_vars : list uniq expenditure_vars ;
+
+. local sch_char_control_vars : list sch_char_vars | dem_char_vars ;
+
+. local sch_char_control_vars : list sch_char_control_vars | expenditure_vars ;
+
+. #delimit cr
+delimiter now cr
+. 
+. 
+. #delimit ;
+delimiter now ;
+. #delimit cr
+delimiter now cr
+. macro list
+cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
+clndtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/calschls
+rawcsvdir:      /home/research/ca_ed_lab/data/restricted_access/raw/calschls/cs
+> v
+rawdtadir:      /home/research/ca_ed_lab/data/restricted_access/raw/calschls/st
+> ata
+distance_dtadir:
+                /home/research/ca_ed_lab/projects/common_core_va/data/k12_posts
+> ec_distance
+mattxwalks:     /home/research/ca_ed_lab/users/msnaven/data/restricted_access/c
+> lean/crosswalks
+nscdtadir_oldformat:
+                /home/research/ca_ed_lab/data/restricted_access/clean/cde_nsc/o
+> ldformat
+nscdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde_nsc
+caschls_projdir:
+                /home/research/ca_ed_lab/users/chesun/gsr/caschls
+vaprojxwalks:   /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks
+vaprojdir:      /home/research/ca_ed_lab/projects/common_core_va
+matt_files_dir: /home/research/ca_ed_lab/projects/common_core_va/do_files
+figures_dir:    /home/research/ca_ed_lab/projects/common_core_va/consolidated/f
+> igures
+tables_dir:     /home/research/ca_ed_lab/projects/common_core_va/consolidated/t
+> ables
+datadir_raw:    /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
+> ata/raw
+datadir_clean:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
+> ata/cleaned
+logdir:         /home/research/ca_ed_lab/projects/common_core_va/consolidated/l
+> og
+output_dir:     /home/research/ca_ed_lab/projects/common_core_va/consolidated/o
+> utput
+estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/e
+> stimates
+datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
+> ata
+consolidated_dir:
+                /home/research/ca_ed_lab/projects/common_core_va/consolidated
+cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/csu_outcomes_cr
+                > osswalk.dta
+cb_k12_csu_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/k12_csu_crosswa
+                > lk.dta
+cb_ccc:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/ccc_outcomes_cr
+                > osswalk.dta
+cb_k12_ccc_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/k12_ccc_crosswa
+                > lk.dta
+cb_nsc:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/crosswalks/nsc_outcomes_cr
+                > osswalk_ssid.dta
+cb_sch_char:    /home/research/ca_ed_lab/projects/common_core_va/data/sch_char.
+> dta
+cb_k12_pre_va:  /home/research/ca_ed_lab/projects/common_core_va/data/va_sample
+> s_v1/score_b.dta
+cb_k12_main:    /home/research/ca_ed_lab/projects/common_core_va/estimates/va_c
+> fr_all_v1/va_est_dta/va_all_schl_char.dta
+cb_calschls_2:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfac
+> tor/allsvyqoimeans
+cb_calschls_1:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfac
+> tor/imputedallsvyqoimeans
+vadtadir:       /home/research/ca_ed_lab/projects/common_core_va/data/sbac
+projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
+S_level:        95
+F1:             help advice;
+F2:             describe;
+F7:             save
+F8:             use
+S_ADO:          BASE;SITE;.;PERSONAL;PLUS;OLDPLACE
+S_StataMP:      MP
+S_StataSE:      SE
+S_CONSOLE:      console
+S_OS:           Unix
+S_MACH:         PC (64-bit x86-64)
+_sch_char_control_vars:
+                fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop
+>  male_prop enr_male_prop
+                eth_minority_prop enr_minority_prop enr_total frpm_prop el_prop
+>  expenditures_instr_pc
+                expenditures3000_pc expenditures4000_pc expenditures_other_pc e
+> xpenditures7000_pc
+_expenditure_vars:
+                expenditures_instr_pc expenditures3000_pc expenditures4000_pc e
+> xpenditures_other_pc expenditures7000_pc
+_expenditures:  expenditures_instr_pc expenditures3000_pc expenditures4000_pc e
+> xpenditures_other_pc expenditures7000_pc
+_dem_char_vars: enr_male_prop enr_minority_prop frpm_prop el_prop enr_total
+_dem_chars:     enr_male_prop enr_minority_prop frpm_prop el_prop enr_total
+_sch_char_vars: fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop
+>  male_prop enr_male_prop
+                eth_minority_prop enr_minority_prop enr_total
+_sch_chars:     fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop
+>  c.male_prop##c.enr_male_prop
+                c.eth_minority_prop##c.enr_minority_prop enr_total
+_enr_black_hisp_prop_str:
+                Proportion of Black and Hispanic Enrollment
+_inc_median_hh_xtile_str:
+                Census Tract Median Household Income Decile
+_charter_str:   Charter Status
+_prop_ecn_disadv_str:
+                Proportion Economically Disadvantaged
+_econ_disadvantage_str:
+                Economically Disadvantaged
+_male_str:      Male
+_race_str:      Race
+_d_str:         postsecondary distance
+_lasd_str:      leave out score & ACS & sibling
+_las_str:       leave out score & ACS & sibling
+_asd_str:       ACS & sibling
+_as_str:        ACS & sibling
+_lsd_str:       leave out score & sibling
+_ls_str:        leave out score & sibling
+_lad_str:       leave out score & ACS
+_la_str:        leave out score & ACS
+_sd_str:        sibling
+_s_str:         sibling
+_ad_str:        ACS
+_a_str:         ACS
+_ld_str:        leave out score
+_l_str:         leave out score
+_bd_str:        base
+_b_str:         base
+_lasd_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling
+> _enr_4year mindist_any_nonprof_4yr
+                mindist_ccc
+_lasd_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling
+> _enr_4year mindist_any_nonprof_4yr
+                mindist_ccc
+_las_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling
+> _enr_4year
+_las_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh i.has_older_sibling_enr_2year i.has_older_sibling
+> _enr_4year
+_asd_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
+_asd_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
+_as_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+_as_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+_lsd_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
+_lsd_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
+_ls_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+_ls_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+_lad_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh mindist_any_nonprof_4yr mindist_ccc
+_lad_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh mindist_any_nonprof_4yr mindist_ccc
+_la_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh
+_la_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore eth_asian_pct
+                eth_hispanic_pct eth_black_pct educ_hs_dropout_prop educ_deg_4y
+> ear_plus_prop pov_fam_child_lt18_pct
+                inc_median_hh
+_sd_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) i.has_older_sibling_enr_2year
+                i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_c
+> cc
+_sd_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) i.has_older_sibling_enr_2year
+                i.has_older_sibling_enr_4year mindist_any_nonprof_4yr mindist_c
+> cc
+_s_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) i.has_older_sibling_enr_2year
+                i.has_older_sibling_enr_4year
+_s_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) i.has_older_sibling_enr_2year
+                i.has_older_sibling_enr_4year
+_ad_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+                mindist_any_nonprof_4yr mindist_ccc
+_ad_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+                mindist_any_nonprof_4yr mindist_ccc
+_a_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+_a_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) eth_asian_pct eth_hispanic_pct
+                eth_black_pct educ_hs_dropout_prop educ_deg_4year_plus_prop pov
+> _fam_child_lt18_pct inc_median_hh
+_ld_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+                mindist_any_nonprof_4yr mindist_ccc
+_ld_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+                mindist_any_nonprof_4yr mindist_ccc
+_l_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+_l_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) loscore
+_bd_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) mindist_any_nonprof_4yr
+                mindist_ccc
+_bd_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) mindist_any_nonprof_4yr
+                mindist_ccc
+_b_scrhat_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score
+> _hat##c.prior_ela_z_score_hat)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score)
+_b_spec_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score)
+_peer_lasd_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian
+> _pct peer_eth_hispanic_pct
+                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4yea
+> r_plus_prop peer_pov_fam_child_lt18_pct
+                peer_inc_median_hh peer_has_older_sibling_enr_2year peer_has_ol
+> der_sibling_enr_4year
+_lasd_controls: loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dr
+> opout_prop educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2y
+> ear i.has_older_sibling_enr_4year
+                mindist_any_nonprof_4yr mindist_ccc
+_peer_asd_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth
+> _hispanic_pct peer_eth_black_pct
+                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_po
+> v_fam_child_lt18_pct peer_inc_median_hh
+                peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4ye
+> ar
+_asd_controls:  eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2y
+> ear i.has_older_sibling_enr_4year
+                mindist_any_nonprof_4yr mindist_ccc
+_peer_lsd_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_has_older
+> _sibling_enr_2year
+                peer_has_older_sibling_enr_4year
+_lsd_controls:  loscore i.has_older_sibling_enr_2year i.has_older_sibling_enr_4
+> year mindist_any_nonprof_4yr mindist_ccc
+_peer_lad_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian
+> _pct peer_eth_hispanic_pct
+                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4yea
+> r_plus_prop peer_pov_fam_child_lt18_pct
+                peer_inc_median_hh
+_lad_controls:  loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dr
+> opout_prop educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh mindist_any_nonprof_4yr mi
+> ndist_ccc
+_peer_sd_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_has_older_sibling_enr_
+> 2year peer_has_older_sibling_enr_4year
+_sd_controls:   i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year min
+> dist_any_nonprof_4yr mindist_ccc
+_peer_ad_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth
+> _hispanic_pct peer_eth_black_pct
+                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_po
+> v_fam_child_lt18_pct peer_inc_median_hh
+_ad_controls:   eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh mindist_any_nonprof_4yr mi
+> ndist_ccc
+_peer_ld_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore
+_ld_controls:   loscore mindist_any_nonprof_4yr mindist_ccc
+_peer_bd_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled
+_bd_controls:   age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score) mindist_any_nonprof_4yr
+                mindist_ccc
+_peer_las_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian
+> _pct peer_eth_hispanic_pct
+                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4yea
+> r_plus_prop peer_pov_fam_child_lt18_pct
+                peer_inc_median_hh peer_has_older_sibling_enr_2year peer_has_ol
+> der_sibling_enr_4year
+_las_controls:  loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dr
+> opout_prop educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2y
+> ear i.has_older_sibling_enr_4year
+_peer_as_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth
+> _hispanic_pct peer_eth_black_pct
+                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_po
+> v_fam_child_lt18_pct peer_inc_median_hh
+                peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4ye
+> ar
+_as_controls:   eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh i.has_older_sibling_enr_2y
+> ear i.has_older_sibling_enr_4year
+_peer_ls_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_has_older
+> _sibling_enr_2year
+                peer_has_older_sibling_enr_4year
+_ls_controls:   loscore i.has_older_sibling_enr_2year i.has_older_sibling_enr_4
+> year
+_peer_la_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore peer_eth_asian
+> _pct peer_eth_hispanic_pct
+                peer_eth_black_pct peer_educ_hs_dropout_prop peer_educ_deg_4yea
+> r_plus_prop peer_pov_fam_child_lt18_pct
+                peer_inc_median_hh
+_la_controls:   loscore eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dr
+> opout_prop educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh
+_peer_s_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_has_older_sibling_enr_
+> 2year peer_has_older_sibling_enr_4year
+_s_controls:    i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+_peer_a_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_eth_asian_pct peer_eth
+> _hispanic_pct peer_eth_black_pct
+                peer_educ_hs_dropout_prop peer_educ_deg_4year_plus_prop peer_po
+> v_fam_child_lt18_pct peer_inc_median_hh
+_a_controls:    eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh
+_peer_l_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled peer_loscore
+_l_controls:    loscore
+_peer_b_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score) peer_age
+                peer_male peer_eth_asian peer_eth_hispanic peer_eth_black peer_
+> eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled
+_b_controls:    age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.
+> prior_ela_z_score)
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score)
+_d_controls:    mindist_any_nonprof_4yr mindist_ccc
+_sib_lag2_controls:
+                old2_sib_enr_2year old2_sib_enr_4year
+_sib_lag1_controls:
+                old1_sib_enr_2year old1_sib_enr_4year
+_peer_sibling_controls:
+                peer_has_older_sibling_enr_2year peer_has_older_sibling_enr_4ye
+> ar
+_sibling_controls:
+                i.has_older_sibling_enr_2year i.has_older_sibling_enr_4year
+_peer_census_controls:
+                peer_eth_asian_pct peer_eth_hispanic_pct peer_eth_black_pct pee
+> r_educ_hs_dropout_prop
+                peer_educ_deg_4year_plus_prop peer_pov_fam_child_lt18_pct peer_
+> inc_median_hh
+_census_controls:
+                eth_asian_pct eth_hispanic_pct eth_black_pct educ_hs_dropout_pr
+> op educ_deg_4year_plus_prop
+                pov_fam_child_lt18_pct inc_median_hh
+_census_grade:  6
+_va_control_vars:
+                age male eth_asian eth_hispanic eth_black eth_other econ_disadv
+> antage limited_eng_prof disabled
+_peer_demographic_controls:
+                peer_age peer_male peer_eth_asian peer_eth_hispanic peer_eth_bl
+> ack peer_eth_other peer_econ_disadvantage
+                peer_limited_eng_prof peer_disabled
+_peer_math_score_controls:
+                i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c
+> .peer_prior_math_z_score)
+_peer_ela_score_controls:
+                i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.p
+> eer_prior_ela_z_score)
+_math_score_controls:
+                i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_mat
+> h_z_score)
+_ela_scrhat_controls:
+                i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.pri
+> or_ela_z_score_hat)
+_ela_score_controls:
+                i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z
+> _score)
+_demographic_controls:
+                age i.male i.eth_asian i.eth_hispanic i.eth_black i.eth_other i
+> .econ_disadvantage i.limited_eng_prof
+                i.disabled
+_both_str:      Original + Census + Sibling
+_sib_str:       Original + Sibling
+_acs_str:       Original + Census
+_og_str:        Original Specification
+_enr_4year_str: 4-Year Enrollment
+_enr_2year_str: 2-Year Enrollment
+_enr_str:       Overall Enrollment
+_math_str:      Math
+_ela_str:       ELA
+_outcome_max_year:
+                2018
+_outcome_min_year:
+                2015
+_caaspp_max_year:
+                2019
+_caaspp_min_year:
+                2015
+_star_max_year: 2013
+_star_min_year: 2003
+_test_score_max_year:
+                2018
+_test_score_min_year:
+                2015
+_sibling_out_xwalk:
+                /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
+> ata/cleaned/siblingxwalk/sibling_out_xwal
+                > k
+_ufamilyxwalk:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/siblingxw
+> alk/ufamilyxwalk
+_siblingxwalk:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/siblingxw
+> alk/siblingpairxwalk
+_k12_test_scores_public:
+                /home/research/ca_ed_lab/projects/common_core_va/data/public_ac
+> cess/clean/k12_test_scores
+_k12_public_schools:
+                /home/research/ca_ed_lab/projects/common_core_va/data/public_ac
+> cess/clean/k12_public_schools
+_public_access: /home/research/ca_ed_lab/projects/common_core_va/data/public_ac
+> cess
+_k12_test_scores:
+                /home/research/ca_ed_lab/projects/common_core_va/data/restricte
+> d_access/clean/k12_test_scores
+_vaprojdofiles: /home/research/ca_ed_lab/projects/common_core_va/do_files" loca
+> l ca_ed_lab "/home/research/ca_ed_lab
+_home:          /home/research/ca_ed_lab/projects/common_core_va
+
+. 
+. 
+. timer on 1
+
+. *****************
+. * Begin Do File *
+. *****************
+. forvalues fall_year = 2014 (1) 2014 {
+  2.         di "Fall Year = `fall_year'"
+  3. 
+.         local fall_year_stub = substr("`fall_year'", 3, 2)
+  4. 
+.         import delimited $vaprojdir/data/public_access/raw/cde/staffdemo/Staf
+> fDemo`fall_year_stub'.txt, delimiter(tab)
+>  varnames(1) case(lower) stringcols(1 2 3) encoding("utf-8") clear
+  5.         desc, full
+  6.         codebook
+  7. 
+.         label var academicyear "Academic Year"
+  8. 
+.         label var recid "Record ID"
+  9. 
+.         label var districtcode "District Code"
+ 10. 
+.         label var countyname "County name"
+ 11. 
+.         label var districtname "District name"
+ 12. 
+.         label var gendercode "Gender"
+ 13. 
+.         label def male 1 "Male" 0 "Female"
+ 14.         gen male:male = 1 if gendercode=="M"
+ 15.         replace male = 0 if gendercode=="F"
+ 16.         replace male = . if mi(gendercode)
+ 17.         label var male "Male"
+ 18.         drop gendercode
+ 19. 
+.         label var educationlevel "Staff member's highest educational level (h
+> onorary degrees not included)"
+ 20. 
+.         label def education 1 "Doctorate"
+ 21.         label def education 2 "Master's degree plus 30 or more semester ho
+> urs", add
+ 22.         label def education 3 "Master's degree", add
+ 23.         label def education 4 "Bachelor's degree plus 30 or more semester 
+> hours", add
+ 24.         label def education 5 "Bachelor's degree", add
+ 25.         label def education 6 "Less than bachelor's degree", add
+ 26.         label def education 7 "Not reported", add
+ 27.         label def education 8 "Special", add
+ 28.         label def education 9 "Fifth year within bachelor's degree", add
+ 29.         label def education 10 "Fifth year induction", add
+ 30.         label def education 11 "Fifth year", add
+ 31.         gen education:education = 1 if educationlevel=="D"
+ 32.         replace education = 8 if educationlevel=="S"
+ 33.         replace education = 2 if educationlevel=="V"
+ 34.         replace education = 3 if educationlevel=="M"
+ 35.         replace education = 9 if educationlevel=="U"
+ 36.         replace education = 10 if educationlevel=="Y"
+ 37.         replace education = 11 if educationlevel=="F"
+ 38.         replace education = 4 if educationlevel=="C"
+ 39.         replace education = 5 if educationlevel=="B"
+ 40.         replace education = 6 if educationlevel=="A"
+ 41.         replace education = 7 if educationlevel=="N"
+ 42.         replace education = . if mi(educationlevel)
+ 43. 
+.         label def ethnicity 0 "Not Reported"
+ 44.         label def ethnicity 1 "American Indian or Alaska Native, not Hispa
+> nic", add
+ 45.         label def ethnicity 2 "Asian, not Hispanic", add
+ 46.         label def ethnicity 3 "Pacific Islander, not Hispanic", add
+ 47.         label def ethnicity 4 "Filipino, not Hispanic", add
+ 48.         label def ethnicity 5 "Hispanic or Latino", add
+ 49.         label def ethnicity 6 "African American, not Hispanic", add
+ 50.         label def ethnicity 7 "White, not Hispanic", add
+ 51.         label def ethnicity 9 "Two or More Races, not Hispanic", add
+ 52.         rename ethnicgroup ethnicity
+ 53.         label val ethnicity ethnicity
+ 54.         label var ethnicity "Staff member's racial/ethnic designation"
+ 55. 
+.         label def race 1 "American Indian or Alaska Native"
+ 56.         label def race 2 "Asian", add
+ 57.         label def race 5 "Hispanic or Latino", add
+ 58.         label def race 6 "Black or African American", add
+ 59.         label def race 7 "White", add
+ 60.         label def race 8 "Two or More Races", add
+ 61.         gen race:race = 1 if ethnicity==1
+ 62.         replace race = 2 if inlist(ethnicity, 2, 3, 4)
+ 63.         replace race = 5 if ethnicity==5
+ 64.         replace race = 6 if ethnicity==6
+ 65.         replace race = 7 if ethnicity==7
+ 66.         replace race = 8 if ethnicity==9
+ 67.         label var race "Race"
+ 68. 
+.         /*gen eth_american_indian = (race==1)
+>         replace eth_american_indian = . if mi(race)
+>         label var eth_american_indian "American Indian or Alaska Native"
+> 
+>         gen eth_asian = (race==2)
+>         replace eth_asian = . if mi(race)
+>         label var eth_asian "Asian"
+> 
+>         gen eth_hispanic = (race==5)
+>         replace eth_hispanic = . if mi(race)
+>         label var eth_hispanic "Hispanic or Latino"
+> 
+>         gen eth_black = (race==6)
+>         replace eth_black = . if mi(race)
+>         label var eth_black "Black or African American"
+> 
+>         gen eth_white = (race==7)
+>         replace eth_white = . if mi(race)
+>         label var eth_white "White"
+> 
+>         gen eth_biracial = (race==8)
+>         replace eth_biracial = . if mi(race)
+>         label var eth_biracial "Two or More Races"
+> 
+>         gen eth_other = inlist(race, 1, 8, .)
+>         label var eth_other "Other Race"*/
+. 
+.         rename yearsteaching years_teaching
+ 69.         label var years_teaching "Total years of public and/or private edu
+> cational service. Includes services in th
+> is district, other districts, other states, and countries. Does not include s
+> ubstitute teaching or classified staff se
+> rvice. The first year of service is counted as 1 year."
+ 70. 
+.         rename yearsindistrict years_district
+ 71.         label var years_district "Total years of service in a certificated
+>  position in the district. The first year
+>  of service is counted as 1 year."
+ 72. 
+.         label var employmentstatuscode "Indicates whether the teacher's posit
+> ion is tenured, probationary, or long-ter
+> m substitute or temporary employee"
+ 73. 
+.         label def employment_status 1 "Long term substitute or temporary empl
+> oyee"
+ 74.         label def employment_status 2 "Probationary", add
+ 75.         label def employment_status 3 "Tenured", add
+ 76.         label def employment_status 4 "Other", add
+ 77.         gen employment_status:employment_status = 1 if employmentstatuscod
+> e=="L"
+ 78.         replace employment_status = 2 if employmentstatuscode=="P"
+ 79.         replace employment_status = 3 if employmentstatuscode=="T"
+ 80.         replace employment_status = 4 if employmentstatuscode=="O"
+ 81.         replace employment_status = . if mi(employmentstatuscode)
+ 82.         label var employment_status "Employment Status"
+ 83. 
+.         rename fteteaching fte_teach
+ 84.         label var fte_teach "Full-time equivalent (FTE) teaching duties"
+ 85. 
+.         rename fteadministrative fte_admin
+ 86.         label var fte_admin "FTE administrative duties"
+ 87. 
+.         rename ftepupilservices fte_pupil
+ 88.         label var fte_pupil "FTE pupil services duties"
+ 89. 
+.         egen fte = rowtotal(fte_teach fte_admin fte_pupil), missing
+ 90.         label var fte "Full-Time Equivalent"
+ 91. 
+.         label var filecreated "Date that the file was created"
+ 92. 
+.         gen date_created = date(filecreated, "MDY")
+ 93.         format date_created %td
+ 94.         label var date_created "Date that the file was created"
+ 95.         drop filecreated
+ 96. 
+.         gen year = `fall_year' + 1
+ 97.         label var year "Year of Spring Semester"
+ 98. 
+.         order districtcode year recid
+ 99.         sort districtcode year recid
+100.         compress
+101.         label data "California Department of Education Spring `=`fall_year
+> ' + 1' Staff Demographics Records"
+102.         save $datadir_clean/cde/staffdemo/staffdemo_`=`fall_year' + 1'_cle
+> an.dta, replace
+103. }
+Fall Year = 2014
+(15 vars, 346,214 obs)
+
+Contains data
+ Observations:       346,214                  
+    Variables:            15                  
+-------------------------------------------------------------------------------
+> -----------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+-------------------------------------------------------------------------------
+> -----------------------------------------
+academicyear    str4    %9s                   AcademicYear
+recid           str10   %10s                  RecID
+districtcode    str7    %9s                   DistrictCode
+countyname      str15   %15s                  CountyName
+districtname    str50   %50s                  DistrictName
+gendercode      str1    %9s                   GenderCode
+educationlevel  str1    %9s                   EducationLevel
+ethnicgroup     byte    %8.0g                 EthnicGroup
+yearsteaching   byte    %8.0g                 YearsTeaching
+yearsindistrict byte    %8.0g                 YearsInDistrict
+employmentstatuscode
+                str1    %9s                   EmploymentStatusCode
+fteteaching     float   %9.0g                 FTE Teaching
+fteadministrative
+                float   %9.0g                 FTE administrative
+ftepupilservices
+                float   %9.0g                 FTE PupilServices
+filecreated     str10   %10s                  FileCreated
+-------------------------------------------------------------------------------
+> -----------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+academicyear                                                                   
+>                              AcademicYear
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str4)
+
+         Unique values: 1                         Missing "": 0/346,214
+
+            Tabulation: Freq.  Value
+                      346,214  "1415"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+recid                                                                          
+>                                     RecID
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str10)
+
+         Unique values: 341,412                   Missing "": 0/346,214
+
+              Examples: "1046349"
+                        "1123552"
+                        "1200755"
+                        "1277909"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+districtcode                                                                   
+>                              DistrictCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str7)
+
+         Unique values: 1,021                     Missing "": 0/346,214
+
+              Examples: "1964527"
+                        "1973460"
+                        "3467314"
+                        "3968593"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+countyname                                                                     
+>                                CountyName
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str15)
+
+         Unique values: 58                        Missing "": 0/346,214
+
+              Examples: "LOS ANGELES    "
+                        "LOS ANGELES    "
+                        "SACRAMENTO     "
+                        "SAN JOAQUIN    "
+
+               Warning: Variable has embedded and trailing blanks.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+districtname                                                                   
+>                              DistrictName
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str50)
+
+         Unique values: 1,009                     Missing "": 0/346,214
+
+              Examples: "Elk Grove Unified"
+                        "Los Angeles Unified"
+                        "Oak Grove Elementary"
+                        "San Jose Unified"
+
+               Warning: Variable has embedded and trailing blanks.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+gendercode                                                                     
+>                                GenderCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 2                         Missing "": 0/346,214
+
+            Tabulation: Freq.  Value
+                      253,803  "F"
+                       92,411  "M"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+educationlevel                                                                 
+>                            EducationLevel
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 11                        Missing "": 0/346,214
+
+              Examples: "C"
+                        "C"
+                        "M"
+                        "M"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+ethnicgroup                                                                    
+>                               EthnicGroup
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,9]                         Units: 1
+         Unique values: 9                         Missing .: 0/346,214
+
+            Tabulation: Freq.  Value
+                       14,033  0
+                        1,766  1
+                       18,460  2
+                        1,105  3
+                        5,267  4
+                       65,589  5
+                       14,588  6
+                      222,754  7
+                        2,652  9
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+yearsteaching                                                                  
+>                             YearsTeaching
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,66]                        Units: 1
+         Unique values: 63                        Missing .: 0/346,214
+
+                  Mean: 14.1753
+             Std. dev.: 9.18908
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              2         7        13        20        27
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+yearsindistrict                                                                
+>                           YearsInDistrict
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,66]                        Units: 1
+         Unique values: 62                        Missing .: 0/346,214
+
+                  Mean: 11.9817
+             Std. dev.: 8.60192
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              1         4        11        17        24
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+employmentstatuscode                                                           
+>                      EmploymentStatusCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 4                         Missing "": 481/346,214
+
+            Tabulation: Freq.  Value
+                          481  ""
+                       18,755  "L"
+                       33,991  "O"
+                       44,853  "P"
+                      248,134  "T"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+fteteaching                                                                    
+>                              FTE Teaching
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (float)
+
+                 Range: [0,400]                       Units: .1
+         Unique values: 481                       Missing .: 0/346,214
+
+                  Mean: 83.0309
+             Std. dev.: 37.2531
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0       100       100       100       100
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+fteadministrative                                                              
+>                        FTE administrative
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (float)
+
+                 Range: [0,700]                       Units: .1
+         Unique values: 144                       Missing .: 0/346,214
+
+                  Mean: 7.16788
+             Std. dev.: 25.7366
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0         0         0         0         0
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+ftepupilservices                                                               
+>                         FTE PupilServices
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (float)
+
+                 Range: [0,800]                       Units: .1
+         Unique values: 194                       Missing .: 0/346,214
+
+                  Mean: 7.65482
+             Std. dev.: 26.2465
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0         0         0         0         0
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+filecreated                                                                    
+>                               FileCreated
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str10)
+
+         Unique values: 1                         Missing "": 0/346,214
+
+            Tabulation: Freq.  Value
+                      346,214  "10/27/2015"
+(253,803 missing values generated)
+(253,803 real changes made)
+(0 real changes made)
+(340,974 missing values generated)
+(244 real changes made)
+(62,685 real changes made)
+(94,868 real changes made)
+(711 real changes made)
+(369 real changes made)
+(982 real changes made)
+(118,972 real changes made)
+(58,835 real changes made)
+(566 real changes made)
+(2,742 real changes made)
+(0 real changes made)
+(344,448 missing values generated)
+(24,832 real changes made)
+(65,589 real changes made)
+(14,588 real changes made)
+(222,754 real changes made)
+(2,652 real changes made)
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+(327,459 missing values generated)
+(44,853 real changes made)
+(248,134 real changes made)
+(33,991 real changes made)
+(0 real changes made)
+  variable year was float now int
+  variable male was float now byte
+  variable education was float now byte
+  variable race was float now byte
+  variable employment_status was float now byte
+  variable date_created was float now int
+  (5,539,424 bytes saved)
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> cde/staffdemo/staffdemo_2015_clean.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /cde/staffdemo/staffdemo_2015_clean.dta
+    saved
+
+. 
+. 
+. 
+. 
+. forvalues fall_year = 2015 (1) `= `test_score_max_year' - 1' {
+  2.         di "Fall Year = `fall_year'"
+  3. 
+.         local fall_year_stub = substr("`fall_year'", 3, 2)
+  4. 
+.         import delimited $vaprojdir/data/public_access/raw/cde/staffdemo/Staf
+> fDemo`fall_year_stub'.txt, delimiter(tab)
+>  varnames(1) case(lower) stringcols(1 2 3) encoding("utf-8") clear
+  5.         desc, full
+  6.         codebook
+  7. 
+.         label var academicyear "Academic Year"
+  8. 
+.         label var recid "Record ID"
+  9. 
+.         label var districtcode "District Code"
+ 10. 
+.         label var countyname "County name"
+ 11. 
+.         label var districtname "District name"
+ 12. 
+.         label var gendercode "Gender"
+ 13. 
+.         label def male 1 "Male" 0 "Female"
+ 14.         gen male:male = 1 if gendercode=="M"
+ 15.         replace male = 0 if gendercode=="F"
+ 16.         replace male = . if mi(gendercode)
+ 17.         label var male "Male"
+ 18.         drop gendercode
+ 19. 
+.         label var age "The age of the staff member on Census Day"
+ 20. 
+.         label var educationlevel "Staff member's highest educational level (h
+> onorary degrees not included)"
+ 21. 
+.         label def education 1 "Doctorate"
+ 22.         label def education 2 "Master's degree plus 30 or more semester ho
+> urs", add
+ 23.         label def education 3 "Master's degree", add
+ 24.         label def education 4 "Bachelor's degree plus 30 or more semester 
+> hours", add
+ 25.         label def education 5 "Bachelor's degree", add
+ 26.         label def education 6 "Less than bachelor's degree", add
+ 27.         label def education 7 "Not reported", add
+ 28.         label def education 8 "Special", add
+ 29.         label def education 9 "Fifth year within bachelor's degree", add
+ 30.         label def education 10 "Fifth year induction", add
+ 31.         label def education 11 "Fifth year", add
+ 32.         gen education:education = 1 if educationlevel=="D"
+ 33.         replace education = 8 if educationlevel=="S"
+ 34.         replace education = 2 if educationlevel=="V"
+ 35.         replace education = 3 if educationlevel=="M"
+ 36.         replace education = 9 if educationlevel=="U"
+ 37.         replace education = 10 if educationlevel=="Y"
+ 38.         replace education = 11 if educationlevel=="F"
+ 39.         replace education = 4 if educationlevel=="C"
+ 40.         replace education = 5 if educationlevel=="B"
+ 41.         replace education = 6 if educationlevel=="A"
+ 42.         replace education = 7 if educationlevel=="N"
+ 43.         replace education = . if mi(educationlevel)
+ 44. 
+.         label def ethnicity 0 "Not Reported"
+ 45.         label def ethnicity 1 "American Indian or Alaska Native, not Hispa
+> nic", add
+ 46.         label def ethnicity 2 "Asian, not Hispanic", add
+ 47.         label def ethnicity 3 "Pacific Islander, not Hispanic", add
+ 48.         label def ethnicity 4 "Filipino, not Hispanic", add
+ 49.         label def ethnicity 5 "Hispanic or Latino", add
+ 50.         label def ethnicity 6 "African American, not Hispanic", add
+ 51.         label def ethnicity 7 "White, not Hispanic", add
+ 52.         label def ethnicity 9 "Two or More Races, not Hispanic", add
+ 53.         rename ethnicgroup ethnicity
+ 54.         label val ethnicity ethnicity
+ 55.         label var ethnicity "Staff member's racial/ethnic designation"
+ 56. 
+.         label def race 1 "American Indian or Alaska Native"
+ 57.         label def race 2 "Asian", add
+ 58.         label def race 5 "Hispanic or Latino", add
+ 59.         label def race 6 "Black or African American", add
+ 60.         label def race 7 "White", add
+ 61.         label def race 8 "Two or More Races", add
+ 62.         gen race:race = 1 if ethnicity==1
+ 63.         replace race = 2 if inlist(ethnicity, 2, 3, 4)
+ 64.         replace race = 5 if ethnicity==5
+ 65.         replace race = 6 if ethnicity==6
+ 66.         replace race = 7 if ethnicity==7
+ 67.         replace race = 8 if ethnicity==9
+ 68.         label var race "Race"
+ 69. 
+.         gen eth_american_indian = (race==1)
+ 70.         replace eth_american_indian = . if mi(race)
+ 71.         label var eth_american_indian "American Indian or Alaska Native"
+ 72. 
+.         gen eth_asian = (race==2)
+ 73.         replace eth_asian = . if mi(race)
+ 74.         label var eth_asian "Asian"
+ 75. 
+.         gen eth_hispanic = (race==5)
+ 76.         replace eth_hispanic = . if mi(race)
+ 77.         label var eth_hispanic "Hispanic or Latino"
+ 78. 
+.         gen eth_black = (race==6)
+ 79.         replace eth_black = . if mi(race)
+ 80.         label var eth_black "Black or African American"
+ 81. 
+.         gen eth_white = (race==7)
+ 82.         replace eth_white = . if mi(race)
+ 83.         label var eth_white "White"
+ 84. 
+.         gen eth_biracial = (race==8)
+ 85.         replace eth_biracial = . if mi(race)
+ 86.         label var eth_biracial "Two or More Races"
+ 87. 
+.         gen eth_other = inlist(race, 1, 8, .)
+ 88.         label var eth_other "Other Race"
+ 89. 
+.         rename yearsteaching years_teaching
+ 90.         label var years_teaching "Total years of public and/or private edu
+> cational service. Includes services in th
+> is district, other districts, other states, and countries. Does not include s
+> ubstitute teaching or classified staff se
+> rvice. The first year of service is counted as 1 year."
+ 91. 
+.         rename yearsindistrict years_district
+ 92.         label var years_district "Total years of service in a certificated
+>  position in the district. The first year
+>  of service is counted as 1 year."
+ 93. 
+.         label var employmentstatuscode "Indicates whether the teacher's posit
+> ion is tenured, probationary, or long-ter
+> m substitute or temporary employee"
+ 94. 
+.         label def employment_status 1 "Long term substitute or temporary empl
+> oyee"
+ 95.         label def employment_status 2 "Probationary", add
+ 96.         label def employment_status 3 "Tenured", add
+ 97.         label def employment_status 4 "Other", add
+ 98.         gen employment_status:employment_status = 1 if employmentstatuscod
+> e=="L"
+ 99.         replace employment_status = 2 if employmentstatuscode=="P"
+100.         replace employment_status = 3 if employmentstatuscode=="T"
+101.         replace employment_status = 4 if employmentstatuscode=="O"
+102.         replace employment_status = . if mi(employmentstatuscode)
+103.         label var employment_status "Employment Status"
+104. 
+.         rename fteteaching fte_teach
+105.         label var fte_teach "Full-time equivalent (FTE) teaching duties"
+106. 
+.         rename fteadministrative fte_admin
+107.         label var fte_admin "FTE administrative duties"
+108. 
+.         rename ftepupilservices fte_pupil
+109.         label var fte_pupil "FTE pupil services duties"
+110. 
+.         label var filecreated "Date that the file was created"
+111. 
+.         gen date_created = date(filecreated, "MDY")
+112.         format date_created %td
+113.         label var date_created "Date that the file was created"
+114.         drop filecreated
+115. 
+.         gen year = `fall_year' + 1
+116.         label var year "Year of Spring Semester"
+117. 
+.         order districtcode year recid
+118.         sort districtcode year recid
+119.         compress
+120.         label data "California Department of Education Spring `=`fall_year
+> ' + 1' Staff Demographics Records"
+121.         save $datadir_clean/cde/staffdemo/staffdemo_`=`fall_year' + 1'_cle
+> an.dta, replace
+122. }
+Fall Year = 2015
+(16 vars, 352,599 obs)
+
+Contains data
+ Observations:       352,599                  
+    Variables:            16                  
+-------------------------------------------------------------------------------
+> -----------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+-------------------------------------------------------------------------------
+> -----------------------------------------
+academicyear    str4    %9s                   AcademicYear
+recid           str10   %10s                  RecID
+districtcode    str7    %9s                   DistrictCode
+countyname      str15   %15s                  CountyName
+districtname    str50   %50s                  DistrictName
+gendercode      str1    %9s                   GenderCode
+age             byte    %8.0g                 
+educationlevel  str1    %9s                   EducationLevel
+ethnicgroup     byte    %8.0g                 EthnicGroup
+yearsteaching   byte    %8.0g                 YearsTeaching
+yearsindistrict byte    %8.0g                 YearsInDistrict
+employmentstatuscode
+                str1    %9s                   EmploymentStatusCode
+fteteaching     int     %8.0g                 FTE Teaching
+fteadministrative
+                int     %8.0g                 FTE administrative
+ftepupilservices
+                int     %8.0g                 FTE PupilServices
+filecreated     str10   %10s                  FileCreated
+-------------------------------------------------------------------------------
+> -----------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+academicyear                                                                   
+>                              AcademicYear
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str4)
+
+         Unique values: 1                         Missing "": 0/352,599
+
+            Tabulation: Freq.  Value
+                      352,599  "1516"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+recid                                                                          
+>                                     RecID
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str10)
+
+         Unique values: 347,353                   Missing "": 0/352,599
+
+              Examples: "1024422"
+                        "1107178"
+                        "1189871"
+                        "1272398"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+districtcode                                                                   
+>                              DistrictCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str7)
+
+         Unique values: 1,022                     Missing "": 0/352,599
+
+              Examples: "1964527"
+                        "1975309"
+                        "3467314"
+                        "3968585"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+countyname                                                                     
+>                                CountyName
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str15)
+
+         Unique values: 58                        Missing "": 0/352,599
+
+              Examples: "LOS ANGELES    "
+                        "LOS ANGELES    "
+                        "SACRAMENTO     "
+                        "SAN JOAQUIN    "
+
+               Warning: Variable has embedded and trailing blanks.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+districtname                                                                   
+>                              DistrictName
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str50)
+
+         Unique values: 1,010                     Missing "": 0/352,599
+
+              Examples: "Elk Grove Unified"
+                        "Los Angeles Unified"
+                        "Oak Grove Elementary"
+                        "San Joaquin County Office of Education"
+
+               Warning: Variable has embedded and trailing blanks.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+gendercode                                                                     
+>                                GenderCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 2                         Missing "": 0/352,599
+
+            Tabulation: Freq.  Value
+                      259,009  "F"
+                       93,590  "M"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+age                                                                            
+>                               (unlabeled)
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [4,87]                        Units: 1
+         Unique values: 72                        Missing .: 0/352,599
+
+                  Mean: 44.4631
+             Std. dev.: 10.9596
+
+           Percentiles:     10%       25%       50%       75%       90%
+                             30        36        44        53        59
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+educationlevel                                                                 
+>                            EducationLevel
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 11                        Missing "": 0/352,599
+
+              Examples: "C"
+                        "C"
+                        "M"
+                        "M"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+ethnicgroup                                                                    
+>                               EthnicGroup
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,9]                         Units: 1
+         Unique values: 9                         Missing .: 0/352,599
+
+            Tabulation: Freq.  Value
+                       11,712  0
+                        1,849  1
+                       19,588  2
+                        1,154  3
+                        5,547  4
+                       58,084  5
+                       15,334  6
+                      236,515  7
+                        2,816  9
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+yearsteaching                                                                  
+>                             YearsTeaching
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [1,99]                        Units: 1
+         Unique values: 62                        Missing .: 0/352,599
+
+                  Mean: 13.9818
+             Std. dev.: 9.23623
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              2         6        13        20        27
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+yearsindistrict                                                                
+>                           YearsInDistrict
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [1,62]                        Units: 1
+         Unique values: 60                        Missing .: 0/352,599
+
+                  Mean: 11.7966
+             Std. dev.: 8.70491
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              1         4        11        18        24
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+employmentstatuscode                                                           
+>                      EmploymentStatusCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 4                         Missing "": 610/352,599
+
+            Tabulation: Freq.  Value
+                          610  ""
+                       19,759  "L"
+                       37,365  "O"
+                       52,027  "P"
+                      242,838  "T"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+fteteaching                                                                    
+>                              FTE Teaching
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,610]                       Units: 1
+         Unique values: 175                       Missing .: 0/352,599
+
+                  Mean: 82.2405
+             Std. dev.: 37.3479
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0       100       100       100       100
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+fteadministrative                                                              
+>                        FTE administrative
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,1200]                      Units: 1
+         Unique values: 117                       Missing .: 0/352,599
+
+                  Mean: 6.89157
+             Std. dev.: 25.2623
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0         0         0         0         0
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+ftepupilservices                                                               
+>                         FTE PupilServices
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,1000]                      Units: 1
+         Unique values: 139                       Missing .: 0/352,599
+
+                  Mean: 7.88655
+             Std. dev.: 26.7596
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0         0         0         0         0
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+filecreated                                                                    
+>                               FileCreated
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str10)
+
+         Unique values: 1                         Missing "": 0/352,599
+
+            Tabulation: Freq.  Value
+                      352,599  "05/17/2017"
+(259,009 missing values generated)
+(259,009 real changes made)
+(0 real changes made)
+(347,916 missing values generated)
+(275 real changes made)
+(62,089 real changes made)
+(97,597 real changes made)
+(667 real changes made)
+(494 real changes made)
+(979 real changes made)
+(115,375 real changes made)
+(65,517 real changes made)
+(881 real changes made)
+(4,042 real changes made)
+(0 real changes made)
+(350,750 missing values generated)
+(26,289 real changes made)
+(58,084 real changes made)
+(15,334 real changes made)
+(236,515 real changes made)
+(2,816 real changes made)
+(11,712 real changes made, 11,712 to missing)
+(11,712 real changes made, 11,712 to missing)
+(11,712 real changes made, 11,712 to missing)
+(11,712 real changes made, 11,712 to missing)
+(11,712 real changes made, 11,712 to missing)
+(11,712 real changes made, 11,712 to missing)
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+(332,840 missing values generated)
+(52,027 real changes made)
+(242,838 real changes made)
+(37,365 real changes made)
+(0 real changes made)
+  variable year was float now int
+  variable male was float now byte
+  variable education was float now byte
+  variable race was float now byte
+  variable eth_american_indian was float now byte
+  variable eth_asian was float now byte
+  variable eth_hispanic was float now byte
+  variable eth_black was float now byte
+  variable eth_white was float now byte
+  variable eth_biracial was float now byte
+  variable eth_other was float now byte
+  variable employment_status was float now byte
+  variable date_created was float now int
+  (13,046,163 bytes saved)
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> cde/staffdemo/staffdemo_2016_clean.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /cde/staffdemo/staffdemo_2016_clean.dta
+    saved
+Fall Year = 2016
+(16 vars, 359,889 obs)
+
+Contains data
+ Observations:       359,889                  
+    Variables:            16                  
+-------------------------------------------------------------------------------
+> -----------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+-------------------------------------------------------------------------------
+> -----------------------------------------
+academicyear    str4    %9s                   AcademicYear
+recid           str10   %10s                  RecID
+districtcode    str7    %9s                   DistrictCode
+countyname      str15   %15s                  CountyName
+districtname    str50   %50s                  DistrictName
+gendercode      str1    %9s                   GenderCode
+age             byte    %8.0g                 Age
+educationlevel  str1    %9s                   EducationLevel
+ethnicgroup     byte    %8.0g                 EthnicGroup
+yearsteaching   byte    %8.0g                 YearsTeaching
+yearsindistrict byte    %8.0g                 YearsInDistrict
+employmentstatuscode
+                str1    %9s                   EmploymentStatusCode
+fteteaching     int     %8.0g                 FTE Teaching
+fteadministrative
+                int     %8.0g                 FTE administrative
+ftepupilservices
+                int     %8.0g                 FTE PupilServices
+filecreated     str10   %10s                  FileCreated
+-------------------------------------------------------------------------------
+> -----------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+academicyear                                                                   
+>                              AcademicYear
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str4)
+
+         Unique values: 1                         Missing "": 0/359,889
+
+            Tabulation: Freq.  Value
+                      359,889  "1617"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+recid                                                                          
+>                                     RecID
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str10)
+
+         Unique values: 353,542                   Missing "": 0/359,889
+
+              Examples: "1002820"
+                        "1090973"
+                        "1179395"
+                        "1267372"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+districtcode                                                                   
+>                              DistrictCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str7)
+
+         Unique values: 1,020                     Missing "": 0/359,889
+
+              Examples: "1964519"
+                        "1975291"
+                        "3467314"
+                        "3968585"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+countyname                                                                     
+>                                CountyName
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str15)
+
+         Unique values: 58                        Missing "": 0/359,889
+
+              Examples: "LOS ANGELES    "
+                        "LOS ANGELES    "
+                        "SACRAMENTO     "
+                        "SAN JOAQUIN    "
+
+               Warning: Variable has embedded and trailing blanks.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+districtname                                                                   
+>                              DistrictName
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str50)
+
+         Unique values: 1,008                     Missing "": 0/359,889
+
+              Examples: "Elk Grove Unified"
+                        "Los Angeles Unified"
+                        "Oak Grove Union Elementary"
+                        "San Jose Unified"
+
+               Warning: Variable has embedded and trailing blanks.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+gendercode                                                                     
+>                                GenderCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 2                         Missing "": 0/359,889
+
+            Tabulation: Freq.  Value
+                      264,953  "F"
+                       94,936  "M"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+age                                                                            
+>                                       Age
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [17,88]                       Units: 1
+         Unique values: 72                        Missing .: 0/359,889
+
+                  Mean: 44.4376
+             Std. dev.: 10.9829
+
+           Percentiles:     10%       25%       50%       75%       90%
+                             30        36        44        53        59
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+educationlevel                                                                 
+>                            EducationLevel
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 11                        Missing "": 0/359,889
+
+              Examples: "C"
+                        "C"
+                        "M"
+                        "M"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+ethnicgroup                                                                    
+>                               EthnicGroup
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,9]                         Units: 1
+         Unique values: 9                         Missing .: 0/359,889
+
+            Tabulation: Freq.  Value
+                       12,945  0
+                        1,775  1
+                       20,083  2
+                        1,156  3
+                        5,617  4
+                       74,117  5
+                       15,662  6
+                      225,456  7
+                        3,078  9
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+yearsteaching                                                                  
+>                             YearsTeaching
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [1,93]                        Units: 1
+         Unique values: 68                        Missing .: 0/359,889
+
+                  Mean: 13.9365
+             Std. dev.: 9.34589
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              2         6        13        20        27
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+yearsindistrict                                                                
+>                           YearsInDistrict
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [1,63]                        Units: 1
+         Unique values: 58                        Missing .: 0/359,889
+
+                  Mean: 11.717
+             Std. dev.: 8.8617
+
+           Percentiles:    10%       25%       50%       75%       90%
+                             1         3        11        18        24
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+employmentstatuscode                                                           
+>                      EmploymentStatusCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 4                         Missing "": 701/359,889
+
+            Tabulation: Freq.  Value
+                          701  ""
+                       19,585  "L"
+                       40,837  "O"
+                       55,473  "P"
+                      243,293  "T"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+fteteaching                                                                    
+>                              FTE Teaching
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,300]                       Units: 1
+         Unique values: 163                       Missing .: 0/359,889
+
+                  Mean: 82.1646
+             Std. dev.: 37.8148
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0       100       100       100       100
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+fteadministrative                                                              
+>                        FTE administrative
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,500]                       Units: 1
+         Unique values: 121                       Missing .: 0/359,889
+
+                  Mean: 7.11378
+             Std. dev.: 25.6172
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0         0         0         0         0
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+ftepupilservices                                                               
+>                         FTE PupilServices
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,366]                       Units: 1
+         Unique values: 131                       Missing .: 0/359,889
+
+                  Mean: 8.15268
+             Std. dev.: 26.9781
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0         0         0         0         0
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+filecreated                                                                    
+>                               FileCreated
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str10)
+
+         Unique values: 1                         Missing "": 0/359,889
+
+            Tabulation: Freq.  Value
+                      359,889  "01/16/2018"
+(264,953 missing values generated)
+(264,953 real changes made)
+(0 real changes made)
+(355,058 missing values generated)
+(375 real changes made)
+(61,558 real changes made)
+(101,881 real changes made)
+(693 real changes made)
+(487 real changes made)
+(906 real changes made)
+(112,825 real changes made)
+(69,508 real changes made)
+(1,098 real changes made)
+(5,727 real changes made)
+(0 real changes made)
+(358,114 missing values generated)
+(26,856 real changes made)
+(74,117 real changes made)
+(15,662 real changes made)
+(225,456 real changes made)
+(3,078 real changes made)
+(12,945 real changes made, 12,945 to missing)
+(12,945 real changes made, 12,945 to missing)
+(12,945 real changes made, 12,945 to missing)
+(12,945 real changes made, 12,945 to missing)
+(12,945 real changes made, 12,945 to missing)
+(12,945 real changes made, 12,945 to missing)
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+(340,304 missing values generated)
+(55,473 real changes made)
+(243,293 real changes made)
+(40,837 real changes made)
+(0 real changes made)
+  variable year was float now int
+  variable male was float now byte
+  variable education was float now byte
+  variable race was float now byte
+  variable eth_american_indian was float now byte
+  variable eth_asian was float now byte
+  variable eth_hispanic was float now byte
+  variable eth_black was float now byte
+  variable eth_white was float now byte
+  variable eth_biracial was float now byte
+  variable eth_other was float now byte
+  variable employment_status was float now byte
+  variable date_created was float now int
+  (13,315,893 bytes saved)
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> cde/staffdemo/staffdemo_2017_clean.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /cde/staffdemo/staffdemo_2017_clean.dta
+    saved
+Fall Year = 2017
+(16 vars, 361,718 obs)
+
+Contains data
+ Observations:       361,718                  
+    Variables:            16                  
+-------------------------------------------------------------------------------
+> -----------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+-------------------------------------------------------------------------------
+> -----------------------------------------
+academicyear    str4    %9s                   AcademicYear
+recid           str10   %10s                  RecID
+districtcode    str7    %9s                   DistrictCode
+countyname      str15   %15s                  CountyName
+districtname    str50   %50s                  DistrictName
+gendercode      str1    %9s                   GenderCode
+age             byte    %8.0g                 Age
+educationlevel  str1    %9s                   EducationLevel
+ethnicgroup     byte    %8.0g                 EthnicGroup
+yearsteaching   byte    %8.0g                 YearsTeaching
+yearsindistrict byte    %8.0g                 YearsInDistrict
+employmentstatuscode
+                str1    %9s                   EmploymentStatusCode
+fteteaching     int     %8.0g                 FTE Teaching
+fteadministrative
+                int     %8.0g                 FTE administrative
+ftepupilservices
+                int     %8.0g                 FTE PupilServices
+filecreated     str10   %10s                  FileCreated
+-------------------------------------------------------------------------------
+> -----------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+academicyear                                                                   
+>                              AcademicYear
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str4)
+
+         Unique values: 1                         Missing "": 0/361,718
+
+            Tabulation: Freq.  Value
+                      361,718  "1718"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+recid                                                                          
+>                                     RecID
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str10)
+
+         Unique values: 354,806                   Missing "": 0/361,718
+
+              Examples: "1000441211"
+                        "1075894"
+                        "1169123"
+                        "1262238"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+districtcode                                                                   
+>                              DistrictCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str7)
+
+         Unique values: 1,023                     Missing "": 0/361,718
+
+              Examples: "1964519"
+                        "1975333"
+                        "3467314"
+                        "3968585"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+countyname                                                                     
+>                                CountyName
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str15)
+
+         Unique values: 58                        Missing "": 0/361,718
+
+              Examples: "LOS ANGELES    "
+                        "LOS ANGELES    "
+                        "SACRAMENTO     "
+                        "SAN JOAQUIN    "
+
+               Warning: Variable has embedded and trailing blanks.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+districtname                                                                   
+>                              DistrictName
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str50)
+
+         Unique values: 1,011                     Missing "": 0/361,718
+
+              Examples: "Elk Grove Unified"
+                        "Los Angeles Unified"
+                        "Oakland Unified"
+                        "San Jose Unified"
+
+               Warning: Variable has embedded and trailing blanks.
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+gendercode                                                                     
+>                                GenderCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 2                         Missing "": 0/361,718
+
+            Tabulation: Freq.  Value
+                      266,536  "F"
+                       95,182  "M"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+age                                                                            
+>                                       Age
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [17,88]                       Units: 1
+         Unique values: 72                        Missing .: 0/361,718
+
+                  Mean: 44.4107
+             Std. dev.: 10.9556
+
+           Percentiles:     10%       25%       50%       75%       90%
+                             30        36        44        53        59
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+educationlevel                                                                 
+>                            EducationLevel
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 11                        Missing "": 0/361,718
+
+              Examples: "B"
+                        "C"
+                        "M"
+                        "M"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+ethnicgroup                                                                    
+>                               EthnicGroup
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [0,9]                         Units: 1
+         Unique values: 9                         Missing .: 0/361,718
+
+            Tabulation: Freq.  Value
+                       15,523  0
+                        1,808  1
+                       20,558  2
+                        1,092  3
+                        5,751  4
+                       76,116  5
+                       15,476  6
+                      222,050  7
+                        3,344  9
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+yearsteaching                                                                  
+>                             YearsTeaching
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [1,94]                        Units: 1
+         Unique values: 68                        Missing .: 0/361,718
+
+                  Mean: 13.9814
+             Std. dev.: 9.37561
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              2         5        13        20        27
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+yearsindistrict                                                                
+>                           YearsInDistrict
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (byte)
+
+                 Range: [1,61]                        Units: 1
+         Unique values: 59                        Missing .: 0/361,718
+
+                  Mean: 11.7462
+             Std. dev.: 8.94522
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              1         3        11        18        24
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+employmentstatuscode                                                           
+>                      EmploymentStatusCode
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str1)
+
+         Unique values: 4                         Missing "": 780/361,718
+
+            Tabulation: Freq.  Value
+                          780  ""
+                       18,951  "L"
+                       41,803  "O"
+                       57,992  "P"
+                      242,192  "T"
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+fteteaching                                                                    
+>                              FTE Teaching
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,400]                       Units: 1
+         Unique values: 161                       Missing .: 0/361,718
+
+                  Mean:  81.684
+             Std. dev.: 37.9362
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0       100       100       100       100
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+fteadministrative                                                              
+>                        FTE administrative
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,400]                       Units: 1
+         Unique values: 124                       Missing .: 0/361,718
+
+                  Mean: 7.02151
+             Std. dev.:  25.405
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0         0         0         0         0
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+ftepupilservices                                                               
+>                         FTE PupilServices
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: Numeric (int)
+
+                 Range: [0,800]                       Units: 1
+         Unique values: 142                       Missing .: 0/361,718
+
+                  Mean: 8.32154
+             Std. dev.: 27.3455
+
+           Percentiles:     10%       25%       50%       75%       90%
+                              0         0         0         0         0
+
+-------------------------------------------------------------------------------
+> -----------------------------------------
+filecreated                                                                    
+>                               FileCreated
+-------------------------------------------------------------------------------
+> -----------------------------------------
+
+                  Type: String (str10)
+
+         Unique values: 1                         Missing "": 0/361,718
+
+            Tabulation: Freq.  Value
+                      361,718  "06/20/2018"
+(266,536 missing values generated)
+(266,536 real changes made)
+(0 real changes made)
+(356,345 missing values generated)
+(420 real changes made)
+(47,667 real changes made)
+(119,224 real changes made)
+(630 real changes made)
+(521 real changes made)
+(587 real changes made)
+(96,818 real changes made)
+(84,893 real changes made)
+(675 real changes made)
+(4,910 real changes made)
+(0 real changes made)
+(359,910 missing values generated)
+(27,401 real changes made)
+(76,116 real changes made)
+(15,476 real changes made)
+(222,050 real changes made)
+(3,344 real changes made)
+(15,523 real changes made, 15,523 to missing)
+(15,523 real changes made, 15,523 to missing)
+(15,523 real changes made, 15,523 to missing)
+(15,523 real changes made, 15,523 to missing)
+(15,523 real changes made, 15,523 to missing)
+(15,523 real changes made, 15,523 to missing)
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+(342,767 missing values generated)
+(57,992 real changes made)
+(242,192 real changes made)
+(41,803 real changes made)
+(0 real changes made)
+  variable year was float now int
+  variable male was float now byte
+  variable education was float now byte
+  variable race was float now byte
+  variable eth_american_indian was float now byte
+  variable eth_asian was float now byte
+  variable eth_hispanic was float now byte
+  variable eth_black was float now byte
+  variable eth_white was float now byte
+  variable eth_biracial was float now byte
+  variable eth_other was float now byte
+  variable employment_status was float now byte
+  variable date_created was float now int
+  (13,383,566 bytes saved)
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> cde/staffdemo/staffdemo_2018_clean.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /cde/staffdemo/staffdemo_2018_clean.dta
+    saved
+
+. 
+. 
+. timer off 1
+
+. timer list
+   1:     42.99 /        1 =      42.9900
+
+. cap log close clean_staffdemo

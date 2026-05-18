@@ -1,0 +1,394 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  k12_postsec_distances
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/k12_postsec_distance/k12_postse
+> c_distances.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:03:45
+
+. 
+. 
+. net install geodist, from(http://fmwww.bc.edu/RePEc/bocode/g) replace
+checking geodist consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. ssc install opencagegeo, replace
+checking opencagegeo consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. clear
+
+. 
+. ********************************
+. * Step 1: Read in raw data
+. ********************************
+. 
+. /* (1a) Higher ed: raw data is the "Directory Information" IPEDS file and was
+>  downloaded 3/20/23 from https://nces.ed.
+> gov/ipeds/datacenter/DataFiles.aspx?gotoReportId=7&fromIpeds=true
+> */
+. 
+. run $consolidated_dir/do/data_prep/k12_postsec_distance/hd2021
+
+. keep if stabbr=="CA"
+(5,590 observations deleted)
+
+. drop if c21ugprf==0 /* graduate ed exclusive */
+(62 observations deleted)
+
+. keep if pseflag==1 /* only active in 2021 */
+(8 observations deleted)
+
+. drop if iclevel==3 /* drop the less than 2 years institutions */
+(198 observations deleted)
+
+. drop if instcat==6 /* not degree granting */
+(17 observations deleted)
+
+. drop if c18basic==10 & control==1 /* drop 2 public health focussed institutio
+> ns */
+(2 observations deleted)
+
+. tab iclevel control
+
+                      |      Control of institution
+ Level of institution |    Public  Private n  Private f |     Total
+----------------------+---------------------------------+----------
+   Four or more years |        56        112         65 |       233 
+At least 2 but less t |       112          5         62 |       179 
+----------------------+---------------------------------+----------
+                Total |       168        117        127 |       412 
+
+. tab sector
+
+                  Sector of institution |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+                    Administrative Unit |         23        5.58        5.58
+                Public, 4-year or above |         47       11.41       16.99
+Private not-for-profit, 4-year or above |        112       27.18       44.17
+    Private for-profit, 4-year or above |         64       15.53       59.71
+                         Public, 2-year |        100       24.27       83.98
+         Private not-for-profit, 2-year |          5        1.21       85.19
+             Private for-profit, 2-year |         61       14.81      100.00
+----------------------------------------+-----------------------------------
+                                  Total |        412      100.00
+
+. drop if sector==0 /* admin unit */
+(23 observations deleted)
+
+. tab iclevel control
+
+                      |      Control of institution
+ Level of institution |    Public  Private n  Private f |     Total
+----------------------+---------------------------------+----------
+   Four or more years |        47        112         64 |       223 
+At least 2 but less t |       100          5         61 |       166 
+----------------------+---------------------------------+----------
+                Total |       147        117        125 |       389 
+
+. 
+. gen csu=(f1sysnam=="California State University")
+
+. count if csu==1
+  23
+
+. assert r(N)==23
+
+. gen uc=(f1sysnam=="University of California")
+
+. gen pub4yr=(csu==1 | uc==1)
+
+. count if uc==1
+  9
+
+. assert r(N)==9
+
+. 
+. tab instnm if uc==0 & csu==0 & control==1
+
+              Institution (entity) name |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+                  Allan Hancock College |          1        0.87        0.87
+                 American River College |          1        0.87        1.74
+Antelope Valley Community College Dis.. |          1        0.87        2.61
+                    Bakersfield College |          1        0.87        3.48
+              Barstow Community College |          1        0.87        4.35
+                  Berkeley City College |          1        0.87        5.22
+                          Butte College |          1        0.87        6.09
+                       Cabrillo College |          1        0.87        6.96
+                         Canada College |          1        0.87        7.83
+                       Cerritos College |          1        0.87        8.70
+           Cerro Coso Community College |          1        0.87        9.57
+                         Chabot College |          1        0.87       10.43
+                        Chaffey College |          1        0.87       11.30
+                         Citrus College |          1        0.87       12.17
+          City College of San Francisco |          1        0.87       13.04
+               Clovis Community College |          1        0.87       13.91
+            Coastline Community College |          1        0.87       14.78
+                     College of Alameda |          1        0.87       15.65
+                       College of Marin |          1        0.87       16.52
+                   College of San Mateo |          1        0.87       17.39
+                 College of the Canyons |          1        0.87       18.26
+                  College of the Desert |          1        0.87       19.13
+                College of the Redwoods |          1        0.87       20.00
+                College of the Sequoias |          1        0.87       20.87
+               College of the Siskiyous |          1        0.87       21.74
+                       Columbia College |          1        0.87       22.61
+                        Compton College |          1        0.87       23.48
+                   Contra Costa College |          1        0.87       24.35
+      Copper Mountain Community College |          1        0.87       25.22
+                 Cosumnes River College |          1        0.87       26.09
+                  Crafton Hills College |          1        0.87       26.96
+                         Cuesta College |          1        0.87       27.83
+                       Cuyamaca College |          1        0.87       28.70
+                        Cypress College |          1        0.87       29.57
+                        De Anza College |          1        0.87       30.43
+                  Diablo Valley College |          1        0.87       31.30
+               East Los Angeles College |          1        0.87       32.17
+   El Camino Community College District |          1        0.87       33.04
+               Evergreen Valley College |          1        0.87       33.91
+Feather River Community College Distr.. |          1        0.87       34.78
+                    Folsom Lake College |          1        0.87       35.65
+                       Foothill College |          1        0.87       36.52
+                    Fresno City College |          1        0.87       37.39
+                      Fullerton College |          1        0.87       38.26
+                        Gavilan College |          1        0.87       39.13
+             Glendale Community College |          1        0.87       40.00
+                    Golden West College |          1        0.87       40.87
+                      Grossmont College |          1        0.87       41.74
+                       Hartnell College |          1        0.87       42.61
+                Imperial Valley College |          1        0.87       43.48
+                  Irvine Valley College |          1        0.87       44.35
+           Lake Tahoe Community College |          1        0.87       45.22
+                          Laney College |          1        0.87       46.09
+                    Las Positas College |          1        0.87       46.96
+               Lassen Community College |          1        0.87       47.83
+                Long Beach City College |          1        0.87       48.70
+               Los Angeles City College |          1        0.87       49.57
+             Los Angeles Harbor College |          1        0.87       50.43
+            Los Angeles Mission College |          1        0.87       51.30
+             Los Angeles Pierce College |          1        0.87       52.17
+          Los Angeles Southwest College |          1        0.87       53.04
+    Los Angeles Trade Technical College |          1        0.87       53.91
+             Los Angeles Valley College |          1        0.87       54.78
+                    Los Medanos College |          1        0.87       55.65
+               Madera Community College |          1        0.87       56.52
+                      Mendocino College |          1        0.87       57.39
+                         Merced College |          1        0.87       58.26
+                        Merritt College |          1        0.87       59.13
+                      MiraCosta College |          1        0.87       60.00
+                        Mission College |          1        0.87       60.87
+                 Modesto Junior College |          1        0.87       61.74
+             Monterey Peninsula College |          1        0.87       62.61
+                       Moorpark College |          1        0.87       63.48
+                  Moreno Valley College |          1        0.87       64.35
+                 Mt San Antonio College |          1        0.87       65.22
+Mt San Jacinto Community College Dist.. |          1        0.87       66.09
+                    Napa Valley College |          1        0.87       66.96
+                          Norco College |          1        0.87       67.83
+                         Ohlone College |          1        0.87       68.70
+                   Orange Coast College |          1        0.87       69.57
+                         Oxnard College |          1        0.87       70.43
+                     Palo Verde College |          1        0.87       71.30
+                        Palomar College |          1        0.87       72.17
+                  Pasadena City College |          1        0.87       73.04
+                    Porterville College |          1        0.87       73.91
+                        Reedley College |          1        0.87       74.78
+                      Rio Hondo College |          1        0.87       75.65
+                 Riverside City College |          1        0.87       76.52
+                Sacramento City College |          1        0.87       77.39
+                     Saddleback College |          1        0.87       78.26
+          San Bernardino Valley College |          1        0.87       79.13
+                 San Diego City College |          1        0.87       80.00
+                 San Diego Mesa College |          1        0.87       80.87
+              San Diego Miramar College |          1        0.87       81.74
+              San Joaquin Delta College |          1        0.87       82.61
+                  San Jose City College |          1        0.87       83.48
+                      Santa Ana College |          1        0.87       84.35
+             Santa Barbara City College |          1        0.87       85.22
+                   Santa Monica College |          1        0.87       86.09
+              Santa Rosa Junior College |          1        0.87       86.96
+                Santiago Canyon College |          1        0.87       87.83
+                         Shasta College |          1        0.87       88.70
+                         Sierra College |          1        0.87       89.57
+                        Skyline College |          1        0.87       90.43
+               Solano Community College |          1        0.87       91.30
+                   Southwestern College |          1        0.87       92.17
+                           Taft College |          1        0.87       93.04
+                        Ventura College |          1        0.87       93.91
+                  Victor Valley College |          1        0.87       94.78
+            West Hills College-Coalinga |          1        0.87       95.65
+             West Hills College-Lemoore |          1        0.87       96.52
+               West Los Angeles College |          1        0.87       97.39
+                    West Valley College |          1        0.87       98.26
+             Woodland Community College |          1        0.87       99.13
+                           Yuba College |          1        0.87      100.00
+----------------------------------------+-----------------------------------
+                                  Total |        115      100.00
+
+. tab f1sysnam if uc==0 & csu==0 & control==1
+
+           Name of multi-institution or |
+              multi-campus organization |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+                                     -2 |         23       20.00       20.00
+    California Community College System |         79       68.70       88.70
+ Los Angeles Community College District |          7        6.09       94.78
+San Bernardino Community College Dist.. |          1        0.87       95.65
+San Mateo County Community College Di.. |          3        2.61       98.26
+        Yuba Community College District |          2        1.74      100.00
+----------------------------------------+-----------------------------------
+                                  Total |        115      100.00
+
+. assert r(N)==115
+
+. gen ccc=(uc==0 & csu==0 & control==1)
+
+. gen any_nonprof_4yr=(control~=3 & iclevel==1)
+
+.  *** 115 CC's, one less than 116 listed on CA CC. I think the calbright onlin
+> e is not in 2021 IPEDS??
+.  /*  any_nonprof_4yr > pub4yr = csu + uc */
+. rename longitud longitude
+
+. keep unitid instnm csu uc ccc any_nonprof_4yr pub4yr latitude longitude
+
+. gen one=1
+
+. tempfile highered
+
+. save `highered'
+file /home/tmp/St48258.000001 saved as .dta format
+
+. local hn=_N
+
+. 
+. 
+. 
+. /* (1b) K12: raw data downloaded 3/20/23 and stored as pubschls.txt. Code bel
+> ow pulls directly from url
+> */
+. 
+. // may encounter CDE server error for this webpage, in which case use data on
+>  disk
+. capture import delimited "https://www.cde.ca.gov/schooldirectory/report?rid=d
+> l1&tp=txt", clear
+
+. 
+. if _rc!=0 {
+.         import delimited $distance_dtadir/raw/pubschls.txt, clear
+. }
+
+. 
+. /* import delimited $distance_dtadir/raw/CDESchoolDirectoryExport.txt, clear 
+> */
+. 
+. 
+. tempfile allk12
+
+. save `allk12'
+file /home/tmp/St48258.000002 saved as .dta format
+
+. 
+. // keep only traditional high schools
+. /* keep if soctype=="High Schools (Public)" | soctype=="High Schools In 1 Sch
+> ool Dist. (Public)" | soctype=="Junior Hi
+> gh Schools (Public)" | soctype=="K-12 Schools (Public)" */
+. 
+. 
+. keep cdscode latitude longitude
+
+. destring latitude longitude, replace force
+latitude: contains nonnumeric characters; replaced as double
+(4769 missing values generated)
+longitude: contains nonnumeric characters; replaced as double
+(4769 missing values generated)
+
+. gen mi_geo_coord = 0
+
+. replace mi_geo_coord = 1 if mi(latitude) | mi(longitude)
+(4,769 real changes made)
+
+. 
+. /////////////////////////////////////////////////////////////////////////////
+> ///
+> /* opencagegeo if mi_geo_coord==1, key("REVOKED-2026-04-30") */
+. 
+. rename l* k12l*
+
+. gen one=1
+
+. local k12n=_N
+
+. 
+. ********************************
+. * Step 2: create all the combos of K12 and higher ed
+. ********************************
+. 
+. joinby one using `highered'
+
+. assert _N==`k12n'*`hn'
+
+. 
+. 
+. ********************************
+. * Step 3: compute distance to colleges
+. ********************************
+. 
+. geodist latitude longitude k12latitude k12longitude, gen(distance) miles
+
+. 
+. save $datadir_clean/k12_postsec_distance/clean/k12_postsec_distance, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> k12_postsec_distance/clean/k12_postsec_
+    > distance.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> k12_postsec_distance/clean/k12_postsec_
+    > distance.dta saved
+
+. 
+. foreach coll in uc csu pub4yr any_nonprof_4yr ccc {
+  2.         gen mindist_`coll'=distance if `coll'==1
+  3. }
+(7,029,981 missing values generated)
+(6,839,329 missing values generated)
+(6,716,767 missing values generated)
+(4,987,281 missing values generated)
+(5,586,473 missing values generated)
+
+. 
+. collapse (min) mindist_*, by(cdscode)
+
+. /* merge 1:1 cdscode using `allk12', keep(1 3) nogen */
+. 
+. // convert the 14 digit cdscode from float to string
+. tostring cdscode, generate(cdscodestr) format("%15.0f")
+cdscodestr generated as str14
+
+. drop cdscode
+
+. rename cdscodestr cdscode
+
+. // replace back leading zeros lost in the conversion
+. replace cdscode = "0" + cdscode if strlen(cdscode)==13
+(1,770 real changes made)
+
+. 
+. save $datadir_clean/k12_postsec_distance/clean/k12_postsec_mindistance, repla
+> ce
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> k12_postsec_distance/clean/k12_postsec_
+    > mindistance.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> k12_postsec_distance/clean/k12_postsec_
+    > mindistance.dta saved
+
+. 
+. 
+. cap log close k12_postsec_distances

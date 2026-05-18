@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------------------------------------------------
-      name:  <unnamed>
+      name:  acs_2017_gen_dict
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/acs/acs_2017_gen_dict.smcl
   log type:  text
- opened on:  17 May 2026, 21:14:35
+ opened on:  17 May 2026, 22:26:17
 
 . 
 .  di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 .  di as text "acs_2017_gen_dict.do — RUN START: `c(current_date)' `c(current_time)'"
-acs_2017_gen_dict.do — RUN START: 17 May 2026 21:14:35
+acs_2017_gen_dict.do — RUN START: 17 May 2026 22:26:17
 
 .  di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -843,11 +843,7 @@ note: label truncated to 80 characters
 426. | hc04_est_vc73     Native; born outside U.S.; Estimate; PERCENT ALLOCATED - Place of birth          |
 427. | hc04_moe_vc73     Native; born outside U.S.; Margin of Error; PERCENT ALLOCATED - Place of birth   |
      +----------------------------------------------------------------------------------------------------+
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S0601_dict.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S0601_dict.dta saved
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S0601_dict.csv not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S0601_dict.csv saved
 (encoding automatically selected: ISO-8859-1)
 (771 vars, 8,058 obs)
@@ -2149,11 +2145,7 @@ note: label truncated to 80 characters
      |----------------------------------------------------------------------------------------------------|
 771. | hc06_moe_vc85     Percent Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017  |
      +----------------------------------------------------------------------------------------------------+
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1501_dict.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1501_dict.dta saved
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1501_dict.csv not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1501_dict.csv saved
 (encoding automatically selected: ISO-8859-1)
 (603 vars, 8,058 obs)
@@ -3439,11 +3431,7 @@ note: label truncated to 80 characters
 602. | hc06_est_vc73     Female householder, no husband present  - Percent below poverty level; Estimate; |
 603. | hc06_moe_vc73     Female householder, no husband present  - Percent below poverty level; Margin of |
      +----------------------------------------------------------------------------------------------------+
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1702_dict.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1702_dict.dta saved
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1702_dict.csv not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1702_dict.csv saved
 (encoding automatically selected: ISO-8859-1)
 (131 vars, 8,058 obs)
@@ -3628,11 +3616,7 @@ note: label truncated to 80 characters
      |----------------------------------------------------------------------------------------------------|
 131. | hc04_moe_vc20     Nonfamily households; Margin of Error; PERCENT ALLOCATED - Nonfamily income in t |
      +----------------------------------------------------------------------------------------------------+
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1901_dict.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1901_dict.dta saved
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1901_dict.csv not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/acs/2017/acs_2017_S1901_dict.csv saved
 
 . 
@@ -3641,4 +3625,4 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/ac
 .    /* export delimited using $vaprojdir/data/public_access/raw/acs/subject_tables/2017/acs_2017_`subject'_dict.csv, re
 > place */
 . 
-. cap log close
+. cap log close acs_2017_gen_dict

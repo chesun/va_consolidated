@@ -1,0 +1,75 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  clean_charter
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/schl_chars/clean_charter.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:03:04
+. 
+. }
+
+. 
+. /* convert cdscode to string */
+. tostring cdscode, replace format("%14.0f")
+cdscode was double now str14
+
+. /* add leading zeros to cdscodes which are only 13 digits */
+. replace cdscode = "0" + cdscode if strlen(cdscode) == 13
+(2,394 real changes made)
+
+. 
+. /* create a dummy for charter status */
+. gen charter = .
+(25,636 missing values generated)
+
+. replace charter = 0 if charteryesno == "N"
+(23,631 real changes made)
+
+. replace charter = 1 if charteryesno == "Y"
+(2,005 real changes made)
+
+. label var charter "Charter school dummy"
+
+. 
+. /* create a dummy for public school status */
+. gen public = .
+(25,636 missing values generated)
+
+. replace public = 0 if publicyesno == "N"
+(8,705 real changes made)
+
+. replace public = 1 if publicyesno == "Y"
+(16,931 real changes made)
+
+. label var public "Public school dummy"
+
+. 
+. keep cdscode opendate closeddate fundingtype charter public 
+
+. 
+. compress 
+  variable charter was float now byte
+  variable public was float now byte
+  (153,816 bytes saved)
+
+. 
+. if c(machine_type)=="Macintosh (Intel 64-bit)" {
+.     save "data_local/charter_status.dta", replace
+. }
+
+. else {
+.     save $datadir_clean/cde/charter_status.dta, replace 
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/cde/charter_status.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /cde/charter_status.dta saved
+.     
+.     local date2 = c(current_date)
+.     local time2 = c(current_time)
+. 
+.     di "do file start time: `date1' `time1' "
+do file start time: 18 May 2026 00:03:03 
+.     di "do file end time: `date2' `time2' "
+do file end time: 18 May 2026 00:03:04 
+. 
+.     cap log close clean_charter

@@ -1,0 +1,150 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  clean_locale
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_locale.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:00:02
+
+. 
+. di as text _n "{hline 80}"
+
+--------------------------------------------------------------------------------
+
+. di as text "clean_locale.do — RUN START: `c(current_date)' `c(current_time)'"
+clean_locale.do — RUN START: 18 May 2026 00:00:02
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. set seed 1984
+
+. 
+. /* import the raw 2015-16 public school data file from NCES */
+. import excel "$vaprojdir/data/public_access/raw/nces/EDGE_GEOCODE_PUBLICSCH_1516.xlsx", firstrow case(lower) clear
+(24 vars, 102,209 obs)
+
+. 
+. /* keep only California schools */
+. keep if lstate == "CA"
+(91,783 observations deleted)
+
+. 
+. /* keep nces school id and locale type var */
+. keep ncessch locale15
+
+. rename ncessch nces_id
+
+. label var nces_id "12 digit NCES school ID"
+
+. 
+. rename locale15 locale_fine
+
+. label var locale_fine "detailed locale classification"
+
+. 
+. /* create a new var from locale variable into a coarser categorization */
+. /* 
+> The classifications include:
+> 11 = City, Large: Territory inside an urbanized area and inside a principal city with population of 250,000
+> or more.
+> 12 = City, Midsize: Territory inside an urbanized area and inside a principal city with population less than
+> 250,000 and greater than or equal to 100,000.
+> 13 = City, Small: Territory inside an urbanized area and inside a principal city with population less than
+> 100,000.
+> 21 = Suburban, Large: Territory outside a principal city and inside an urbanized area with population of
+> 250,000 or more.
+> 22 = Suburban, Midsize: Territory outside a principal city and inside an urbanized area with population
+> less than 250,000 and greater than or equal to 100,000.
+> 23 = Suburban, Small: Territory outside a principal city and inside an urbanized area with population less
+> than 100,000.
+> 31 = Town, Fringe: Territory inside an urban cluster that is less than or equal to 10 miles from an
+> urbanized area.
+> 32 = Town, Distant: Territory inside an urban cluster that is more than 10 miles and less than or equal to
+> 35 miles from an urbanized area.
+> 33 = Town, Remote: Territory inside an urban cluster that is more than 35 miles from an urbanized area.
+> 41 = Rural, Fringe: Census-defined rural territory that is less than or equal to 5 miles from an urbanized
+> area, as well as rural territory that is less than or equal to 2.5 miles from an urban cluster.
+> 42 = Rural, Distant: Census-defined rural territory that is more than 5 miles but less than or equal to 25
+> miles from an urbanized area, as well as rural territory that is more than 2.5 miles but less than or equal
+> to 10 miles from an urban cluster.
+> 43 = Rural, Remote: Census-defined rural territory that is more than 25 miles from an urbanized area
+> and is also more than 10 miles from an urban cluster.
+>  */
+. 
+. 
+. gen locale_coarse = .
+(10,426 missing values generated)
+
+. replace locale_coarse = 1 if inlist(locale_fine, "11", "12", "13")
+(4,120 real changes made)
+
+. replace locale_coarse = 2 if inlist(locale_fine, "21", "22", "23")
+(4,165 real changes made)
+
+. replace locale_coarse = 3 if inlist(locale_fine, "31", "32", "33")
+(896 real changes made)
+
+. replace locale_coarse = 4 if inlist(locale_fine, "41", "42", "43")
+(1,245 real changes made)
+
+. 
+. label var locale_coarse "coarse locale categories"
+
+. 
+. label define  local_coarse_label 1 "City" 2 "Suburban" 3 "Town" 4 "Rural"
+
+. label values locale_coarse local_coarse_label
+
+. 
+. 
+. /* create value labels for fine locale */
+. destring locale_fine, replace
+locale_fine: all characters numeric; replaced as byte
+
+. 
+. label define locale_fine_label 11 "City, large" 12 "City, Midsize" 13 "City, Small" ///
+>     21 "Suburban, Large" 22 "Suburban, Midsize" 23 "Suburban, Small" ///
+>     31 "Town, Fringe" 32 "Town, Distant" 33 "Town, Remote" ///
+>     41 "Rural, Fringe" 42 "Rural, Distant" 43 "Rural, Remote"
+
+. label values locale_fine locale_fine_label
+
+. 
+. 
+. 
+. // merge on cdscode 
+. /* Note: cdscode is unique but nces_id is not in the xwal */
+. merge 1:m nces_id using $datadir_clean/cde/cds_nces_id_xwalk.dta, nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         2,724
+        from master                        61  
+        from using                      2,663  
+
+    Matched                            10,415  
+    -----------------------------------------
+
+. drop if missing(cdscode)
+(61 observations deleted)
+
+. 
+. compress 
+  variable locale_coarse was float now byte
+  variable ncesschool was str7 now str5
+  (65,390 bytes saved)
+
+. save $datadir_clean/nces/pubschls_locale.dta, replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/nces/pubschls_locale.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/nces/pubschls_locale.dta saved
+
+. cap log close clean_locale

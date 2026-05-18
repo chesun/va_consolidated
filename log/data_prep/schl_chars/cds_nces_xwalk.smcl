@@ -1,0 +1,70 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  cds_nces_xwalk
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/cds_nces_xwalk.smcl
+  log type:  text
+ opened on:  18 May 2026, 00:00:01
+
+. 
+. di as text _n "{hline 80}"
+
+--------------------------------------------------------------------------------
+
+. di as text "cds_nces_xwalk.do — RUN START: `c(current_date)' `c(current_time)'"
+cds_nces_xwalk.do — RUN START: 18 May 2026 00:00:01
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. set seed 1984
+
+. 
+. /* import raw public school datafile */
+. import delimited $vaprojdir/data/public_access/raw/cde/pubschls.txt, delimiters("\t") clear
+(encoding automatically selected: ISO-8859-1)
+(47 vars, 18,325 obs)
+
+. 
+. keep cdscode nces*
+
+. 
+. foreach var of varlist nces* {
+  2.     replace `var' = "" if `var'== "No Data"
+  3. }
+(1,066 real changes made)
+(4,956 real changes made)
+
+. 
+. keep if !missing(ncesschool) & !missing(ncesdist)
+(5,247 observations deleted)
+
+. 
+. /* convert cdscode to string */
+. tostring cdscode, replace format("%14.0f")
+cdscode was double now str14
+
+. /* add leading zeros to cdscodes which are only 13 digits */
+. replace cdscode = "0" + cdscode if strlen(cdscode) == 13
+(1,212 real changes made)
+
+. 
+. gen nces_id = ncesdist + ncesschool 
+
+. label var nces_id "12 digit NCES district and school ID"
+
+. 
+. 
+. save $datadir_clean/cde/cds_nces_id_xwalk.dta, replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/cds_nces_id_xwalk.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/cds_nces_id_xwalk.dta saved
+
+. cap log close cds_nces_xwalk
