@@ -36,8 +36,29 @@ EXCLUSIONS
     do/main.do, do/settings.do — top-level (reldir empty); Transform 2 skipped
                                   Transform 1 still applies.
 
+ONE-SHOT INTENT, IDEMPOTENT BY CONSTRUCTION
+    This is intended as a ONE-SHOT migration helper.  Both transforms are
+    nonetheless designed to be idempotent so re-runs on an already-swept
+    tree produce 0 changes:
+      - T1 (`transform_comment_globs` + `_flatten_lone_block_opens` +
+        `strip_orphan_block_closes`): all comment-state `/*` / `*/`
+        digraphs are rewritten to `<x>` placeholders on first run; second
+        run finds no comment-state digraphs and does nothing.
+      - T2 (`transform_log_paths`): path-rewrite regexes use a `/`-free
+        char class so already-nested paths don't re-match; the cap-mkdir
+        cascade is gated on whether the expected cascade lines already
+        follow the `cap mkdir "$logdir"` anchor (idempotence fix added
+        post round-2 review per `M-T2`).
+    Detection if idempotence ever regresses: a clean `git diff` after a
+    second run.  Test:
+        python3 py/sweep_comments_and_logdirs.py
+        git diff -- do/ | wc -l    # should be 0
+
 REFERENCES
-    quality_reports/plans/2026-05-17_comment-bug-sweep.md v3
+    quality_reports/plans/2026-05-17_comment-bug-sweep.md v3 (+ round-2
+        addendum noting the state-machine pre-pass + T2 idempotence fix)
+    quality_reports/reviews/2026-05-17_dual-sweep-round2_coder_review.md
+        (round-2 finding M-T2: T2 idempotence)
     ADR-0021 (sandbox + description convention)
     .claude/rules/stata-code-conventions.md (rule additions in same commit)
 """
@@ -563,6 +584,25 @@ def transform_log_paths(
     Only rewrites references where the basename equals `name` (the file's
     stem), to avoid touching unrelated log paths.
 
+    IDEMPOTENCE: the path-rewrite regexes `_LOGPATH_SMCL_ANY` and
+    `_LOGPATH_LOG_ANY` use the char class `[A-Za-z0-9_.-]+` which excludes
+    `/`, so after the first run `$logdir/<reldir>/<name>.smcl` no longer
+    matches (the captured stem `<reldir>` lacks the literal `.smcl`
+    extension immediately after).  The cap-mkdir cascade insertion guards
+    against the original round-1 non-idempotence (re-matching
+    `cap mkdir "$logdir"` and re-appending the cascade) by checking
+    whether ALL of the expected per-component `cap mkdir "$logdir/<part>"`
+    lines already exist somewhere in the file body.  If so, the insertion
+    is skipped — making re-runs no-ops even when the existing cascade is
+    separated from the anchor by blank lines or other content (which is
+    the case for several files swept in the initial dual sweep).  This is
+    conservative: we never double-insert, but on the rare edge case of
+    a partial cascade pre-existing the helper will also skip insertion.
+    The cost is acceptable; the load-bearing invariant is no duplicates.
+    See round-2 review
+    `quality_reports/reviews/2026-05-17_dual-sweep-round2_coder_review.md`
+    finding M-T2 for the original non-idempotence diagnosis.
+
     Returns (transformed_text, n_updates).
     """
     if not reldir_parts:
@@ -589,22 +629,35 @@ def transform_log_paths(
     text = _LOGPATH_SMCL_ANY.sub(_replace_smcl, text)
     text = _LOGPATH_LOG_ANY.sub(_replace_log, text)
 
-    # Insert sibling cap mkdir lines after the existing `cap mkdir "$logdir"` block.
-    # Build the desired insertion block (one line per intermediate path component).
-    def _expand_mkdir(m: re.Match) -> str:
-        indent = m.group(1)
-        original = m.group(0)
-        extra_lines = []
-        cumulative = ""
-        for part in reldir_parts:
-            cumulative = f"{cumulative}/{part}" if cumulative else f"/{part}"
-            extra_lines.append(f'{indent}cap mkdir "$logdir{cumulative}"')
-        return original + "\n" + "\n".join(extra_lines)
+    # Compute the expected cumulative cap-mkdir lines for this file's reldir.
+    # E.g. for reldir_parts=["data_prep", "prepare"]:
+    #   ['cap mkdir "$logdir/data_prep"',
+    #    'cap mkdir "$logdir/data_prep/prepare"']
+    expected_cumulative: list[str] = []
+    cumulative = ""
+    for part in reldir_parts:
+        cumulative = f"{cumulative}/{part}" if cumulative else f"/{part}"
+        expected_cumulative.append(f'cap mkdir "$logdir{cumulative}"')
 
-    new_text, n_subs = _CAP_MKDIR_LOGDIR.subn(_expand_mkdir, text, count=1)
-    if n_subs > 0:
-        replacements += n_subs
-        text = new_text
+    # IDEMPOTENCE GUARD — if EVERY expected cap-mkdir cascade line is
+    # already present somewhere in the file, the sweep has already been
+    # applied (or the lines pre-existed independently) and re-insertion
+    # would create duplicates.  Conservative: occasionally skipping a
+    # legitimate insertion (if a partial cascade somehow exists) is
+    # acceptable; never double-inserting is the load-bearing invariant.
+    cascade_already_present = all(line in text for line in expected_cumulative)
+
+    if not cascade_already_present:
+        # Insert sibling cap mkdir lines after the `cap mkdir "$logdir"` anchor.
+        def _expand_mkdir(m: re.Match) -> str:
+            nonlocal replacements
+            indent = m.group(1)
+            original = m.group(0)
+            extra = "\n".join(f"{indent}{line}" for line in expected_cumulative)
+            replacements += 1
+            return original + "\n" + extra
+
+        text = _CAP_MKDIR_LOGDIR.sub(_expand_mkdir, text, count=1)
 
     return text, replacements
 
@@ -617,6 +670,11 @@ def transform_log_paths(
 TOP_LEVEL_SKIP = {"main.do", "settings.do"}
 
 
+# NOTE: this is a ONE-SHOT migration helper (intent), but BOTH T1 and T2 are
+# idempotent by construction (see module docstring "ONE-SHOT INTENT,
+# IDEMPOTENT BY CONSTRUCTION").  Re-running across an already-swept tree
+# produces 0 changes.  If a future edit ever breaks that invariant, the
+# detection is a non-empty `git diff -- do/` after a second run.
 def process_file(path: Path, do_root: Path) -> tuple[int, int, int]:
     """
     Read `path`, apply both transforms and the orphan-close strip pass,

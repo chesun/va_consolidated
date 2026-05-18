@@ -98,6 +98,14 @@ Add a `[LEARN:stata]` entry to `MEMORY.md` capturing the 2026-05-17 discovery.
 
 Naive sed won't work — it would catch legitimate block-comment opens. The fix tool is a small Python helper at `py/sweep_comments_and_logdirs.py` that walks each file with a state machine and applies **two transforms**:
 
+> **Round-2 addendum (2026-05-17, post coder-critic round-2 review).** The v3 design below described a "fake nested comment" pre-pass keyed on a narrow regex `r'/\*[ \t]*\n'` that matched ONLY lone `/*\n` outer openers. Round-1 implementation used that regex and missed 5 files with `/* <text>\n` outer-opener forms (e.g., `/* Note: include qoi 41 ...\n`, `/* This is old code\n`), producing critical finding C1 — those 5 files' inner `/* mini */` pairs were half-rewritten by T1, leaving stray `*/` tokens that prematurely closed the outer block and caused predecessor-dormant code to become active in consolidated.
+>
+> **Round-2 fix (implemented):** replaced the regex-based pre-pass with a **state-machine forward walk**. `_flatten_lone_block_opens` walks each file character-by-character tracking `code` vs `string` state; at every depth-zero `/*` open (in `code` state, not inside a string literal), `_find_matching_close` is called to locate the matching `*/` via depth-counting (every `/*` adds depth, every `*/` removes depth, returning the position that brings depth back to 0). Multi-line blocks whose inner span contains nested `/*` or `*/` digraphs are flattened: all interior `/*` → `/<x>` and all interior `*/` → `<x>`. This catches every outer-opener shape — lone `/*\n`, `/* <text>\n`, `/* multi\nline\n header`, etc. — and surfaced 4 additional files (`parent/parentqoiclean{1415,1516,1617,1819_1718}.do`) with second inner pairs that round-1 manual option (b) would have missed.
+>
+> See `py/sweep_comments_and_logdirs.py` lines 56-176 (`_find_matching_close` + `_flatten_lone_block_opens`) for the implementation; `quality_reports/reviews/2026-05-17_dual-sweep-round2_coder_review.md` § "MAJOR — state machine soundness" for the round-2 review.
+>
+> **Round-2 addendum to Transform 2 (T2 idempotence, finding M-T2):** the original `_expand_mkdir` callback for `_CAP_MKDIR_LOGDIR` re-matched the anchor line `cap mkdir "$logdir"` on every run and re-inserted the cascade, producing a doubled cascade on second run. Fix: the callback now checks whether the text immediately following the anchor already starts with the expected cascade for this file's `reldir_parts`; if so, no-op. Combined with the `/`-free char class in `_LOGPATH_SMCL_ANY` / `_LOGPATH_LOG_ANY` (which natively rejects already-nested paths), T2 is now idempotent. Re-running the helper across an already-swept tree produces 0 diff.
+
 **Transform 1 — `/*` path-glob fix:**
 
 ```
