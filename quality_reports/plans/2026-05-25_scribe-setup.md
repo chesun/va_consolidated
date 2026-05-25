@@ -140,22 +140,62 @@ Branches A/B/C below remain the menu, but the data-preservation steps above run 
 
 ---
 
-## Recommended resolution: nuke + re-clone (Option B)
+## Recommended resolution: swap `.git/` only (Option C)
 
-Christina confirmed 2026-05-25 that the Scribe repo was created by `git init` + `git add .` + `git commit -m`, not by cloning origin. That means Scribe's local commit history has data files baked in from the very first commit, with no shared ancestor with origin's pristine history beyond what's been merged in along the way.
+Christina confirmed 2026-05-25 that the Scribe repo was created by `git init` + `git add .` + `git commit -m`, not by cloning origin. That means Scribe's local commit history has data files baked in. The fix is to replace Scribe's git *metadata* (the `.git/` directory) with origin's pristine version, while leaving the working tree completely intact. Tracked files then get reset to origin's content; untracked + gitignored files (the populated `data/`, `estimates/`, etc.) are never touched.
 
-Two paths converge on the same end state (Scribe synced to origin/main with data files preserved as untracked):
+Three options converge on the same end state. **Option C is the simplest** because the data files on disk are never moved — no backup-restore dance.
 
-| | Option B — delete + re-clone (RECOMMENDED) | Option A — `git reset --hard` within existing repo |
-|---|---|---|
-| Mental model | "Start over" | "Rewind history" |
-| Steps | 6 | 7 |
-| Concepts needed | `cp`, `rm -rf`, `git clone` | `git stash`, `git tag`, `git reset --hard`, `git ls-files` |
-| Backup scope | All Scribe-populated dirs (`data/`, `estimates/`, `figures/`, `tables/`, `output/`, `log/`) | Only `data/` + `estimates/` |
-| Auth | Need GitHub credentials on Scribe | None (existing remote already set) |
-| Loses | Any Scribe-local git config (none yet) | Nothing extra (config preserved) |
+| | Option C — swap `.git/` (RECOMMENDED) | Option B — delete dir + re-clone | Option A — `git reset --hard` |
+|---|---|---|---|
+| Mental model | "Swap git metadata" | "Start over" | "Rewind history" |
+| Steps | 3 | 6 | 7 |
+| Backup needed? | No (data never moves) | Yes (whole working tree to /tmp) | Yes (data/+estimates/ to /tmp) |
+| Concepts | `rm -rf .git`, `mv`, `git checkout --` | `cp -a`, `rm -rf`, `git clone` | `git stash`, `git tag`, `git reset --hard`, `git ls-files` |
+| Auth | Need GitHub credentials on Scribe | Same | None |
+| Disk churn | Just `.git/` | All Scribe-populated dirs (probably several GB) | Data + estimates dirs |
+| Loses | Any Scribe-local git config (none yet) | Same + Scribe `.git/` hooks | Nothing extra |
 
-Option B is simpler. Use it unless you have a reason to preserve Scribe's git state (you don't — you have no commits worth keeping beyond what's on origin).
+### Option C — exact commands
+
+```bash
+# === STAGE 1 — Clone a fresh .git/ from origin to a temp location ===
+cd /tmp
+git clone https://github.com/chesun/va_consolidated.git fresh
+# Verify it pulled the latest commits
+cd fresh && git log --oneline -5
+# >>> Should show 0f888bf (latest), b680d5f, 7622aec, e31fe15, 932a3fc.
+
+# === STAGE 2 — Swap Scribe's .git/ for the fresh one ===
+cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+rm -rf .git                                    # nukes Scribe's old git state
+mv /tmp/fresh/.git ./                          # installs origin's .git
+rm -rf /tmp/fresh                              # remove leftover working tree from temp clone
+
+# === STAGE 3 — Sync tracked files to match origin's HEAD ===
+# After the .git swap, many tracked files in working tree are now "modified"
+# (Scribe's old versions vs origin's new ones).  Reset them to origin.
+# Untracked + gitignored files (data/, estimates/, log/ run-time content)
+# are NOT touched by this — they're not in the new index at all.
+git status | head -30                          # preview the mismatch
+git checkout -- .                              # discards working-tree changes to TRACKED files only
+
+# === STAGE 4 — Verify ===
+git status                                     # should be clean (no modifications)
+git log --oneline -5                           # should show origin's commits
+git ls-files data/ estimates/                  # only .gitkeep stubs (4 paths total)
+ls -la data/cleaned/acs/ | head -5             # restricted .dta files still on disk
+```
+
+After Stage 4, Scribe is synced to origin and the data files are safely outside git's reach. Proceed to **Step 2 (sparse-checkout)** and **Step 3 (pre-push hook activation)** below.
+
+If `git checkout -- .` reports any "would be overwritten" errors, those are usually Scribe-local modifications to tracked files (e.g., debug edits to a `.do` file). Inspect with `git diff <file>`, then decide: keep (commit on a branch first) or discard (`git checkout -- <file>` individually).
+
+---
+
+## Alternative: nuke + re-clone (Option B)
+
+Same end state as Option C; useful if `.git/` swap proves awkward (e.g., filesystem permission issues with `mv` across mount points) or if you prefer a clean working tree to verify the fresh clone is intact before layering data back.
 
 ### Option B — exact commands
 

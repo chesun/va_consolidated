@@ -382,3 +382,66 @@ Other path-glob-heavy headers (secpooling, renamedata, allvaregs) were spot-chec
 - **Coder-critic audit trail (2026-05-18):** 5 dispatches — bootstrap+named-log PASS 95/100; restoration+helper-fix PASS 95/100; field-guide extension PASS; polish items PASS 98/100. 0 BLOCK verdicts in this session.
 - **TODO Backlog:** 5 items resolved across 2026-05-17 + 2026-05-18 (named-log triplet, T2 idempotence, 3 polish items); 9 items remain (6 cosmetic + 5 post-smoke minus 2 already resolved). 1 new entry added: idempotence regression test.
 - **Total commits today (2026-05-18):** 3 substantive + 4 housekeeping/follow-up = 7. Combined 2026-05-17 + 2026-05-18: ~15 commits.
+
+---
+
+## 2026-05-25 continuation — M4 attempt #4 r(601) hotfix + Scribe-safety infrastructure
+
+Picked up after 7 days idle. State at start: M4 attempt #4 had been launched on Scribe 2026-05-18 (master log `log/main_18-May-2026_10-30-58.smcl`, 1.9 MB; synced back to laptop but uncommitted); pipeline crashed `r(601)` on `do/data_prep/poolingdata/clean_va.do:97-103` reading `$estimates_dir/va_cfr_all_v1/va_est_dta/va_ela_all.dta`. Workflow-sync repo had landed 4 commits 2026-05-24 (universal hook + skill propagation; no project work).
+
+### Per-step rollup
+
+**Step 1 — Diagnose the r(601).** Cross-phase ordering bug in `do/main.do`. `clean_va.do` invoked at Phase 1 batch 9f (line 195) but CHAIN-reads VA outputs produced by `do/va/merge_va_est.do` at Phase 3 batch 3c1 (line 311). File's own RELOCATION header (lines 17-18) declared the dependency: predecessor caschls master.do treated VA outputs as pre-existing artifacts from a separate cde_va_project_fork run; consolidation collapses both into one master so the dependency now binds. Predecessor pipeline never tripped this because VA estimates were always cached from a prior cde fork run.
+
+**Step 2 — Hotfix + coder-critic.** Moved `clean_va.do` invocation from Phase 1 site to start of Phase 5 (survey-VA trailer). Rationale for Phase 5 trailer vs Phase 3 trailer: clean_va.do produces `va_pooled_all.dta` consumed only by Phase 5; placing it at start of Phase 5 keeps it semantically grouped with consumers AND gates it consistently under `if `run_survey_va''`. Phase 1 batch 9f comment updated to "4 of 5 files"; new Phase 5 explanatory comment added. Coder-critic dispatched per phase-1-review.md §3 (paper-affecting code change): PASS 95/100 round 1; -3 for stale Phase 5 header (not mentioning Step 9 batch 9f trailer) and -2 for missing in-place `analysisready` update side-effect in one-liner. Both polish items applied pre-commit. Commit `184ff0d`.
+
+**Step 3 — M4 attempt #4 log artifacts.** Committed 47 modified per-step logs + 4 new untracked log dirs (poolingdata/, qoiclean/{secondary,staff}/, responserate/) + the attempt #4 master log + attempt #3 master log as accumulating audit trail, mirroring `d0991f2` pattern from 2026-05-17. Commit `932a3fc`.
+
+**Step 4 — Scribe-safety infrastructure.** User flagged divergent Scribe-side checkout with populated `data/`, `figures/`, etc. and asked specifically to gitignore `data/` to prevent accidental push from Scribe. Three-layer defense:
+  - **`.gitignore`** — added `/data/*` + `/data/raw/*` + `/data/cleaned/*` + `/estimates/*` patterns with explicit allowlist for `.gitkeep` stubs. Path-anchored (leading `/`) so only matches project-root paths.
+  - **`estimates/.gitkeep`** — new stub for the previously-untracked canonical dir.
+  - **`.githooks/pre-push`** — git-native Bash hook (NOT Claude-specific, since Scribe has no Claude). Diffs the push range (or, for new-branch pushes, all commits not on other remotes via `git rev-list ... --not --remotes`), aborts with remediation message if any file under `data/` or `estimates/` (other than the four allowlisted `.gitkeep` stubs) appears in the range. Per-machine opt-in via `git config core.hooksPath .githooks`. Override via `git push --no-verify`. Commit `e31fe15`.
+
+**Step 5 — Scribe-setup plan doc.** Wrote `quality_reports/plans/2026-05-25_scribe-setup.md`. Iterated 3x based on user feedback:
+  - **v1 (`7622aec`):** initial plan — pre-flight diagnostic + 3 branches (A/B/C) for divergent-pull resolution + sparse-checkout for excluding `.claude/` (and optionally other Claude-only/LaTeX dirs) + pre-push hook activation + going-forward sync protocol + 6 common errors + 8-item audit checklist.
+  - **v2 (`b680d5f`):** added reading of user's pasted git status output (1 commit ahead, 191 behind; `data/cleaned/acs/acs_ca_census_tract_clean_2010.dta` modified = TRACKED on Scribe) + the data-preservation wrinkle (`git reset --hard` would delete tracked-on-Scribe-but-not-on-origin files) + 7-stage in-place-reset path with `/tmp/` backup.
+  - **v3 (`0f888bf`):** after user confirmed `git init` history, added Option B (delete + re-clone) as primary recommendation with comparison table; demoted in-place reset to "Option A — alternative".
+
+### Today's commits
+
+```
+184ff0d phase-1a(§3.5): main.do clean_va.do Phase 1→Phase 5 reorder; M4 attempt #4 r(601) hotfix
+932a3fc chore: log artifacts from M4 acceptance attempt #4 (2026-05-18 run)
+e31fe15 chore(scribe-safety): gitignore data/ + estimates/; add git-native pre-push hook
+7622aec docs: scribe-side setup plan for M4 attempt #5 (divergent-pull + sparse-checkout + pre-push)
+b680d5f docs: scribe-setup — add `git init` history wrinkle + recommended reset path
+0f888bf docs: scribe-setup — add nuke+re-clone as Option B (recommended over in-place reset)
+```
+
+6 commits, all pushed.
+
+### Process learnings (cumulative — append, #16-18)
+
+16. **Cross-phase ordering bugs survive per-batch coder-critic by design.** Per-batch critics (Phase 1a §3.3 Steps 1-11) reviewed each batch in isolation. Cross-phase chain dependencies — like clean_va.do's read of merge_va_est.do output — slipped through because: (a) Step 9 batch 9f saw clean_va.do as a Phase 1 pooling file (verbatim relocation per predecessor's master.do:302-341), (b) Step 3 batch 3c1 added merge_va_est.do at Phase 3 (canonical VA estimation chain), (c) no batch ever held both in scope. Pre-flight Tier-2 audit (2026-05-16) caught 3 of these but missed this one because clean_va.do's RELOCATION header *declared* the dependency cleanly — partition C (data_prep) coder-critic saw a self-consistent file. The runtime invariant ("the consumer must be invoked AFTER the producer") was never empirically tested before M4. **`check_chain.do` proposed for Phase 1c §5.3 would catch this class** — a programmatic post-relocation scan for producer-CANONICAL/consumer-LEGACY-OR-WRONG-PHASE pairs would have flagged clean_va.do reading `$estimates_dir/...` before Phase 3 ran. Codify after M4 closure.
+
+17. **Pre-existing-artifact assumptions from predecessor pipelines must be re-tested in consolidated single-master flow.** caschls's master.do assumed VA outputs were pre-existing (built by a separate cde_va_project_fork pipeline). Consolidation collapses both into one main.do; the pre-existing assumption no longer holds, but the comment ("Order from predecessor master.do:302-341: <sub>pooling -> mergegr11enr -> clean_va") preserved the predecessor order verbatim without flagging the broken assumption. Going forward: any RELOCATION comment that documents predecessor invocation order should be cross-checked against the consolidated invocation graph for cross-phase chain dependencies.
+
+18. **For divergent local repos (Scribe), "discard local history + adopt origin" is simpler than "rewrite history".** `git filter-repo` / interactive rebase to scrub data files from Scribe's history would be complex, blocked by `.claude/rules/destructive-actions.md`, and unnecessary — origin's history is pristine, so adopting it wholesale (with a `/tmp/` backup of disk files first) trivially produces the same end state. Codified in `quality_reports/plans/2026-05-25_scribe-setup.md` as Option B (nuke + re-clone, recommended) and Option A (in-place reset, alternative).
+
+### Status (end of 2026-05-25)
+
+- **Phase 1a §3.5 (M4):** attempt #4 r(601) root cause fixed (`184ff0d`); attempt #5 blocked on Scribe-side sync prerequisites.
+- **Scribe sync:** plan doc shipped; awaits user execution of Option B (nuke + re-clone) on Scribe followed by sparse-checkout + hook activation.
+- **Tree:** clean post `0f888bf`; HEAD in sync with origin.
+- **ADR ledger:** unchanged (21 Decided + 1 amendment).
+- **Coder-critic audit trail (today):** 1 dispatch — main.do clean_va.do reorder PASS 95/100 round 1 (no BLOCK). Other commits skipped critic per phase-1-review.md §3 (governance / docs / logs / Bash hook).
+- **TODO Backlog:** unchanged (9 items); 1 new Active entry added for Scribe-side setup.
+- **Total commits today (2026-05-25):** 6 (1 code, 1 log artifacts, 1 infra, 3 doc-iterations).
+
+### Next session pickup
+
+**Blocking on user:** Scribe-side setup per `quality_reports/plans/2026-05-25_scribe-setup.md` Option B (delete + re-clone) or Option C (delete `.git/` only — user proposal 2026-05-25, simpler still; pending plan-doc update). After Scribe is synced:
+1. Sparse-checkout to exclude `.claude/` (Step 2 of plan)
+2. Activate `.githooks/pre-push` via `git config core.hooksPath .githooks` (Step 3)
+3. Re-launch M4 acceptance attempt #5: `nohup stata-mp -b do do/main.do &`
+4. Monitor through Phase 5 trailer (where clean_va.do now invokes); if it passes, run smoke tier of M4 golden-master comparison.
