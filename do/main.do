@@ -185,14 +185,20 @@ if `run_data_prep' {
     do do/data_prep/responserate/trimparentdemo.do      // trim parent CalSCHLS demographics per year (1415-1819); writes 5 yearly trimparentdemo dtas
     do do/data_prep/responserate/parentresponserate.do  // compute parent survey response rates by school; writes $datadir_clean/calschls/responserate/parentresponserate.dta (consumed by 9f parentpooling)
 
-    * Step 9 batch 9f — caschls/poolingdata (5 files): LANDED 2026-05-08 (extension batch — Christina decision)
+    * Step 9 batch 9f — caschls/poolingdata (4 of 5 files): LANDED 2026-05-08 (extension batch — Christina decision)
     * Order from predecessor master.do:302-341: <sub>pooling -> mergegr11enr -> clean_va.
-    * Reads CHAIN qoiclean (9e) + responserate (9g) + poolgr11enr (9d); writes CHAIN analysisready/poolingdata/va outputs (consumed by Step 7 survey-VA in do/survey_va/).
+    * Reads CHAIN qoiclean (9e) + responserate (9g) + poolgr11enr (9d); writes CHAIN analysisready/poolingdata outputs (consumed by Step 7 survey-VA in do/survey_va/).
+    * NOTE: clean_va.do (5th file of batch 9f) moved to Phase 5 trailer 2026-05-25
+    * because it CHAIN-reads $estimates_dir/va_cfr_all_v1/va_est_dta/va_<outcome>_all.dta
+    * produced by do/va/merge_va_est.do (Phase 3 batch 3c1) and so must run AFTER
+    * Phase 3.  Predecessor caschls master.do treated VA outputs as pre-existing
+    * artifacts from a separate cde_va_project_fork pipeline; consolidation
+    * collapses both into one master so the dependency now binds.  See its
+    * invocation under PHASE 5 below.
     do do/data_prep/poolingdata/secpooling.do           // pool secondary qoiclean across years; writes secpooledstats + secanalysisready
     do do/data_prep/poolingdata/parentpooling.do        // pool parent qoiclean across years; writes parentpooledstats + parentanalysisready
     do do/data_prep/poolingdata/staffpooling.do         // pool staff qoiclean across years; writes staffpooledstats only (staffanalysisready is created downstream by mergegr11enr from staffpooledstats + poolgr11enr)
     do do/data_prep/poolingdata/mergegr11enr.do         // merge gr11enr_mean weight onto parent/sec analysisready (in-place update); CREATES staffanalysisready from staffpooledstats + poolgr11enr
-    do do/data_prep/poolingdata/clean_va.do             // clean VA estimates from $estimates_dir/va_cfr_all_v1/ (CHAIN from do/va/merge_va_est.do); writes $datadir_clean/calschls/va/va_pooled_all.dta
     *
     * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
     * + plan v3 §8 Q1 (verified by grep — ZERO production invocations of
@@ -383,10 +389,23 @@ if `run_survey_va' {
     di as text "PHASE 5: SURVEY VA"
     di as text "{hline 80}"
 
-    * RELOCATED 2026-05-08 per plan v3 §3.3 steps 7+10+11 — Survey VA chain.
+    * RELOCATED 2026-05-08 per plan v3 §3.3 steps 7+10+11 (+ Step 9 batch 9f
+    * trailer clean_va.do, moved 2026-05-25; see NOTE below) — Survey VA chain.
     * Reads CHAIN $datadir_clean/{survey_va,schoolchar,calschls/{analysisready,va}}/<x>
     * (Steps 9f + 10 + 11); writes CANONICAL $datadir_clean/survey_va/<x> +
     * $estimates_dir/survey_va/factor/<x> + $output_dir/csv|graph/factoranalysis/<x>.
+
+    * Step 9 batch 9f trailer — clean_va.do moved here 2026-05-25 (cross-phase
+    * ordering fix discovered during M4 acceptance attempt #4).  Belongs at start
+    * of Phase 5 because it CHAIN-reads both Phase 1 analysisready dtas (from
+    * sec/parent/staffpooling + mergegr11enr above) AND Phase 3 VA outputs (from
+    * do/va/merge_va_est.do), and produces va_pooled_all.dta consumed only by
+    * survey-VA scripts below.  Predecessor caschls master.do invoked it within
+    * the pooling batch because VA outputs were treated as pre-existing artifacts
+    * from a separate cde_va_project_fork pipeline; consolidated single-master
+    * flow now requires it to wait for Phase 3.
+    do do/data_prep/poolingdata/clean_va.do        // clean VA estimates from $estimates_dir/va_cfr_all_v1/ (CHAIN from do/va/merge_va_est.do — Phase 3); writes $datadir_clean/calschls/va/va_pooled_all.dta + in-place updates secanalysisready/parentanalysisready (consumed by allsvymerge + factor + pcascore below)
+
     do do/survey_va/allsvymerge.do                 // RELOCATED Step 11; merges parent/sec/staff CalSCHLS qoimeans into $datadir_clean/survey_va/allsvyqoimeans.dta + per-survey formerge dtas (consumed by imputation + compcasecategoryindex below)
     do do/survey_va/imputation.do                  // multiply-impute missing CalSCHLS QOI items; writes $datadir_clean/survey_va/imputedallsvyqoimeans.dta
     do do/survey_va/imputedcategoryindex.do        // build climate/quality/support indices on imputed data (9/15/4 items per ADR-0010); sums→means fix DEFERRED Phase 1b §4.2 per ADR-0011
