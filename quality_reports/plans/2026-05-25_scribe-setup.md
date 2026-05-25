@@ -68,16 +68,19 @@ rm -rf /tmp/fresh                       # cleanup temp clone
 ### Step 3: Sync tracked files to origin (respects sparse-checkout)
 
 ```bash
-git checkout -- .
+git reset --hard HEAD
 ```
 
 This:
 
-- Overwrites Scribe's old `do/main.do` (and all other tracked files) with origin's current versions
+- Populates the index from HEAD (necessary because `git clone --no-checkout` leaves it in a state where pathspec-based commands like `git checkout -- .` can fail with `pathspec '.' did not match any file(s) known to git`)
+- Writes tracked files to the working tree at HEAD's version (overwrites Scribe's old `do/main.do` with origin's new version)
 - Skips paths excluded by sparse-checkout (`.claude/`, etc. never materialize)
 - **Leaves untracked + gitignored files alone** — `data/`, `estimates/`, `log/` populated content is preserved on disk
 
-If `git checkout -- .` reports any "would be overwritten" or conflict errors, that's a tracked file Scribe had locally modified before the `.git/` was removed (rare; usually means a debug edit Christina made). Inspect with `git diff <file>` before deciding whether to keep (commit on a branch first) or discard (`git checkout -- <file>`).
+`--hard` is the right tool here because we WANT to overwrite Scribe's old tracked-file content with origin's. Untracked files (your data) are untouched. There's no in-progress work to preserve (any local edits before the `.git/` removal are gone with the old `.git/`).
+
+> If you're more comfortable with a gentler command first, try `git checkout -- .` and only fall back to `git reset --hard HEAD` if you see the "pathspec '.' did not match" error. The reset is the reliable path.
 
 ### Step 4: Activate the pre-push hook
 
