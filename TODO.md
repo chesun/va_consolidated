@@ -1,10 +1,10 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-25 (M4 attempt #4 r(601) hotfix landed `184ff0d`; Scribe-safety gitignore + pre-push hook landed `e31fe15`; Scribe-side setup procedure documented for attempt #5 launch)
+Last updated: 2026-05-25 (M4 attempt #4 r(601) hotfix landed `184ff0d`; Scribe-safety gitignore + pre-push hook landed `e31fe15`; Christina removed Scribe-side `.git/` 2026-05-25; setup plan rewritten as linear 5-step procedure)
 
 ## Active (next-up)
 
-- [ ] **Scribe-side setup for M4 attempt #5** — execute `quality_reports/plans/2026-05-25_scribe-setup.md` on Scribe: (1) resolve divergent-branch pull error (diagnose Scribe-local commits first; rebase / merge / reset per branch A/B/C), (2) sparse-checkout to exclude `.claude/` (and optionally other Claude-only dirs) from Scribe working tree, (3) activate `.githooks/pre-push` via `git config core.hooksPath .githooks`. Blocks M4 attempt #5 launch.
+- [ ] **Scribe-side setup for M4 attempt #5** — execute `quality_reports/plans/2026-05-25_scribe-setup.md` on Scribe: 5-step linear procedure starting from clean (no-.git/) state. Step 1: clone `--no-checkout` + configure sparse-checkout (excludes `.claude/` + LaTeX + docs dirs). Step 2: move `.git/` into consolidated dir. Step 3: `git checkout -- .` (syncs tracked files; preserves untracked data/+estimates/+log/ content on disk). Step 4: activate pre-push hook (`git config core.hooksPath .githooks`). Step 5: verify via 10-item audit checklist. Blocks M4 attempt #5 launch.
 - [ ] **Phase 1a §3.5 — Golden-master verification (M4) attempt #5** per ADR-0018 acceptance criteria. Verifier in submission mode runs `diff -r consolidated/output predecessor/output` on a fresh end-to-end Scribe run. Confirms behavior preservation across all 148 relocated/archived files. **First gate before `v1.0-final` tag.** Attempt #4 (2026-05-18 launch) crashed `r(601)` at `do/data_prep/poolingdata/clean_va.do` reading VA-estimation outputs not yet produced; fixed in `184ff0d` (moved invocation Phase 1 → Phase 5 trailer).
 
 ## Phase 1a §3.3 — COMPLETE 2026-05-08 ✅ (148 files across 11 steps)

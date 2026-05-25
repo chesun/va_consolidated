@@ -2059,3 +2059,61 @@ End-of-session log: `quality_reports/session_logs/2026-05-08_END-OF-SESSION_phas
 
 ### Detailed session log
 `quality_reports/session_logs/2026-05-16_m4-pre-flight-audit-and-protocol.md` (multi-day arc with continuation sections for 2026-05-17 and 2026-05-18).
+
+---
+
+## 2026-05-25 — M4 attempt #4 r(601) hotfix + Scribe-safety infrastructure + Scribe-side setup procedure
+
+After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master log synced back; not yet committed); crashed `r(601)` at `do/data_prep/poolingdata/clean_va.do:97-103` reading VA outputs from `merge_va_est.do`. Today: diagnose + fix + ship Scribe-safety infrastructure + iterate the Scribe-side setup plan based on user state changes.
+
+**Operations:**
+
+- Diagnosed cross-phase ordering bug in `do/main.do`: `clean_va.do` invoked at Phase 1 batch 9f (line 195) before `merge_va_est.do` at Phase 3 batch 3c1 (line 311); file's own RELOCATION header (lines 17-18) declared the CHAIN dependency
+- Moved `clean_va.do` invocation from Phase 1 to start of Phase 5 (survey-VA trailer); coder-critic dispatched per phase-1-review.md §3 → PASS 95/100 round 1; -3 stale Phase 5 header + -2 missing in-place `analysisready` side-effect; both polish items applied pre-commit
+- Committed Scribe-synced logs from attempt #4 as audit trail (47 modified + 4 new untracked log dirs + 2 master logs)
+- Added 3-layer Scribe-safety infrastructure: `.gitignore` patterns for `data/` + `estimates/` with `.gitkeep` allowlist; new `estimates/.gitkeep` stub; new `.githooks/pre-push` git-native Bash hook (per-machine opt-in via `git config core.hooksPath .githooks`; aborts push if any non-.gitkeep file under `data/` or `estimates/` appears in commit range; emergency override via `--no-verify`)
+- Wrote + iterated Scribe-setup plan doc 4× based on user feedback:
+  - v1 (`7622aec`): initial 3-task plan (resolve divergence + sparse-checkout + hook activation) with 3 branches A/B/C for divergence resolution
+  - v2 (`b680d5f`): added analysis of user's pasted `git status` output (1 commit ahead, 191 behind; `.dta` file tracked on Scribe); added 7-stage in-place-reset path with `/tmp/` backup
+  - v3 (`0f888bf`): user confirmed `git init` history → added Option B (delete + re-clone) as primary; demoted in-place reset to Option A alternative
+  - v4 (`c72c08b`): user asked about deleting `.git/` only → added Option C (swap `.git/`); ranked C < B < A by simplicity
+  - **v5 (this session, post-rewrite):** user removed `.git/` on Scribe → comprehensive rewrite as single linear 5-step procedure; pruned all multi-option content + divergence-diagnosis sections; added recovery section + 10-item audit checklist + reference table for tracked-vs-ignored-vs-sparse-excluded paths
+
+**Decisions:**
+
+- `clean_va.do` belongs at start of Phase 5, not Phase 3 trailer — keeps it semantically grouped with consumers (survey-VA scripts) and gates it consistently under `if `run_survey_va''`
+- Scribe gets `data/` + `estimates/` gitignored aggressively (`/data/*` + `/data/raw/*` + `/data/cleaned/*` + `/estimates/*` with explicit `.gitkeep` allowlist); belt-and-suspenders via `.githooks/pre-push` git-native hook (no Claude dependency on Scribe)
+- Pre-push hook ships via `core.hooksPath` config (one-time per machine), not symlink — cleaner UX, hook script stays tracked in repo
+- For Scribe sync: "discard local + adopt origin" cleaner than "rewrite history" (avoids `git filter-repo` which is blocked + caused 2026-04-25 data-loss incident)
+- After user deleted `.git/`, the cleanest path is `git clone --no-checkout` + pre-configure sparse-checkout BEFORE any working-tree materialization → `.claude/` never lands on Scribe disk
+
+**Results:**
+
+- 6 commits today (pre-rewrite): `184ff0d` (main.do hotfix), `932a3fc` (attempt #4 logs), `e31fe15` (gitignore + hook), `7622aec` / `b680d5f` / `0f888bf` / `c72c08b` (plan doc iterations through v4)
+- Session log appended 2026-05-25 continuation to multi-day M4 arc log; 3 new process learnings (#16-18)
+- Plan doc v5 rewrite ships in this same commit batch (post-rewrite)
+
+**Commits (chronological):**
+
+- `184ff0d` phase-1a(§3.5): main.do clean_va.do Phase 1→Phase 5 reorder; M4 attempt #4 r(601) hotfix
+- `932a3fc` chore: log artifacts from M4 acceptance attempt #4 (2026-05-18 run)
+- `e31fe15` chore(scribe-safety): gitignore data/ + estimates/; add git-native pre-push hook
+- `7622aec` docs: scribe-side setup plan for M4 attempt #5 (divergent-pull + sparse-checkout + pre-push)
+- `b680d5f` docs: scribe-setup — add `git init` history wrinkle + recommended reset path
+- `0f888bf` docs: scribe-setup — add nuke+re-clone as Option B (recommended over in-place reset)
+- `c72c08b` docs: session log 2026-05-25 continuation + plan doc adds Option C (swap .git/ only)
+- (pending) docs: scribe-setup v5 — comprehensive rewrite as linear 5-step procedure (post-.git-removal)
+
+**Status:**
+
+- Phase 1a §3.5 (M4): attempt #4 r(601) root cause fixed (commit `184ff0d`); attempt #5 blocked on Scribe-side setup execution
+- Scribe state: `.git/` removed by user; working tree intact; ready for fresh sync per v5 of the plan doc
+- Tree (laptop): in sync with origin
+- ADR ledger: unchanged (21 Decided + 1 amendment)
+- TODO: 1 new Active entry (Scribe-side setup); Backlog unchanged
+
+**Next session pickup:**
+
+1. Christina executes 5-step Scribe-setup on Scribe per `quality_reports/plans/2026-05-25_scribe-setup.md` v5
+2. M4 attempt #5 launch: `nohup stata-mp -b do do/main.do &`
+3. Monitor through Phase 5 (clean_va.do now invoked here per fix); if it passes, run smoke tier of M4 golden-master

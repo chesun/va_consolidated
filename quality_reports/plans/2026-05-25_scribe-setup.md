@@ -1,438 +1,36 @@
-# Scribe-side Setup: Sync Hygiene, Sparse Checkout, Pre-push Guard
+# Scribe-side Setup: Sync, Sparse-Checkout, Pre-Push Guard
 
-**Date:** 2026-05-25
-**Status:** Active reference (execute on Scribe; update if any step changes)
-**Audience:** Christina, working on the Scribe server side of the va_consolidated repo
-**Related:** commit `e31fe15` (gitignore + .githooks/pre-push); CLAUDE.md §"Runtime location"; `.claude/rules/air-gapped-workflow.md`
-
----
-
-## Why this doc exists
-
-Scribe has a checkout of `va_consolidated` that is *operationally* divergent from the GitHub remote:
-
-| Difference | On laptop (origin/main) | On Scribe |
-|---|---|---|
-| `data/` | `.gitkeep` stubs only | Populated with restricted CalSCHLS / CDE records (PII) |
-| `estimates/` | `.gitkeep` stub only (as of `e31fe15`) | Populated with `.ster` + `va_<outcome>_all.dta` |
-| `figures/`, `tables/`, `output/` | `.gitkeep` stubs (plus committed paper-class files) | Populated with run-time outputs |
-| `log/` | Tracked smcl/log audit trail (committed) | Re-written by each run |
-| `.claude/`, `quality_reports/`, etc. | Tracked Claude workflow infra | Should NOT exist (no Claude on Scribe) |
-
-The Scribe checkout was also `git init`'d / set up separately at some point, so its commit history may have local commits that don't exist on origin. Hence: divergent branches.
-
-This doc covers three independent setup tasks:
-
-1. **Resolve the current divergence** so `git pull origin main` works.
-2. **Sparse-checkout** so `.claude/` (and optionally other Claude-only dirs) never materialize in the Scribe working tree.
-3. **Activate the pre-push hook** so accidental `git add -f data/` cannot escape Scribe.
-
-Tasks are independent — you can do them in any order, but the suggested order is 1 → 2 → 3 because (1) is blocking the next pull.
+**Date:** 2026-05-25 (rewritten after Christina removed Scribe-side `.git/`)
+**Status:** Active reference (execute on Scribe; update if anything changes)
+**Audience:** Christina, working on the Scribe server side of `va_consolidated`
+**Related:** commits `184ff0d` (main.do clean_va.do hotfix), `e31fe15` (gitignore + .githooks/pre-push); `.claude/rules/air-gapped-workflow.md`
 
 ---
 
-## Pre-flight: diagnose what's actually divergent
+## Current Scribe state (2026-05-25)
 
-Before any reconciliation, run these on Scribe to see the shape of the divergence. Each is read-only; nothing is changed.
+- `.git/` removed by user
+- Working tree intact: `data/`, `estimates/`, `figures/`, `tables/`, `output/`, `log/`, `do/`, `ado/`, `py/`, `paper/`, etc. all still on disk
+- No git tracking → no divergent-branch error to resolve, no history to scrub, no data files baked into old commits
 
-```bash
-cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
-
-# Make sure origin is set correctly
-git remote -v
-Results: : origin	https://github.com/chesun/va_consolidated.git (fetch)
-origin	https://github.com/chesun/va_consolidated.git (push)
-# Expect: origin  https://github.com/chesun/va_consolidated.git (fetch)
-#         origin  https://github.com/chesun/va_consolidated.git (push)
-
-# Fetch the latest remote state (this doesn't modify your working tree)
-git fetch origin
-
-# Commits ONLY on Scribe (not on origin/main)
-git log --oneline origin/main..HEAD
-# This is what Scribe has that GitHub doesn't.  Usually setup commits,
-# accidental commits of generated content, or partial work-in-progress.
-
-# Commits ONLY on origin/main (not on Scribe)
-git log --oneline HEAD..origin/main
-Results: basically every single commit on remote
-# This is what GitHub has that Scribe doesn't.  Should include
-# 184ff0d (clean_va reorder), 932a3fc (M4 logs), e31fe15 (gitignore + hook),
-# plus the four workflow-sync commits from 2026-05-24.
-
-# Are there any uncommitted local changes?
-git status
-On branch main
-Your branch and 'origin/main' have diverged,
-and have 1 and 191 different commits each, respectively.
-  (use "git pull" to merge the remote branch into yours)
-
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
-	modified:   data/cleaned/acs/acs_ca_census_tract_clean_2010.dta
-	modified:   log/data_prep/acs/clean_acs_census_tract.smcl
-	modified:   log/data_prep/poolingdata/clean_va.smcl
-	modified:   log/main_25-May-2026_15-38-40.smcl
-
-no changes added to commit (use "git add" and/or "git commit -a")
-```
-
-Now read what you found. The next step depends on what's in `git log --oneline origin/main..HEAD`.
+This is the cleanest possible starting point. The setup becomes a linear 5-step procedure: clone fresh `.git/`, swap it in, sync tracked files, activate hook, verify.
 
 ---
 
-## Reading the 2026-05-25 diagnostic output
-
-What you pasted shows:
-
-| Signal | Value | Interpretation |
-|---|---|---|
-| `git remote -v` | `https://github.com/chesun/va_consolidated.git` | ✓ origin URL correct |
-| Scribe has **1** commit ahead of origin | (commit SHA not yet captured) | Need to inspect — could be setup commit, data-add, or local work |
-| Origin has **191** commits ahead of Scribe | "basically every single commit on remote" | Scribe was cloned/initialized at a much earlier point in the project's history; major catch-up needed |
-| Working-tree modifications: 4 files | `data/cleaned/acs/acs_ca_census_tract_clean_2010.dta`, 3 log files | **Critical signal:** a `.dta` file under `data/cleaned/` is TRACKED on Scribe (otherwise `git status` wouldn't report "modified") |
-| Latest log: `log/main_25-May-2026_15-38-40.smcl` | Today's run | M4 was re-run on Scribe today, almost certainly before the hotfix landed; likely failed at the same `clean_va.do` r(601) |
-
-### The critical wrinkle: tracked data files on Scribe
-
-The `modified: data/cleaned/acs/acs_ca_census_tract_clean_2010.dta` line tells us at least one restricted `.dta` file was at some point added to Scribe's git index. This was likely accidental (`git add .` somewhere, before the gitignore tightening landed). It does **not** mean the file is on GitHub — origin/main only has `.gitkeep` stubs under `data/`. But Scribe's git history has the file.
-
-This creates a **data-preservation risk**: a naive `git reset --hard origin/main` would discard tracked-on-Scribe-but-not-on-origin files from the working tree. So:
-
-- `data/cleaned/acs/acs_ca_census_tract_clean_2010.dta` → would be **deleted from disk** on a hard reset
-- Same risk for any other tracked `data/*` or `estimates/*` files we haven't enumerated yet
-
-We must inventory those files first and un-track them via `git rm --cached` (preserves disk, removes from git) before resolving the divergence.
-
----
-
-## Pre-flight extension: three more diagnostics needed
-
-Run these on Scribe and paste the outputs back below each command:
-
-```bash
-# 1. What's IN the 1 Scribe-local commit?
-git log --oneline origin/main..HEAD
-git show --stat HEAD
-Results: <paste here>
-
-# 2. What files are currently tracked under data/ and estimates/ on Scribe?
-git ls-files data/ estimates/
-Results: <paste here>
-
-# 3. Confirm the 2026-05-25 master log is from a pre-hotfix M4 run
-#    (last 20 lines should show whether it crashed at clean_va.do r(601) again)
-tail -20 log/main_25-May-2026_15-38-40.smcl
-Results: <paste here>
-```
-
-The third one is informational — confirms that the May 25 run was a wasted attempt because Scribe didn't yet have the hotfix (commit `184ff0d`). Doesn't block the sync.
-
-Once those three are pasted, the exact resolution falls out of the data. The likely shape:
-
-1. **Stage 1 — preserve data.** Inventory any tracked `data/`+`estimates/` files. Copy each to a parallel backup path on Scribe (`/tmp/scribe-backup-YYYYMMDD/...` or similar). This is the safety net before any history-rewriting operation.
-2. **Stage 2 — un-track.** `git rm --cached <files>` to remove them from Scribe's git index without deleting the disk copies. Commit on Scribe.
-3. **Stage 3 — reconcile.** Now safe to rebase or reset against origin/main per the Branch A/B/C logic below.
-4. **Stage 4 — restore.** Move the backup files back into the working tree if the reset disturbed them (it shouldn't, since they're now untracked and gitignored).
-
-Branches A/B/C below remain the menu, but the data-preservation steps above run *before* any of them.
-
----
-
-## Recommended resolution: swap `.git/` only (Option C)
-
-Christina confirmed 2026-05-25 that the Scribe repo was created by `git init` + `git add .` + `git commit -m`, not by cloning origin. That means Scribe's local commit history has data files baked in. The fix is to replace Scribe's git *metadata* (the `.git/` directory) with origin's pristine version, while leaving the working tree completely intact. Tracked files then get reset to origin's content; untracked + gitignored files (the populated `data/`, `estimates/`, etc.) are never touched.
-
-Three options converge on the same end state. **Option C is the simplest** because the data files on disk are never moved — no backup-restore dance.
-
-| | Option C — swap `.git/` (RECOMMENDED) | Option B — delete dir + re-clone | Option A — `git reset --hard` |
-|---|---|---|---|
-| Mental model | "Swap git metadata" | "Start over" | "Rewind history" |
-| Steps | 3 | 6 | 7 |
-| Backup needed? | No (data never moves) | Yes (whole working tree to /tmp) | Yes (data/+estimates/ to /tmp) |
-| Concepts | `rm -rf .git`, `mv`, `git checkout --` | `cp -a`, `rm -rf`, `git clone` | `git stash`, `git tag`, `git reset --hard`, `git ls-files` |
-| Auth | Need GitHub credentials on Scribe | Same | None |
-| Disk churn | Just `.git/` | All Scribe-populated dirs (probably several GB) | Data + estimates dirs |
-| Loses | Any Scribe-local git config (none yet) | Same + Scribe `.git/` hooks | Nothing extra |
-
-### Option C — exact commands
-
-```bash
-# === STAGE 1 — Clone a fresh .git/ from origin to a temp location ===
-cd /tmp
-git clone https://github.com/chesun/va_consolidated.git fresh
-# Verify it pulled the latest commits
-cd fresh && git log --oneline -5
-# >>> Should show 0f888bf (latest), b680d5f, 7622aec, e31fe15, 932a3fc.
-
-# === STAGE 2 — Swap Scribe's .git/ for the fresh one ===
-cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
-rm -rf .git                                    # nukes Scribe's old git state
-mv /tmp/fresh/.git ./                          # installs origin's .git
-rm -rf /tmp/fresh                              # remove leftover working tree from temp clone
-
-# === STAGE 3 — Sync tracked files to match origin's HEAD ===
-# After the .git swap, many tracked files in working tree are now "modified"
-# (Scribe's old versions vs origin's new ones).  Reset them to origin.
-# Untracked + gitignored files (data/, estimates/, log/ run-time content)
-# are NOT touched by this — they're not in the new index at all.
-git status | head -30                          # preview the mismatch
-git checkout -- .                              # discards working-tree changes to TRACKED files only
-
-# === STAGE 4 — Verify ===
-git status                                     # should be clean (no modifications)
-git log --oneline -5                           # should show origin's commits
-git ls-files data/ estimates/                  # only .gitkeep stubs (4 paths total)
-ls -la data/cleaned/acs/ | head -5             # restricted .dta files still on disk
-```
-
-After Stage 4, Scribe is synced to origin and the data files are safely outside git's reach. Proceed to **Step 2 (sparse-checkout)** and **Step 3 (pre-push hook activation)** below.
-
-If `git checkout -- .` reports any "would be overwritten" errors, those are usually Scribe-local modifications to tracked files (e.g., debug edits to a `.do` file). Inspect with `git diff <file>`, then decide: keep (commit on a branch first) or discard (`git checkout -- <file>` individually).
-
----
-
-## Alternative: nuke + re-clone (Option B)
-
-Same end state as Option C; useful if `.git/` swap proves awkward (e.g., filesystem permission issues with `mv` across mount points) or if you prefer a clean working tree to verify the fresh clone is intact before layering data back.
-
-### Option B — exact commands
+## The setup, in 5 steps
 
 Run on Scribe in this order. Read each block, run it, paste any unexpected output back here before proceeding.
 
-```bash
-# === STAGE 1 — Back up all Scribe-populated dirs to /tmp/ ===
-# Wider scope than Option A because we're deleting the whole repo dir.
-BACKUP_DIR="/tmp/scribe-presync-backup-$(date +%Y%m%d-%H%M%S)"
-mkdir -p "$BACKUP_DIR"
-cd /home/research/ca_ed_lab/projects/common_core_va/
+### Step 1: Clone fresh `.git/` with sparse-checkout pre-configured
 
-for d in data estimates figures tables output log; do
-    if [ -d "consolidated/$d" ]; then
-        cp -a "consolidated/$d/" "$BACKUP_DIR/$d/"
-        echo "  backed up: consolidated/$d -> $BACKUP_DIR/$d ($(du -sh "$BACKUP_DIR/$d" | cut -f1))"
-    fi
-done
-echo ""
-du -sh "$BACKUP_DIR"
-echo "BACKUP at: $BACKUP_DIR"
-# >>> Verify backup size looks reasonable (probably several GB) before proceeding.
-
-# === STAGE 2 — Move old repo dir aside (don't delete yet — cheap insurance) ===
-mv consolidated consolidated_OLD_$(date +%Y%m%d-%H%M%S)
-
-# === STAGE 3 — Fresh clone from origin ===
-git clone https://github.com/chesun/va_consolidated.git consolidated
-cd consolidated
-git log --oneline -5
-# >>> Should show b680d5f (latest), 7622aec, e31fe15, 932a3fc, 184ff0d.
-
-# === STAGE 4 — Restore Scribe-populated content layered on top of fresh clone ===
-# .gitkeep stubs from the fresh clone stay; backup content goes on top.
-# For log/: origin has tracked audit-trail logs we want to keep, so only
-# restore log files that DON'T exist in the fresh clone (preserves committed
-# audit trail + adds Scribe's newer runs as untracked).
-for d in data estimates figures tables output; do
-    if [ -d "$BACKUP_DIR/$d" ]; then
-        cp -a "$BACKUP_DIR/$d/." "$d/"
-        echo "  restored: $d/"
-    fi
-done
-
-# For log/: use cp -n (no-clobber) so origin's tracked logs aren't overwritten
-if [ -d "$BACKUP_DIR/log" ]; then
-    cp -an "$BACKUP_DIR/log/." log/
-    echo "  restored: log/ (no-clobber; tracked logs preserved)"
-fi
-
-# === STAGE 5 — Verify ===
-git status                              # should be clean (data/, estimates/, etc. gitignored)
-git ls-files data/ estimates/           # only .gitkeep stubs (4 paths total)
-ls -la data/cleaned/acs/ | head -5      # confirm restricted .dta files physically present
-du -sh data/ estimates/                 # confirm sizes match backup expectation
-
-# === STAGE 6 — Once happy, clean up ===
-rm -rf ../consolidated_OLD_*            # delete the old repo dir
-# Keep $BACKUP_DIR around for a few days as extra insurance, then:
-# rm -rf "$BACKUP_DIR"
-```
-
-After Stage 5 passes (no surprising additions in `git status`, only `.gitkeep` stubs tracked under data/+estimates/), Scribe is synced to origin and the data files are safely outside git's reach. Then proceed to **Step 2 (sparse-checkout)** and **Step 3 (pre-push hook activation)** below.
-
----
-
-## Alternative: in-place reset (Option A)
-
-Same end state as Option B; preserves Scribe's git config + history insurance via `git tag`. Use only if you have a specific reason to keep Scribe's existing repo dir.
-
-This avoids:
-- `git filter-repo` / `git rebase -i` history rewrites (blocked per `.claude/rules/destructive-actions.md`; caused a real data-loss incident on 2026-04-25)
-- Multi-step `git rm --cached` + commit + reconcile sequences (more error-prone)
-
-Exact commands — run on Scribe in this order. Read each block, run it, paste any unexpected output back here before proceeding to the next:
+Clone to a temp location **without** checking out files (`--no-checkout`), so sparse-checkout can be set up before any files materialize. This avoids ever writing `.claude/` (or other excluded dirs) to disk on Scribe.
 
 ```bash
-cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+cd /tmp
+git clone --no-checkout https://github.com/chesun/va_consolidated.git fresh
+cd fresh
 
-# === STAGE 1 — Back up data/ + estimates/ to /tmp/ ===
-# Covers both tracked-on-Scribe and untracked files.  Disk-cheap.
-BACKUP_DIR="/tmp/scribe-presync-backup-$(date +%Y%m%d-%H%M%S)"
-mkdir -p "$BACKUP_DIR"
-cp -a data/ "$BACKUP_DIR/data/"
-cp -a estimates/ "$BACKUP_DIR/estimates/" 2>/dev/null || echo "(estimates/ missing or empty; OK)"
-du -sh "$BACKUP_DIR"
-echo "BACKUP at: $BACKUP_DIR"
-# >>> Verify backup size looks reasonable before proceeding.
-
-# === STAGE 2 — Stash working-tree modifications ===
-# (so they aren't disturbed by the reset; can restore or discard later)
-git stash push -u -m "scribe-pre-reset $(date +%Y-%m-%d)"
-
-# === STAGE 3 — Tag the current state for emergency recovery ===
-git tag scribe-pre-reset-$(date +%Y%m%d-%H%M%S)
-git tag                                  # confirm tag exists
-
-# === STAGE 4 — Hard reset to origin/main ===
-# This discards Scribe's 1 local commit, pulls origin's 191 commits,
-# updates the working tree to match origin's tree.  Tracked-on-Scribe-but-
-# not-on-origin files (like data/*.dta) are DELETED from disk by this step
-# — but we backed them up in Stage 1, so they'll be restored in Stage 5.
-git fetch origin
-git reset --hard origin/main
-
-# Verify
-git log --oneline -5                     # should show origin's commits (184ff0d, 932a3fc, e31fe15, 7622aec, etc.)
-git status                               # tree should be clean (logs may show as modified — that's fine)
-
-# === STAGE 5 — Restore data/ + estimates/ from backup ===
-# These reappear as untracked files; new .gitignore prevents them from re-entering git
-cp -a "$BACKUP_DIR/data/." data/
-cp -a "$BACKUP_DIR/estimates/." estimates/ 2>/dev/null || echo "(estimates backup empty; OK)"
-
-# === STAGE 6 — Verify data/ files are now untracked + gitignored ===
-git ls-files data/ estimates/            # should show ONLY the .gitkeep stubs (4 paths total)
-git status                               # data/ and estimates/ contents should NOT appear (gitignored)
-ls -la data/cleaned/acs/ | head -5       # confirm the .dta files are physically still on disk
-
-# === STAGE 7 — Decide on the stashed log modifications ===
-git stash list                           # see what was stashed
-# Option A: discard (log files will be re-written by the next run anyway):
-#   git stash drop
-# Option B: restore (preserves the 4 file mods you had):
-#   git stash pop
-# Choose based on whether you care about the in-progress log state.
-```
-
-After Stage 6 passes (the `git ls-files` shows only `.gitkeep` stubs), Scribe is in sync with origin and the data files are safely outside git's reach. Then proceed to **Step 2 (sparse-checkout)** and **Step 3 (pre-push hook activation)** below.
-
-If anything in Stages 1-7 produces unexpected output, stop and paste it back. The backup at `$BACKUP_DIR` is your safety net — until you `rm -rf` it, no data is at risk.
-
----
-
-## Step 1 (alternative branches): Resolve the divergence
-
-Three branches based on the diagnosis above:
-
-### Branch A — Scribe has no commits ahead of origin (the simplest case)
-
-If `git log --oneline origin/main..HEAD` is empty, the only divergence is that `git status` shows local file modifications. Fix:
-
-```bash
-# Stash uncommitted changes
-git stash push -u -m "scribe-pre-sync $(date +%Y-%m-%d)"
-
-# Fast-forward pull
-git pull origin main
-
-# Inspect what was stashed; un-stash if still wanted
-git stash list
-git stash pop          # restores changes (may conflict if same files were touched on origin)
-# OR: git stash drop   # discard
-```
-
-### Branch B — Scribe has commits ahead of origin, AND those commits are wanted
-
-The commits should be replayed on top of origin/main. Use rebase. **Read the contents of each Scribe-only commit first** — if any commit added `data/` or `estimates/` files, do NOT push afterward (the new pre-push hook would catch it, but better to fix locally first).
-
-```bash
-# Inspect each Scribe-only commit's contents
-git log --stat origin/main..HEAD
-
-# If clean (no data/ or estimates/ files added), rebase
-git pull --rebase origin main
-
-# Resolve any conflicts iteratively
-# git status will show conflicted files
-# Edit them, then:
-# git add <file>
-# git rebase --continue
-# (or git rebase --abort to bail out)
-```
-
-If during inspection you find a Scribe-only commit that added `data/foo.dta` or similar by mistake, the safest path is **drop those commits** during an interactive rebase:
-
-```bash
-# After the pull --rebase fails or before starting:
-git rebase -i origin/main
-# Editor opens with a list of commits.  Change "pick" to "drop" for any
-# commit that added restricted files.  Save and exit.
-```
-
-### Branch C — Scribe has commits ahead, but they're throwaway setup commits
-
-If the Scribe-only commits are just `git init` artifacts, accidental `git add .` of generated content, or other things that shouldn't propagate, the cleanest fix is to discard them and adopt origin's state directly.
-
-**WARNING — this is destructive to Scribe's local commit history.** Make sure you understand what you're throwing away before running it.
-
-```bash
-# Tag the current state for emergency recovery (5 sec; gives a safety net)
-git tag scribe-pre-reset-$(date +%Y%m%d-%H%M%S)
-
-# Hard-reset to origin/main
-git fetch origin
-git reset --hard origin/main
-
-# Verify
-git log --oneline -5     # should show origin's commits only
-git status               # working tree should match origin's tracked files
-# (untracked files in data/, estimates/, log/, etc. are PRESERVED;
-#  git reset --hard only touches tracked files)
-```
-
-If you later realize you needed something from the dropped commits:
-
-```bash
-git reflog                            # find the pre-reset SHA
-git checkout <pre-reset-sha> -- <path>  # rescue a specific file
-```
-
----
-
-## Step 2: Sparse-checkout to exclude `.claude/` (and other Claude-only dirs)
-
-Sparse-checkout is git-native (no extra tools) and lets each machine include only a subset of the tracked files in its working tree. Pulls and pushes still work normally; excluded dirs just don't materialize.
-
-The config is per-machine (lives in `.git/info/sparse-checkout`, not tracked), so doing this on Scribe does not affect the laptop.
-
-### Minimal exclusion (just `.claude/`)
-
-```bash
-git sparse-checkout init --no-cone
-cat > .git/info/sparse-checkout <<'EOF'
-/*
-!/.claude/
-EOF
-git read-tree -m -u HEAD
-```
-
-After this, `.claude/` is gone from the Scribe working tree. `git status` won't list it; future pulls won't bring it back.
-
-### Recommended exclusion (Claude-only + LaTeX dirs you don't compile on Scribe)
-
-If you don't render papers, slides, or supplementary docs on Scribe, also exclude those — keeps the Scribe checkout focused on what Stata actually runs.
-
-```bash
+# Configure sparse-checkout
 git sparse-checkout init --no-cone
 cat > .git/info/sparse-checkout <<'EOF'
 /*
@@ -449,123 +47,206 @@ cat > .git/info/sparse-checkout <<'EOF'
 !/replication/
 !/explorations/
 EOF
-git read-tree -m -u HEAD
 ```
 
-This keeps on Scribe: `do/`, `ado/`, `py/`, `.githooks/`, `data/` (your populated content), `estimates/`, `figures/`, `tables/`, `output/`, `log/`, plus top-level files (`README.md`, `CLAUDE.md`, `LICENSE`, `TODO.md`, `SESSION_REPORT.md`, `MEMORY.md`, `Bibliography_base.bib`, `.gitignore`).
+> If you'd rather only exclude `.claude/` and keep everything else (e.g., to read the plan doc on Scribe), replace the `cat > ...` block with:
+> ```bash
+> cat > .git/info/sparse-checkout <<'EOF'
+> /*
+> !/.claude/
+> EOF
+> ```
 
-> Note: `CLAUDE.md` stays in the tree even on Scribe. It's a small markdown file; if you want it gone too, add `!/CLAUDE.md` to the list. Same for `MEMORY.md`, `SESSION_REPORT.md`.
-
-### Verifying sparse-checkout
+### Step 2: Move `.git/` into Scribe's `consolidated/` dir
 
 ```bash
-git sparse-checkout list           # shows the active patterns
-ls -la | head -20                  # should NOT show .claude/ (or other excluded dirs)
-git status                         # should still be clean
-git log --oneline -3 -- .claude/   # history still accessible; just not checked out
+mv .git /home/research/ca_ed_lab/projects/common_core_va/consolidated/.git
+cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+rm -rf /tmp/fresh                       # cleanup temp clone
 ```
 
-### Disabling sparse-checkout (if you ever change your mind)
+### Step 3: Sync tracked files to origin (respects sparse-checkout)
 
 ```bash
-git sparse-checkout disable        # restores full working tree on next checkout
+git checkout -- .
 ```
 
----
+This:
 
-## Step 3: Activate the pre-push hook
+- Overwrites Scribe's old `do/main.do` (and all other tracked files) with origin's current versions
+- Skips paths excluded by sparse-checkout (`.claude/`, etc. never materialize)
+- **Leaves untracked + gitignored files alone** — `data/`, `estimates/`, `log/` populated content is preserved on disk
 
-The hook script ships at `.githooks/pre-push` in the tracked tree. To opt-in on a machine, set the `core.hooksPath` config so git looks in `.githooks/` instead of `.git/hooks/`:
+If `git checkout -- .` reports any "would be overwritten" or conflict errors, that's a tracked file Scribe had locally modified before the `.git/` was removed (rare; usually means a debug edit Christina made). Inspect with `git diff <file>` before deciding whether to keep (commit on a branch first) or discard (`git checkout -- <file>`).
+
+### Step 4: Activate the pre-push hook
 
 ```bash
 git config core.hooksPath .githooks
-git config --get core.hooksPath          # should print: .githooks
-
-# Smoke test: hook is executable?
-ls -la .githooks/pre-push
-# Expect: -rwxr-xr-x ... .githooks/pre-push
-# If not executable: chmod +x .githooks/pre-push (should already be x from clone,
-# but on Scribe filesystems that strip exec bit, you'll need to re-chmod)
+git config --get core.hooksPath         # should print: .githooks
+ls -la .githooks/pre-push               # confirm executable (rwxr-xr-x)
 ```
 
-What the hook does on each `git push`:
-
-- Inspects every commit in the push range
-- If any file under `data/` or `estimates/` (other than the four allowlisted `.gitkeep` stubs) appears in the commit, aborts the push with a clear error
-- If everything is clean, exits silently and the push proceeds
-
-Emergency override (audited via shell history):
+If the hook isn't executable (some shared-storage filesystems strip the exec bit):
 
 ```bash
-git push --no-verify
+chmod +x .githooks/pre-push
 ```
+
+### Step 5: Verify
+
+```bash
+# === Git state ===
+git log --oneline -5
+# Expect: c72c08b (or newer) ... 184ff0d (main.do hotfix) ... e31fe15 (gitignore+hook)
+
+git status
+# Expect: "nothing to commit, working tree clean"
+# (data/, estimates/ contents should NOT appear — covered by .gitignore)
+
+# === Sparse-checkout active ===
+git sparse-checkout list
+# Expect: shows the patterns you configured in Step 1
+
+ls -la
+# Expect: NO .claude/ directory, NO quality_reports/, etc.
+
+# === Data preserved ===
+ls -la data/cleaned/acs/ | head -5
+# Expect: the restricted .dta files still on disk
+du -sh data/ estimates/
+# Expect: sizes match what was there before (probably several GB total)
+
+# === Gitignore working: only .gitkeep stubs tracked ===
+git ls-files data/ estimates/
+# Expect: exactly 4 paths:
+#   data/.gitkeep         (will only show if it exists; check)
+#   data/cleaned/.gitkeep
+#   data/raw/.gitkeep
+#   estimates/.gitkeep
+
+# === Pre-push hook armed ===
+git config --get core.hooksPath
+# Expect: .githooks
+```
+
+If all five blocks produce the expected output, Scribe is fully synced and ready for M4 attempt #5.
 
 ---
 
-## Going-forward sync protocol on Scribe
+## Re-launching M4 attempt #5
 
-Once Steps 1-3 are complete, the daily/weekly rhythm is:
+After Steps 1-5 pass:
+
+```bash
+cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+nohup stata-mp -b do do/main.do &
+```
+
+`do/main.do` now has the clean_va.do Phase 1 → Phase 5 reorder (commit `184ff0d`), so the `r(601)` crash from attempt #4 should not recur. The pipeline should progress through:
+
+- Phase 1 — data prep (re-uses cached intermediates from prior runs)
+- Phase 2 — sample construction (`do_touse_va` + `do_create_samples` flip to 1 under `m4_acceptance_run`)
+- **Phase 3 — VA estimation (the multi-hour bottleneck)**
+- Phase 4 — VA tables/figures (stub)
+- Phase 5 — survey VA, now starting with `clean_va.do` (the relocated invocation)
+- Phase 6 — paper outputs
+- Phase 7 — data checks
+
+Monitor the master log: `tail -f log/main_$(date +%d-%b-%Y)_*.smcl`
+
+When the run completes (or fails), the next M4 step is the smoke-tier golden-master comparison per `quality_reports/plans/2026-05-17_m4-golden-master-protocol.md`.
+
+---
+
+## Going-forward sync protocol
+
+Once setup is complete, the day-to-day rhythm:
 
 ```bash
 # To pull updates from laptop
-git fetch origin
-git pull --rebase origin main      # rebase keeps history linear; merge also fine if preferred
+git pull --rebase origin main           # rebase keeps history linear
 
-# To push local Scribe work (e.g., new check_*.do files written on Scribe)
-# Pre-push hook will catch any accidental data/ or estimates/ stages
+# To push local Scribe work
+# (e.g., new check_*.do files written on Scribe; the pre-push hook will
+#  catch any accidental data/ or estimates/ stages)
 git push origin main
-
-# To set default pull behavior (one-time, recommended)
-git config pull.rebase true        # makes plain `git pull` always rebase
 ```
 
-If you frequently work on both laptop and Scribe, set:
+One-time config recommendations:
 
 ```bash
-git config pull.rebase true        # default to rebase, avoids divergence
-git config push.default current    # only push the current branch
+git config pull.rebase true             # default to rebase on every pull
+git config push.default current         # only push the current branch
 ```
 
 ---
 
 ## Common errors + fixes
 
-| Error | Likely cause | Fix |
+| Error | Cause | Fix |
 |---|---|---|
-| `fatal: Need to specify how to reconcile divergent branches` | Git ≥2.27 default; both branches moved | Step 1 above (run the diagnostics; pick A/B/C) |
+| `fatal: Need to specify how to reconcile divergent branches` | Git ≥2.27 default; happens if you commit on Scribe and laptop also commits before you pull | `git config pull.rebase true` (one-time) then `git pull` |
 | `error: Your local changes to the following files would be overwritten by merge` | Modified tracked files in working tree | `git stash push -u`, pull, `git stash pop` |
 | `error: The following untracked working tree files would be overwritten by merge: ...` | Untracked file at a path the pull would create | `mv <file> <file>.scribe-backup`, pull, decide what to do with the backup |
-| `fatal: refusing to merge unrelated histories` | Scribe was `git init`'d separately, no common ancestor with origin | Different recovery — re-clone from scratch and move data/estimates contents into the fresh clone (NOT addressed above; ask if this is what you're seeing) |
-| `ERROR: refusing to push — restricted data files in the commit range` | Pre-push hook caught a `data/` or `estimates/` file in a commit | Follow the hook's printed remediation (git rm --cached, git commit --amend) |
-| `.claude/` keeps reappearing after pull | Sparse-checkout not active | Re-run Step 2; check `git sparse-checkout list` |
+| `ERROR: refusing to push — restricted data files in the commit range` | Pre-push hook caught a `data/` or `estimates/` file in a commit | Follow the hook's printed remediation (`git rm --cached`, `git commit --amend`) |
+| `.claude/` reappears after pull | Sparse-checkout not active or got disabled | Verify with `git sparse-checkout list`; if empty, re-run Step 1 |
+| `.githooks/pre-push: Permission denied` on push | Hook script lost exec bit | `chmod +x .githooks/pre-push` |
 
 ---
 
-## Audit checklist (one-time after completing setup)
+## Audit checklist (run once after Step 5 passes)
 
-- [ ] `git remote -v` shows the correct origin URL
-- [ ] `git log --oneline HEAD..origin/main` is empty (Scribe is in sync with origin)
+- [ ] `git remote -v` shows correct origin URL
+- [ ] `git log --oneline HEAD..origin/main` is empty (Scribe in sync with origin)
 - [ ] `git sparse-checkout list` shows the configured exclusions
-- [ ] `ls -la` does not show `.claude/` (or any other dir you excluded)
+- [ ] `ls -la` does NOT show `.claude/` (or any other excluded dir)
 - [ ] `git config --get core.hooksPath` prints `.githooks`
 - [ ] `.githooks/pre-push` is executable (`-rwxr-xr-x`)
 - [ ] `git status` is clean (no unexpected modifications)
-- [ ] `git ls-files data/ estimates/ | grep -v '\.gitkeep$'` is empty (no restricted files tracked)
+- [ ] `git ls-files data/ estimates/` shows only `.gitkeep` stubs
+- [ ] `ls -la data/cleaned/acs/ | head -5` shows restricted `.dta` files preserved on disk
+- [ ] `du -sh data/ estimates/` sizes match pre-setup expectations
 
-Once all eight boxes are checked, Scribe is set up safely for the M4 attempt #5 launch.
+Once all ten boxes are checked, Scribe is set up safely for the M4 attempt #5 launch.
 
 ---
 
 ## Reference: what's tracked vs ignored vs sparse-excluded
 
-| Path | Tracked? | Gitignored content? | Sparse-excluded on Scribe? |
+| Path | Tracked on origin? | Gitignored content? | Sparse-excluded on Scribe? |
 |---|---|---|---|
 | `do/`, `ado/`, `py/` | Yes (source) | No | No (need at runtime) |
-| `data/` | Stub `.gitkeep` only | Yes (populated content) | No (populated on Scribe) |
-| `estimates/` | Stub `.gitkeep` only | Yes (populated content) | No (populated on Scribe) |
+| `data/` | `.gitkeep` stubs only | Yes (populated content) | No (populated on Scribe) |
+| `estimates/` | `.gitkeep` stub only | Yes (populated content) | No (populated on Scribe) |
 | `figures/`, `tables/`, `output/` | Stubs + paper-shipping content | No | No (populated on Scribe) |
 | `log/` | Yes (audit trail) | No | No (Scribe writes to it) |
 | `.githooks/` | Yes (hook script) | No | No (needed for `core.hooksPath`) |
-| `.claude/` | Yes (Claude infra) | Settings.local.json + state | **Yes** (Claude doesn't run here) |
-| `quality_reports/`, `master_supporting_docs/`, `decisions/` | Yes (docs) | No | Recommended Yes (not used at runtime) |
-| `paper/`, `talks/`, `slides/`, `supplementary/`, `templates/`, `preambles/`, `replication/`, `explorations/` | Yes (LaTeX) | LaTeX build artifacts | Recommended Yes (if not compiling on Scribe) |
+| `.claude/` | Yes (Claude infra) | `settings.local.json` + `state/*` | **Yes** (Claude doesn't run here) |
+| `quality_reports/`, `master_supporting_docs/`, `decisions/` | Yes (docs) | No | **Yes** (not used at runtime) |
+| `paper/`, `talks/`, `slides/`, `supplementary/`, `templates/`, `preambles/`, `replication/`, `explorations/` | Yes (LaTeX) | LaTeX build artifacts | **Yes** (not compiling on Scribe) |
+| Top-level files (`README.md`, `CLAUDE.md`, `LICENSE`, `TODO.md`, `SESSION_REPORT.md`, `MEMORY.md`, `Bibliography_base.bib`, `.gitignore`, `main.do` if at root) | Yes | No | No (sparse-included by default `/*`) |
+
+---
+
+## Recovery: undoing the setup if anything goes wrong
+
+If Steps 1-5 produce an unrecoverable state, the recovery is symmetric to setup — delete `.git/` again and start over:
+
+```bash
+cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+rm -rf .git
+# Working tree (including data/) preserved.  Restart at Step 1.
+```
+
+If you want to permanently abandon sparse-checkout (e.g., to materialize `.claude/` again):
+
+```bash
+git sparse-checkout disable             # restores full working tree on next checkout
+```
+
+If you want to permanently abandon the pre-push hook:
+
+```bash
+git config --unset core.hooksPath       # git uses default .git/hooks/ again
+```
