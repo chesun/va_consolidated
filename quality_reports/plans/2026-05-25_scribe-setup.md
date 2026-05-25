@@ -40,6 +40,8 @@ cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
 
 # Make sure origin is set correctly
 git remote -v
+Results: : origin	https://github.com/chesun/va_consolidated.git (fetch)
+origin	https://github.com/chesun/va_consolidated.git (push)
 # Expect: origin  https://github.com/chesun/va_consolidated.git (fetch)
 #         origin  https://github.com/chesun/va_consolidated.git (push)
 
@@ -53,19 +55,160 @@ git log --oneline origin/main..HEAD
 
 # Commits ONLY on origin/main (not on Scribe)
 git log --oneline HEAD..origin/main
+Results: basically every single commit on remote
 # This is what GitHub has that Scribe doesn't.  Should include
 # 184ff0d (clean_va reorder), 932a3fc (M4 logs), e31fe15 (gitignore + hook),
 # plus the four workflow-sync commits from 2026-05-24.
 
 # Are there any uncommitted local changes?
 git status
+On branch main
+Your branch and 'origin/main' have diverged,
+and have 1 and 191 different commits each, respectively.
+  (use "git pull" to merge the remote branch into yours)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   data/cleaned/acs/acs_ca_census_tract_clean_2010.dta
+	modified:   log/data_prep/acs/clean_acs_census_tract.smcl
+	modified:   log/data_prep/poolingdata/clean_va.smcl
+	modified:   log/main_25-May-2026_15-38-40.smcl
+
+no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
 Now read what you found. The next step depends on what's in `git log --oneline origin/main..HEAD`.
 
 ---
 
-## Step 1: Resolve the divergence
+## Reading the 2026-05-25 diagnostic output
+
+What you pasted shows:
+
+| Signal | Value | Interpretation |
+|---|---|---|
+| `git remote -v` | `https://github.com/chesun/va_consolidated.git` | ✓ origin URL correct |
+| Scribe has **1** commit ahead of origin | (commit SHA not yet captured) | Need to inspect — could be setup commit, data-add, or local work |
+| Origin has **191** commits ahead of Scribe | "basically every single commit on remote" | Scribe was cloned/initialized at a much earlier point in the project's history; major catch-up needed |
+| Working-tree modifications: 4 files | `data/cleaned/acs/acs_ca_census_tract_clean_2010.dta`, 3 log files | **Critical signal:** a `.dta` file under `data/cleaned/` is TRACKED on Scribe (otherwise `git status` wouldn't report "modified") |
+| Latest log: `log/main_25-May-2026_15-38-40.smcl` | Today's run | M4 was re-run on Scribe today, almost certainly before the hotfix landed; likely failed at the same `clean_va.do` r(601) |
+
+### The critical wrinkle: tracked data files on Scribe
+
+The `modified: data/cleaned/acs/acs_ca_census_tract_clean_2010.dta` line tells us at least one restricted `.dta` file was at some point added to Scribe's git index. This was likely accidental (`git add .` somewhere, before the gitignore tightening landed). It does **not** mean the file is on GitHub — origin/main only has `.gitkeep` stubs under `data/`. But Scribe's git history has the file.
+
+This creates a **data-preservation risk**: a naive `git reset --hard origin/main` would discard tracked-on-Scribe-but-not-on-origin files from the working tree. So:
+
+- `data/cleaned/acs/acs_ca_census_tract_clean_2010.dta` → would be **deleted from disk** on a hard reset
+- Same risk for any other tracked `data/*` or `estimates/*` files we haven't enumerated yet
+
+We must inventory those files first and un-track them via `git rm --cached` (preserves disk, removes from git) before resolving the divergence.
+
+---
+
+## Pre-flight extension: three more diagnostics needed
+
+Run these on Scribe and paste the outputs back below each command:
+
+```bash
+# 1. What's IN the 1 Scribe-local commit?
+git log --oneline origin/main..HEAD
+git show --stat HEAD
+Results: <paste here>
+
+# 2. What files are currently tracked under data/ and estimates/ on Scribe?
+git ls-files data/ estimates/
+Results: <paste here>
+
+# 3. Confirm the 2026-05-25 master log is from a pre-hotfix M4 run
+#    (last 20 lines should show whether it crashed at clean_va.do r(601) again)
+tail -20 log/main_25-May-2026_15-38-40.smcl
+Results: <paste here>
+```
+
+The third one is informational — confirms that the May 25 run was a wasted attempt because Scribe didn't yet have the hotfix (commit `184ff0d`). Doesn't block the sync.
+
+Once those three are pasted, the exact resolution falls out of the data. The likely shape:
+
+1. **Stage 1 — preserve data.** Inventory any tracked `data/`+`estimates/` files. Copy each to a parallel backup path on Scribe (`/tmp/scribe-backup-YYYYMMDD/...` or similar). This is the safety net before any history-rewriting operation.
+2. **Stage 2 — un-track.** `git rm --cached <files>` to remove them from Scribe's git index without deleting the disk copies. Commit on Scribe.
+3. **Stage 3 — reconcile.** Now safe to rebase or reset against origin/main per the Branch A/B/C logic below.
+4. **Stage 4 — restore.** Move the backup files back into the working tree if the reset disturbed them (it shouldn't, since they're now untracked and gitignored).
+
+Branches A/B/C below remain the menu, but the data-preservation steps above run *before* any of them.
+
+---
+
+## Recommended resolution (given the `git init` history)
+
+Christina confirmed 2026-05-25 that the Scribe repo was created by `git init` + `git add .` + `git commit -m`, not by cloning origin. That means Scribe's local commit history has data files baked in from the very first commit. The simplest fix is to **discard Scribe's local history entirely** and adopt origin's history (which is pristine — laptop never tracked data files). The data files on disk are preserved via a `/tmp/` backup before the reset, then restored as untracked files afterward where the new `.gitignore` blocks them from re-entering git.
+
+This avoids:
+- `git filter-repo` / `git rebase -i` history rewrites (blocked per `.claude/rules/destructive-actions.md`; caused a real data-loss incident on 2026-04-25)
+- Multi-step `git rm --cached` + commit + reconcile sequences (more error-prone)
+
+Exact commands — run on Scribe in this order. Read each block, run it, paste any unexpected output back here before proceeding to the next:
+
+```bash
+cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+
+# === STAGE 1 — Back up data/ + estimates/ to /tmp/ ===
+# Covers both tracked-on-Scribe and untracked files.  Disk-cheap.
+BACKUP_DIR="/tmp/scribe-presync-backup-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+cp -a data/ "$BACKUP_DIR/data/"
+cp -a estimates/ "$BACKUP_DIR/estimates/" 2>/dev/null || echo "(estimates/ missing or empty; OK)"
+du -sh "$BACKUP_DIR"
+echo "BACKUP at: $BACKUP_DIR"
+# >>> Verify backup size looks reasonable before proceeding.
+
+# === STAGE 2 — Stash working-tree modifications ===
+# (so they aren't disturbed by the reset; can restore or discard later)
+git stash push -u -m "scribe-pre-reset $(date +%Y-%m-%d)"
+
+# === STAGE 3 — Tag the current state for emergency recovery ===
+git tag scribe-pre-reset-$(date +%Y%m%d-%H%M%S)
+git tag                                  # confirm tag exists
+
+# === STAGE 4 — Hard reset to origin/main ===
+# This discards Scribe's 1 local commit, pulls origin's 191 commits,
+# updates the working tree to match origin's tree.  Tracked-on-Scribe-but-
+# not-on-origin files (like data/*.dta) are DELETED from disk by this step
+# — but we backed them up in Stage 1, so they'll be restored in Stage 5.
+git fetch origin
+git reset --hard origin/main
+
+# Verify
+git log --oneline -5                     # should show origin's commits (184ff0d, 932a3fc, e31fe15, 7622aec, etc.)
+git status                               # tree should be clean (logs may show as modified — that's fine)
+
+# === STAGE 5 — Restore data/ + estimates/ from backup ===
+# These reappear as untracked files; new .gitignore prevents them from re-entering git
+cp -a "$BACKUP_DIR/data/." data/
+cp -a "$BACKUP_DIR/estimates/." estimates/ 2>/dev/null || echo "(estimates backup empty; OK)"
+
+# === STAGE 6 — Verify data/ files are now untracked + gitignored ===
+git ls-files data/ estimates/            # should show ONLY the .gitkeep stubs (4 paths total)
+git status                               # data/ and estimates/ contents should NOT appear (gitignored)
+ls -la data/cleaned/acs/ | head -5       # confirm the .dta files are physically still on disk
+
+# === STAGE 7 — Decide on the stashed log modifications ===
+git stash list                           # see what was stashed
+# Option A: discard (log files will be re-written by the next run anyway):
+#   git stash drop
+# Option B: restore (preserves the 4 file mods you had):
+#   git stash pop
+# Choose based on whether you care about the in-progress log state.
+```
+
+After Stage 6 passes (the `git ls-files` shows only `.gitkeep` stubs), Scribe is in sync with origin and the data files are safely outside git's reach. Then proceed to **Step 2 (sparse-checkout)** and **Step 3 (pre-push hook activation)** below.
+
+If anything in Stages 1-7 produces unexpected output, stop and paste it back. The backup at `$BACKUP_DIR` is your safety net — until you `rm -rf` it, no data is at risk.
+
+---
+
+## Step 1 (alternative branches): Resolve the divergence
 
 Three branches based on the diagnosis above:
 
