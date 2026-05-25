@@ -1,0 +1,473 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  secqoiclean1415
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/qoiclean/secondary/secqoiclean1
+> 415.smcl
+  log type:  text
+ opened on:  18 May 2026, 12:12:31
+
+. 
+. use $datadir_clean/calschls/secondary/sec1415, clear
+
+. //shorten the var names for the vars we will deal with to make subsequent operations easier
+. rename a#_a# a#
+
+. //keep only the questions of interest
+. keep cdscode a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28
+
+. //rename value labels to be consistent with var names
+. elabel rename (a#_a#) (a#)
+
+. //rename questions of interest and rename value labels using question numbers in 1819 as standard
+. /* Note: 1415 dataset does not have qoi 27-30 */
+. /* 14-18 correspond to qoi 22-26 */
+. foreach i of numlist 14/18 {
+  2.   local j = `i' + 8
+  3.   rename a`i' qoi`j'
+  4.   elabel rename a`i' qoi`j'
+  5. }
+
+. /* 19=28 correspond to qoi 31-40 */
+. foreach i of numlist 19/28 {
+  2.   local j = `i' + 12
+  3.   rename a`i' qoi`j'
+  4.   elabel rename a`i' qoi`j'
+  5. }
+
+. 
+. * count the total number of responses in each school <x>
+. sort cdscode
+
+. by cdscode: gen totalresp = _N
+
+. label var totalresp "total number of responses at each school including missing"
+
+. 
+. 
+. ******** clean qoi 22-26 and 31-34 as they have the same response options ******
+. /* value labels qoi 22-26 and 31-34:
+> 1 strongly disagree
+> 2 disagree
+> 3 neither disagree nor disagree4 disagree5 strongly agree
+> 4 agree
+> 5 strongly agree
+> 
+> Recode:
+> -2 strongly disagree
+> -1 disagree
+> 0 neutral
+> 1 agree
+> 2 strongly agree
+> */
+. 
+. 
+. /* recode qoi 22-26 and 31-34 */
+. foreach i of numlist 22/26 31/34 {
+  2.   replace qoi`i' = qoi`i' - 3
+  3. }
+(345,879 real changes made)
+(345,661 real changes made)
+(339,187 real changes made)
+(345,411 real changes made)
+(340,965 real changes made)
+(340,399 real changes made)
+(340,364 real changes made)
+(340,876 real changes made)
+(341,001 real changes made)
+
+. 
+. /* generate dummies for each response option for qoi 22-26 and 31-34*/
+. foreach i of numlist 22/26 31/34 {
+  2.   gen strdisagree`i' = 0
+  3.   replace strdisagree`i' = 1 if qoi`i' == -2
+  4. 
+.   gen disagree`i' = 0
+  5.   replace disagree`i' = 1 if qoi`i' == -1
+  6. 
+.   gen neither`i' = 0
+  7.   replace neither`i' = 1 if qoi`i' == 0
+  8. 
+.   gen agree`i' = 0
+  9.   replace agree`i' = 1 if qoi`i' == 1
+ 10. 
+.   gen stragree`i' = 0
+ 11.   replace stragree`i' = 1 if qoi`i' == 2
+ 12. 
+.   gen missing`i' = 0
+ 13.   replace missing`i' = 1 if missing(qoi`i')
+ 14. }
+(20,574 real changes made)
+(26,029 real changes made)
+(83,416 real changes made)
+(148,629 real changes made)
+(67,231 real changes made)
+(7,338 real changes made)
+(24,608 real changes made)
+(25,893 real changes made)
+(85,228 real changes made)
+(137,823 real changes made)
+(72,109 real changes made)
+(7,556 real changes made)
+(25,079 real changes made)
+(34,417 real changes made)
+(97,489 real changes made)
+(128,712 real changes made)
+(53,490 real changes made)
+(14,030 real changes made)
+(25,787 real changes made)
+(38,906 real changes made)
+(94,361 real changes made)
+(134,790 real changes made)
+(51,567 real changes made)
+(7,806 real changes made)
+(18,078 real changes made)
+(22,592 real changes made)
+(83,994 real changes made)
+(147,552 real changes made)
+(68,749 real changes made)
+(12,252 real changes made)
+(11,002 real changes made)
+(11,834 real changes made)
+(52,237 real changes made)
+(139,820 real changes made)
+(125,506 real changes made)
+(12,818 real changes made)
+(18,396 real changes made)
+(32,045 real changes made)
+(94,110 real changes made)
+(123,318 real changes made)
+(72,495 real changes made)
+(12,853 real changes made)
+(12,653 real changes made)
+(17,048 real changes made)
+(68,441 real changes made)
+(149,347 real changes made)
+(93,387 real changes made)
+(12,341 real changes made)
+(11,892 real changes made)
+(12,198 real changes made)
+(54,525 real changes made)
+(137,307 real changes made)
+(125,079 real changes made)
+(12,216 real changes made)
+
+. 
+. 
+. *********** clean qoi 35-40 as they have the same response options *************
+. /* value labels for qoi 35-40
+>  1 not at all true
+>  2 a little true
+>  3 pretty much true
+>  4 very much true
+> 
+>  recode:
+> -2 not at all true
+> -1 a little true
+> 1 pretty much true
+> 2 very much true
+>  */
+. 
+.  /* recode qoi 35-40 */
+.  foreach i of numlist 35/40 {
+  2.    replace qoi`i' = qoi`i' - 3 if qoi`i' == 1 | qoi`i' == 2
+  3.    replace qoi`i' = qoi`i' - 2 if qoi`i' == 3 | qoi`i' == 4
+  4.  }
+(148,060 real changes made)
+(194,746 real changes made)
+(111,833 real changes made)
+(231,257 real changes made)
+(145,232 real changes made)
+(194,968 real changes made)
+(79,935 real changes made)
+(261,804 real changes made)
+(119,176 real changes made)
+(223,164 real changes made)
+(99,750 real changes made)
+(242,505 real changes made)
+
+. 
+.  /* generate dummies for each response option for qoi 35-40*/
+.  foreach i of numlist 35/40 {
+  2.    gen nottrue`i' = 0
+  3.    replace nottrue`i' = 1 if qoi`i' == -2
+  4. 
+.    gen littletrue`i' = 0
+  5.    replace littletrue`i' = 1 if qoi`i' == -1
+  6. 
+.    gen prettytrue`i' = 0
+  7.    replace prettytrue`i' = 1 if qoi`i' == 1
+  8. 
+.    gen verytrue`i' = 0
+  9.    replace verytrue`i' = 1 if qoi`i' == 2
+ 10. 
+.    gen missing`i' = 0
+ 11.    replace missing`i' = 1 if missing(qoi`i')
+ 12.  }
+(42,519 real changes made)
+(105,541 real changes made)
+(114,162 real changes made)
+(80,584 real changes made)
+(10,411 real changes made)
+(31,728 real changes made)
+(80,105 real changes made)
+(127,672 real changes made)
+(103,585 real changes made)
+(10,127 real changes made)
+(51,082 real changes made)
+(94,150 real changes made)
+(108,551 real changes made)
+(86,417 real changes made)
+(13,017 real changes made)
+(21,957 real changes made)
+(57,978 real changes made)
+(111,967 real changes made)
+(149,837 real changes made)
+(11,478 real changes made)
+(38,381 real changes made)
+(80,795 real changes made)
+(118,094 real changes made)
+(105,070 real changes made)
+(10,877 real changes made)
+(32,364 real changes made)
+(67,386 real changes made)
+(109,603 real changes made)
+(132,902 real changes made)
+(10,962 real changes made)
+
+. 
+.  /* collapse the dataset, resulting dataset has mean for each qoi, total number of responses, and number of responses 
+> for each option in each question */
+.   collapse (mean) qoi* totalresp (sum) strdisagree* disagree* neither* agree* stragree* missing* nottrue* littletrue* 
+> prettytrue* verytrue*, by(cdscode)
+
+. 
+. 
+.   ************************ relabel all the vars **********************************
+.   /* label all the mean qoi vars */
+.   label var qoi22 "Mean of Q: I feel close to people at this school"
+
+.   label var qoi23 "Mean of Q: I am happy to be at this school"
+
+.   label var qoi24 "Mean of Q: I feel like I am part of this school"
+
+.   label var qoi25 "Mean of Q: The teachers at this school treat students fairly"
+
+.   label var qoi26 "Mean of Q: I feel safe in my school"
+
+. 
+.   label var qoi31 "Mean of Q: I try hard to make sure that I am good at my schoolwork"
+
+.   label var qoi32 "Mean of Q: I try hard at school because I am interested in my work"
+
+.   label var qoi33 "Mean of Q: I work hard to try to understand new things at school"
+
+.   label var qoi34 "Mean of Q: I am always trying to do better in my schoolwork"
+
+. 
+.   label var qoi35 "Mean of Q: There is... who really cares about me"
+
+.   label var qoi36 "Mean of Q: There is... who tells me when I do a good job"
+
+.   label var qoi37 "Mean of Q: There is... who notices when I’m not there"
+
+.   label var qoi38 "Mean of Q: There is... who always wants me to do my best"
+
+.   label var qoi39 "Mean of Q: There is... who listens to me when I have something to say"
+
+.   label var qoi40 "Mean of Q: There is... who believes that I will be a success"
+
+. 
+.   label var totalresp "total number of responses in the school including missing"
+
+. 
+.   /* rename the qoi vars to reflect they are now averages */
+.   rename qoi* qoi*mean
+
+. 
+.   /* label vars for the number of response for each option */
+.   foreach i of numlist 22/26 31/34 {
+  2.     label var strdisagree`i' "number of people choosing strongly disagree for qoi`i'"
+  3.     label var disagree`i' "number of people choosing disagree for qoi`i'"
+  4.     label var neither`i' "number of people choosing neither disagree or agree for qoi`i'"
+  5.     label var agree`i' "number of people choosing agree for qoi`i'"
+  6.     label var stragree`i' "number of people choosing strongly agree for qoi`i'"
+  7.     label var missing`i' "number of missing responses for qoi`i'"
+  8.   }
+
+. 
+.   foreach i of numlist 35/40 {
+  2.     label var nottrue`i' "number of people choosing not at all true for qoi`i'"
+  3.     label var littletrue`i' "number of people choosing a little true for qoi`i'"
+  4.     label var prettytrue`i' "number of people choosing pretty much true for qoi`i'"
+  5.     label var verytrue`i' "number of people choosing very much true for qoi`i'"
+  6.     label var missing`i' "number of missing responses for qoi`i'"
+  7.   }
+
+. 
+.   ********************* generate percentage agree/disagree etc *******************
+. 
+.   /* first, generate the net total responses for each question excluding missing */
+.   foreach i of numlist 22/26 31/40 {
+  2.     gen nettotalresp`i' = totalresp - missing`i'
+  3.     label var nettotalresp`i' "net total responses for qoi`i' excluding missing "
+  4.   }
+
+. 
+.   /* generate pct disagree/agree for qoi 22-26 and 31-34 */
+.   foreach i of numlist 22/26 31/34 {
+  2.     gen pctdisagree`i' = (strdisagree`i' + disagree`i')/nettotalresp`i'
+  3.     label var pctdisagree`i' "percent strongly disagree or disagree in qoi`i'"
+  4.     gen pctagree`i' = (stragree`i' + agree`i')/nettotalresp`i'
+  5.     label var pctagree`i' "percent strongly agree or agree in qoi`i'"
+  6.     gen pctneither`i' = neither`i'/nettotalresp`i'
+  7.     label var pctneither`i' "percent neither disagree nor agree in qoi`i'"
+  8.   }
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+(5 missing values generated)
+(5 missing values generated)
+(5 missing values generated)
+(6 missing values generated)
+(6 missing values generated)
+(6 missing values generated)
+(6 missing values generated)
+(6 missing values generated)
+(6 missing values generated)
+(6 missing values generated)
+(6 missing values generated)
+(6 missing values generated)
+
+. 
+.   /* generate pct no true/true for qoi 35-40 */
+.   foreach i of numlist 35/40 {
+  2.     gen pctnottrue`i' = nottrue`i'/nettotalresp`i'
+  3.     label var pctnottrue`i' "percent not true in qoi`i'"
+  4.     gen pcttrue`i' = (littletrue`i' + prettytrue`i' + verytrue`i')/nettotalresp`i'
+  5.     label var pcttrue`i' "percent a little true, pretty much true, and very much true in qoi`i'"
+  6.   }
+
+. 
+. /* generate a year var to prepare for constructing a panel */
+. gen year = 1415
+
+. 
+.   label data "cleaned secondary 1415 survey questions of interest with percent disagree/agree etc."
+note: label truncated to 80 characters
+
+.   compress
+  variable totalresp was float now int
+  variable nettotalresp22 was float now int
+  variable nettotalresp23 was float now int
+  variable nettotalresp24 was float now int
+  variable nettotalresp25 was float now int
+  variable nettotalresp26 was float now int
+  variable nettotalresp31 was float now int
+  variable nettotalresp32 was float now int
+  variable nettotalresp33 was float now int
+  variable nettotalresp34 was float now int
+  variable nettotalresp35 was float now int
+  variable nettotalresp36 was float now int
+  variable nettotalresp37 was float now int
+  variable nettotalresp38 was float now int
+  variable nettotalresp39 was float now int
+  variable nettotalresp40 was float now int
+  variable year was float now int
+  variable strdisagree22 was double now int
+  variable strdisagree23 was double now int
+  variable strdisagree24 was double now int
+  variable strdisagree25 was double now int
+  variable strdisagree26 was double now int
+  variable strdisagree31 was double now byte
+  variable strdisagree32 was double now int
+  variable strdisagree33 was double now byte
+  variable strdisagree34 was double now int
+  variable disagree22 was double now int
+  variable disagree23 was double now int
+  variable disagree24 was double now int
+  variable disagree25 was double now int
+  variable disagree26 was double now int
+  variable disagree31 was double now int
+  variable disagree32 was double now int
+  variable disagree33 was double now int
+  variable disagree34 was double now int
+  variable neither22 was double now int
+  variable neither23 was double now int
+  variable neither24 was double now int
+  variable neither25 was double now int
+  variable neither26 was double now int
+  variable neither31 was double now int
+  variable neither32 was double now int
+  variable neither33 was double now int
+  variable neither34 was double now int
+  variable agree22 was double now int
+  variable agree23 was double now int
+  variable agree24 was double now int
+  variable agree25 was double now int
+  variable agree26 was double now int
+  variable agree31 was double now int
+  variable agree32 was double now int
+  variable agree33 was double now int
+  variable agree34 was double now int
+  variable stragree22 was double now int
+  variable stragree23 was double now int
+  variable stragree24 was double now int
+  variable stragree25 was double now int
+  variable stragree26 was double now int
+  variable stragree31 was double now int
+  variable stragree32 was double now int
+  variable stragree33 was double now int
+  variable stragree34 was double now int
+  variable missing22 was double now int
+  variable missing23 was double now int
+  variable missing24 was double now int
+  variable missing25 was double now int
+  variable missing26 was double now int
+  variable missing31 was double now int
+  variable missing32 was double now int
+  variable missing33 was double now int
+  variable missing34 was double now int
+  variable missing35 was double now int
+  variable missing36 was double now int
+  variable missing37 was double now int
+  variable missing38 was double now int
+  variable missing39 was double now int
+  variable missing40 was double now int
+  variable nottrue35 was double now int
+  variable nottrue36 was double now int
+  variable nottrue37 was double now int
+  variable nottrue38 was double now int
+  variable nottrue39 was double now int
+  variable nottrue40 was double now int
+  variable littletrue35 was double now int
+  variable littletrue36 was double now int
+  variable littletrue37 was double now int
+  variable littletrue38 was double now int
+  variable littletrue39 was double now int
+  variable littletrue40 was double now int
+  variable prettytrue35 was double now int
+  variable prettytrue36 was double now int
+  variable prettytrue37 was double now int
+  variable prettytrue38 was double now int
+  variable prettytrue39 was double now int
+  variable prettytrue40 was double now int
+  variable verytrue35 was double now int
+  variable verytrue36 was double now int
+  variable verytrue37 was double now int
+  variable verytrue38 was double now int
+  variable verytrue39 was double now int
+  variable verytrue40 was double now int
+  (691,740 bytes saved)
+
+.   save $datadir_clean/calschls/qoiclean/secondary/secqoiclean1415, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/secondary/secqoiclean
+    > 1415.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/secondary/secqoiclean
+    > 1415.dta saved
+
+. 
+. cap log close secqoiclean1415

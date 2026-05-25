@@ -1,0 +1,159 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  trimparentdemo
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/responserate/trimparentdemo.smc
+> l
+  log type:  text
+ opened on:  18 May 2026, 12:13:15
+
+. 
+. /* rename variables in the secondary demographics datasets to indicate year, keep only vars needed to calculate respon
+> se rates */
+. local grades `" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "' //local macro for grades
+
+. 
+. use $caschls_projdir/dta/demographics/parent/parentdemo1415, replace
+( )
+
+. keep cdscode svygr1 svygr2 svygr3 svygr4 svygr5 svygr6 svygr7 svygr8 svygr9 svygr10 svygr11 svygr12 ///
+> gr1enr gr2enr gr3enr gr4enr gr5enr gr6enr gr7enr gr8enr gr9enr gr10enr gr11enr gr12enr
+
+. //renaming vars to indicate the year of the dataset to prepare for merging with other years later
+. foreach i of local grades {
+  2.   rename svygr`i' svygr`i'_1415
+  3.   rename gr`i'enr enrgr`i'_1415
+  4.   label var svygr`i'_1415 "number of grade `i' household responses in 1415"
+  5.   label var enrgr`i'_1415 "grade `i' enrollment in 1415"
+  6. }
+
+. label data "trimmed parent demographics 1415 including only survey responses and enrollment for grades 1-12"
+note: label truncated to 80 characters
+
+. compress
+  (0 bytes saved)
+
+. save $datadir_clean/calschls/demotrim/parent/trimparentdemo1415, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1415.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1415.dta saved
+
+. 
+. 
+. use $caschls_projdir/dta/demographics/parent/parentdemo1516, replace
+(2015-16 Parent CSPS Data)
+
+. keep cdscode svygr1 svygr2 svygr3 svygr4 svygr5 svygr6 svygr7 svygr8 svygr9 svygr10 svygr11 svygr12 ///
+> gr1enr gr2enr gr3enr gr4enr gr5enr gr6enr gr7enr gr8enr gr9enr gr10enr gr11enr gr12enr
+
+. foreach i of local grades {
+  2.   rename svygr`i' svygr`i'_1516
+  3.   rename gr`i'enr enrgr`i'_1516
+  4.   label var svygr`i'_1516 "number of grade `i' household responses in 1516"
+  5.   label var enrgr`i'_1516 "grade `i' enrollment in 1516"
+  6. }
+
+. label data "trimmed parent demographics 1516 including only survey responses and enrollment for grades 1-12"
+note: label truncated to 80 characters
+
+. compress
+  (0 bytes saved)
+
+. save $datadir_clean/calschls/demotrim/parent/trimparentdemo1516, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1516.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1516.dta saved
+
+. 
+. 
+. use $caschls_projdir/dta/demographics/parent/parentdemo1617, replace
+(2016-17 Parent CSPS Data)
+
+. keep cdscode svygr1 svygr2 svygr3 svygr4 svygr5 svygr6 svygr7 svygr8 svygr9 svygr10 svygr11 svygr12 ///
+> gr1enr gr2enr gr3enr gr4enr gr5enr gr6enr gr7enr gr8enr gr9enr gr10enr gr11enr gr12enr
+
+. foreach i of local grades {
+  2.   rename svygr`i' svygr`i'_1617
+  3.   rename gr`i'enr enrgr`i'_1617
+  4.   label var svygr`i'_1617 "number of grade `i' household responses in 1617"
+  5.   label var enrgr`i'_1617 "grade `i' enrollment in 1617"
+  6. }
+
+. label data "trimmed parent demographics 1617 including only survey responses and enrollment for grades 1-12"
+note: label truncated to 80 characters
+
+. compress
+  (0 bytes saved)
+
+. save $datadir_clean/calschls/demotrim/parent/trimparentdemo1617, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1617.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1617.dta saved
+
+. 
+. 
+. use $caschls_projdir/dta/demographics/parent/parentdemo1718, replace
+(2017-18 Parent CSPS Data)
+
+. keep cdscode svygr1 svygr2 svygr3 svygr4 svygr5 svygr6 svygr7 svygr8 svygr9 svygr10 svygr11 svygr12 ///
+> gr1enr gr2enr gr3enr gr4enr gr5enr gr6enr gr7enr gr8enr gr9enr gr10enr gr11enr gr12enr
+
+. foreach i of local grades {
+  2.   rename svygr`i' svygr`i'_1718
+  3.   rename gr`i'enr enrgr`i'_1718
+  4.   label var svygr`i'_1718 "number of grade `i' household responses in 1718"
+  5.   label var enrgr`i'_1718 "grade `i' enrollment in 1718"
+  6. }
+
+. label data "trimmed parent demographics 1718 including only survey responses and enrollment for grades 1-12"
+note: label truncated to 80 characters
+
+. compress
+  (0 bytes saved)
+
+. save $datadir_clean/calschls/demotrim/parent/trimparentdemo1718, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1718.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1718.dta saved
+
+. 
+. 
+. use $caschls_projdir/dta/demographics/parent/parentdemo1819, replace
+(2018-19 Parent CSPS Data)
+
+. keep cdscode svygr1 svygr2 svygr3 svygr4 svygr5 svygr6 svygr7 svygr8 svygr9 svygr10 svygr11 svygr12 ///
+> gr1enr gr2enr gr3enr gr4enr gr5enr gr6enr gr7enr gr8enr gr9enr gr10enr gr11enr gr12enr
+
+. foreach i of local grades {
+  2.   rename svygr`i' svygr`i'_1819
+  3.   rename gr`i'enr enrgr`i'_1819
+  4.   label var svygr`i'_1819 "number of grade `i' household responses in 1819"
+  5.   label var enrgr`i'_1819 "grade `i' enrollment in 1819"
+  6. }
+
+. label data "trimmed parent demographics 1819 including only survey responses and enrollment for grades 1-12"
+note: label truncated to 80 characters
+
+. compress
+  (0 bytes saved)
+
+. save $datadir_clean/calschls/demotrim/parent/trimparentdemo1819, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1819.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
+    > 1819.dta saved
+
+. 
+. cap log close trimparentdemo

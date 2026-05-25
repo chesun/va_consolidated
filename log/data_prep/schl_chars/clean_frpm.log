@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/clean_frpm.smcl
   log type:  text
- opened on:  18 May 2026, 00:00:59
+ opened on:  18 May 2026, 12:04:31
 
 . 
 . 
@@ -846,6 +846,7 @@ datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
 > ata
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
 > d_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
@@ -1642,9 +1643,6 @@ percenteligiblefrpmage: all characters numeric; frpm_prop generated as double
 (1 missing value generated)
   variable year was float now int
   (20,790 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/frpm/frpm_2015_clean.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/frpm/frpm_2015_clean.dta saved
 Fall Year = 2015
@@ -1664,9 +1662,6 @@ frpmcountages517: all characters numeric; totalfrpm generated as int
 percenteligiblefrpmage: all characters numeric; frpm_prop generated as double
   variable year was float now int
   (20,906 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/frpm/frpm_2016_clean.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/frpm/frpm_2016_clean.dta saved
 Fall Year = 2016
@@ -1686,9 +1681,6 @@ frpmcountages517: all characters numeric; totalfrpm generated as int
 percenteligiblefrpmage: all characters numeric; frpm_prop generated as double
   variable year was float now int
   (20,956 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/frpm/frpm_2017_clean.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/frpm/frpm_2017_clean.dta saved
 Fall Year = 2017
@@ -1708,9 +1700,6 @@ frpmcountages517: all characters numeric; totalfrpm generated as int
 percenteligiblefrpmage: all characters numeric; frpm_prop generated as double
   variable year was float now int
   (20,950 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/frpm/frpm_2018_clean.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/frpm/frpm_2018_clean.dta saved
 
@@ -1722,6 +1711,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:      7.81 /        1 =       7.8130
+   1:      7.81 /        1 =       7.8070
 
 . cap log close clean_frpm

@@ -2,7 +2,7 @@
       name:  poolgr11enr
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/prepare/poolgr11enr.smcl
   log type:  text
- opened on:  18 May 2026, 00:06:04
+ opened on:  18 May 2026, 12:09:38
 
 . 
 . /* append the datasets */
@@ -36,9 +36,6 @@
 
 . 
 . save $datadir_clean/enrollment/schoollevel/poolgr11enr, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/poolgr11enr.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/enrollment/schoollevel/poolgr11enr.dta
     saved
 

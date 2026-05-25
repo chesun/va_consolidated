@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_staffschoolfte
 > .smcl
   log type:  text
- opened on:  18 May 2026, 00:02:19
+ opened on:  18 May 2026, 12:06:00
 
 . 
 . graph drop _all
@@ -815,6 +815,7 @@ estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/es
 datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/data
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
 cb_k12_csu_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/k12_csu_crosswa
@@ -1509,9 +1510,6 @@ filecreated                                                                     
   variable staff_type was float now byte
   variable date_created was float now int
   (2,560,614 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffschoolfte/staffschoolfte_2015_
-    > clean.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffschoolfte/staffschoolfte_2015_
     > clean.dta saved
@@ -1698,9 +1696,6 @@ filecreated                                                                     
   variable staff_type was float now byte
   variable date_created was float now int
   (2,598,267 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffschoolfte/staffschoolfte_2016_
-    > clean.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffschoolfte/staffschoolfte_2016_
     > clean.dta saved
@@ -1887,9 +1882,6 @@ filecreated                                                                     
   variable staff_type was float now byte
   variable date_created was float now int
   (2,649,122 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffschoolfte/staffschoolfte_2017_
-    > clean.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffschoolfte/staffschoolfte_2017_
     > clean.dta saved
@@ -2076,9 +2068,6 @@ filecreated                                                                     
   variable staff_type was float now byte
   variable date_created was float now int
   (2,671,102 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffschoolfte/staffschoolfte_2018_
-    > clean.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffschoolfte/staffschoolfte_2018_
     > clean.dta saved
@@ -2088,6 +2077,6 @@ file
 . timer off 1
 
 . timer list
-   1:     43.67 /        1 =      43.6660
+   1:     48.91 /        1 =      48.9130
 
 . cap log close clean_staffschoolfte

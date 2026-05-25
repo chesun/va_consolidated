@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/clean_enr.smcl
   log type:  text
- opened on:  18 May 2026, 00:00:43
+ opened on:  18 May 2026, 12:04:14
 
 . 
 . graph drop _all
@@ -846,6 +846,7 @@ datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
 > ata
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
 > d_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
@@ -2123,8 +2124,6 @@ note: label truncated to 80 characters
   variable race was float now byte
   variable male was float now byte
   (1,034,832 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/enr/enr_2015_clean.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/enr/enr_2015_clean.dta saved
 Fall Year = 2015
@@ -2596,8 +2595,6 @@ note: label truncated to 80 characters
   variable race was float now byte
   variable male was float now byte
   (1,037,736 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/enr/enr_2016_clean.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/enr/enr_2016_clean.dta saved
 Fall Year = 2016
@@ -3069,8 +3066,6 @@ note: label truncated to 80 characters
   variable race was float now byte
   variable male was float now byte
   (1,038,504 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/enr/enr_2017_clean.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/enr/enr_2017_clean.dta saved
 Fall Year = 2017
@@ -3542,8 +3537,6 @@ note: label truncated to 80 characters
   variable race was float now byte
   variable male was float now byte
   (1,041,552 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/enr/enr_2018_clean.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/enr/enr_2018_clean.dta saved
 
@@ -3552,6 +3545,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:     16.14 /        1 =      16.1390
+   1:     16.99 /        1 =      16.9900
 
 . cap log close clean_enr

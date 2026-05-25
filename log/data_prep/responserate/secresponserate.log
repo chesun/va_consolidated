@@ -1,0 +1,252 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  secresponserate
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/responserate/secresponserate.sm
+> cl
+  log type:  text
+ opened on:  18 May 2026, 12:13:15
+
+. 
+. use $datadir_clean/calschls/demotrim/secondary/trimsecdemo1415, replace
+(trimmed secondary demographics 1415 including only survey response and enrollm
+> en)
+
+. merge 1:1 cdscode using $datadir_clean/calschls/demotrim/secondary/trimsecdem
+> o1516
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         1,994
+        from master                       725  (_merge==1)
+        from using                      1,269  (_merge==2)
+
+    Matched                               459  (_merge==3)
+    -----------------------------------------
+
+. /* matched: 459. not matched: 1994 (from master: 725, from using: 1269) */
+. 
+. drop _merge
+
+. merge 1:1 cdscode using $datadir_clean/calschls/demotrim/secondary/trimsecdem
+> o1617
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         1,567
+        from master                     1,269  (_merge==1)
+        from using                        298  (_merge==2)
+
+    Matched                             1,184  (_merge==3)
+    -----------------------------------------
+
+. /* matched: 1184. not matched: 1567 (frin naster: 1269, from using: 298) */
+. 
+. drop _merge
+
+. merge 1:1 cdscode using $datadir_clean/calschls/demotrim/secondary/trimsecdem
+> o1718
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         1,297
+        from master                     1,116  (_merge==1)
+        from using                        181  (_merge==2)
+
+    Matched                             1,635  (_merge==3)
+    -----------------------------------------
+
+. /* matched: 1635. not matched: 1297 (from master: 1116, from using: 181) */
+. 
+. drop _merge
+
+. merge 1:1 cdscode using $datadir_clean/calschls/demotrim/secondary/trimsecdem
+> o1819
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         1,590
+        from master                     1,471  (_merge==1)
+        from using                        119  (_merge==2)
+
+    Matched                             1,461  (_merge==3)
+    -----------------------------------------
+
+. /* matched: 1461. not matched: 1590 (from master: 1471, from using: 119) */
+. 
+. drop _merge
+
+. 
+. local grades `" "9" "10" "11" "12" "' //local macro for grades
+
+. //recode the missing values for survey response as 0 since unmatched means th
+> ere were no responses for that year
+. foreach i of local grades {
+  2.   replace svygr`i'_1415 = 0 if svygr`i'_1415 == .
+  3.   replace svygr`i'_1516 = 0 if svygr`i'_1516 == .
+  4.   replace svygr`i'_1617 = 0 if svygr`i'_1617 == .
+  5.   replace svygr`i'_1718 = 0 if svygr`i'_1718 == .
+  6.   replace svygr`i'_1819 = 0 if svygr`i'_1819 == .
+  7. }
+(1,867 real changes made)
+(1,323 real changes made)
+(1,569 real changes made)
+(1,235 real changes made)
+(1,471 real changes made)
+(1,867 real changes made)
+(1,323 real changes made)
+(1,569 real changes made)
+(1,235 real changes made)
+(1,471 real changes made)
+(1,867 real changes made)
+(1,323 real changes made)
+(1,569 real changes made)
+(1,235 real changes made)
+(1,471 real changes made)
+(1,867 real changes made)
+(1,323 real changes made)
+(1,569 real changes made)
+(1,235 real changes made)
+(1,471 real changes made)
+
+. 
+. 
+. 
+. /* generate indicators for which year each school had survey responses */
+. local years `" "1415" "1516" "1617" "1718" "1819" "' //local macro for survey
+>  years
+
+. //generate total survey responses for grades 9-12
+. foreach year of local years {
+  2.   gen svy`year' = svygr9_`year' + svygr10_`year' + svygr11_`year' + svygr1
+> 2_`year'
+  3.   label var svy`year' "total survey response grades 9-12 in year `year'"
+  4. }
+
+. //generate total enrollment for grades 9-12
+. foreach year of local years {
+  2.   gen enr`year' = enrgr9_`year' + enrgr10_`year' + enrgr11_`year' + enrgr1
+> 2_`year'
+  3.   label var enr`year' "total enrollment in grades 9-12 in year `year'"
+  4. }
+(1,867 missing values generated)
+(1,323 missing values generated)
+(1,569 missing values generated)
+(1,235 missing values generated)
+(1,471 missing values generated)
+
+. //generate indicators for which years the school has survey responses
+. foreach year of local years {
+  2.   gen has`year' = 0
+  3.   replace has`year' = 1 if svy`year' > 0
+  4.   label var has`year' "has survey response in year `year'"
+  5. }
+(412 real changes made)
+(583 real changes made)
+(527 real changes made)
+(626 real changes made)
+(570 real changes made)
+
+. 
+. //generate overall response rate for each school including only years with su
+> rvey responses
+. gen denomtemp = 0 //generate a temp var for the denominator of response rate
+
+. gen numertemp = 0 //generate a temp var for the numerator of response rate
+
+. //add up the number of survey responses and enrollment from all years with su
+> rvey response
+. foreach year of local years {
+  2.   replace denomtemp = denomtemp + enr`year' if has`year' == 1
+  3.   replace numertemp = numertemp + svy`year' if has`year' == 1
+  4. }
+(409 real changes made)
+(412 real changes made)
+(582 real changes made)
+(583 real changes made)
+(527 real changes made)
+(527 real changes made)
+(626 real changes made)
+(626 real changes made)
+(570 real changes made)
+(570 real changes made)
+
+. //generate the pooled response rate only including years with responses
+. gen pooledrr = numertemp/denomtemp
+(1,995 missing values generated)
+
+. label var pooledrr "pooled response rate for grades 9-12"
+
+. drop denomtemp numertemp
+
+. 
+. //generate pooled response rate for grades 9 and 11 for each school including
+>  only years with survey responses
+. gen denomtemp = 0 //generate a temp var for the denominator of response rate
+
+. gen numertemp = 0 //generate a temp var for the numerator of response rate
+
+. //add up the number of survey responses in grades 9 and 11 and enrollment for
+>  grades 9 and 11 from all years with surv
+> ey response
+. foreach year of local years {
+  2.   replace denomtemp = denomtemp + enrgr9_`year' + enrgr11_`year' if has`ye
+> ar' == 1
+  3.   replace numertemp = numertemp + svygr9_`year' + svygr11_`year' if has`ye
+> ar' == 1
+  4. }
+(409 real changes made)
+(411 real changes made)
+(582 real changes made)
+(582 real changes made)
+(527 real changes made)
+(527 real changes made)
+(626 real changes made)
+(619 real changes made)
+(570 real changes made)
+(559 real changes made)
+
+. //generate the pooled response rate only including years with responses
+. gen pooledrr_gr9and11 = numertemp/denomtemp
+(1,995 missing values generated)
+
+. label var pooledrr_gr9and11 "pooled response rate for grades 9 and 11"
+
+. drop denomtemp numertemp
+
+. 
+. 
+. label data "secondary survey response numbers by grade year with pooled respo
+> nse rates"
+
+. compress
+  variable svy1415 was float now int
+  variable svy1516 was float now int
+  variable svy1617 was float now int
+  variable svy1718 was float now int
+  variable svy1819 was float now int
+  variable enr1415 was float now int
+  variable enr1516 was float now int
+  variable enr1617 was float now int
+  variable enr1718 was float now int
+  variable enr1819 was float now int
+  variable has1415 was float now byte
+  variable has1516 was float now byte
+  variable has1617 was float now byte
+  variable has1718 was float now byte
+  variable has1819 was float now byte
+  (106,785 bytes saved)
+
+. save $datadir_clean/calschls/responserate/secresponserate, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/responserate/secresponserate.d
+    > ta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/responserate/secresponserate.d
+    > ta saved
+
+. 
+. 
+. cap log close secresponserate

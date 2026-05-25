@@ -1,0 +1,226 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  staffpooling
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/poolingdata/staffpooling.smcl
+  log type:  text
+ opened on:  18 May 2026, 12:13:16
+
+. 
+. /* first append all years to make a pnael dataset to calculate pooled stats *
+> /
+. use $datadir_clean/calschls/qoiclean/staff/staffqoiclean1819, clear
+(cleaned staff 1819 survey questions of interest with percent disagree/agree et
+> c.)
+
+. append using $datadir_clean/calschls/qoiclean/staff/staffqoiclean1718
+
+. 
+. append using $datadir_clean/calschls/qoiclean/staff/staffqoiclean1617
+
+. 
+. append using $datadir_clean/calschls/qoiclean/staff/staffqoiclean1516
+(variable stragree87 was byte, now int to accommodate using data's values)
+(variable agree10 was byte, now int to accommodate using data's values)
+(variable neither20 was byte, now int to accommodate using data's values)
+(variable yes103 was byte, now int to accommodate using data's values)
+(variable yes104 was byte, now int to accommodate using data's values)
+(variable yes105 was byte, now int to accommodate using data's values)
+(variable yes112 was byte, now int to accommodate using data's values)
+(variable missing87 was byte, now int to accommodate using data's values)
+(variable nettotalresp128 was byte, now int to accommodate using data's values)
+
+. 
+. append using $datadir_clean/calschls/qoiclean/staff/staffqoiclean1415
+(variable neither41 was byte, now int to accommodate using data's values)
+(variable mild98 was byte, now int to accommodate using data's values)
+(variable no109 was byte, now int to accommodate using data's values)
+(variable no111 was byte, now int to accommodate using data's values)
+
+. 
+. drop if missing(cdscode) //there is one observation with missing cdscode
+(4 observations deleted)
+
+. 
+. 
+. /* calculate the weighted average of qoi means pooled over years
+> ignore missing values */
+. /* Note: collapse doesn't work because the weight is different for each varia
+> ble, would have to write everything out *
+> /
+. sort cdscode year
+
+. 
+. foreach i of numlist 10 20 24 41 44 64 87 98 103/105 109 111 112 128 {
+  2.   by cdscode: egen qoi`i'mean_pooled =  wtmean(qoi`i'mean), weight(nettota
+> lresp`i')
+  3. }
+(13 missing values generated)
+(18 missing values generated)
+(1,589 missing values generated)
+(13 missing values generated)
+(15 missing values generated)
+(1,588 missing values generated)
+(408 missing values generated)
+(13 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(169 missing values generated)
+
+. 
+. /* generate the percentage agree/disagree for qoi 10 20 24 41 44 64 87 128 */
+. foreach i of numlist 10 20 24 41 44 64 87 128 {
+  2.   by cdscode: egen pctagree`i'_pooled = wtmean(pctagree`i'), weight(nettot
+> alresp`i')
+  3.   by cdscode: egen pctdisagree`i'_pooled = wtmean(pctdisagree`i'), weight(
+> nettotalresp`i')
+  4. }
+(13 missing values generated)
+(13 missing values generated)
+(18 missing values generated)
+(18 missing values generated)
+(1,589 missing values generated)
+(1,589 missing values generated)
+(13 missing values generated)
+(13 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(1,588 missing values generated)
+(1,588 missing values generated)
+(408 missing values generated)
+(408 missing values generated)
+(169 missing values generated)
+(169 missing values generated)
+
+. 
+. /* generate pooled weighted average percentage small/big problem for qoi98 */
+. by cdscode: egen pctsmallprob98_pooled = wtmean(pctsmallprob98), weight(netto
+> talresp98)
+(13 missing values generated)
+
+. by cdscode: egen pctbigprob98_pooled = wtmean(pctbigprob98), weight(nettotalr
+> esp98)
+(13 missing values generated)
+
+. 
+. /* generate pooled weighted percentage yes/no for qoi 103/105 109 111 112 */
+. foreach i of numlist 103/105 109 111 112 {
+  2.   by cdscode: egen pctyes`i'_pooled = wtmean(pctyes`i'), weight(nettotalre
+> sp`i')
+  3.   by cdscode: egen pctno`i'_pooled = wtmean(pctno`i'), weight(nettotalresp
+> `i')
+  4. }
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+(15 missing values generated)
+
+. 
+. collapse (mean) *pooled (sum) nettotalresp* missing*, by(cdscode)
+
+. 
+. /* label the pooled qoi means and nettotalresp and missing*/
+. foreach i of numlist 10 20 24 41 44 64 87 98 103/105 109 111 112 128 {
+  2.   label var qoi`i'mean_pooled "weighted mean of qoi`i' responses over year
+> s for a given school"
+  3.   label var nettotalresp`i' "net total responses for qoi`i' excluding miss
+> ing pooled over years"
+  4.   label var missing`i' "number of missing responses for qoi`i' pooled over
+>  years"
+  5. }
+
+. 
+. ********************** label all the weighted pooled vars *******************
+> ***
+. /* label the pooled percent agree/disagree vars */
+. foreach i of numlist 10 20 24 41 44 64 87 128 {
+  2.   label var pctagree`i'_pooled "weighted average percent agree/strongly ag
+> ree in qoi`i' pooled over years"
+  3.   label var pctdisagree`i'_pooled "weighted average percent disagree/stron
+> gly disagree in qoi`i' pooled over years"
+  4. }
+
+. 
+. /* label the pooled percent small/big problem  for qoi98 */
+. label var pctsmallprob98_pooled "weighted avg percent insignificant or mild p
+> roblem in qoi98 pooled over years"
+
+. label var pctbigprob98_pooled "weighted avg percent moderate or severe proble
+> m in qoi98 pooled over years"
+
+. 
+. /* label the pooled percent yes/no for qoi 103/105 109 111 112 */
+. foreach i of numlist 103/105 109 111 112 {
+  2.   label var pctyes`i'_pooled "weighted avg percent yes in qoi `i' pooled o
+> ver years"
+  3.   label var pctno`i'_pooled "weighted avg percent no in qoi`i' pooled over
+>  years"
+  4. }
+
+. 
+. 
+. 
+. 
+. /* there is no staff response rate so cannot merge with the response rate dat
+> aset */
+. 
+. label data "weighted average staff qoi statistics pooled over years"
+
+. compress
+  variable nettotalresp10 was double now int
+  variable nettotalresp20 was double now int
+  variable nettotalresp24 was double now int
+  variable nettotalresp41 was double now int
+  variable nettotalresp44 was double now int
+  variable nettotalresp64 was double now int
+  variable nettotalresp87 was double now int
+  variable nettotalresp98 was double now int
+  variable nettotalresp103 was double now int
+  variable nettotalresp104 was double now int
+  variable nettotalresp105 was double now int
+  variable nettotalresp109 was double now int
+  variable nettotalresp111 was double now int
+  variable nettotalresp112 was double now int
+  variable nettotalresp128 was double now int
+  variable missing10 was double now byte
+  variable missing20 was double now byte
+  variable missing24 was double now byte
+  variable missing41 was double now int
+  variable missing44 was double now byte
+  variable missing64 was double now byte
+  variable missing87 was double now int
+  variable missing128 was double now int
+  variable missing98 was double now byte
+  variable missing103 was double now byte
+  variable missing104 was double now byte
+  variable missing105 was double now byte
+  variable missing109 was double now byte
+  variable missing111 was double now byte
+  variable missing112 was double now byte
+  (808,704 bytes saved)
+
+. save $datadir_clean/calschls/poolingdata/staffpooledstats, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/poolingdata/staffpooledstats.d
+    > ta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/poolingdata/staffpooledstats.d
+    > ta saved
+
+. 
+. 
+. cap log close staffpooling

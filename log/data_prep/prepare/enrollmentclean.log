@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/prepare/enrollmentclean.smcl
   log type:  text
- opened on:  18 May 2026, 00:04:56
+ opened on:  18 May 2026, 12:08:32
 
 . 
 . local enrdtaname `" "enr1415" "enr1516" "enr1617" "enr1718" "enr1819" "'  //c
@@ -663,9 +663,6 @@ gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixede
   variable whiteenrtotal was float now int
   variable hispanicenrtotal was float now int
   (3,615,393 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/enrollment/schoollevel/enr1415.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /enrollment/schoollevel/enr1415.dta
     saved
@@ -1048,9 +1045,6 @@ gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixede
   variable whiteenrtotal was float now int
   variable hispanicenrtotal was float now int
   (3,640,428 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/enrollment/schoollevel/enr1516.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /enrollment/schoollevel/enr1516.dta
     saved
@@ -1433,9 +1427,6 @@ gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixede
   variable whiteenrtotal was float now int
   variable hispanicenrtotal was float now int
   (3,669,050 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/enrollment/schoollevel/enr1617.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /enrollment/schoollevel/enr1617.dta
     saved
@@ -1818,9 +1809,6 @@ gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixede
   variable whiteenrtotal was float now int
   variable hispanicenrtotal was float now int
   (3,613,875 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/enrollment/schoollevel/enr1718.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /enrollment/schoollevel/enr1718.dta
     saved
@@ -2203,9 +2191,6 @@ gr3maleenr    gr12maleenr   gr2mixedenr   gr4mixedenr   gr6mixedenr   gr8mixede
   variable whiteenrtotal was float now int
   variable hispanicenrtotal was float now int
   (3,682,350 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/enrollment/schoollevel/enr1819.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /enrollment/schoollevel/enr1819.dta
     saved
@@ -2222,6 +2207,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/prepare/enrollmentclean.smcl
   log type:  text
- closed on:  18 May 2026, 00:06:04
+ closed on:  18 May 2026, 12:09:38
 -------------------------------------------------------------------------------
 > -----------------------------------------

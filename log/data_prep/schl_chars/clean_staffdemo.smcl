@@ -2,7 +2,7 @@
       name:  clean_staffdemo
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_staffdemo.smcl
   log type:  text
- opened on:  18 May 2026, 00:01:36
+ opened on:  18 May 2026, 12:05:09
 
 . 
 . graph drop _all
@@ -813,6 +813,7 @@ estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/es
 datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/data
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
 cb_k12_csu_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/k12_csu_crosswa
@@ -1700,9 +1701,6 @@ note: label truncated to 80 characters
   variable employment_status was float now byte
   variable date_created was float now int
   (5,539,424 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffdemo/staffdemo_2015_clean.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffdemo/staffdemo_2015_clean.dta
     saved
 
@@ -2178,9 +2176,6 @@ note: label truncated to 80 characters
   variable employment_status was float now byte
   variable date_created was float now int
   (13,046,163 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffdemo/staffdemo_2016_clean.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffdemo/staffdemo_2016_clean.dta
     saved
 Fall Year = 2016
@@ -2492,9 +2487,6 @@ note: label truncated to 80 characters
   variable employment_status was float now byte
   variable date_created was float now int
   (13,315,893 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffdemo/staffdemo_2017_clean.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffdemo/staffdemo_2017_clean.dta
     saved
 Fall Year = 2017
@@ -2806,9 +2798,6 @@ note: label truncated to 80 characters
   variable employment_status was float now byte
   variable date_created was float now int
   (13,383,566 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffdemo/staffdemo_2018_clean.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffdemo/staffdemo_2018_clean.dta
     saved
 
@@ -2817,6 +2806,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:     42.99 /        1 =      42.9900
+   1:     50.39 /        1 =      50.3890
 
 . cap log close clean_staffdemo

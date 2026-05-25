@@ -42786,3 +42786,66 @@ end of do-file
 
 r(110);
 
+. do do/main.do
+
+. /*------------------------------------------------------------------------------
+> do/main.do — single pipeline entry point for the consolidated VA project
+> ================================================================================
+> 
+> PURPOSE
+>     Replaces `cde_va_project_fork/do_files/do_all.do` and `caschls/do/master.do`.
+>     One command (`stata -b do do/main.do` from `$consolidated_dir` on Scribe)
+>     runs the entire pipeline end-to-end.
+> 
+> STATUS
+>     SKELETON (drafted 2026-04-28 ahead of plan v3 APPROVED; relocated under
+>     do/ on 2026-04-29 per ADR-0021).  Phase toggles are wired up; phase
+>     BODIES are stubbed with TODO markers.  Each stub will be filled in as
+>     Phase 1a §3.3 relocates the corresponding scripts.
+> 
+> INVOCATION
+>     cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+>     stata -b do do/main.do
+> 
+> SANDBOX PRINCIPLE (per ADR-0021)
+>     The consolidated/ folder is a self-contained output sandbox.  Every WRITE
+>     by every do file in this pipeline lands under $consolidated_dir.  Reads
+>     from predecessor paths (Matt's files, legacy caches, restricted-access
+>     raw data) are fine, but no script may write back to those paths.  Payoff:
+>     `diff -r consolidated/output predecessor/output` cleanly compares the new
+>     pipeline against the old one without polluting either side.
+> 
+> CONVENTIONS
+>     - Phase toggles let dev iterate on one stage without re-running everything.
+>       Production / acceptance runs (per ADR-0018) toggle ALL on, including
+>       run_data_checks.
+>     - `m4_acceptance_run' is the master override for ADR-0018 acceptance-run
+>       scenarios.  Setting it to 1 forces the three run-once-cached sub-toggles
+>       (do_touse_va, do_create_samples, do_va) ON, so the run rebuilds samples
+>       + VA estimates from scratch instead of relying on cached predecessor
+>       outputs.  Default 0 mirrors predecessor `do_all.do' cached-output pattern.
+>     - Each phase block calls do-files relative to $consolidated_dir.
+>     - Per-do-file logging convention (plan v3 §5.1 step 2): each invoked do
+>       file opens its own log via `log using $logdir/<filename>.smcl`.
+>     - Description convention (per ADR-0021): every do-file invocation below
+>       carries a one-liner describing what the called script does.  The called
+>       script's own header carries the authoritative longer description.
+>     - The phase blocks below currently hold *placeholder* one-liners —
+>       Phase 1a §3.3 has not yet relocated the actual scripts.  When each
+>       script is relocated, the per-commit checklist (per phase-1-review.md
+>       §2) requires cross-checking the one-liner against the relocated
+>       script's header and updating it if the script's role differs.
+>     - main.do itself opens a master log at $logdir/main.smcl that captures
+>       the orchestration layer (which phases ran, runtime, exit codes).
+> 
+> REFERENCES
+>     Plan v3 §3.4 (main.do construction)
+>     Plan v3 §5.3 (automated data checks)
+>     ADR-0018 (offboarding acceptance criteria — all toggles on)
+>     ADR-0021 (do/ relocation; self-contained sandbox; description convention)
+> ------------------------------------------------------------------------------*/
+. 
+. 
+. clear all
+
+. cap log close master

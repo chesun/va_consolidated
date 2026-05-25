@@ -1,0 +1,352 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  secpooling
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/poolingdata/secpooling.smcl
+  log type:  text
+ opened on:  18 May 2026, 12:13:15
+
+. 
+. /* ssc install _gwtmean, replace //package to allow use of weights in egen me
+> an  */
+. 
+. 
+. /* first append all years to make a pnael dataset to calculate pooled stats *
+> /
+. use $datadir_clean/calschls/qoiclean/secondary/secqoiclean1819, clear
+(cleaned secondary 1819 survey questions of interest with percent disagree/agre
+> e )
+
+. append using $datadir_clean/calschls/qoiclean/secondary/secqoiclean1718
+(variable strdisagree31 was byte, now int to accommodate using data's values)
+(variable disagree31 was byte, now int to accommodate using data's values)
+(variable disagree34 was byte, now int to accommodate using data's values)
+
+. 
+. append using $datadir_clean/calschls/qoiclean/secondary/secqoiclean1617
+
+. 
+. append using $datadir_clean/calschls/qoiclean/secondary/secqoiclean1516
+
+. 
+. append using $datadir_clean/calschls/qoiclean/secondary/secqoiclean1415
+
+. 
+. drop if missing(cdscode) //there is one observation with missing cdscode
+(4 observations deleted)
+
+. 
+. 
+. /* calculate the weighted average of qoi means pooled over years
+> ignore missing values */
+. /* Note: collapse doesn't work because the weight is different for each varia
+> ble, would have to write everything out *
+> /
+. sort cdscode year
+
+. 
+. foreach i of numlist 22/40 {
+  2.   by cdscode: egen qoi`i'mean_pooled = wtmean(qoi`i'mean), weight(nettotal
+> resp`i')
+  3. }
+(1 missing value generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(2 missing values generated)
+(1 missing value generated)
+(2 missing values generated)
+
+. 
+. 
+. /* generate the percentages of agree/disagree etc for qoi 22-34 */
+. foreach i of numlist 22/34 {
+  2.   by cdscode: egen pctagree`i'_pooled = wtmean(pctagree`i'), weight(nettot
+> alresp`i')
+  3.   by cdscode: egen pctdisagree`i'_pooled = wtmean(pctdisagree`i'), weight(
+> nettotalresp`i')
+  4.   by cdscode: egen pctneither`i'_pooled = wtmean(pctneither`i'), weight(ne
+> ttotalresp`i')
+  5. }
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(109 missing values generated)
+(2 missing values generated)
+(2 missing values generated)
+(2 missing values generated)
+(1 missing value generated)
+(1 missing value generated)
+(1 missing value generated)
+
+. 
+. /* generate the percentages of true/not true etc for qoi 35-40 */
+. foreach i of numlist 35/40 {
+  2.   by cdscode: egen pcttrue`i'_pooled = wtmean(pcttrue`i'), weight(nettotal
+> resp`i')
+  3.   by cdscode: egen pctnottrue`i'_pooled = wtmean(pctnottrue`i'), weight(ne
+> ttotalresp`i')
+  4. }
+(2 missing values generated)
+(2 missing values generated)
+
+. 
+. 
+. collapse (mean) *pooled (sum) nettotalresp* missing* strdisagree* disagree* n
+> either* agree* stragree* ///
+> nottrue* littletrue* prettytrue* verytrue*, by(cdscode)
+
+. 
+. /* label the pooled qoi means and nettotalresp and missing*/
+. foreach i of numlist 22/40 {
+  2.   label var qoi`i'mean_pooled "weighted mean of qoi`i' responses over year
+> s for a given school"
+  3.   label var nettotalresp`i' "net total responses for qoi`i' excluding miss
+> ing pooled over years"
+  4.   label var missing`i' "number of missing responses for qoi`i' pooled over
+>  years"
+  5. }
+
+. 
+. /* label the pooled percent agree/disagree vars */
+. foreach i of numlist 22/34 {
+  2.   label var pctagree`i'_pooled "weighted average percent agree/strongly ag
+> ree in qoi`i' pooled over years"
+  3.   label var pctdisagree`i'_pooled "weighted average percent disagree/stron
+> gly disagree in qoi`i' pooled over years"
+  4.   label var pctneither`i'_pooled "weighted average percent neither agree n
+> or disagree in qoi`i' pooled over years"
+  5. 
+.   label var strdisagree`i' "total number of strongly disagree for qoi`i' pool
+> ed over years"
+  6.   label var disagree`i' "total number of disagree for qoi`i' pooled over y
+> ears"
+  7.   label var neither`i' "total number of neither disagree nor agree for qoi
+> `i' pooled over years"
+  8.   label var agree`i' "total number of agree for qoi`i' pooled over years"
+  9.   label var stragree`i' "total number of strongly agree for qoi`i' pooled 
+> over years"
+ 10. }
+
+. 
+. foreach i of numlist 35/40 {
+  2.   label var pcttrue`i'_pooled "weighted average percent little true, prett
+> y much true, and very much true in qoi`i'
+>  pooled over years"
+  3.   label var pctnottrue`i'_pooled "weighted average percent not true in qoi
+> `i' pooled over years"
+  4. 
+.   label var nottrue`i' "total number of not true for qoi`i' pooled over years
+> "
+  5.   label var littletrue`i' "total number of a little true for qoi`i' pooled
+>  over years"
+  6.   label var prettytrue`i' "total number of pretty much true for qoi`i' poo
+> led over years"
+  7.   label var verytrue`i' "total number of very true for qoi`i' pooled over 
+> years"
+  8. }
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+note: label truncated to 80 characters
+
+. 
+. 
+. label data "weighted average secondary qoi statistics pooled over years"
+
+. compress
+  variable nettotalresp22 was double now int
+  variable nettotalresp23 was double now int
+  variable nettotalresp24 was double now int
+  variable nettotalresp25 was double now int
+  variable nettotalresp26 was double now int
+  variable nettotalresp27 was double now int
+  variable nettotalresp28 was double now int
+  variable nettotalresp29 was double now int
+  variable nettotalresp30 was double now int
+  variable nettotalresp31 was double now int
+  variable nettotalresp32 was double now int
+  variable nettotalresp33 was double now int
+  variable nettotalresp34 was double now int
+  variable nettotalresp35 was double now int
+  variable nettotalresp36 was double now int
+  variable nettotalresp37 was double now int
+  variable nettotalresp38 was double now int
+  variable nettotalresp39 was double now int
+  variable nettotalresp40 was double now int
+  variable missing22 was double now int
+  variable missing23 was double now int
+  variable missing24 was double now int
+  variable missing25 was double now int
+  variable missing26 was double now int
+  variable missing27 was double now int
+  variable missing28 was double now int
+  variable missing29 was double now int
+  variable missing30 was double now int
+  variable missing31 was double now int
+  variable missing32 was double now int
+  variable missing33 was double now int
+  variable missing34 was double now int
+  variable missing35 was double now int
+  variable missing36 was double now int
+  variable missing37 was double now int
+  variable missing38 was double now int
+  variable missing39 was double now int
+  variable missing40 was double now int
+  variable strdisagree22 was double now int
+  variable strdisagree23 was double now int
+  variable strdisagree24 was double now int
+  variable strdisagree25 was double now int
+  variable strdisagree26 was double now int
+  variable strdisagree27 was double now int
+  variable strdisagree28 was double now int
+  variable strdisagree29 was double now int
+  variable strdisagree30 was double now int
+  variable strdisagree31 was double now int
+  variable strdisagree32 was double now int
+  variable strdisagree33 was double now int
+  variable strdisagree34 was double now int
+  variable disagree22 was double now int
+  variable disagree23 was double now int
+  variable disagree24 was double now int
+  variable disagree25 was double now int
+  variable disagree26 was double now int
+  variable disagree27 was double now int
+  variable disagree28 was double now int
+  variable disagree29 was double now int
+  variable disagree30 was double now int
+  variable disagree31 was double now int
+  variable disagree32 was double now int
+  variable disagree33 was double now int
+  variable disagree34 was double now int
+  variable neither22 was double now int
+  variable neither23 was double now int
+  variable neither24 was double now int
+  variable neither25 was double now int
+  variable neither26 was double now int
+  variable neither27 was double now int
+  variable neither28 was double now int
+  variable neither29 was double now int
+  variable neither30 was double now int
+  variable neither31 was double now int
+  variable neither32 was double now int
+  variable neither33 was double now int
+  variable neither34 was double now int
+  variable agree22 was double now int
+  variable agree23 was double now int
+  variable agree24 was double now int
+  variable agree25 was double now int
+  variable agree26 was double now int
+  variable agree27 was double now int
+  variable agree28 was double now int
+  variable agree29 was double now int
+  variable agree30 was double now int
+  variable agree31 was double now int
+  variable agree32 was double now int
+  variable agree33 was double now int
+  variable agree34 was double now int
+  variable stragree22 was double now int
+  variable stragree23 was double now int
+  variable stragree24 was double now int
+  variable stragree25 was double now int
+  variable stragree26 was double now int
+  variable stragree27 was double now int
+  variable stragree28 was double now int
+  variable stragree29 was double now int
+  variable stragree30 was double now int
+  variable stragree31 was double now int
+  variable stragree32 was double now int
+  variable stragree33 was double now int
+  variable stragree34 was double now int
+  variable nottrue35 was double now int
+  variable nottrue36 was double now int
+  variable nottrue37 was double now int
+  variable nottrue38 was double now int
+  variable nottrue39 was double now int
+  variable nottrue40 was double now int
+  variable littletrue35 was double now int
+  variable littletrue36 was double now int
+  variable littletrue37 was double now int
+  variable littletrue38 was double now int
+  variable littletrue39 was double now int
+  variable littletrue40 was double now int
+  variable prettytrue35 was double now int
+  variable prettytrue36 was double now int
+  variable prettytrue37 was double now int
+  variable prettytrue38 was double now int
+  variable prettytrue39 was double now int
+  variable prettytrue40 was double now int
+  variable verytrue35 was double now int
+  variable verytrue36 was double now int
+  variable verytrue37 was double now int
+  variable verytrue38 was double now int
+  variable verytrue39 was double now int
+  variable verytrue40 was double now int
+  (2,579,370 bytes saved)
+
+. save $datadir_clean/calschls/poolingdata/secpooledstats, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/poolingdata/secpooledstats.dta
+    not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/poolingdata/secpooledstats.dta
+    saved
+
+. 
+. 
+. /* merge with the response rate dataset */
+. 
+. merge 1:1 cdscode using $datadir_clean/calschls/responserate/secresponserate
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           334
+        from master                       334  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                             3,051  (_merge==3)
+    -----------------------------------------
+
+. drop _merge
+
+. 
+. 
+. drop if missing(cdscode) //there is one observation with missing cdscode
+(0 observations deleted)
+
+. 
+. label data "secondary pooled dataset ready for analysis with stats and respon
+> se rate"
+
+. compress
+  (0 bytes saved)
+
+. save $datadir_clean/calschls/analysisready/secanalysisready, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/secanalysisready
+    > .dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/secanalysisready
+    > .dta saved
+
+. 
+. 
+. cap log close secpooling

@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/k12_postsec_distance/k12_postse
 > c_distances.smcl
   log type:  text
- opened on:  18 May 2026, 00:03:45
+ opened on:  18 May 2026, 12:07:27
 
 . 
 . 
@@ -330,9 +330,6 @@ longitude: contains nonnumeric characters; replaced as double
 
 . 
 . save $datadir_clean/k12_postsec_distance/clean/k12_postsec_distance, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/k12_postsec_distance/clean/k12_postsec_
-    > distance.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/k12_postsec_distance/clean/k12_postsec_
     > distance.dta saved
@@ -366,9 +363,6 @@ cdscodestr generated as str14
 
 . 
 . save $datadir_clean/k12_postsec_distance/clean/k12_postsec_mindistance, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/k12_postsec_distance/clean/k12_postsec_
-    > mindistance.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/k12_postsec_distance/clean/k12_postsec_
     > mindistance.dta saved

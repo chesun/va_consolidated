@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/qoiclean/parent/parentqoiclean1
 > 516.smcl
   log type:  text
- opened on:  18 May 2026, 00:08:30
+ opened on:  18 May 2026, 12:12:24
 
 . 
 . use $datadir_clean/calschls/parent/parent1516, clear
@@ -482,9 +482,6 @@ note: label truncated to 80 characters
   (345,944 bytes saved)
 
 . save $datadir_clean/calschls/qoiclean/parent/parentqoiclean1516, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/parent/parentqoiclean
-    > 1516.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/parent/parentqoiclean
     > 1516.dta saved

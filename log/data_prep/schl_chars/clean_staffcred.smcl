@@ -2,7 +2,7 @@
       name:  clean_staffcred
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_staffcred.smcl
   log type:  text
- opened on:  18 May 2026, 00:01:07
+ opened on:  18 May 2026, 12:04:39
 
 . 
 . 
@@ -815,6 +815,7 @@ estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/es
 datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/data
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
 cb_k12_csu_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/k12_csu_crosswa
@@ -1436,9 +1437,6 @@ filecreated                                                                     
   variable year was float now int
   variable date_created was float now int
   (3,244,444 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffcred/staffcred_2015_clean.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffcred/staffcred_2015_clean.dta
     saved
 Fall Year = 2015
@@ -1528,9 +1526,6 @@ filecreated                                                                     
   variable year was float now int
   variable date_created was float now int
   (3,270,756 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffcred/staffcred_2016_clean.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffcred/staffcred_2016_clean.dta
     saved
 Fall Year = 2016
@@ -1620,9 +1615,6 @@ filecreated                                                                     
   variable year was float now int
   variable date_created was float now int
   (3,308,888 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffcred/staffcred_2017_clean.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffcred/staffcred_2017_clean.dta
     saved
 Fall Year = 2017
@@ -1712,9 +1704,6 @@ filecreated                                                                     
   variable year was float now int
   variable date_created was float now int
   (3,319,260 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffcred/staffcred_2018_clean.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/staffcred/staffcred_2018_clean.dta
     saved
 
@@ -1723,6 +1712,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:     28.97 /        1 =      28.9740
+   1:     30.19 /        1 =      30.1930
 
 . cap log close clean_staffcred

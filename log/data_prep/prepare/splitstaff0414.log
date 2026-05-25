@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/prepare/splitstaff0414.smcl
   log type:  text
- opened on:  18 May 2026, 00:08:26
+ opened on:  18 May 2026, 12:12:20
 
 . 
 . use $datadir_clean/calschls/staff/staff0414, clear  // CHAIN read from rename
@@ -64,63 +64,33 @@ variable tempyear was str1 now str4
 > isk
   5. }
 (373,546 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff0405.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff0405.dta saved
 (335,821 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff0506.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff0506.dta saved
 (366,458 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff0607.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff0607.dta saved
 (332,138 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff0708.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff0708.dta saved
 (359,495 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff0809.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff0809.dta saved
 (327,202 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff0910.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff0910.dta saved
 (363,250 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff1011.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff1011.dta saved
 (353,705 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff1112.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff1112.dta saved
 (369,679 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff1213.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff1213.dta saved
 (354,428 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/calschls/staff/staff1314.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /calschls/staff/staff1314.dta saved
 
@@ -133,6 +103,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/prepare/splitstaff0414.smcl
   log type:  text
- closed on:  18 May 2026, 00:08:30
+ closed on:  18 May 2026, 12:12:24
 -------------------------------------------------------------------------------
 > -----------------------------------------

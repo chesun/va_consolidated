@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/acs/clean_acs_census_tract.smcl
   log type:  text
- opened on:  17 May 2026, 22:26:27
+ opened on:  18 May 2026, 10:31:07
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "clean_acs_census_tract.do — RUN START: `c(current_date)' `c(curre
 > nt_time)'"
-clean_acs_census_tract.do — RUN START: 17 May 2026 22:26:27
+clean_acs_census_tract.do — RUN START: 18 May 2026 10:31:07
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -812,6 +812,7 @@ datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
 > ata
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
 > d_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
@@ -5327,10 +5328,6 @@ file /home/tmp/St48258.000004 saved as .dta format
   variable year was float now int
   variable fam_child_lt18_tot was float now int
   (296,008 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> acs/acs_ca_census_tract_clean_2010.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /acs/acs_ca_census_tract_clean_2010.dta
     saved
@@ -8996,10 +8993,6 @@ file /home/tmp/St48258.000008 saved as .dta format
   variable year was float now int
   variable fam_child_lt18_tot was float now int
   (296,536 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> acs/acs_ca_census_tract_clean_2011.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /acs/acs_ca_census_tract_clean_2011.dta
     saved
@@ -12440,10 +12433,6 @@ file /home/tmp/St48258.00000c saved as .dta format
   variable year was float now int
   variable fam_child_lt18_tot was float now int
   (296,004 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> acs/acs_ca_census_tract_clean_2012.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /acs/acs_ca_census_tract_clean_2012.dta
     saved
@@ -15930,10 +15919,6 @@ file /home/tmp/St48258.00000g saved as .dta format
   variable year was float now int
   variable fam_child_lt18_tot was float now int
   (296,004 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> acs/acs_ca_census_tract_clean_2013.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /acs/acs_ca_census_tract_clean_2013.dta
     saved
@@ -15951,9 +15936,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . append using $datadir_clean/acs/acs_ca_census_tract_clean_2013.dta
 
 . save $datadir_clean/acs/acs_ca_census_tract_clean.dta, replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/acs/acs_ca_census_tract_clean.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /acs/acs_ca_census_tract_clean.dta
     saved
@@ -15969,6 +15951,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:   5614.32 /        1 =    5614.3190
+   1:   5547.05 /        1 =    5547.0540
 
 . cap log close clean_acs_census_tract

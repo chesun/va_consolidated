@@ -2,7 +2,7 @@
       name:  renamedata
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/prepare/renamedata.smcl
   log type:  text
- opened on:  18 May 2026, 00:06:04
+ opened on:  18 May 2026, 12:09:38
 
 . 
 . ************************** elementary CHKS surveys *****************************
@@ -57,8 +57,6 @@
   (10,476,690 bytes saved)
 
 . save "$datadir_clean/calschls/elementary/elem1415", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1415.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1415.dta saved
 
 . 
@@ -75,8 +73,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/elementary/elem1516", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1516.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1516.dta saved
 
 . 
@@ -94,8 +90,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/elementary/elem1617", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1617.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1617.dta saved
 
 . 
@@ -113,8 +107,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/elementary/elem1718", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1718.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1718.dta saved
 
 . 
@@ -133,8 +125,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (203,020 bytes saved)
 
 . save "$datadir_clean/calschls/elementary/elem1819", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1819.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/elementary/elem1819.dta saved
 
 . 
@@ -210,8 +200,6 @@ schl was long now str7
 . gen cdscode = cdcode + schl //generate 14 digit cds code by combining cdcode and school code
 
 . save "$datadir_clean/calschls/parent/parent1415", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1415.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1415.dta saved
 
 . 
@@ -229,8 +217,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/parent/parent1516", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1516.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1516.dta saved
 
 . 
@@ -248,8 +234,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/parent/parent1617", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1617.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1617.dta saved
 
 . 
@@ -267,8 +251,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/parent/parent1718", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1718.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1718.dta saved
 
 . 
@@ -286,8 +268,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/parent/parent1819", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1819.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/parent/parent1819.dta saved
 
 . 
@@ -309,8 +289,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 cdscode was double now str14
 
 . save "$datadir_clean/calschls/secondary/sec1112", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1112.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1112.dta saved
 
 . 
@@ -323,8 +301,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 cdscode was double now str14
 
 . save "$datadir_clean/calschls/secondary/sec1213", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1213.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1213.dta saved
 
 . 
@@ -342,8 +318,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (1,656,552 bytes saved)
 
 . save "$datadir_clean/calschls/secondary/sec1314", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1314.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1314.dta saved
 
 . 
@@ -360,8 +334,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/secondary/sec1415", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1415.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1415.dta saved
 
 . 
@@ -379,8 +351,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/secondary/sec1516", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1516.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1516.dta saved
 
 . 
@@ -398,8 +368,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/secondary/sec1617", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1617.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1617.dta saved
 
 . 
@@ -417,8 +385,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/secondary/sec1718", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1718.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1718.dta saved
 
 . 
@@ -436,8 +402,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/secondary/sec1819", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1819.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1819.dta saved
 
 . 
@@ -460,8 +424,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/staff/staff0414", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff0414.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff0414.dta saved
 
 . 
@@ -479,8 +441,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/staff/staff1415", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1415.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1415.dta saved
 
 . 
@@ -498,8 +458,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/staff/staff1516", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1516.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1516.dta saved
 
 . 
@@ -517,8 +475,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/staff/staff1617", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1617.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1617.dta saved
 
 . 
@@ -536,8 +492,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/staff/staff1718", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1718.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1718.dta saved
 
 . 
@@ -555,8 +509,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
   (0 bytes saved)
 
 . save "$datadir_clean/calschls/staff/staff1819", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1819.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/staff/staff1819.dta saved
 
 . 
@@ -565,5 +517,5 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
       name:  renamedata
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/prepare/renamedata.smcl
   log type:  text
- closed on:  18 May 2026, 00:08:26
+ closed on:  18 May 2026, 12:12:20
 ------------------------------------------------------------------------------------------------------------------------

@@ -2,7 +2,7 @@
       name:  clean_sch_char
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_sch_char.smcl
   log type:  text
- opened on:  18 May 2026, 00:03:25
+ opened on:  18 May 2026, 12:07:07
 
 . 
 . 
@@ -813,6 +813,7 @@ estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/es
 datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/data
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
 cb_k12_csu_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/k12_csu_crosswa
@@ -2169,12 +2170,11 @@ file /home/tmp/St48258.00000c saved as .dta format
   (0 bytes saved)
 
 . save $datadir_clean/sch_char.dta, replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char.dta saved
 
 . /* create a dataset for school characteristics for each year */
 . snapshot save
-snapshot 1 created at 18 May 2026 00:03
+snapshot 2 created at 18 May 2026 12:07
 
 . 
 . forvalues spring_year = `test_score_min_year' (1) `test_score_max_year' {
@@ -2183,16 +2183,12 @@ snapshot 1 created at 18 May 2026 00:03
   4.         snapshot restore 1
   5. }
 (68,396 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char_2015.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char_2015.dta saved
 (68,100 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char_2016.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char_2016.dta saved
 (67,914 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char_2017.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char_2017.dta saved
 (67,954 observations deleted)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char_2018.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sch_char_2018.dta saved
 
 . 
@@ -2200,6 +2196,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:     19.79 /        1 =      19.7880
+   1:     20.07 /        1 =      20.0650
 
 . cap log close clean_sch_char

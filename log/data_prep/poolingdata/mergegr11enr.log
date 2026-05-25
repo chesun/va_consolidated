@@ -1,0 +1,107 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  mergegr11enr
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/poolingdata/mergegr11enr.smcl
+  log type:  text
+ opened on:  18 May 2026, 12:13:16
+
+. 
+. /* merge gr11 enrollment with parent pooled dataset */
+. use $datadir_clean/calschls/analysisready/parentanalysisready, clear
+(parent pooled (over years) dataset ready for analysis with stats and response 
+> ra)
+
+. merge 1:1 cdscode using $datadir_clean/enrollment/schoollevel/poolgr11enr, ke
+> epusing(gr11enr_mean)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         9,029
+        from master                       445  (_merge==1)
+        from using                      8,584  (_merge==2)
+
+    Matched                             2,551  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2 //drop unmatched observations from the enrollment dataset
+(8,584 observations deleted)
+
+. drop _merge
+
+. 
+. save, replace
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/parentanalysisre
+    > ady.dta saved
+
+. 
+. 
+. 
+. /* merge gr11 enrollment with secondary pooled dataset */
+. use $datadir_clean/calschls/analysisready/secanalysisready, clear
+(secondary pooled dataset ready for analysis with stats and response rate)
+
+. merge 1:1 cdscode using $datadir_clean/enrollment/schoollevel/poolgr11enr, ke
+> epusing(gr11enr_mean)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         8,416
+        from master                       333  (_merge==1)
+        from using                      8,083  (_merge==2)
+
+    Matched                             3,052  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2 //drop unmatched observations from the enrollment dataset
+(8,083 observations deleted)
+
+. drop _merge
+
+. 
+. save, replace
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/secanalysisready
+    > .dta saved
+
+. 
+. 
+. 
+. /* merge gr11 enrollment with staff pooled dataset */
+. use $datadir_clean/calschls/poolingdata/staffpooledstats, clear
+(weighted average staff qoi statistics pooled over years)
+
+. merge 1:1 cdscode using $datadir_clean/enrollment/schoollevel/poolgr11enr, ke
+> epusing(gr11enr_mean)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         7,899
+        from master                       488  (_merge==1)
+        from using                      7,411  (_merge==2)
+
+    Matched                             3,724  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2 //drop unmatched observations from the enrollment dataset
+(7,411 observations deleted)
+
+. drop _merge
+
+. 
+. save $datadir_clean/calschls/analysisready/staffanalysisready, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/staffanalysisrea
+    > dy.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/staffanalysisrea
+    > dy.dta saved
+
+. 
+. 
+. cap log close mergegr11enr

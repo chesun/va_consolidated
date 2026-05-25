@@ -1,0 +1,312 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  parentpooling
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/poolingdata/parentpooling.smcl
+  log type:  text
+ opened on:  18 May 2026, 12:13:16
+
+. 
+. /* first append all years to make a pnael dataset to calculate pooled stats *
+> /
+. use $datadir_clean/calschls/qoiclean/parent/parentqoiclean1819, clear
+(cleaned parent 1819 survey questions of interest with percent disagree/agree e
+> tc)
+
+. 
+. append using $datadir_clean/calschls/qoiclean/parent/parentqoiclean1718
+(variable disagree30 was byte, now int to accommodate using data's values)
+(variable dontknow31 was byte, now int to accommodate using data's values)
+
+. 
+. append using $datadir_clean/calschls/qoiclean/parent/parentqoiclean1617
+(variable disagree16 was byte, now int to accommodate using data's values)
+(variable disagree33 was byte, now int to accommodate using data's values)
+
+. 
+. append using $datadir_clean/calschls/qoiclean/parent/parentqoiclean1516
+
+. 
+. append using $datadir_clean/calschls/qoiclean/parent/parentqoiclean1415
+(variable strdisagree16 was byte, now int to accommodate using data's values)
+(variable strdisagree17 was byte, now int to accommodate using data's values)
+(variable dontknow16 was byte, now int to accommodate using data's values)
+
+. 
+. drop if missing(cdscode) //there are 3 observations with missing cdscode
+(3 observations deleted)
+
+. 
+. /* calculate the wieghted average of qoi means pooled over years
+> ignore missing values */
+. 
+. sort cdscode year
+
+. 
+. foreach i of numlist 9 15/17 27 30/34 64 {
+  2.   by cdscode: egen qoi`i'mean_pooled =  wtmean(qoi`i'mean), weight(nettota
+> lresp`i')
+  3. }
+(216 missing values generated)
+(211 missing values generated)
+(213 missing values generated)
+(211 missing values generated)
+(211 missing values generated)
+(662 missing values generated)
+(221 missing values generated)
+(1,108 missing values generated)
+(218 missing values generated)
+(662 missing values generated)
+(323 missing values generated)
+
+. 
+. /* generate the pct agree/disagree/don't know for qoi 9 15/17 27 30/34 */
+. foreach i of numlist 9 15/17 27 30/34 {
+  2.   by cdscode: egen pctagree`i'_pooled = wtmean(pctagree`i'), weight(nettot
+> alresp`i')
+  3.   by cdscode: egen pctdisagree`i'_pooled = wtmean(pctdisagree`i'), weight(
+> nettotalresp`i')
+  4.   by cdscode: egen pctdontknow`i'_pooled = wtmean(pctdontknow`i'), weight(
+> nettotalresp`i')
+  5. }
+(216 missing values generated)
+(216 missing values generated)
+(216 missing values generated)
+(211 missing values generated)
+(211 missing values generated)
+(211 missing values generated)
+(213 missing values generated)
+(213 missing values generated)
+(213 missing values generated)
+(211 missing values generated)
+(211 missing values generated)
+(211 missing values generated)
+(211 missing values generated)
+(211 missing values generated)
+(211 missing values generated)
+(662 missing values generated)
+(662 missing values generated)
+(662 missing values generated)
+(221 missing values generated)
+(221 missing values generated)
+(221 missing values generated)
+(1,108 missing values generated)
+(1,108 missing values generated)
+(1,108 missing values generated)
+(218 missing values generated)
+(218 missing values generated)
+(218 missing values generated)
+(662 missing values generated)
+(662 missing values generated)
+(662 missing values generated)
+
+. 
+. /* generate the pct well/okay/notwell/dontknow for qoi64 */
+. by cdscode: egen pctwell64_pooled = wtmean(pctwell64), weight(nettotalresp64)
+(323 missing values generated)
+
+. by cdscode: egen pctokay64_pooled = wtmean(pctokay64), weight(nettotalresp64)
+(323 missing values generated)
+
+. by cdscode: egen pctnotwell64_pooled = wtmean(pctnotwell64), weight(nettotalr
+> esp64)
+(323 missing values generated)
+
+. by cdscode: egen pctdontknow64_pooled = wtmean(pctdontknow64), weight(nettota
+> lresp64)
+(323 missing values generated)
+
+. 
+. 
+. collapse (mean) *pooled (sum) nettotalresp* stragree* agree* disagree* strdis
+> agree* dontknow* ///
+> verywell64 justokay64 notwell64 doesnotdo64 missing*, by(cdscode)
+
+. 
+. /* label the pooled qoi means and nettotalresp and missing*/
+. foreach i of numlist 9 15/17 27 30/34 64 {
+  2.   label var qoi`i'mean_pooled "weighted mean of qoi`i' responses over year
+> s for a given school"
+  3.   label var nettotalresp`i' "net total responses for qoi`i' excluding miss
+> ing pooled over years"
+  4.   label var missing`i' "number of missing responses for qoi`i' pooled over
+>  years"
+  5. }
+
+. 
+. /* label the pooled percent agree/disagree vars */
+. foreach i of numlist 9 15/17 27 30/34 {
+  2.   label var pctagree`i'_pooled "weighted average percent agree/strongly ag
+> ree in qoi`i' pooled over years"
+  3.   label var pctdisagree`i'_pooled "weighted average percent disagree/stron
+> gly disagree in qoi`i' pooled over years"
+  4.   label var pctdontknow`i'_pooled "weight average percent don't know in qo
+> i`i' pooled over years"
+  5. 
+.   label var strdisagree`i' "total number of strongly disagree for qoi`i' pool
+> ed over years"
+  6.   label var disagree`i' "total number of disagree for qoi`i' pooled over y
+> ears"
+  7.   label var dontknow`i' "total number of don't know for qoi`i' pooled over
+>  years"
+  8.   label var agree`i' "total number of agree for qoi`i' pooled over years"
+  9.   label var stragree`i' "total number of strongly agree for qoi`i' pooled 
+> over years"
+ 10. }
+
+. 
+. label var pctwell64_pooled "weighted avg percent very well in qoi64 pooled ov
+> er years"
+
+. label var pctokay64_pooled "weighted avg percent just okay in qoi64 pooled ov
+> er years"
+
+. label var pctnotwell64_pooled "weighted avg percent not well or does not do a
+> t all in qoi64 pooled over years"
+
+. 
+. label var verywell64 "total number of very well for qoi64 pooled over years"
+
+. label var justokay64 "total number of just okay for qoi64 pooled over years"
+
+. label var notwell64 "total number of not well for qoi64 pooled over years"
+
+. label var doesnotdo64 "total number of does not do it at all for qoi64 pooled
+>  over years"
+
+. label var dontknow64 "total number of don't know for qoi64 pooled over years"
+
+. 
+. label data "weighted average parent qoi statistics pooled over years"
+
+. compress
+  variable nettotalresp9 was double now int
+  variable nettotalresp15 was double now int
+  variable nettotalresp16 was double now int
+  variable nettotalresp17 was double now int
+  variable nettotalresp27 was double now int
+  variable nettotalresp30 was double now int
+  variable nettotalresp31 was double now int
+  variable nettotalresp32 was double now int
+  variable nettotalresp33 was double now int
+  variable nettotalresp34 was double now int
+  variable nettotalresp64 was double now int
+  variable stragree9 was double now int
+  variable stragree15 was double now int
+  variable stragree16 was double now int
+  variable stragree17 was double now int
+  variable stragree27 was double now int
+  variable stragree30 was double now int
+  variable stragree31 was double now int
+  variable stragree32 was double now int
+  variable stragree33 was double now int
+  variable stragree34 was double now int
+  variable agree9 was double now int
+  variable agree15 was double now int
+  variable agree16 was double now int
+  variable agree17 was double now int
+  variable agree27 was double now int
+  variable agree30 was double now int
+  variable agree31 was double now int
+  variable agree32 was double now int
+  variable agree33 was double now int
+  variable agree34 was double now int
+  variable disagree9 was double now int
+  variable disagree15 was double now int
+  variable disagree16 was double now int
+  variable disagree17 was double now int
+  variable disagree27 was double now int
+  variable disagree30 was double now int
+  variable disagree31 was double now int
+  variable disagree32 was double now int
+  variable disagree33 was double now int
+  variable disagree34 was double now int
+  variable strdisagree9 was double now byte
+  variable strdisagree15 was double now int
+  variable strdisagree16 was double now int
+  variable strdisagree17 was double now int
+  variable strdisagree27 was double now int
+  variable strdisagree30 was double now byte
+  variable strdisagree31 was double now byte
+  variable strdisagree32 was double now byte
+  variable strdisagree33 was double now byte
+  variable strdisagree34 was double now byte
+  variable dontknow9 was double now int
+  variable dontknow15 was double now int
+  variable dontknow16 was double now int
+  variable dontknow17 was double now int
+  variable dontknow27 was double now int
+  variable dontknow30 was double now int
+  variable dontknow31 was double now int
+  variable dontknow32 was double now int
+  variable dontknow33 was double now int
+  variable dontknow34 was double now int
+  variable dontknow64 was double now int
+  variable verywell64 was double now int
+  variable justokay64 was double now int
+  variable notwell64 was double now int
+  variable doesnotdo64 was double now int
+  variable missing9 was double now int
+  variable missing15 was double now int
+  variable missing16 was double now int
+  variable missing17 was double now int
+  variable missing27 was double now int
+  variable missing30 was double now int
+  variable missing31 was double now int
+  variable missing32 was double now int
+  variable missing33 was double now int
+  variable missing34 was double now int
+  variable missing64 was double now int
+  (1,402,128 bytes saved)
+
+. save $datadir_clean/calschls/poolingdata/parentpooledstats, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/poolingdata/parentpooledstats.
+    > dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/poolingdata/parentpooledstats.
+    > dta saved
+
+. 
+. /* merge with the response rate dataset */
+. merge 1:1 cdscode using $datadir_clean/calschls/responserate/parentresponsera
+> te
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           445
+        from master                       445  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                             2,551  (_merge==3)
+    -----------------------------------------
+
+. drop _merge
+
+. 
+. drop if missing(cdscode)
+(0 observations deleted)
+
+. 
+. label data "parent pooled (over years) dataset ready for analysis with stats 
+> and response rates"
+note: label truncated to 80 characters
+
+. compress
+  (0 bytes saved)
+
+. save $datadir_clean/calschls/analysisready/parentanalysisready, replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/parentanalysisre
+    > ady.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/parentanalysisre
+    > ady.dta saved
+
+. 
+. 
+. cap log close parentpooling

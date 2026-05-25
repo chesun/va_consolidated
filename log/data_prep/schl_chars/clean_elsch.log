@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/clean_elsch.smcl
   log type:  text
- opened on:  18 May 2026, 00:00:41
+ opened on:  18 May 2026, 12:04:12
 
 . 
 . 
@@ -848,6 +848,7 @@ datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
 > ata
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
 > d_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
@@ -1576,36 +1577,24 @@ Fall Year = 2014
 (21 vars, 62,042 obs)
   variable year was float now int
   (124,084 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/elsch/elsch_2015_clean.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/elsch/elsch_2015_clean.dta saved
 Fall Year = 2015
 (21 vars, 63,250 obs)
   variable year was float now int
   (126,500 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/elsch/elsch_2016_clean.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/elsch/elsch_2016_clean.dta saved
 Fall Year = 2016
 (21 vars, 63,714 obs)
   variable year was float now int
   (127,428 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/elsch/elsch_2017_clean.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/elsch/elsch_2017_clean.dta saved
 Fall Year = 2017
 (21 vars, 63,660 obs)
   variable year was float now int
   (127,320 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/elsch/elsch_2018_clean.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/elsch/elsch_2018_clean.dta saved
 
@@ -1614,6 +1603,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:      1.95 /        1 =       1.9490
+   1:      2.01 /        1 =       2.0080
 
 . cap log close clean_elsch

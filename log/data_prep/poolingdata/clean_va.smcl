@@ -1,0 +1,49 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  clean_va
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/poolingdata/clean_va.smcl
+  log type:  text
+ opened on:  18 May 2026, 12:13:16
+
+. 
+. 
+. 
+. 
+. local date1_va_scatter_plot = c(current_date)
+
+. local time1_va_scatter_plot = c(current_time)
+
+. 
+. 
+. //------------------------------------------------------------------------------
+. // collapse VA estimates to school level mean over the years 2015-2018
+. //------------------------------------------------------------------------------
+. 
+. foreach va_outcome in ela math enr enr_2year enr_4year {
+  2.   use $estimates_dir/va_cfr_all_v1/va_est_dta/va_`va_outcome'_all.dta, clear  // CHAIN read from do/va/merge_va_est
+> .do (CANONICAL; relocated Step 3 batch 3c1)
+  3.   collapse (mean) va*, by(cdscode)
+  4. 
+.   tempfile va_`va_outcome'
+  5.   save `va_`va_outcome''
+  6. }
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/va_est_dta/va_ela_all.dta
+    not found
+r(601);
+
+end of do-file
+r(601);
+.     *
+.     * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
+.     * + plan v3 §8 Q1 (verified by grep — ZERO production invocations of
+.     * crosswalk_*_outcomes.do): these crosswalk-build files are NOT invoked
+.     * from main.do.  They are static, run-once-cached artifacts.  Their
+.     * .dta outputs are pre-existing inputs that merge_k12_postsecondary.doh
+.     * consumes when called by Christina's sample-construction code (in the
+.     * run_samples block below).
+. }
+r(601);
+
+end of do-file
+
+r(601);
+

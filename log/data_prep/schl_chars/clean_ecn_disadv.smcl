@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_ecn_disadv.smc
 > l
   log type:  text
- opened on:  18 May 2026, 00:03:04
+ opened on:  18 May 2026, 12:06:50
 
 . 
 . /* import sbac data */
@@ -26,7 +26,6 @@
   (0 bytes saved)
 
 . save $datadir_clean/cde/ecn_disadv.dta, replace 
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/ecn_disadv.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/cde/ecn_disadv.dta saved
 
 . 

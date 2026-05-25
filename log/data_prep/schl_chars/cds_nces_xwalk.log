@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/cds_nces_xwalk.smcl
   log type:  text
- opened on:  18 May 2026, 00:00:01
+ opened on:  18 May 2026, 12:03:35
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "cds_nces_xwalk.do — RUN START: `c(current_date)' `c(current_time)
 > '"
-cds_nces_xwalk.do — RUN START: 18 May 2026 00:00:01
+cds_nces_xwalk.do — RUN START: 18 May 2026 12:03:35
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -72,8 +72,6 @@ cdscode was double now str14
 . 
 . 
 . save $datadir_clean/cde/cds_nces_id_xwalk.dta, replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/cde/cds_nces_id_xwalk.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /cde/cds_nces_id_xwalk.dta saved
 
