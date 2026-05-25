@@ -1,10 +1,11 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-18 (after commit `33d41c6` — round-3 over-flatten fix + 3 polish items; Phase 1a §3.5 M4 attempt #4 prerequisites ready)
+Last updated: 2026-05-25 (M4 attempt #4 r(601) hotfix landed `184ff0d`; Scribe-safety gitignore + pre-push hook landed `e31fe15`; Scribe-side setup procedure documented for attempt #5 launch)
 
 ## Active (next-up)
 
-- [ ] **Phase 1a §3.5 — Golden-master verification (M4)** per ADR-0018 acceptance criteria. Verifier in submission mode runs `diff -r consolidated/output predecessor/output` on a fresh end-to-end Scribe run. Confirms behavior preservation across all 148 relocated/archived files. **First gate before `v1.0-final` tag.**
+- [ ] **Scribe-side setup for M4 attempt #5** — execute `quality_reports/plans/2026-05-25_scribe-setup.md` on Scribe: (1) resolve divergent-branch pull error (diagnose Scribe-local commits first; rebase / merge / reset per branch A/B/C), (2) sparse-checkout to exclude `.claude/` (and optionally other Claude-only dirs) from Scribe working tree, (3) activate `.githooks/pre-push` via `git config core.hooksPath .githooks`. Blocks M4 attempt #5 launch.
+- [ ] **Phase 1a §3.5 — Golden-master verification (M4) attempt #5** per ADR-0018 acceptance criteria. Verifier in submission mode runs `diff -r consolidated/output predecessor/output` on a fresh end-to-end Scribe run. Confirms behavior preservation across all 148 relocated/archived files. **First gate before `v1.0-final` tag.** Attempt #4 (2026-05-18 launch) crashed `r(601)` at `do/data_prep/poolingdata/clean_va.do` reading VA-estimation outputs not yet produced; fixed in `184ff0d` (moved invocation Phase 1 → Phase 5 trailer).
 
 ## Phase 1a §3.3 — COMPLETE 2026-05-08 ✅ (148 files across 11 steps)
 
