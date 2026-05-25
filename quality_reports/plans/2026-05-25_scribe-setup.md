@@ -140,9 +140,91 @@ Branches A/B/C below remain the menu, but the data-preservation steps above run 
 
 ---
 
-## Recommended resolution (given the `git init` history)
+## Recommended resolution: nuke + re-clone (Option B)
 
-Christina confirmed 2026-05-25 that the Scribe repo was created by `git init` + `git add .` + `git commit -m`, not by cloning origin. That means Scribe's local commit history has data files baked in from the very first commit. The simplest fix is to **discard Scribe's local history entirely** and adopt origin's history (which is pristine — laptop never tracked data files). The data files on disk are preserved via a `/tmp/` backup before the reset, then restored as untracked files afterward where the new `.gitignore` blocks them from re-entering git.
+Christina confirmed 2026-05-25 that the Scribe repo was created by `git init` + `git add .` + `git commit -m`, not by cloning origin. That means Scribe's local commit history has data files baked in from the very first commit, with no shared ancestor with origin's pristine history beyond what's been merged in along the way.
+
+Two paths converge on the same end state (Scribe synced to origin/main with data files preserved as untracked):
+
+| | Option B — delete + re-clone (RECOMMENDED) | Option A — `git reset --hard` within existing repo |
+|---|---|---|
+| Mental model | "Start over" | "Rewind history" |
+| Steps | 6 | 7 |
+| Concepts needed | `cp`, `rm -rf`, `git clone` | `git stash`, `git tag`, `git reset --hard`, `git ls-files` |
+| Backup scope | All Scribe-populated dirs (`data/`, `estimates/`, `figures/`, `tables/`, `output/`, `log/`) | Only `data/` + `estimates/` |
+| Auth | Need GitHub credentials on Scribe | None (existing remote already set) |
+| Loses | Any Scribe-local git config (none yet) | Nothing extra (config preserved) |
+
+Option B is simpler. Use it unless you have a reason to preserve Scribe's git state (you don't — you have no commits worth keeping beyond what's on origin).
+
+### Option B — exact commands
+
+Run on Scribe in this order. Read each block, run it, paste any unexpected output back here before proceeding.
+
+```bash
+# === STAGE 1 — Back up all Scribe-populated dirs to /tmp/ ===
+# Wider scope than Option A because we're deleting the whole repo dir.
+BACKUP_DIR="/tmp/scribe-presync-backup-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+cd /home/research/ca_ed_lab/projects/common_core_va/
+
+for d in data estimates figures tables output log; do
+    if [ -d "consolidated/$d" ]; then
+        cp -a "consolidated/$d/" "$BACKUP_DIR/$d/"
+        echo "  backed up: consolidated/$d -> $BACKUP_DIR/$d ($(du -sh "$BACKUP_DIR/$d" | cut -f1))"
+    fi
+done
+echo ""
+du -sh "$BACKUP_DIR"
+echo "BACKUP at: $BACKUP_DIR"
+# >>> Verify backup size looks reasonable (probably several GB) before proceeding.
+
+# === STAGE 2 — Move old repo dir aside (don't delete yet — cheap insurance) ===
+mv consolidated consolidated_OLD_$(date +%Y%m%d-%H%M%S)
+
+# === STAGE 3 — Fresh clone from origin ===
+git clone https://github.com/chesun/va_consolidated.git consolidated
+cd consolidated
+git log --oneline -5
+# >>> Should show b680d5f (latest), 7622aec, e31fe15, 932a3fc, 184ff0d.
+
+# === STAGE 4 — Restore Scribe-populated content layered on top of fresh clone ===
+# .gitkeep stubs from the fresh clone stay; backup content goes on top.
+# For log/: origin has tracked audit-trail logs we want to keep, so only
+# restore log files that DON'T exist in the fresh clone (preserves committed
+# audit trail + adds Scribe's newer runs as untracked).
+for d in data estimates figures tables output; do
+    if [ -d "$BACKUP_DIR/$d" ]; then
+        cp -a "$BACKUP_DIR/$d/." "$d/"
+        echo "  restored: $d/"
+    fi
+done
+
+# For log/: use cp -n (no-clobber) so origin's tracked logs aren't overwritten
+if [ -d "$BACKUP_DIR/log" ]; then
+    cp -an "$BACKUP_DIR/log/." log/
+    echo "  restored: log/ (no-clobber; tracked logs preserved)"
+fi
+
+# === STAGE 5 — Verify ===
+git status                              # should be clean (data/, estimates/, etc. gitignored)
+git ls-files data/ estimates/           # only .gitkeep stubs (4 paths total)
+ls -la data/cleaned/acs/ | head -5      # confirm restricted .dta files physically present
+du -sh data/ estimates/                 # confirm sizes match backup expectation
+
+# === STAGE 6 — Once happy, clean up ===
+rm -rf ../consolidated_OLD_*            # delete the old repo dir
+# Keep $BACKUP_DIR around for a few days as extra insurance, then:
+# rm -rf "$BACKUP_DIR"
+```
+
+After Stage 5 passes (no surprising additions in `git status`, only `.gitkeep` stubs tracked under data/+estimates/), Scribe is synced to origin and the data files are safely outside git's reach. Then proceed to **Step 2 (sparse-checkout)** and **Step 3 (pre-push hook activation)** below.
+
+---
+
+## Alternative: in-place reset (Option A)
+
+Same end state as Option B; preserves Scribe's git config + history insurance via `git tag`. Use only if you have a specific reason to keep Scribe's existing repo dir.
 
 This avoids:
 - `git filter-repo` / `git rebase -i` history rewrites (blocked per `.claude/rules/destructive-actions.md`; caused a real data-loss incident on 2026-04-25)
