@@ -91,3 +91,25 @@ CLAUDE.local.md
 # quality_reports/plans/*lfs-dvc-migration-plan.md.
 master_supporting_docs/literature/papers/*.pdf
 master_supporting_docs/literature/papers/**/*.pdf
+
+# ==============================================================================
+# RESTRICTED DATA + ESTIMATES (air-gap; never push from Scribe to remote)
+# ==============================================================================
+# data/      = raw row-level CalSCHLS / CDE student records (restricted PII)
+# estimates/ = .ster + va_<outcome>_all.dta (large derived from restricted data)
+# Per .claude/rules/air-gapped-workflow.md, only .gitkeep stubs are tracked
+# to preserve directory structure on clone.  Pre-push enforcement lives in
+# `.githooks/pre-push` — install on each machine with:
+#     git config core.hooksPath .githooks
+
+/data/*
+!/data/.gitkeep
+!/data/raw/
+!/data/cleaned/
+/data/raw/*
+!/data/raw/.gitkeep
+/data/cleaned/*
+!/data/cleaned/.gitkeep
+
+/estimates/*
+!/estimates/.gitkeep

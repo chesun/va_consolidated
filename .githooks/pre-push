@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# .githooks/pre-push — abort push if restricted data files are in the commit range
+#
+# Purpose
+#   Belt-and-suspenders backup to .gitignore.  Protects against
+#   `git add -f data/` bypasses (e.g., on the Scribe server where
+#   data/ contains restricted CalSCHLS / CDE records that must not
+#   leave the server) or other accidental staging of files under
+#   data/ or estimates/.
+#
+# One-time install per machine (sets git to look in .githooks/ instead
+# of .git/hooks/ for hook scripts; the file lives in the tracked tree so
+# every clone gets it, but the config must be set per-machine to opt in):
+#     git config core.hooksPath .githooks
+# Verify:
+#     git config --get core.hooksPath   # should print: .githooks
+#
+# To override the guard (emergency, audited via shell history):
+#     git push --no-verify
+
+set -uo pipefail
+
+remote="${1:-}"
+url="${2:-}"
+
+# Path regexes
+forbidden_pattern='^(data|estimates)/'
+allowed_pattern='^(data|data/raw|data/cleaned|estimates)/\.gitkeep$'
+
+# Zero-SHA placeholder used by git for "branch deletion" or "no remote ref"
+zero='0000000000000000000000000000000000000000'
+
+violations=0
+violation_log=""
+
+# Stdin format (per githooks(5)): <local ref> <local sha> <remote ref> <remote sha>
+while read -r local_ref local_sha remote_ref remote_sha; do
+    # Skip branch deletion
+    [ "$local_sha" = "$zero" ] && continue
+
+    if [ "$remote_sha" = "$zero" ]; then
+        # New branch on remote — scan all commits reachable from local that
+        # aren't on any other remote ref
+        files=$(git rev-list "$local_sha" --not --remotes 2>/dev/null \
+                | xargs -r -I {} git show --name-only --pretty=format: {} 2>/dev/null \
+                | sort -u | grep -v '^$' || true)
+    else
+        # Updating an existing remote branch — diff the range
+        files=$(git diff --name-only "${remote_sha}..${local_sha}" 2>/dev/null || true)
+    fi
+
+    [ -z "$files" ] && continue
+
+    bad_files=$(printf '%s\n' "$files" | grep -E "$forbidden_pattern" | grep -vE "$allowed_pattern" || true)
+
+    if [ -n "$bad_files" ]; then
+        violations=1
+        violation_log="${violation_log}
+  ref: ${local_ref} -> ${remote_ref}
+$(printf '%s\n' "$bad_files" | sed 's/^/    /')"
+    fi
+done
+
+if [ "$violations" -ne 0 ]; then
+    {
+        echo ""
+        echo "ERROR: refusing to push — restricted data files in the commit range:"
+        echo "$violation_log"
+        echo ""
+        echo "These paths are gitignored on normal clones and must never leave the"
+        echo "originating machine (per .claude/rules/air-gapped-workflow.md)."
+        echo "Most likely cause: a 'git add -f data/' or 'git add -f estimates/'"
+        echo "that bypassed .gitignore."
+        echo ""
+        echo "To inspect which commit introduced each file:"
+        echo "  for f in <file>; do git log --diff-filter=A --pretty=oneline -- \"\$f\"; done"
+        echo ""
+        echo "Remediation:"
+        echo "  1) git rm --cached <file>   (un-stage from index)"
+        echo "  2) git commit --amend       (if the offending commit is HEAD)"
+        echo "     OR git rebase -i         (if deeper; coordinate with coauthors)"
+        echo "  3) git push                 (retry)"
+        echo ""
+        echo "Emergency override (audited via shell history):"
+        echo "  git push --no-verify"
+    } >&2
+    exit 1
+fi
+
+exit 0
