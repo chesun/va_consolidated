@@ -30,10 +30,13 @@ CONVENTIONS
       Production / acceptance runs (per ADR-0018) toggle ALL on, including
       run_data_checks.
     - `m4_acceptance_run' is the master override for ADR-0018 acceptance-run
-      scenarios.  Setting it to 1 forces the three run-once-cached sub-toggles
-      (do_touse_va, do_create_samples, do_va) ON, so the run rebuilds samples
-      + VA estimates from scratch instead of relying on cached predecessor
-      outputs.  Default 0 mirrors predecessor `do_all.do' cached-output pattern.
+      scenarios.  Setting it to 1 forces only `do_va' ON (Phase 3 VA
+      estimation re-runs from scratch); sample-construction sub-toggles
+      (do_touse_va, do_create_samples) stay at their cached-default 0,
+      mirroring predecessor `do_all.do' production behavior (the cached
+      va_samples.dta + score/out_*.dta artifacts persist on Scribe and are
+      re-read by every VA-estimation pass).  See Phase 2 comment block for
+      why do_touse_va is NOT flipped under M4 (2026-05-26 trim).
     - Each phase block calls do-files relative to $consolidated_dir.
     - Per-do-file logging convention (plan v3 §5.1 step 2): each invoked do
       file opens its own log via `log using $logdir/<filename>.smcl`.
@@ -101,10 +104,18 @@ ACCEPTANCE-RUN MASTER OVERRIDE  (per ADR-0018)
 
     Set m4_acceptance_run = 1 when doing the canonical end-to-end run that
     produces ALL consolidated outputs (M4 golden-master, v1.0-final freeze,
-    any other ADR-0018-acceptance scenario).  The flag overrides three
-    sub-toggles inside Phases 2-3 (do_touse_va, do_create_samples, do_va)
-    from their cached-default 0 to 1, so the run rebuilds samples + VA
-    estimates from scratch instead of relying on cached predecessor outputs.
+    any other ADR-0018-acceptance scenario).  The flag overrides ONE sub-
+    toggle inside Phase 3 (do_va) from its cached-default 0 to 1, so the
+    run re-runs VA estimation from scratch instead of relying on cached
+    estimates.  Sample-construction sub-toggles (do_touse_va,
+    do_create_samples) stay at cached-default 0; their outputs persist on
+    Scribe from prior production runs (run-once-cached pattern).
+
+    NOTE 2026-05-26: the override used to flip do_touse_va + do_create_samples
+    ON as well, but that hit a known dead include in touse_va.do.  See
+    Phase 2 comment block for the diagnosis + reasoning.  Re-add the
+    sample-toggle override only after Phase 1b §4.3 resolves the dead
+    include AND a deliberate re-seed is wanted.
 
     Leave at 0 for dev iteration where you want the cached-outputs pattern
     (mirrors predecessor `do_all.do' defaults).
@@ -115,7 +126,7 @@ ACCEPTANCE-RUN MASTER OVERRIDE  (per ADR-0018)
 local m4_acceptance_run  1   // CHANGE ME to 1 for full acceptance / M4 run
 
 di as text _n "M4 acceptance-run override: " ///
-    cond(`m4_acceptance_run', "ENABLED — sub-toggles do_touse_va, do_create_samples, do_va will be forced to 1", "DISABLED — sub-toggles use cached-defaults")
+    cond(`m4_acceptance_run', "ENABLED — do_va will be forced to 1 (VA re-estimation); do_touse_va + do_create_samples stay at cached-default 0", "DISABLED — all sub-toggles use cached-defaults")
 
 
 /*==============================================================================
@@ -229,11 +240,24 @@ if `run_samples' {
     local do_touse_va        0
     local do_create_samples  0
 
-    * M4 override (per ADR-0018): acceptance-run flips both sub-toggles ON.
-    if `m4_acceptance_run' {
-        local do_touse_va        1
-        local do_create_samples  1
-    }
+    * M4 override REMOVED 2026-05-26 (was: acceptance-run flipped both sub-
+    * toggles ON).  Removed after M4 attempt #5 hit r(601) at
+    * touse_va.do:262 `include $consolidated_dir/do/samples/create_prior_scores.doh'
+    * — a known DEAD INCLUDE documented in touse_va.do's own header (lines
+    * 89-101) as a Phase 1b §4.3 carry-forward (the file has not existed since
+    * the v1/v2 prior-score refactor per ADR-0009).
+    *
+    * Predecessor production runs do_all.do with `do_touse_va = 0' and
+    * `do_create_samples = 0' (do_all.do:110, :148); the cached va_samples.dta
+    * and create_*_samples outputs persist on Scribe from prior real-data
+    * production runs and are re-read by every VA-estimation pass.  M4's role
+    * is to verify production behavior, not to re-create intermediate
+    * artifacts that are run-once-cached by design.  Therefore the M4 override
+    * should mirror predecessor production: only do_va flips (Phase 3 below);
+    * sample-construction sub-toggles stay 0.
+    *
+    * Re-add the override if (a) Phase 1b §4.3 resolves the dead include in
+    * touse_va.do AND (b) a future deliberate re-seeding is needed.
 
     * RELOCATED 2026-04-30 per ADR-0005 — sibling enrollment-outcomes crosswalk
     * (the only file from caschls/do/share/siblingvaregs/ that survives
