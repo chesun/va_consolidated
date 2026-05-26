@@ -445,3 +445,70 @@ b680d5f docs: scribe-setup — add `git init` history wrinkle + recommended rese
 2. Activate `.githooks/pre-push` via `git config core.hooksPath .githooks` (Step 3)
 3. Re-launch M4 acceptance attempt #5: `nohup stata-mp -b do do/main.do &`
 4. Monitor through Phase 5 trailer (where clean_va.do now invokes); if it passes, run smoke tier of M4 golden-master comparison.
+
+---
+
+## 2026-05-26 continuation — Scribe-setup execution iteration + sparse-checkout refinement + README workflow-sync regression
+
+Continued from yesterday's v5 plan doc rewrite. Christina executing the 5-step Scribe setup on Scribe; hit one error + asked clarifying questions; iterated the plan doc 4x to refine exclusion list + Step 3 command.
+
+### Per-step rollup
+
+**Step 3 fix.** Christina ran `git checkout -- .` per the v5 plan and got `error: pathspec '.' did not match any file(s) known to git`. Root cause: `git clone --no-checkout` + sparse-checkout activation leaves the index in a state where pathspec-based commands can't resolve `.` against any tracked path (behavior varies by git version). Replaced Step 3 with `git reset --hard HEAD` — same end state (working tree synced to HEAD, sparse-checkout respected, untracked files preserved) but works regardless of initial index state because it populates index from HEAD AND writes working tree atomically. Committed `58153c6`.
+
+**Clarifying-questions cycle.** Christina asked three questions that prompted explanation rather than code changes: (1) what does moving `.git/` into the consolidated dir achieve, (2) why is `.gitignore` not yet on Scribe (expected — appears at Step 3), (3) what does `git reset --hard HEAD` do (three-step semantics with table showing per-path-category before/after behavior). Then asked about log-file divergence with active Stata runs — explained Unix file-handle semantics (atomic rename preserves running-process handle on old inode; new inode from git checkout sits as separate file) + recommended NOT running Step 3 while Stata is writing + documented 3 long-term divergence-management options (accept + commit periodically [current pattern]; sparse-exclude `log/`; stop tracking `log/`).
+
+**IDE buffer staleness.** Christina reported seeing "branches A/B/C in Step 1" after the v5 rewrite. Verified via grep: doc has zero A/B/C content (255 lines, only `branch` mentions are git-branch references). Diagnosed: VS Code buffer didn't refresh after my external Write call; close+reopen fixed it. Codified the troubleshooting recipe (`git diff origin/main -- <file>`) in the response.
+
+**Sparse-checkout refinement — 5 additional file exclusions.** After Christina completed Step 3, she noticed `CLAUDE.md`, `MEMORY.md`, `SESSION_REPORT.md` appeared on Scribe disk — Claude-only artifacts with no Scribe value. Added all three to sparse-checkout exclusion list + provided retroactive recipe (edit `.git/info/sparse-checkout` + `git sparse-checkout reapply`). Commit `93cdedd`. Then Christina asked to also exclude `README.md` (stale workflow-template copy) + `TODO.md` (laptop-only project tracker). Added both. Commit `1479828`. Final default exclusion set: 12 dirs + 5 top-level files.
+
+**README workflow-sync regression investigation.** Christina flagged the current README on Scribe is "a stale copy from the workflow repo" and asked me to dig through logs + decisions to find what was decided about the handoff README + handoff memo. Found:
+
+  - ADR-0018 (2026-04-27) established the offboarding model: no live handoff; deliverable to Kramer (custodian, not maintainer); README is the only orientation for unknown future successor; cold-read test is acceptance criterion for `v1.0-final`.
+  - Project-specific README was written at `7c02750` (2026-04-29; ~311 lines for offboarding-era operator); improved at `ab79be9` (2026-04-30) + `1f7c8d8` (2026-04-30).
+  - Workflow-sync commit `287b8df` silently overwrote the project README with the generic 220-line template README. Regression.
+
+Added TODO updates per Christina's "leave it for now" call on doing the restoration:
+
+  - Existing Phase 1c §5.2 README polish entry annotated with regression context + exact restoration command as a prerequisite to Phase 1c §5.4 cold-read test
+  - New Backlog meta-issue: protect project README.md from workflow-sync clobbers; fix lives in the upstream workflow repo's sync config or propagate script; until fixed, every future workflow-sync risks re-clobbering
+
+Commit `4598f50`.
+
+### Today's commits
+
+```
+58153c6 docs: scribe-setup Step 3 — git reset --hard HEAD instead of git checkout -- .
+93cdedd docs: scribe-setup — exclude CLAUDE.md, MEMORY.md, SESSION_REPORT.md from sparse pattern
+1479828 docs: scribe-setup — also exclude README.md + TODO.md from Scribe sparse pattern
+4598f50 todo: README workflow-sync regression + restoration step + meta-issue backlog entry
+```
+
+4 commits, all pushed.
+
+### Process learnings (cumulative — append, #19-21)
+
+19. **`git clone --no-checkout` + sparse-checkout creates a state where pathspec-based commands fail.** `git checkout -- .` resolves the pathspec against the index; with `--no-checkout`, the index can be left in a half-populated state (specifics depend on git version + whether sparse-checkout was activated before/after the clone). The reliable recovery is `git reset --hard HEAD` — populates index from HEAD AND writes working tree atomically. For setup recipes that combine `--no-checkout` + sparse-checkout, prefer `reset --hard` over `checkout -- .` for the post-swap sync step.
+
+20. **VS Code (and similar IDEs) don't always auto-refresh buffers when files are modified externally.** When an assistant agent edits a file the user has open in VS Code, the IDE may show stale content indefinitely until the user closes + reopens the file. User-facing diagnostic: `git diff origin/main -- <path>` from terminal — if remote+local match but IDE shows different content, IDE buffer is stale. Add to common-error troubleshooting in future setup docs.
+
+21. **Workflow-sync needs a "consumer-customized files" allowlist to prevent template-overwrites-project regressions.** README.md was the canary: workflow-sync's default behavior propagates every change from the template repo, including changes to files that consumers customize (README.md, CLAUDE.md project descriptions, etc.). The regression at `287b8df` silently reverted ~3 months of project-specific README evolution. Fix lives in the upstream workflow repo; workaround on consumer side is to add a sync-exclusion list. Codified as a Backlog TODO entry for upstream-side fix coordination.
+
+### Status (end of 2026-05-26 working block)
+
+- **Phase 1a §3.5 (M4):** attempt #4 r(601) root cause fixed (`184ff0d`); attempt #5 still blocked on Scribe-side setup completion.
+- **Scribe state:** `.git/` swap completed; Step 3 awaiting `git reset --hard HEAD` execution; sparse-checkout pattern needs the additional 5 file exclusions per the updated v5+ plan doc.
+- **Tree (laptop):** in sync with origin; latest commit `4598f50`.
+- **ADR ledger:** unchanged (21 Decided + 1 amendment); upcoming: new ADR for Scribe-git-sync workflow decision (supersedes ADR-0020 manual-drag-drop choice; revisit at end of project).
+- **README:** confirmed clobbered at `287b8df`; restoration deferred per Christina's "leave it for now" call.
+- **TODO:** 1 Active (Scribe setup); Backlog grew by 1 meta-issue entry.
+- **Total commits 2026-05-26:** 4 (all docs / TODO updates; no code).
+
+### Next session pickup
+
+1. Christina runs `git reset --hard HEAD` on Scribe
+2. Christina applies the 5-file sparse-checkout extension + `git sparse-checkout reapply`
+3. Christina runs Step 4 (`git config core.hooksPath .githooks`) + Step 5 (10-item audit checklist)
+4. Launch M4 attempt #5
+5. Phase 1c §5.2 README restoration (deferred per 2026-05-26)
+6. NEW: write ADR for Scribe-git-sync workflow decision (supersedes prior ADR-0020 manual-drag-drop choice); revisit at end of project to decide whether to keep this workflow or revert; also useful learning material for a lab guide doc Christina is planning

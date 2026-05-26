@@ -1,7 +1,7 @@
 # 0020: File transfer mechanism is operator-choice (FileZilla today); refines ADR-0007 sync model
 
 - **Date:** 2026-04-28
-- **Status:** Decided
+- **Status:** Superseded by #0022 (2026-05-26 — provisional adoption of git-based Scribe sync, supersedes the FileZilla operator-choice. The drag-and-drop model documented here was in force 2026-04-28 to 2026-05-26.)
 - **Supersedes:** none (refines ADR-0007 §"Sync model")
 - **Scope:** Infrastructure
 - **Data quality:** Full context

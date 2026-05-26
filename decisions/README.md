@@ -108,8 +108,9 @@ What this commits us to. What it rules out. Open questions it creates.
 | [0017](0017_matt-naven-files-untouched.md) | Matt Naven's files stay untouched through Phase 1 | 2026-04-27 | Decided | Infrastructure |
 | [0018](0018_offboarding-model-refinement.md) | Offboarding model — Kramer is custodian; successor unknown; full-pipeline acceptance run before `v1.0-final` | 2026-04-27 | Decided | Infrastructure |
 | [0019](0019_nsc-crosswalk-authorship-correction.md) | `crosswalk_nsc_outcomes.do` is Christina's; refines ADR-0017 file list; Phase 1 leaves untouched anyway | 2026-04-27 | Decided | Infrastructure |
-| [0020](0020_sync-mechanism-operator-choice.md) | File transfer is operator-choice (FileZilla today); refines ADR-0007 sync model; rest of ADR-0007 stands | 2026-04-28 | Decided | Infrastructure |
+| [0020](0020_sync-mechanism-operator-choice.md) | File transfer is operator-choice (FileZilla today); refines ADR-0007 sync model; rest of ADR-0007 stands | 2026-04-28 | Superseded by #0022 | Infrastructure |
 | [0021](0021_main-settings-relocation-and-self-contained-sandbox.md) | main.do + settings.do relocated under do/; consolidated/ is self-contained sandbox (no writes to legacy paths); every do file carries a header description + main.do one-liner | 2026-04-29 | Decided | Infrastructure |
+| [0022](0022_scribe-git-sync-provisional.md) | Git repo on Scribe (provisional through end of project) supersedes FileZilla drag-and-drop; sparse-checkout excludes Claude-only paths; pre-push hook prevents data-leak pushes; revisit at Phase 1c §5.4 acceptance run | 2026-05-26 | Decided | Infrastructure |
 
 ---
 
