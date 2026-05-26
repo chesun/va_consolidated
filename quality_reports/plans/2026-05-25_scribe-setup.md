@@ -142,7 +142,76 @@ git config --get core.hooksPath
 # Expect: .githooks
 ```
 
-If all five blocks produce the expected output, Scribe is fully synced and ready for M4 attempt #5.
+If all five blocks produce the expected output, Scribe is fully synced and the read-side of the workflow works. Pushes still need auth + a real test of the hook — see Step 6.
+
+### Step 6: First-push auth + deliberate-trip hook test
+
+This step does two things in one push: sets up push credentials for the first time, and confirms the pre-push hook actually blocks a data leak (verifying that the protection is real, not just notionally configured).
+
+**6a — Generate a fine-grained PAT on GitHub:**
+
+- github.com → avatar → **Settings** → **Developer settings** (bottom of left sidebar) → **Personal access tokens** → **Fine-grained tokens** → **Generate new token**
+- **Resource owner:** `chesun`
+- **Repository access:** "Only select repositories" → `va_consolidated` (tight scope per ADR-0022)
+- **Repository permissions:** `Contents: Read and write` (minimum for push)
+- **Expiration:** align with your offboarding window (e.g., 90 days)
+- Click **Generate token** → **copy it immediately** — GitHub hides the token after one view; you cannot retrieve it again
+- The string begins with `github_pat_`
+
+**6b — Tell git to remember the PAT after first use:**
+
+```bash
+git config --global credential.helper store
+```
+
+**6c — Create a deliberate-bad commit to test the hook:**
+
+```bash
+echo "fake data" > data/test_leak.dta
+git add -f data/test_leak.dta             # -f bypasses .gitignore
+git commit -m "test: should be blocked by pre-push hook"
+```
+
+**6d — Push it. This is where the auth + hook test happens:**
+
+```bash
+git push origin main
+```
+
+When git prompts for credentials:
+
+- **Username:** `chesun` — your GitHub login. This is NOT the PAT. Plain text, no `github_pat_` prefix.
+- **Password:** the PAT — paste the full `github_pat_...` string here.
+
+> **Common trap:** copying the PAT from GitHub and pasting it into the username field by reflex. If that happens, the PAT is captured by git's transport + immediately leaked to auth-failure logs. **Revoke and regenerate the PAT immediately on GitHub** if you make this mistake. Username is short; PAT is long with a prefix — verify before pressing enter.
+
+After auth succeeds, the pre-push hook fires. Expected output:
+
+```
+ERROR: refusing to push — restricted data files in the commit range:
+  ref: refs/heads/main -> refs/heads/main
+    data/test_leak.dta
+
+These paths are gitignored on normal clones and must never leave the
+originating machine (per .claude/rules/air-gapped-workflow.md).
+...
+error: failed to push some refs to 'https://github.com/chesun/va_consolidated.git'
+```
+
+The "failed to push" + "ERROR: refusing to push" combo confirms the hook works. If you don't see the `ERROR:` message and the push proceeds, the hook is misconfigured — re-check `git config --get core.hooksPath` returns `.githooks` and `ls -la .githooks/pre-push` shows executable.
+
+**6e — Clean up the deliberate-bad commit:**
+
+```bash
+git reset --hard HEAD~1                    # drops the test commit
+rm -f data/test_leak.dta                   # removes the fake file
+git log --oneline -3                       # confirm HEAD matches origin/main
+git status                                 # clean
+```
+
+Credentials are cached at `~/.git-credentials` (chmod 600 by default; lab-account-scoped). Future pushes won't prompt for username/password until the PAT expires.
+
+After Step 6 passes, Scribe is fully set up — read-side (sync), write-side (push auth), and safeguards (pre-push hook) all verified.
 
 ---
 
