@@ -512,3 +512,72 @@ Commit `4598f50`.
 4. Launch M4 attempt #5
 5. Phase 1c §5.2 README restoration (deferred per 2026-05-26)
 6. NEW: write ADR for Scribe-git-sync workflow decision (supersedes prior ADR-0020 manual-drag-drop choice); revisit at end of project to decide whether to keep this workflow or revert; also useful learning material for a lab guide doc Christina is planning
+
+---
+
+## 2026-05-26 continuation — Scribe-setup execution end-to-end + learnings doc
+
+Continued from the 2026-05-26 working block above. Christina completed the Scribe-side execution of the v5+ setup procedure end-to-end, hit one credential-handling incident along the way (PAT pasted into username field — revoked + regenerated), confirmed the pre-push hook fires correctly via the deliberate-trip test, then committed Scribe-side log files as the first real audit-trail entry from the new workflow.
+
+### Per-step rollup
+
+**Plan doc Step 6 + Step 5 reword.** After Christina hit the auth prompt on her first push attempt, added a new Step 6 to the setup plan covering first-push auth (PAT generation, credential.helper config) AND the deliberate-trip hook test in a single procedure. Step 5 reword: "fully synced and read-side works. Pushes still need auth + a real test of the hook — see Step 6." Commit `c13fbc0`.
+
+**Learnings doc as lab-guide source material.** Christina asked for a detailed write-up of session learnings to feed a future lab-internal guide on git + Scribe + Stata. Wrote a 559-line standalone learnings doc at `quality_reports/handoff/2026-05-26_scribe-git-stata-workflow-learnings.md`. Organized by theme rather than chronologically: architecture rationale, three-layer data-isolation pattern, setup pitfalls, credential management, hook architecture, pull/push divergence, file preservation, workflow-sync regression class, documentation patterns, canonical setup procedure, error-message lookup appendix. Commit `60b7cef`.
+
+**Scribe-side execution sequence:**
+
+  1. Steps 1-2 of plan doc: clone `--no-checkout` + sparse-checkout config + `.git/` swap (done 2026-05-25)
+  2. Step 3: hit `pathspec '.' did not match any file(s)` on `git checkout -- .`; switched to `git reset --hard HEAD` per the updated plan (commit `58153c6`). Worked.
+  3. Sparse-checkout pattern iterated: extended exclusion list across two iterations to cover Claude-only top-level files (CLAUDE.md, MEMORY.md, SESSION_REPORT.md, README.md, TODO.md). Commits `93cdedd` + `1479828`.
+  4. Step 4: `git config core.hooksPath .githooks` activated.
+  5. Step 5: passive verification passed (10-item audit checklist).
+  6. **PAT incident.** Christina generated PAT, then on the first push attempt pasted the PAT into the username field by reflex. Auth failed with "Invalid username or token. Password authentication is not supported." PAT was thereby leaked to git's transport layer + auth-failure log + the conversation. Revoked the PAT immediately on GitHub UI. Wrote a memory note (`feedback_credentials_pat_username_trap.md`) so future credential flows get explicit per-field guidance.
+  7. **First successful push attempt (post-PAT-regenerate).** Got "rejected (fetch first)" because Scribe was behind origin by today's plan/ADR/learnings commits. Resolved with `git pull --rebase origin main` (Scribe's local test commit rebased on top of origin's latest), then `git push origin main`.
+  8. **Hook fired correctly.** Output: "ERROR: refusing to push — restricted data files in the commit range: data/test_leak.dta". Push aborted. Confirmed end-to-end that the three-layer data-isolation pattern works as designed (gitignore + hook + sparse-checkout).
+  9. **Cleanup.** `git reset --hard HEAD~1` dropped the test commit; `rm data/test_leak.dta` removed the fake file. Scribe back to clean state matching origin.
+  10. **First real audit-trail commit from Scribe.** Christina committed the accumulated log files (`log/main_25-May-2026_...smcl`, `log/samples/`, `log/sibling_xwalk/`, `output/csv/`) as the first non-test push from Scribe. Now resolving the "rejected (fetch first)" cycle one more time with `git pull --rebase` + `git push`.
+
+### Today's commits (laptop side, end of 2026-05-26)
+
+```
+58153c6 docs: scribe-setup Step 3 — git reset --hard HEAD instead of git checkout -- .
+93cdedd docs: scribe-setup — exclude CLAUDE.md, MEMORY.md, SESSION_REPORT.md from sparse pattern
+1479828 docs: scribe-setup — also exclude README.md + TODO.md from Scribe sparse pattern
+4598f50 todo: README workflow-sync regression + restoration step + meta-issue backlog entry
+4831b19 decisions: ADR-0022 scribe-git-sync workflow (provisional) — supersedes ADR-0020
+c13fbc0 docs: scribe-setup Step 6 — first-push auth + deliberate-trip hook test
+60b7cef docs(handoff): scribe-git-stata workflow learnings — lab guide source material
+```
+
+(Plus an upcoming Scribe-originated commit for the log files, pending the pull-rebase-push cycle.)
+
+### Memory note created
+
+`~/.claude/projects/-Users-christinasun-github-repos-va-consolidated/memory/feedback_credentials_pat_username_trap.md` — feedback-type memory codifying per-field guidance for future PAT setup. Will auto-load in future conversations so the warning surfaces proactively before any credential prompt.
+
+### Process learnings (cumulative — append, #22-24)
+
+22. **Test the safety net deliberately.** Passive verification (config is set, file exists) is not the same as active verification (the hook actually blocks a bad push). The deliberate-trip test — `echo "fake data" > data/test_leak.dta && git add -f && git commit && git push` — is the only way to confirm. Codified in plan doc Step 6.
+
+23. **PAT username/password fields are easy to confuse under prompt fatigue.** Muscle memory after copying a PAT says "paste the long thing" — and the long thing lands in the username field. Mitigations: read prompts explicitly; verify field length matches expectation (username is short, PAT is long); revoke + regenerate at the slightest suspicion of mispaste.
+
+24. **Workflow-sync of consumer-customized files is a regression class.** README.md got silently overwritten by a workflow-sync at commit `287b8df`. Fix lives upstream in `claude-code-my-workflow` (consumer-customized files allowlist). Workaround on consumer side: manually inspect every workflow-sync commit's file list before merge for README.md / CLAUDE.md / project-specific files.
+
+### Status (end of 2026-05-26)
+
+- **Phase 1a §3.5 (M4):** attempt #4 r(601) root cause fixed (`184ff0d`); Scribe setup fully complete and verified end-to-end; attempt #5 unblocked.
+- **Scribe state:** synced to origin (after the current pull-rebase-push cycle for log files completes); sparse-checkout active; pre-push hook armed + verified via trip test; PAT cached at `~/.git-credentials`; canonical git identity set.
+- **Tree (laptop):** in sync with origin; latest commit `60b7cef`.
+- **ADR ledger:** 22 Decided + 1 amendment + 1 Superseded (ADR-0020 → 0022).
+- **Documentation:** plan doc v5+ at 6 steps; learnings doc 559 lines as lab-guide source material; session log this multi-day arc through end of 2026-05-26.
+- **TODO:** 1 Active (M4 attempt #5 launch); Backlog includes README restoration + workflow-sync README protection + 9 carry-forward items.
+- **Total commits 2026-05-26 (laptop):** 7 (3 plan doc + 1 TODO + 1 ADR + 1 plan extension + 1 learnings doc; no Stata code changes).
+
+### Next session pickup
+
+1. Christina completes the current pull-rebase-push cycle on Scribe (log files commit lands on origin).
+2. Launch M4 attempt #5: `nohup stata-mp -b do do/main.do &`
+3. Monitor through Phase 5 trailer (where clean_va.do now invokes per the hotfix). If it passes, run smoke tier of M4 golden-master comparison per `quality_reports/plans/2026-05-17_m4-golden-master-protocol.md`.
+4. Phase 1c §5.2 README restoration still deferred.
+5. Phase 1c §5.4 acceptance run includes ADR-0022 revisit (keep git-on-Scribe or revert?).
