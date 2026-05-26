@@ -49,10 +49,12 @@ cat > .git/info/sparse-checkout <<'EOF'
 !/CLAUDE.md
 !/MEMORY.md
 !/SESSION_REPORT.md
+!/README.md
+!/TODO.md
 EOF
 ```
 
-> Top-level files retained on Scribe by default: `README.md`, `TODO.md`, `LICENSE`, `Bibliography_base.bib`. Add `!/<filename>` lines if you want to exclude additional ones.
+> Top-level files retained on Scribe by default: `LICENSE`, `Bibliography_base.bib`, `.gitignore`. Add `!/<filename>` lines if you want to exclude additional ones (or remove `!/README.md` / `!/TODO.md` lines if you want them on Scribe).
 
 > **If you've already completed Steps 1-3 and only want to add these exclusions retroactively:** edit `.git/info/sparse-checkout` directly with the new lines, then `git sparse-checkout reapply` to remove the now-excluded files from the working tree.
 
@@ -235,8 +237,8 @@ Once all ten boxes are checked, Scribe is set up safely for the M4 attempt #5 la
 | `.claude/` | Yes (Claude infra) | `settings.local.json` + `state/*` | **Yes** (Claude doesn't run here) |
 | `quality_reports/`, `master_supporting_docs/`, `decisions/` | Yes (docs) | No | **Yes** (not used at runtime) |
 | `paper/`, `talks/`, `slides/`, `supplementary/`, `templates/`, `preambles/`, `replication/`, `explorations/` | Yes (LaTeX) | LaTeX build artifacts | **Yes** (not compiling on Scribe) |
-| Top-level files: `README.md`, `TODO.md`, `LICENSE`, `Bibliography_base.bib`, `.gitignore` | Yes | No | No (sparse-included by default `/*`) |
-| Top-level files: `CLAUDE.md`, `MEMORY.md`, `SESSION_REPORT.md` | Yes | No | **Yes** (Claude-specific; no value on Scribe) |
+| Top-level files: `LICENSE`, `Bibliography_base.bib`, `.gitignore` | Yes | No | No (sparse-included by default `/*`) |
+| Top-level files: `CLAUDE.md`, `MEMORY.md`, `SESSION_REPORT.md`, `README.md`, `TODO.md` | Yes | No | **Yes** (Claude-specific or laptop-only project tracking; no value on Scribe) |
 
 ---
 
