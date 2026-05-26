@@ -1,0 +1,772 @@
+order,name,type,isnumeric,format,vallab,varlab
+1,geoid,str20,0,%20s,,Id
+2,geoid2,str11,0,%11s,,Id2
+3,geodisplaylabel,str55,0,%55s,,Geography
+4,hc01_est_vc02,str42,0,%42s,,Total; Estimate; Population 18 to 24 years
+5,hc01_moe_vc02,str49,0,%49s,,Total; Margin of Error; Population 18 to 24 years
+6,hc02_est_vc02,str44,0,%44s,,Percent; Estimate; Population 18 to 24 years
+7,hc02_moe_vc02,str51,0,%51s,,Percent; Margin of Error; Population 18 to 24 years
+8,hc03_est_vc02,str41,0,%41s,,Male; Estimate; Population 18 to 24 years
+9,hc03_moe_vc02,str48,0,%48s,,Male; Margin of Error; Population 18 to 24 years
+10,hc04_est_vc02,str49,0,%49s,,Percent Male; Estimate; Population 18 to 24 years
+11,hc04_moe_vc02,str56,0,%56s,,Percent Male; Margin of Error; Population 18 to 24 years
+12,hc05_est_vc02,str43,0,%43s,,Female; Estimate; Population 18 to 24 years
+13,hc05_moe_vc02,str50,0,%50s,,Female; Margin of Error; Population 18 to 24 years
+14,hc06_est_vc02,str51,0,%51s,,Percent Female; Estimate; Population 18 to 24 years
+15,hc06_moe_vc02,str58,0,%58s,,Percent Female; Margin of Error; Population 18 to 24 years
+16,hc01_est_vc03,str75,0,%75s,,Total; Estimate; Population 18 to 24 years - Less than high school graduate
+17,hc01_moe_vc03,strL,0,%9s,,Total; Margin of Error; Population 18 to 24 years - Less than high school gradua
+18,hc02_est_vc03,str77,0,%77s,,Percent; Estimate; Population 18 to 24 years - Less than high school graduate
+19,hc02_moe_vc03,strL,0,%9s,,Percent; Margin of Error; Population 18 to 24 years - Less than high school grad
+20,hc03_est_vc03,str74,0,%74s,,Male; Estimate; Population 18 to 24 years - Less than high school graduate
+21,hc03_moe_vc03,strL,0,%9s,,Male; Margin of Error; Population 18 to 24 years - Less than high school graduat
+22,hc04_est_vc03,strL,0,%9s,,Percent Male; Estimate; Population 18 to 24 years - Less than high school gradua
+23,hc04_moe_vc03,strL,0,%9s,,Percent Male; Margin of Error; Population 18 to 24 years - Less than high school
+24,hc05_est_vc03,strL,0,%9s,,Female; Estimate; Population 18 to 24 years - Less than high school graduate
+25,hc05_moe_vc03,strL,0,%9s,,Female; Margin of Error; Population 18 to 24 years - Less than high school gradu
+26,hc06_est_vc03,strL,0,%9s,,Percent Female; Estimate; Population 18 to 24 years - Less than high school grad
+27,hc06_moe_vc03,strL,0,%9s,,Percent Female; Margin of Error; Population 18 to 24 years - Less than high scho
+28,hc01_est_vc04,strL,0,%9s,,Total; Estimate; Population 18 to 24 years - High school graduate (includes equi
+29,hc01_moe_vc04,strL,0,%9s,,Total; Margin of Error; Population 18 to 24 years - High school graduate (includ
+30,hc02_est_vc04,strL,0,%9s,,Percent; Estimate; Population 18 to 24 years - High school graduate (includes eq
+31,hc02_moe_vc04,strL,0,%9s,,Percent; Margin of Error; Population 18 to 24 years - High school graduate (incl
+32,hc03_est_vc04,strL,0,%9s,,Male; Estimate; Population 18 to 24 years - High school graduate (includes equiv
+33,hc03_moe_vc04,strL,0,%9s,,Male; Margin of Error; Population 18 to 24 years - High school graduate (include
+34,hc04_est_vc04,strL,0,%9s,,Percent Male; Estimate; Population 18 to 24 years - High school graduate (includ
+35,hc04_moe_vc04,strL,0,%9s,,Percent Male; Margin of Error; Population 18 to 24 years - High school graduate 
+36,hc05_est_vc04,strL,0,%9s,,Female; Estimate; Population 18 to 24 years - High school graduate (includes equ
+37,hc05_moe_vc04,strL,0,%9s,,Female; Margin of Error; Population 18 to 24 years - High school graduate (inclu
+38,hc06_est_vc04,strL,0,%9s,,Percent Female; Estimate; Population 18 to 24 years - High school graduate (incl
+39,hc06_moe_vc04,strL,0,%9s,,Percent Female; Margin of Error; Population 18 to 24 years - High school graduat
+40,hc01_est_vc05,strL,0,%9s,,Total; Estimate; Population 18 to 24 years - Some college or associate's degree
+41,hc01_moe_vc05,strL,0,%9s,,Total; Margin of Error; Population 18 to 24 years - Some college or associate's 
+42,hc02_est_vc05,strL,0,%9s,,Percent; Estimate; Population 18 to 24 years - Some college or associate's degre
+43,hc02_moe_vc05,strL,0,%9s,,Percent; Margin of Error; Population 18 to 24 years - Some college or associate'
+44,hc03_est_vc05,strL,0,%9s,,Male; Estimate; Population 18 to 24 years - Some college or associate's degree
+45,hc03_moe_vc05,strL,0,%9s,,Male; Margin of Error; Population 18 to 24 years - Some college or associate's d
+46,hc04_est_vc05,strL,0,%9s,,Percent Male; Estimate; Population 18 to 24 years - Some college or associate's 
+47,hc04_moe_vc05,strL,0,%9s,,Percent Male; Margin of Error; Population 18 to 24 years - Some college or assoc
+48,hc05_est_vc05,strL,0,%9s,,Female; Estimate; Population 18 to 24 years - Some college or associate's degree
+49,hc05_moe_vc05,strL,0,%9s,,Female; Margin of Error; Population 18 to 24 years - Some college or associate's
+50,hc06_est_vc05,strL,0,%9s,,Percent Female; Estimate; Population 18 to 24 years - Some college or associate'
+51,hc06_moe_vc05,strL,0,%9s,,Percent Female; Margin of Error; Population 18 to 24 years - Some college or ass
+52,hc01_est_vc06,str72,0,%72s,,Total; Estimate; Population 18 to 24 years - Bachelor's degree or higher
+53,hc01_moe_vc06,strL,0,%9s,,Total; Margin of Error; Population 18 to 24 years - Bachelor's degree or higher
+54,hc02_est_vc06,str74,0,%74s,,Percent; Estimate; Population 18 to 24 years - Bachelor's degree or higher
+55,hc02_moe_vc06,strL,0,%9s,,Percent; Margin of Error; Population 18 to 24 years - Bachelor's degree or highe
+56,hc03_est_vc06,str71,0,%71s,,Male; Estimate; Population 18 to 24 years - Bachelor's degree or higher
+57,hc03_moe_vc06,strL,0,%9s,,Male; Margin of Error; Population 18 to 24 years - Bachelor's degree or higher
+58,hc04_est_vc06,strL,0,%9s,,Percent Male; Estimate; Population 18 to 24 years - Bachelor's degree or higher
+59,hc04_moe_vc06,strL,0,%9s,,Percent Male; Margin of Error; Population 18 to 24 years - Bachelor's degree or 
+60,hc05_est_vc06,str73,0,%73s,,Female; Estimate; Population 18 to 24 years - Bachelor's degree or higher
+61,hc05_moe_vc06,strL,0,%9s,,Female; Margin of Error; Population 18 to 24 years - Bachelor's degree or higher
+62,hc06_est_vc06,strL,0,%9s,,Percent Female; Estimate; Population 18 to 24 years - Bachelor's degree or highe
+63,hc06_moe_vc06,strL,0,%9s,,Percent Female; Margin of Error; Population 18 to 24 years - Bachelor's degree o
+64,hc01_est_vc08,str45,0,%45s,,Total; Estimate; Population 25 years and over
+65,hc01_moe_vc08,str52,0,%52s,,Total; Margin of Error; Population 25 years and over
+66,hc02_est_vc08,str47,0,%47s,,Percent; Estimate; Population 25 years and over
+67,hc02_moe_vc08,str54,0,%54s,,Percent; Margin of Error; Population 25 years and over
+68,hc03_est_vc08,str44,0,%44s,,Male; Estimate; Population 25 years and over
+69,hc03_moe_vc08,str51,0,%51s,,Male; Margin of Error; Population 25 years and over
+70,hc04_est_vc08,str52,0,%52s,,Percent Male; Estimate; Population 25 years and over
+71,hc04_moe_vc08,str59,0,%59s,,Percent Male; Margin of Error; Population 25 years and over
+72,hc05_est_vc08,str46,0,%46s,,Female; Estimate; Population 25 years and over
+73,hc05_moe_vc08,str53,0,%53s,,Female; Margin of Error; Population 25 years and over
+74,hc06_est_vc08,str54,0,%54s,,Percent Female; Estimate; Population 25 years and over
+75,hc06_moe_vc08,str61,0,%61s,,Percent Female; Margin of Error; Population 25 years and over
+76,hc01_est_vc09,str67,0,%67s,,Total; Estimate; Population 25 years and over - Less than 9th grade
+77,hc01_moe_vc09,str74,0,%74s,,Total; Margin of Error; Population 25 years and over - Less than 9th grade
+78,hc02_est_vc09,str69,0,%69s,,Percent; Estimate; Population 25 years and over - Less than 9th grade
+79,hc02_moe_vc09,str76,0,%76s,,Percent; Margin of Error; Population 25 years and over - Less than 9th grade
+80,hc03_est_vc09,str66,0,%66s,,Male; Estimate; Population 25 years and over - Less than 9th grade
+81,hc03_moe_vc09,str73,0,%73s,,Male; Margin of Error; Population 25 years and over - Less than 9th grade
+82,hc04_est_vc09,str74,0,%74s,,Percent Male; Estimate; Population 25 years and over - Less than 9th grade
+83,hc04_moe_vc09,strL,0,%9s,,Percent Male; Margin of Error; Population 25 years and over - Less than 9th grad
+84,hc05_est_vc09,str68,0,%68s,,Female; Estimate; Population 25 years and over - Less than 9th grade
+85,hc05_moe_vc09,str75,0,%75s,,Female; Margin of Error; Population 25 years and over - Less than 9th grade
+86,hc06_est_vc09,str76,0,%76s,,Percent Female; Estimate; Population 25 years and over - Less than 9th grade
+87,hc06_moe_vc09,strL,0,%9s,,Percent Female; Margin of Error; Population 25 years and over - Less than 9th gr
+88,hc01_est_vc10,strL,0,%9s,,"Total; Estimate; Population 25 years and over - 9th to 12th grade, no diploma"
+89,hc01_moe_vc10,strL,0,%9s,,"Total; Margin of Error; Population 25 years and over - 9th to 12th grade, no dip"
+90,hc02_est_vc10,strL,0,%9s,,"Percent; Estimate; Population 25 years and over - 9th to 12th grade, no diploma"
+91,hc02_moe_vc10,strL,0,%9s,,"Percent; Margin of Error; Population 25 years and over - 9th to 12th grade, no d"
+92,hc03_est_vc10,str76,0,%76s,,"Male; Estimate; Population 25 years and over - 9th to 12th grade, no diploma"
+93,hc03_moe_vc10,strL,0,%9s,,"Male; Margin of Error; Population 25 years and over - 9th to 12th grade, no dipl"
+94,hc04_est_vc10,strL,0,%9s,,"Percent Male; Estimate; Population 25 years and over - 9th to 12th grade, no dip"
+95,hc04_moe_vc10,strL,0,%9s,,"Percent Male; Margin of Error; Population 25 years and over - 9th to 12th grade,"
+96,hc05_est_vc10,strL,0,%9s,,"Female; Estimate; Population 25 years and over - 9th to 12th grade, no diploma"
+97,hc05_moe_vc10,strL,0,%9s,,"Female; Margin of Error; Population 25 years and over - 9th to 12th grade, no di"
+98,hc06_est_vc10,strL,0,%9s,,"Percent Female; Estimate; Population 25 years and over - 9th to 12th grade, no d"
+99,hc06_moe_vc10,strL,0,%9s,,Percent Female; Margin of Error; Population 25 years and over - 9th to 12th grad
+100,hc01_est_vc11,strL,0,%9s,,Total; Estimate; Population 25 years and over - High school graduate (includes e
+101,hc01_moe_vc11,strL,0,%9s,,Total; Margin of Error; Population 25 years and over - High school graduate (inc
+102,hc02_est_vc11,strL,0,%9s,,Percent; Estimate; Population 25 years and over - High school graduate (includes
+103,hc02_moe_vc11,strL,0,%9s,,Percent; Margin of Error; Population 25 years and over - High school graduate (i
+104,hc03_est_vc11,strL,0,%9s,,Male; Estimate; Population 25 years and over - High school graduate (includes eq
+105,hc03_moe_vc11,strL,0,%9s,,Male; Margin of Error; Population 25 years and over - High school graduate (incl
+106,hc04_est_vc11,strL,0,%9s,,Percent Male; Estimate; Population 25 years and over - High school graduate (inc
+107,hc04_moe_vc11,strL,0,%9s,,Percent Male; Margin of Error; Population 25 years and over - High school gradua
+108,hc05_est_vc11,strL,0,%9s,,Female; Estimate; Population 25 years and over - High school graduate (includes 
+109,hc05_moe_vc11,strL,0,%9s,,Female; Margin of Error; Population 25 years and over - High school graduate (in
+110,hc06_est_vc11,strL,0,%9s,,Percent Female; Estimate; Population 25 years and over - High school graduate (i
+111,hc06_moe_vc11,strL,0,%9s,,Percent Female; Margin of Error; Population 25 years and over - High school grad
+112,hc01_est_vc12,str71,0,%71s,,"Total; Estimate; Population 25 years and over - Some college, no degree"
+113,hc01_moe_vc12,strL,0,%9s,,"Total; Margin of Error; Population 25 years and over - Some college, no degree"
+114,hc02_est_vc12,str73,0,%73s,,"Percent; Estimate; Population 25 years and over - Some college, no degree"
+115,hc02_moe_vc12,strL,0,%9s,,"Percent; Margin of Error; Population 25 years and over - Some college, no degree"
+116,hc03_est_vc12,str70,0,%70s,,"Male; Estimate; Population 25 years and over - Some college, no degree"
+117,hc03_moe_vc12,strL,0,%9s,,"Male; Margin of Error; Population 25 years and over - Some college, no degree"
+118,hc04_est_vc12,str78,0,%78s,,"Percent Male; Estimate; Population 25 years and over - Some college, no degree"
+119,hc04_moe_vc12,strL,0,%9s,,"Percent Male; Margin of Error; Population 25 years and over - Some college, no d"
+120,hc05_est_vc12,str72,0,%72s,,"Female; Estimate; Population 25 years and over - Some college, no degree"
+121,hc05_moe_vc12,strL,0,%9s,,"Female; Margin of Error; Population 25 years and over - Some college, no degree"
+122,hc06_est_vc12,strL,0,%9s,,"Percent Female; Estimate; Population 25 years and over - Some college, no degree"
+123,hc06_moe_vc12,strL,0,%9s,,"Percent Female; Margin of Error; Population 25 years and over - Some college, no"
+124,hc01_est_vc13,str66,0,%66s,,Total; Estimate; Population 25 years and over - Associate's degree
+125,hc01_moe_vc13,str73,0,%73s,,Total; Margin of Error; Population 25 years and over - Associate's degree
+126,hc02_est_vc13,str68,0,%68s,,Percent; Estimate; Population 25 years and over - Associate's degree
+127,hc02_moe_vc13,str75,0,%75s,,Percent; Margin of Error; Population 25 years and over - Associate's degree
+128,hc03_est_vc13,str65,0,%65s,,Male; Estimate; Population 25 years and over - Associate's degree
+129,hc03_moe_vc13,str72,0,%72s,,Male; Margin of Error; Population 25 years and over - Associate's degree
+130,hc04_est_vc13,str73,0,%73s,,Percent Male; Estimate; Population 25 years and over - Associate's degree
+131,hc04_moe_vc13,strL,0,%9s,,Percent Male; Margin of Error; Population 25 years and over - Associate's degree
+132,hc05_est_vc13,str67,0,%67s,,Female; Estimate; Population 25 years and over - Associate's degree
+133,hc05_moe_vc13,str74,0,%74s,,Female; Margin of Error; Population 25 years and over - Associate's degree
+134,hc06_est_vc13,str75,0,%75s,,Percent Female; Estimate; Population 25 years and over - Associate's degree
+135,hc06_moe_vc13,strL,0,%9s,,Percent Female; Margin of Error; Population 25 years and over - Associate's degr
+136,hc01_est_vc14,str65,0,%65s,,Total; Estimate; Population 25 years and over - Bachelor's degree
+137,hc01_moe_vc14,str72,0,%72s,,Total; Margin of Error; Population 25 years and over - Bachelor's degree
+138,hc02_est_vc14,str67,0,%67s,,Percent; Estimate; Population 25 years and over - Bachelor's degree
+139,hc02_moe_vc14,str74,0,%74s,,Percent; Margin of Error; Population 25 years and over - Bachelor's degree
+140,hc03_est_vc14,str64,0,%64s,,Male; Estimate; Population 25 years and over - Bachelor's degree
+141,hc03_moe_vc14,str71,0,%71s,,Male; Margin of Error; Population 25 years and over - Bachelor's degree
+142,hc04_est_vc14,str72,0,%72s,,Percent Male; Estimate; Population 25 years and over - Bachelor's degree
+143,hc04_moe_vc14,strL,0,%9s,,Percent Male; Margin of Error; Population 25 years and over - Bachelor's degree
+144,hc05_est_vc14,str66,0,%66s,,Female; Estimate; Population 25 years and over - Bachelor's degree
+145,hc05_moe_vc14,str73,0,%73s,,Female; Margin of Error; Population 25 years and over - Bachelor's degree
+146,hc06_est_vc14,str74,0,%74s,,Percent Female; Estimate; Population 25 years and over - Bachelor's degree
+147,hc06_moe_vc14,strL,0,%9s,,Percent Female; Margin of Error; Population 25 years and over - Bachelor's degre
+148,hc01_est_vc15,strL,0,%9s,,Total; Estimate; Population 25 years and over - Graduate or professional degree
+149,hc01_moe_vc15,strL,0,%9s,,Total; Margin of Error; Population 25 years and over - Graduate or professional 
+150,hc02_est_vc15,strL,0,%9s,,Percent; Estimate; Population 25 years and over - Graduate or professional degre
+151,hc02_moe_vc15,strL,0,%9s,,Percent; Margin of Error; Population 25 years and over - Graduate or professiona
+152,hc03_est_vc15,strL,0,%9s,,Male; Estimate; Population 25 years and over - Graduate or professional degree
+153,hc03_moe_vc15,strL,0,%9s,,Male; Margin of Error; Population 25 years and over - Graduate or professional d
+154,hc04_est_vc15,strL,0,%9s,,Percent Male; Estimate; Population 25 years and over - Graduate or professional 
+155,hc04_moe_vc15,strL,0,%9s,,Percent Male; Margin of Error; Population 25 years and over - Graduate or profes
+156,hc05_est_vc15,strL,0,%9s,,Female; Estimate; Population 25 years and over - Graduate or professional degree
+157,hc05_moe_vc15,strL,0,%9s,,Female; Margin of Error; Population 25 years and over - Graduate or professional
+158,hc06_est_vc15,strL,0,%9s,,Percent Female; Estimate; Population 25 years and over - Graduate or professiona
+159,hc06_moe_vc15,strL,0,%9s,,Percent Female; Margin of Error; Population 25 years and over - Graduate or prof
+160,hc01_est_vc17,str55,0,%55s,,Total; Estimate; Percent high school graduate or higher
+161,hc01_moe_vc17,str62,0,%62s,,Total; Margin of Error; Percent high school graduate or higher
+162,hc02_est_vc17,str57,0,%57s,,Percent; Estimate; Percent high school graduate or higher
+163,hc02_moe_vc17,str64,0,%64s,,Percent; Margin of Error; Percent high school graduate or higher
+164,hc03_est_vc17,str54,0,%54s,,Male; Estimate; Percent high school graduate or higher
+165,hc03_moe_vc17,str61,0,%61s,,Male; Margin of Error; Percent high school graduate or higher
+166,hc04_est_vc17,str62,0,%62s,,Percent Male; Estimate; Percent high school graduate or higher
+167,hc04_moe_vc17,str69,0,%69s,,Percent Male; Margin of Error; Percent high school graduate or higher
+168,hc05_est_vc17,str56,0,%56s,,Female; Estimate; Percent high school graduate or higher
+169,hc05_moe_vc17,str63,0,%63s,,Female; Margin of Error; Percent high school graduate or higher
+170,hc06_est_vc17,str64,0,%64s,,Percent Female; Estimate; Percent high school graduate or higher
+171,hc06_moe_vc17,str71,0,%71s,,Percent Female; Margin of Error; Percent high school graduate or higher
+172,hc01_est_vc18,str52,0,%52s,,Total; Estimate; Percent bachelor's degree or higher
+173,hc01_moe_vc18,str59,0,%59s,,Total; Margin of Error; Percent bachelor's degree or higher
+174,hc02_est_vc18,str54,0,%54s,,Percent; Estimate; Percent bachelor's degree or higher
+175,hc02_moe_vc18,str61,0,%61s,,Percent; Margin of Error; Percent bachelor's degree or higher
+176,hc03_est_vc18,str51,0,%51s,,Male; Estimate; Percent bachelor's degree or higher
+177,hc03_moe_vc18,str58,0,%58s,,Male; Margin of Error; Percent bachelor's degree or higher
+178,hc04_est_vc18,str59,0,%59s,,Percent Male; Estimate; Percent bachelor's degree or higher
+179,hc04_moe_vc18,str66,0,%66s,,Percent Male; Margin of Error; Percent bachelor's degree or higher
+180,hc05_est_vc18,str53,0,%53s,,Female; Estimate; Percent bachelor's degree or higher
+181,hc05_moe_vc18,str60,0,%60s,,Female; Margin of Error; Percent bachelor's degree or higher
+182,hc06_est_vc18,str61,0,%61s,,Percent Female; Estimate; Percent bachelor's degree or higher
+183,hc06_moe_vc18,str68,0,%68s,,Percent Female; Margin of Error; Percent bachelor's degree or higher
+184,hc01_est_vc20,str42,0,%42s,,Total; Estimate; Population 25 to 34 years
+185,hc01_moe_vc20,str49,0,%49s,,Total; Margin of Error; Population 25 to 34 years
+186,hc02_est_vc20,str44,0,%44s,,Percent; Estimate; Population 25 to 34 years
+187,hc02_moe_vc20,str51,0,%51s,,Percent; Margin of Error; Population 25 to 34 years
+188,hc03_est_vc20,str41,0,%41s,,Male; Estimate; Population 25 to 34 years
+189,hc03_moe_vc20,str48,0,%48s,,Male; Margin of Error; Population 25 to 34 years
+190,hc04_est_vc20,str49,0,%49s,,Percent Male; Estimate; Population 25 to 34 years
+191,hc04_moe_vc20,str56,0,%56s,,Percent Male; Margin of Error; Population 25 to 34 years
+192,hc05_est_vc20,str43,0,%43s,,Female; Estimate; Population 25 to 34 years
+193,hc05_moe_vc20,str50,0,%50s,,Female; Margin of Error; Population 25 to 34 years
+194,hc06_est_vc20,str51,0,%51s,,Percent Female; Estimate; Population 25 to 34 years
+195,hc06_moe_vc20,str58,0,%58s,,Percent Female; Margin of Error; Population 25 to 34 years
+196,hc01_est_vc21,str75,0,%75s,,Total; Estimate; Population 25 to 34 years - High school graduate or higher
+197,hc01_moe_vc21,strL,0,%9s,,Total; Margin of Error; Population 25 to 34 years - High school graduate or high
+198,hc02_est_vc21,str77,0,%77s,,Percent; Estimate; Population 25 to 34 years - High school graduate or higher
+199,hc02_moe_vc21,strL,0,%9s,,Percent; Margin of Error; Population 25 to 34 years - High school graduate or hi
+200,hc03_est_vc21,str74,0,%74s,,Male; Estimate; Population 25 to 34 years - High school graduate or higher
+201,hc03_moe_vc21,strL,0,%9s,,Male; Margin of Error; Population 25 to 34 years - High school graduate or highe
+202,hc04_est_vc21,strL,0,%9s,,Percent Male; Estimate; Population 25 to 34 years - High school graduate or high
+203,hc04_moe_vc21,strL,0,%9s,,Percent Male; Margin of Error; Population 25 to 34 years - High school graduate 
+204,hc05_est_vc21,str76,0,%76s,,Female; Estimate; Population 25 to 34 years - High school graduate or higher
+205,hc05_moe_vc21,strL,0,%9s,,Female; Margin of Error; Population 25 to 34 years - High school graduate or hig
+206,hc06_est_vc21,strL,0,%9s,,Percent Female; Estimate; Population 25 to 34 years - High school graduate or hi
+207,hc06_moe_vc21,strL,0,%9s,,Percent Female; Margin of Error; Population 25 to 34 years - High school graduat
+208,hc01_est_vc22,str72,0,%72s,,Total; Estimate; Population 25 to 34 years - Bachelor's degree or higher
+209,hc01_moe_vc22,strL,0,%9s,,Total; Margin of Error; Population 25 to 34 years - Bachelor's degree or higher
+210,hc02_est_vc22,str74,0,%74s,,Percent; Estimate; Population 25 to 34 years - Bachelor's degree or higher
+211,hc02_moe_vc22,strL,0,%9s,,Percent; Margin of Error; Population 25 to 34 years - Bachelor's degree or highe
+212,hc03_est_vc22,str71,0,%71s,,Male; Estimate; Population 25 to 34 years - Bachelor's degree or higher
+213,hc03_moe_vc22,strL,0,%9s,,Male; Margin of Error; Population 25 to 34 years - Bachelor's degree or higher
+214,hc04_est_vc22,strL,0,%9s,,Percent Male; Estimate; Population 25 to 34 years - Bachelor's degree or higher
+215,hc04_moe_vc22,strL,0,%9s,,Percent Male; Margin of Error; Population 25 to 34 years - Bachelor's degree or 
+216,hc05_est_vc22,str73,0,%73s,,Female; Estimate; Population 25 to 34 years - Bachelor's degree or higher
+217,hc05_moe_vc22,strL,0,%9s,,Female; Margin of Error; Population 25 to 34 years - Bachelor's degree or higher
+218,hc06_est_vc22,strL,0,%9s,,Percent Female; Estimate; Population 25 to 34 years - Bachelor's degree or highe
+219,hc06_moe_vc22,strL,0,%9s,,Percent Female; Margin of Error; Population 25 to 34 years - Bachelor's degree o
+220,hc01_est_vc24,str42,0,%42s,,Total; Estimate; Population 35 to 44 years
+221,hc01_moe_vc24,str49,0,%49s,,Total; Margin of Error; Population 35 to 44 years
+222,hc02_est_vc24,str44,0,%44s,,Percent; Estimate; Population 35 to 44 years
+223,hc02_moe_vc24,str51,0,%51s,,Percent; Margin of Error; Population 35 to 44 years
+224,hc03_est_vc24,str41,0,%41s,,Male; Estimate; Population 35 to 44 years
+225,hc03_moe_vc24,str48,0,%48s,,Male; Margin of Error; Population 35 to 44 years
+226,hc04_est_vc24,str49,0,%49s,,Percent Male; Estimate; Population 35 to 44 years
+227,hc04_moe_vc24,str56,0,%56s,,Percent Male; Margin of Error; Population 35 to 44 years
+228,hc05_est_vc24,str43,0,%43s,,Female; Estimate; Population 35 to 44 years
+229,hc05_moe_vc24,str50,0,%50s,,Female; Margin of Error; Population 35 to 44 years
+230,hc06_est_vc24,str51,0,%51s,,Percent Female; Estimate; Population 35 to 44 years
+231,hc06_moe_vc24,str58,0,%58s,,Percent Female; Margin of Error; Population 35 to 44 years
+232,hc01_est_vc25,str75,0,%75s,,Total; Estimate; Population 35 to 44 years - High school graduate or higher
+233,hc01_moe_vc25,strL,0,%9s,,Total; Margin of Error; Population 35 to 44 years - High school graduate or high
+234,hc02_est_vc25,str77,0,%77s,,Percent; Estimate; Population 35 to 44 years - High school graduate or higher
+235,hc02_moe_vc25,strL,0,%9s,,Percent; Margin of Error; Population 35 to 44 years - High school graduate or hi
+236,hc03_est_vc25,str74,0,%74s,,Male; Estimate; Population 35 to 44 years - High school graduate or higher
+237,hc03_moe_vc25,strL,0,%9s,,Male; Margin of Error; Population 35 to 44 years - High school graduate or highe
+238,hc04_est_vc25,strL,0,%9s,,Percent Male; Estimate; Population 35 to 44 years - High school graduate or high
+239,hc04_moe_vc25,strL,0,%9s,,Percent Male; Margin of Error; Population 35 to 44 years - High school graduate 
+240,hc05_est_vc25,str76,0,%76s,,Female; Estimate; Population 35 to 44 years - High school graduate or higher
+241,hc05_moe_vc25,strL,0,%9s,,Female; Margin of Error; Population 35 to 44 years - High school graduate or hig
+242,hc06_est_vc25,strL,0,%9s,,Percent Female; Estimate; Population 35 to 44 years - High school graduate or hi
+243,hc06_moe_vc25,strL,0,%9s,,Percent Female; Margin of Error; Population 35 to 44 years - High school graduat
+244,hc01_est_vc26,str72,0,%72s,,Total; Estimate; Population 35 to 44 years - Bachelor's degree or higher
+245,hc01_moe_vc26,strL,0,%9s,,Total; Margin of Error; Population 35 to 44 years - Bachelor's degree or higher
+246,hc02_est_vc26,str74,0,%74s,,Percent; Estimate; Population 35 to 44 years - Bachelor's degree or higher
+247,hc02_moe_vc26,strL,0,%9s,,Percent; Margin of Error; Population 35 to 44 years - Bachelor's degree or highe
+248,hc03_est_vc26,str71,0,%71s,,Male; Estimate; Population 35 to 44 years - Bachelor's degree or higher
+249,hc03_moe_vc26,strL,0,%9s,,Male; Margin of Error; Population 35 to 44 years - Bachelor's degree or higher
+250,hc04_est_vc26,strL,0,%9s,,Percent Male; Estimate; Population 35 to 44 years - Bachelor's degree or higher
+251,hc04_moe_vc26,strL,0,%9s,,Percent Male; Margin of Error; Population 35 to 44 years - Bachelor's degree or 
+252,hc05_est_vc26,str73,0,%73s,,Female; Estimate; Population 35 to 44 years - Bachelor's degree or higher
+253,hc05_moe_vc26,strL,0,%9s,,Female; Margin of Error; Population 35 to 44 years - Bachelor's degree or higher
+254,hc06_est_vc26,strL,0,%9s,,Percent Female; Estimate; Population 35 to 44 years - Bachelor's degree or highe
+255,hc06_moe_vc26,strL,0,%9s,,Percent Female; Margin of Error; Population 35 to 44 years - Bachelor's degree o
+256,hc01_est_vc28,str42,0,%42s,,Total; Estimate; Population 45 to 64 years
+257,hc01_moe_vc28,str49,0,%49s,,Total; Margin of Error; Population 45 to 64 years
+258,hc02_est_vc28,str44,0,%44s,,Percent; Estimate; Population 45 to 64 years
+259,hc02_moe_vc28,str51,0,%51s,,Percent; Margin of Error; Population 45 to 64 years
+260,hc03_est_vc28,str41,0,%41s,,Male; Estimate; Population 45 to 64 years
+261,hc03_moe_vc28,str48,0,%48s,,Male; Margin of Error; Population 45 to 64 years
+262,hc04_est_vc28,str49,0,%49s,,Percent Male; Estimate; Population 45 to 64 years
+263,hc04_moe_vc28,str56,0,%56s,,Percent Male; Margin of Error; Population 45 to 64 years
+264,hc05_est_vc28,str43,0,%43s,,Female; Estimate; Population 45 to 64 years
+265,hc05_moe_vc28,str50,0,%50s,,Female; Margin of Error; Population 45 to 64 years
+266,hc06_est_vc28,str51,0,%51s,,Percent Female; Estimate; Population 45 to 64 years
+267,hc06_moe_vc28,str58,0,%58s,,Percent Female; Margin of Error; Population 45 to 64 years
+268,hc01_est_vc29,str75,0,%75s,,Total; Estimate; Population 45 to 64 years - High school graduate or higher
+269,hc01_moe_vc29,strL,0,%9s,,Total; Margin of Error; Population 45 to 64 years - High school graduate or high
+270,hc02_est_vc29,str77,0,%77s,,Percent; Estimate; Population 45 to 64 years - High school graduate or higher
+271,hc02_moe_vc29,strL,0,%9s,,Percent; Margin of Error; Population 45 to 64 years - High school graduate or hi
+272,hc03_est_vc29,str74,0,%74s,,Male; Estimate; Population 45 to 64 years - High school graduate or higher
+273,hc03_moe_vc29,strL,0,%9s,,Male; Margin of Error; Population 45 to 64 years - High school graduate or highe
+274,hc04_est_vc29,strL,0,%9s,,Percent Male; Estimate; Population 45 to 64 years - High school graduate or high
+275,hc04_moe_vc29,strL,0,%9s,,Percent Male; Margin of Error; Population 45 to 64 years - High school graduate 
+276,hc05_est_vc29,str76,0,%76s,,Female; Estimate; Population 45 to 64 years - High school graduate or higher
+277,hc05_moe_vc29,strL,0,%9s,,Female; Margin of Error; Population 45 to 64 years - High school graduate or hig
+278,hc06_est_vc29,strL,0,%9s,,Percent Female; Estimate; Population 45 to 64 years - High school graduate or hi
+279,hc06_moe_vc29,strL,0,%9s,,Percent Female; Margin of Error; Population 45 to 64 years - High school graduat
+280,hc01_est_vc30,str72,0,%72s,,Total; Estimate; Population 45 to 64 years - Bachelor's degree or higher
+281,hc01_moe_vc30,strL,0,%9s,,Total; Margin of Error; Population 45 to 64 years - Bachelor's degree or higher
+282,hc02_est_vc30,str74,0,%74s,,Percent; Estimate; Population 45 to 64 years - Bachelor's degree or higher
+283,hc02_moe_vc30,strL,0,%9s,,Percent; Margin of Error; Population 45 to 64 years - Bachelor's degree or highe
+284,hc03_est_vc30,str71,0,%71s,,Male; Estimate; Population 45 to 64 years - Bachelor's degree or higher
+285,hc03_moe_vc30,strL,0,%9s,,Male; Margin of Error; Population 45 to 64 years - Bachelor's degree or higher
+286,hc04_est_vc30,strL,0,%9s,,Percent Male; Estimate; Population 45 to 64 years - Bachelor's degree or higher
+287,hc04_moe_vc30,strL,0,%9s,,Percent Male; Margin of Error; Population 45 to 64 years - Bachelor's degree or 
+288,hc05_est_vc30,str73,0,%73s,,Female; Estimate; Population 45 to 64 years - Bachelor's degree or higher
+289,hc05_moe_vc30,strL,0,%9s,,Female; Margin of Error; Population 45 to 64 years - Bachelor's degree or higher
+290,hc06_est_vc30,strL,0,%9s,,Percent Female; Estimate; Population 45 to 64 years - Bachelor's degree or highe
+291,hc06_moe_vc30,strL,0,%9s,,Percent Female; Margin of Error; Population 45 to 64 years - Bachelor's degree o
+292,hc01_est_vc32,str45,0,%45s,,Total; Estimate; Population 65 years and over
+293,hc01_moe_vc32,str52,0,%52s,,Total; Margin of Error; Population 65 years and over
+294,hc02_est_vc32,str47,0,%47s,,Percent; Estimate; Population 65 years and over
+295,hc02_moe_vc32,str54,0,%54s,,Percent; Margin of Error; Population 65 years and over
+296,hc03_est_vc32,str44,0,%44s,,Male; Estimate; Population 65 years and over
+297,hc03_moe_vc32,str51,0,%51s,,Male; Margin of Error; Population 65 years and over
+298,hc04_est_vc32,str52,0,%52s,,Percent Male; Estimate; Population 65 years and over
+299,hc04_moe_vc32,str59,0,%59s,,Percent Male; Margin of Error; Population 65 years and over
+300,hc05_est_vc32,str46,0,%46s,,Female; Estimate; Population 65 years and over
+301,hc05_moe_vc32,str53,0,%53s,,Female; Margin of Error; Population 65 years and over
+302,hc06_est_vc32,str54,0,%54s,,Percent Female; Estimate; Population 65 years and over
+303,hc06_moe_vc32,str61,0,%61s,,Percent Female; Margin of Error; Population 65 years and over
+304,hc01_est_vc33,strL,0,%9s,,Total; Estimate; Population 65 years and over - High school graduate or higher
+305,hc01_moe_vc33,strL,0,%9s,,Total; Margin of Error; Population 65 years and over - High school graduate or h
+306,hc02_est_vc33,strL,0,%9s,,Percent; Estimate; Population 65 years and over - High school graduate or higher
+307,hc02_moe_vc33,strL,0,%9s,,Percent; Margin of Error; Population 65 years and over - High school graduate or
+308,hc03_est_vc33,strL,0,%9s,,Male; Estimate; Population 65 years and over - High school graduate or higher
+309,hc03_moe_vc33,strL,0,%9s,,Male; Margin of Error; Population 65 years and over - High school graduate or hi
+310,hc04_est_vc33,strL,0,%9s,,Percent Male; Estimate; Population 65 years and over - High school graduate or h
+311,hc04_moe_vc33,strL,0,%9s,,Percent Male; Margin of Error; Population 65 years and over - High school gradua
+312,hc05_est_vc33,strL,0,%9s,,Female; Estimate; Population 65 years and over - High school graduate or higher
+313,hc05_moe_vc33,strL,0,%9s,,Female; Margin of Error; Population 65 years and over - High school graduate or 
+314,hc06_est_vc33,strL,0,%9s,,Percent Female; Estimate; Population 65 years and over - High school graduate or
+315,hc06_moe_vc33,strL,0,%9s,,Percent Female; Margin of Error; Population 65 years and over - High school grad
+316,hc01_est_vc34,str75,0,%75s,,Total; Estimate; Population 65 years and over - Bachelor's degree or higher
+317,hc01_moe_vc34,strL,0,%9s,,Total; Margin of Error; Population 65 years and over - Bachelor's degree or high
+318,hc02_est_vc34,str77,0,%77s,,Percent; Estimate; Population 65 years and over - Bachelor's degree or higher
+319,hc02_moe_vc34,strL,0,%9s,,Percent; Margin of Error; Population 65 years and over - Bachelor's degree or hi
+320,hc03_est_vc34,str74,0,%74s,,Male; Estimate; Population 65 years and over - Bachelor's degree or higher
+321,hc03_moe_vc34,strL,0,%9s,,Male; Margin of Error; Population 65 years and over - Bachelor's degree or highe
+322,hc04_est_vc34,strL,0,%9s,,Percent Male; Estimate; Population 65 years and over - Bachelor's degree or high
+323,hc04_moe_vc34,strL,0,%9s,,Percent Male; Margin of Error; Population 65 years and over - Bachelor's degree 
+324,hc05_est_vc34,str76,0,%76s,,Female; Estimate; Population 65 years and over - Bachelor's degree or higher
+325,hc05_moe_vc34,strL,0,%9s,,Female; Margin of Error; Population 65 years and over - Bachelor's degree or hig
+326,hc06_est_vc34,strL,0,%9s,,Percent Female; Estimate; Population 65 years and over - Bachelor's degree or hi
+327,hc06_moe_vc34,strL,0,%9s,,Percent Female; Margin of Error; Population 65 years and over - Bachelor's degre
+328,hc01_est_vc37,strL,0,%9s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT - 
+329,hc01_moe_vc37,strL,0,%9s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAIN
+330,hc02_est_vc37,strL,0,%9s,,Percent; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT 
+331,hc02_moe_vc37,strL,0,%9s,,Percent; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTA
+332,hc03_est_vc37,strL,0,%9s,,Male; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT - W
+333,hc03_moe_vc37,strL,0,%9s,,Male; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINM
+334,hc04_est_vc37,strL,0,%9s,,Percent Male; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAIN
+335,hc04_moe_vc37,strL,0,%9s,,Percent Male; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL
+336,hc05_est_vc37,strL,0,%9s,,Female; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT -
+337,hc05_moe_vc37,strL,0,%9s,,Female; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAI
+338,hc06_est_vc37,strL,0,%9s,,Percent Female; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTA
+339,hc06_moe_vc37,strL,0,%9s,,Percent Female; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATION
+340,hc01_est_vc38,strL,0,%9s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT - 
+341,hc01_moe_vc38,strL,0,%9s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAIN
+342,hc02_est_vc38,strL,0,%9s,,Percent; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT 
+343,hc02_moe_vc38,strL,0,%9s,,Percent; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTA
+344,hc03_est_vc38,strL,0,%9s,,Male; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT - W
+345,hc03_moe_vc38,strL,0,%9s,,Male; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINM
+346,hc04_est_vc38,strL,0,%9s,,Percent Male; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAIN
+347,hc04_moe_vc38,strL,0,%9s,,Percent Male; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL
+348,hc05_est_vc38,strL,0,%9s,,Female; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT -
+349,hc05_moe_vc38,strL,0,%9s,,Female; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAI
+350,hc06_est_vc38,strL,0,%9s,,Percent Female; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTA
+351,hc06_moe_vc38,strL,0,%9s,,Percent Female; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATION
+352,hc01_est_vc39,strL,0,%9s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT - 
+353,hc01_moe_vc39,strL,0,%9s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAIN
+354,hc02_est_vc39,strL,0,%9s,,Percent; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT 
+355,hc02_moe_vc39,strL,0,%9s,,Percent; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTA
+356,hc03_est_vc39,strL,0,%9s,,Male; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT - W
+357,hc03_moe_vc39,strL,0,%9s,,Male; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINM
+358,hc04_est_vc39,strL,0,%9s,,Percent Male; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAIN
+359,hc04_moe_vc39,strL,0,%9s,,Percent Male; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL
+360,hc05_est_vc39,strL,0,%9s,,Female; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT -
+361,hc05_moe_vc39,strL,0,%9s,,Female; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAI
+362,hc06_est_vc39,strL,0,%9s,,Percent Female; Estimate; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTA
+363,hc06_moe_vc39,strL,0,%9s,,Percent Female; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATION
+364,hc01_est_vc41,str52,0,%52s,,"Total; Estimate; White alone, not Hispanic or Latino"
+365,hc01_moe_vc41,str59,0,%59s,,"Total; Margin of Error; White alone, not Hispanic or Latino"
+366,hc02_est_vc41,str54,0,%54s,,"Percent; Estimate; White alone, not Hispanic or Latino"
+367,hc02_moe_vc41,str61,0,%61s,,"Percent; Margin of Error; White alone, not Hispanic or Latino"
+368,hc03_est_vc41,str51,0,%51s,,"Male; Estimate; White alone, not Hispanic or Latino"
+369,hc03_moe_vc41,str58,0,%58s,,"Male; Margin of Error; White alone, not Hispanic or Latino"
+370,hc04_est_vc41,str59,0,%59s,,"Percent Male; Estimate; White alone, not Hispanic or Latino"
+371,hc04_moe_vc41,str66,0,%66s,,"Percent Male; Margin of Error; White alone, not Hispanic or Latino"
+372,hc05_est_vc41,str53,0,%53s,,"Female; Estimate; White alone, not Hispanic or Latino"
+373,hc05_moe_vc41,str60,0,%60s,,"Female; Margin of Error; White alone, not Hispanic or Latino"
+374,hc06_est_vc41,str61,0,%61s,,"Percent Female; Estimate; White alone, not Hispanic or Latino"
+375,hc06_moe_vc41,str68,0,%68s,,"Percent Female; Margin of Error; White alone, not Hispanic or Latino"
+376,hc01_est_vc42,strL,0,%9s,,"Total; Estimate; White alone, not Hispanic or Latino - High school graduate or h"
+377,hc01_moe_vc42,strL,0,%9s,,"Total; Margin of Error; White alone, not Hispanic or Latino - High school gradua"
+378,hc02_est_vc42,strL,0,%9s,,"Percent; Estimate; White alone, not Hispanic or Latino - High school graduate or"
+379,hc02_moe_vc42,strL,0,%9s,,"Percent; Margin of Error; White alone, not Hispanic or Latino - High school grad"
+380,hc03_est_vc42,strL,0,%9s,,"Male; Estimate; White alone, not Hispanic or Latino - High school graduate or hi"
+381,hc03_moe_vc42,strL,0,%9s,,"Male; Margin of Error; White alone, not Hispanic or Latino - High school graduat"
+382,hc04_est_vc42,strL,0,%9s,,"Percent Male; Estimate; White alone, not Hispanic or Latino - High school gradua"
+383,hc04_moe_vc42,strL,0,%9s,,"Percent Male; Margin of Error; White alone, not Hispanic or Latino - High school"
+384,hc05_est_vc42,strL,0,%9s,,"Female; Estimate; White alone, not Hispanic or Latino - High school graduate or "
+385,hc05_moe_vc42,strL,0,%9s,,"Female; Margin of Error; White alone, not Hispanic or Latino - High school gradu"
+386,hc06_est_vc42,strL,0,%9s,,"Percent Female; Estimate; White alone, not Hispanic or Latino - High school grad"
+387,hc06_moe_vc42,strL,0,%9s,,"Percent Female; Margin of Error; White alone, not Hispanic or Latino - High scho"
+388,hc01_est_vc43,strL,0,%9s,,"Total; Estimate; White alone, not Hispanic or Latino - Bachelor's degree or high"
+389,hc01_moe_vc43,strL,0,%9s,,"Total; Margin of Error; White alone, not Hispanic or Latino - Bachelor's degree "
+390,hc02_est_vc43,strL,0,%9s,,"Percent; Estimate; White alone, not Hispanic or Latino - Bachelor's degree or hi"
+391,hc02_moe_vc43,strL,0,%9s,,"Percent; Margin of Error; White alone, not Hispanic or Latino - Bachelor's degre"
+392,hc03_est_vc43,strL,0,%9s,,"Male; Estimate; White alone, not Hispanic or Latino - Bachelor's degree or highe"
+393,hc03_moe_vc43,strL,0,%9s,,"Male; Margin of Error; White alone, not Hispanic or Latino - Bachelor's degree o"
+394,hc04_est_vc43,strL,0,%9s,,"Percent Male; Estimate; White alone, not Hispanic or Latino - Bachelor's degree "
+395,hc04_moe_vc43,strL,0,%9s,,"Percent Male; Margin of Error; White alone, not Hispanic or Latino - Bachelor's "
+396,hc05_est_vc43,strL,0,%9s,,"Female; Estimate; White alone, not Hispanic or Latino - Bachelor's degree or hig"
+397,hc05_moe_vc43,strL,0,%9s,,"Female; Margin of Error; White alone, not Hispanic or Latino - Bachelor's degree"
+398,hc06_est_vc43,strL,0,%9s,,"Percent Female; Estimate; White alone, not Hispanic or Latino - Bachelor's degre"
+399,hc06_moe_vc43,strL,0,%9s,,"Percent Female; Margin of Error; White alone, not Hispanic or Latino - Bachelor'"
+400,hc01_est_vc45,str28,0,%28s,,Total; Estimate; Black alone
+401,hc01_moe_vc45,str35,0,%35s,,Total; Margin of Error; Black alone
+402,hc02_est_vc45,str30,0,%30s,,Percent; Estimate; Black alone
+403,hc02_moe_vc45,str37,0,%37s,,Percent; Margin of Error; Black alone
+404,hc03_est_vc45,str27,0,%27s,,Male; Estimate; Black alone
+405,hc03_moe_vc45,str34,0,%34s,,Male; Margin of Error; Black alone
+406,hc04_est_vc45,str35,0,%35s,,Percent Male; Estimate; Black alone
+407,hc04_moe_vc45,str42,0,%42s,,Percent Male; Margin of Error; Black alone
+408,hc05_est_vc45,str29,0,%29s,,Female; Estimate; Black alone
+409,hc05_moe_vc45,str36,0,%36s,,Female; Margin of Error; Black alone
+410,hc06_est_vc45,str37,0,%37s,,Percent Female; Estimate; Black alone
+411,hc06_moe_vc45,str44,0,%44s,,Percent Female; Margin of Error; Black alone
+412,hc01_est_vc46,str61,0,%61s,,Total; Estimate; Black alone - High school graduate or higher
+413,hc01_moe_vc46,str68,0,%68s,,Total; Margin of Error; Black alone - High school graduate or higher
+414,hc02_est_vc46,str63,0,%63s,,Percent; Estimate; Black alone - High school graduate or higher
+415,hc02_moe_vc46,str70,0,%70s,,Percent; Margin of Error; Black alone - High school graduate or higher
+416,hc03_est_vc46,str60,0,%60s,,Male; Estimate; Black alone - High school graduate or higher
+417,hc03_moe_vc46,str67,0,%67s,,Male; Margin of Error; Black alone - High school graduate or higher
+418,hc04_est_vc46,str68,0,%68s,,Percent Male; Estimate; Black alone - High school graduate or higher
+419,hc04_moe_vc46,str75,0,%75s,,Percent Male; Margin of Error; Black alone - High school graduate or higher
+420,hc05_est_vc46,str62,0,%62s,,Female; Estimate; Black alone - High school graduate or higher
+421,hc05_moe_vc46,str69,0,%69s,,Female; Margin of Error; Black alone - High school graduate or higher
+422,hc06_est_vc46,str70,0,%70s,,Percent Female; Estimate; Black alone - High school graduate or higher
+423,hc06_moe_vc46,str77,0,%77s,,Percent Female; Margin of Error; Black alone - High school graduate or higher
+424,hc01_est_vc47,str58,0,%58s,,Total; Estimate; Black alone - Bachelor's degree or higher
+425,hc01_moe_vc47,str65,0,%65s,,Total; Margin of Error; Black alone - Bachelor's degree or higher
+426,hc02_est_vc47,str60,0,%60s,,Percent; Estimate; Black alone - Bachelor's degree or higher
+427,hc02_moe_vc47,str67,0,%67s,,Percent; Margin of Error; Black alone - Bachelor's degree or higher
+428,hc03_est_vc47,str57,0,%57s,,Male; Estimate; Black alone - Bachelor's degree or higher
+429,hc03_moe_vc47,str64,0,%64s,,Male; Margin of Error; Black alone - Bachelor's degree or higher
+430,hc04_est_vc47,str65,0,%65s,,Percent Male; Estimate; Black alone - Bachelor's degree or higher
+431,hc04_moe_vc47,str72,0,%72s,,Percent Male; Margin of Error; Black alone - Bachelor's degree or higher
+432,hc05_est_vc47,str59,0,%59s,,Female; Estimate; Black alone - Bachelor's degree or higher
+433,hc05_moe_vc47,str66,0,%66s,,Female; Margin of Error; Black alone - Bachelor's degree or higher
+434,hc06_est_vc47,str67,0,%67s,,Percent Female; Estimate; Black alone - Bachelor's degree or higher
+435,hc06_moe_vc47,str74,0,%74s,,Percent Female; Margin of Error; Black alone - Bachelor's degree or higher
+436,hc01_est_vc49,str55,0,%55s,,Total; Estimate; American Indian or Alaska Native alone
+437,hc01_moe_vc49,str62,0,%62s,,Total; Margin of Error; American Indian or Alaska Native alone
+438,hc02_est_vc49,str57,0,%57s,,Percent; Estimate; American Indian or Alaska Native alone
+439,hc02_moe_vc49,str64,0,%64s,,Percent; Margin of Error; American Indian or Alaska Native alone
+440,hc03_est_vc49,str54,0,%54s,,Male; Estimate; American Indian or Alaska Native alone
+441,hc03_moe_vc49,str61,0,%61s,,Male; Margin of Error; American Indian or Alaska Native alone
+442,hc04_est_vc49,str62,0,%62s,,Percent Male; Estimate; American Indian or Alaska Native alone
+443,hc04_moe_vc49,str69,0,%69s,,Percent Male; Margin of Error; American Indian or Alaska Native alone
+444,hc05_est_vc49,str56,0,%56s,,Female; Estimate; American Indian or Alaska Native alone
+445,hc05_moe_vc49,str63,0,%63s,,Female; Margin of Error; American Indian or Alaska Native alone
+446,hc06_est_vc49,str64,0,%64s,,Percent Female; Estimate; American Indian or Alaska Native alone
+447,hc06_moe_vc49,str71,0,%71s,,Percent Female; Margin of Error; American Indian or Alaska Native alone
+448,hc01_est_vc50,strL,0,%9s,,Total; Estimate; American Indian or Alaska Native alone - High school graduate o
+449,hc01_moe_vc50,strL,0,%9s,,Total; Margin of Error; American Indian or Alaska Native alone - High school gra
+450,hc02_est_vc50,strL,0,%9s,,Percent; Estimate; American Indian or Alaska Native alone - High school graduate
+451,hc02_moe_vc50,strL,0,%9s,,Percent; Margin of Error; American Indian or Alaska Native alone - High school g
+452,hc03_est_vc50,strL,0,%9s,,Male; Estimate; American Indian or Alaska Native alone - High school graduate or
+453,hc03_moe_vc50,strL,0,%9s,,Male; Margin of Error; American Indian or Alaska Native alone - High school grad
+454,hc04_est_vc50,strL,0,%9s,,Percent Male; Estimate; American Indian or Alaska Native alone - High school gra
+455,hc04_moe_vc50,strL,0,%9s,,Percent Male; Margin of Error; American Indian or Alaska Native alone - High sch
+456,hc05_est_vc50,strL,0,%9s,,Female; Estimate; American Indian or Alaska Native alone - High school graduate 
+457,hc05_moe_vc50,strL,0,%9s,,Female; Margin of Error; American Indian or Alaska Native alone - High school gr
+458,hc06_est_vc50,strL,0,%9s,,Percent Female; Estimate; American Indian or Alaska Native alone - High school g
+459,hc06_moe_vc50,strL,0,%9s,,Percent Female; Margin of Error; American Indian or Alaska Native alone - High s
+460,hc01_est_vc51,strL,0,%9s,,Total; Estimate; American Indian or Alaska Native alone - Bachelor's degree or h
+461,hc01_moe_vc51,strL,0,%9s,,Total; Margin of Error; American Indian or Alaska Native alone - Bachelor's degr
+462,hc02_est_vc51,strL,0,%9s,,Percent; Estimate; American Indian or Alaska Native alone - Bachelor's degree or
+463,hc02_moe_vc51,strL,0,%9s,,Percent; Margin of Error; American Indian or Alaska Native alone - Bachelor's de
+464,hc03_est_vc51,strL,0,%9s,,Male; Estimate; American Indian or Alaska Native alone - Bachelor's degree or hi
+465,hc03_moe_vc51,strL,0,%9s,,Male; Margin of Error; American Indian or Alaska Native alone - Bachelor's degre
+466,hc04_est_vc51,strL,0,%9s,,Percent Male; Estimate; American Indian or Alaska Native alone - Bachelor's degr
+467,hc04_moe_vc51,strL,0,%9s,,Percent Male; Margin of Error; American Indian or Alaska Native alone - Bachelor
+468,hc05_est_vc51,strL,0,%9s,,Female; Estimate; American Indian or Alaska Native alone - Bachelor's degree or 
+469,hc05_moe_vc51,strL,0,%9s,,Female; Margin of Error; American Indian or Alaska Native alone - Bachelor's deg
+470,hc06_est_vc51,strL,0,%9s,,Percent Female; Estimate; American Indian or Alaska Native alone - Bachelor's de
+471,hc06_moe_vc51,strL,0,%9s,,Percent Female; Margin of Error; American Indian or Alaska Native alone - Bachel
+472,hc01_est_vc53,str28,0,%28s,,Total; Estimate; Asian alone
+473,hc01_moe_vc53,str35,0,%35s,,Total; Margin of Error; Asian alone
+474,hc02_est_vc53,str30,0,%30s,,Percent; Estimate; Asian alone
+475,hc02_moe_vc53,str37,0,%37s,,Percent; Margin of Error; Asian alone
+476,hc03_est_vc53,str27,0,%27s,,Male; Estimate; Asian alone
+477,hc03_moe_vc53,str34,0,%34s,,Male; Margin of Error; Asian alone
+478,hc04_est_vc53,str35,0,%35s,,Percent Male; Estimate; Asian alone
+479,hc04_moe_vc53,str42,0,%42s,,Percent Male; Margin of Error; Asian alone
+480,hc05_est_vc53,str29,0,%29s,,Female; Estimate; Asian alone
+481,hc05_moe_vc53,str36,0,%36s,,Female; Margin of Error; Asian alone
+482,hc06_est_vc53,str37,0,%37s,,Percent Female; Estimate; Asian alone
+483,hc06_moe_vc53,str44,0,%44s,,Percent Female; Margin of Error; Asian alone
+484,hc01_est_vc54,str61,0,%61s,,Total; Estimate; Asian alone - High school graduate or higher
+485,hc01_moe_vc54,str68,0,%68s,,Total; Margin of Error; Asian alone - High school graduate or higher
+486,hc02_est_vc54,str63,0,%63s,,Percent; Estimate; Asian alone - High school graduate or higher
+487,hc02_moe_vc54,str70,0,%70s,,Percent; Margin of Error; Asian alone - High school graduate or higher
+488,hc03_est_vc54,str60,0,%60s,,Male; Estimate; Asian alone - High school graduate or higher
+489,hc03_moe_vc54,str67,0,%67s,,Male; Margin of Error; Asian alone - High school graduate or higher
+490,hc04_est_vc54,str68,0,%68s,,Percent Male; Estimate; Asian alone - High school graduate or higher
+491,hc04_moe_vc54,str75,0,%75s,,Percent Male; Margin of Error; Asian alone - High school graduate or higher
+492,hc05_est_vc54,str62,0,%62s,,Female; Estimate; Asian alone - High school graduate or higher
+493,hc05_moe_vc54,str69,0,%69s,,Female; Margin of Error; Asian alone - High school graduate or higher
+494,hc06_est_vc54,str70,0,%70s,,Percent Female; Estimate; Asian alone - High school graduate or higher
+495,hc06_moe_vc54,str77,0,%77s,,Percent Female; Margin of Error; Asian alone - High school graduate or higher
+496,hc01_est_vc55,str58,0,%58s,,Total; Estimate; Asian alone - Bachelor's degree or higher
+497,hc01_moe_vc55,str65,0,%65s,,Total; Margin of Error; Asian alone - Bachelor's degree or higher
+498,hc02_est_vc55,str60,0,%60s,,Percent; Estimate; Asian alone - Bachelor's degree or higher
+499,hc02_moe_vc55,str67,0,%67s,,Percent; Margin of Error; Asian alone - Bachelor's degree or higher
+500,hc03_est_vc55,str57,0,%57s,,Male; Estimate; Asian alone - Bachelor's degree or higher
+501,hc03_moe_vc55,str64,0,%64s,,Male; Margin of Error; Asian alone - Bachelor's degree or higher
+502,hc04_est_vc55,str65,0,%65s,,Percent Male; Estimate; Asian alone - Bachelor's degree or higher
+503,hc04_moe_vc55,str72,0,%72s,,Percent Male; Margin of Error; Asian alone - Bachelor's degree or higher
+504,hc05_est_vc55,str59,0,%59s,,Female; Estimate; Asian alone - Bachelor's degree or higher
+505,hc05_moe_vc55,str66,0,%66s,,Female; Margin of Error; Asian alone - Bachelor's degree or higher
+506,hc06_est_vc55,str67,0,%67s,,Percent Female; Estimate; Asian alone - Bachelor's degree or higher
+507,hc06_moe_vc55,str74,0,%74s,,Percent Female; Margin of Error; Asian alone - Bachelor's degree or higher
+508,hc01_est_vc57,str65,0,%65s,,Total; Estimate; Native Hawaiian and Other Pacific Islander alone
+509,hc01_moe_vc57,str72,0,%72s,,Total; Margin of Error; Native Hawaiian and Other Pacific Islander alone
+510,hc02_est_vc57,str67,0,%67s,,Percent; Estimate; Native Hawaiian and Other Pacific Islander alone
+511,hc02_moe_vc57,str74,0,%74s,,Percent; Margin of Error; Native Hawaiian and Other Pacific Islander alone
+512,hc03_est_vc57,str64,0,%64s,,Male; Estimate; Native Hawaiian and Other Pacific Islander alone
+513,hc03_moe_vc57,str71,0,%71s,,Male; Margin of Error; Native Hawaiian and Other Pacific Islander alone
+514,hc04_est_vc57,str72,0,%72s,,Percent Male; Estimate; Native Hawaiian and Other Pacific Islander alone
+515,hc04_moe_vc57,strL,0,%9s,,Percent Male; Margin of Error; Native Hawaiian and Other Pacific Islander alone
+516,hc05_est_vc57,str66,0,%66s,,Female; Estimate; Native Hawaiian and Other Pacific Islander alone
+517,hc05_moe_vc57,str73,0,%73s,,Female; Margin of Error; Native Hawaiian and Other Pacific Islander alone
+518,hc06_est_vc57,str74,0,%74s,,Percent Female; Estimate; Native Hawaiian and Other Pacific Islander alone
+519,hc06_moe_vc57,strL,0,%9s,,Percent Female; Margin of Error; Native Hawaiian and Other Pacific Islander alon
+520,hc01_est_vc58,strL,0,%9s,,Total; Estimate; Native Hawaiian and Other Pacific Islander alone - High school 
+521,hc01_moe_vc58,strL,0,%9s,,Total; Margin of Error; Native Hawaiian and Other Pacific Islander alone - High 
+522,hc02_est_vc58,strL,0,%9s,,Percent; Estimate; Native Hawaiian and Other Pacific Islander alone - High schoo
+523,hc02_moe_vc58,strL,0,%9s,,Percent; Margin of Error; Native Hawaiian and Other Pacific Islander alone - Hig
+524,hc03_est_vc58,strL,0,%9s,,Male; Estimate; Native Hawaiian and Other Pacific Islander alone - High school g
+525,hc03_moe_vc58,strL,0,%9s,,Male; Margin of Error; Native Hawaiian and Other Pacific Islander alone - High s
+526,hc04_est_vc58,strL,0,%9s,,Percent Male; Estimate; Native Hawaiian and Other Pacific Islander alone - High 
+527,hc04_moe_vc58,strL,0,%9s,,Percent Male; Margin of Error; Native Hawaiian and Other Pacific Islander alone 
+528,hc05_est_vc58,strL,0,%9s,,Female; Estimate; Native Hawaiian and Other Pacific Islander alone - High school
+529,hc05_moe_vc58,strL,0,%9s,,Female; Margin of Error; Native Hawaiian and Other Pacific Islander alone - High
+530,hc06_est_vc58,strL,0,%9s,,Percent Female; Estimate; Native Hawaiian and Other Pacific Islander alone - Hig
+531,hc06_moe_vc58,strL,0,%9s,,Percent Female; Margin of Error; Native Hawaiian and Other Pacific Islander alon
+532,hc01_est_vc59,strL,0,%9s,,Total; Estimate; Native Hawaiian and Other Pacific Islander alone - Bachelor's d
+533,hc01_moe_vc59,strL,0,%9s,,Total; Margin of Error; Native Hawaiian and Other Pacific Islander alone - Bache
+534,hc02_est_vc59,strL,0,%9s,,Percent; Estimate; Native Hawaiian and Other Pacific Islander alone - Bachelor's
+535,hc02_moe_vc59,strL,0,%9s,,Percent; Margin of Error; Native Hawaiian and Other Pacific Islander alone - Bac
+536,hc03_est_vc59,strL,0,%9s,,Male; Estimate; Native Hawaiian and Other Pacific Islander alone - Bachelor's de
+537,hc03_moe_vc59,strL,0,%9s,,Male; Margin of Error; Native Hawaiian and Other Pacific Islander alone - Bachel
+538,hc04_est_vc59,strL,0,%9s,,Percent Male; Estimate; Native Hawaiian and Other Pacific Islander alone - Bache
+539,hc04_moe_vc59,strL,0,%9s,,Percent Male; Margin of Error; Native Hawaiian and Other Pacific Islander alone 
+540,hc05_est_vc59,strL,0,%9s,,Female; Estimate; Native Hawaiian and Other Pacific Islander alone - Bachelor's 
+541,hc05_moe_vc59,strL,0,%9s,,Female; Margin of Error; Native Hawaiian and Other Pacific Islander alone - Bach
+542,hc06_est_vc59,strL,0,%9s,,Percent Female; Estimate; Native Hawaiian and Other Pacific Islander alone - Bac
+543,hc06_moe_vc59,strL,0,%9s,,Percent Female; Margin of Error; Native Hawaiian and Other Pacific Islander alon
+544,hc01_est_vc61,str38,0,%38s,,Total; Estimate; Some other race alone
+545,hc01_moe_vc61,str45,0,%45s,,Total; Margin of Error; Some other race alone
+546,hc02_est_vc61,str40,0,%40s,,Percent; Estimate; Some other race alone
+547,hc02_moe_vc61,str47,0,%47s,,Percent; Margin of Error; Some other race alone
+548,hc03_est_vc61,str37,0,%37s,,Male; Estimate; Some other race alone
+549,hc03_moe_vc61,str44,0,%44s,,Male; Margin of Error; Some other race alone
+550,hc04_est_vc61,str45,0,%45s,,Percent Male; Estimate; Some other race alone
+551,hc04_moe_vc61,str52,0,%52s,,Percent Male; Margin of Error; Some other race alone
+552,hc05_est_vc61,str39,0,%39s,,Female; Estimate; Some other race alone
+553,hc05_moe_vc61,str46,0,%46s,,Female; Margin of Error; Some other race alone
+554,hc06_est_vc61,str47,0,%47s,,Percent Female; Estimate; Some other race alone
+555,hc06_moe_vc61,str54,0,%54s,,Percent Female; Margin of Error; Some other race alone
+556,hc01_est_vc62,str71,0,%71s,,Total; Estimate; Some other race alone - High school graduate or higher
+557,hc01_moe_vc62,strL,0,%9s,,Total; Margin of Error; Some other race alone - High school graduate or higher
+558,hc02_est_vc62,str73,0,%73s,,Percent; Estimate; Some other race alone - High school graduate or higher
+559,hc02_moe_vc62,strL,0,%9s,,Percent; Margin of Error; Some other race alone - High school graduate or higher
+560,hc03_est_vc62,str70,0,%70s,,Male; Estimate; Some other race alone - High school graduate or higher
+561,hc03_moe_vc62,strL,0,%9s,,Male; Margin of Error; Some other race alone - High school graduate or higher
+562,hc04_est_vc62,str78,0,%78s,,Percent Male; Estimate; Some other race alone - High school graduate or higher
+563,hc04_moe_vc62,strL,0,%9s,,Percent Male; Margin of Error; Some other race alone - High school graduate or h
+564,hc05_est_vc62,str72,0,%72s,,Female; Estimate; Some other race alone - High school graduate or higher
+565,hc05_moe_vc62,strL,0,%9s,,Female; Margin of Error; Some other race alone - High school graduate or higher
+566,hc06_est_vc62,strL,0,%9s,,Percent Female; Estimate; Some other race alone - High school graduate or higher
+567,hc06_moe_vc62,strL,0,%9s,,Percent Female; Margin of Error; Some other race alone - High school graduate or
+568,hc01_est_vc63,str68,0,%68s,,Total; Estimate; Some other race alone - Bachelor's degree or higher
+569,hc01_moe_vc63,str75,0,%75s,,Total; Margin of Error; Some other race alone - Bachelor's degree or higher
+570,hc02_est_vc63,str70,0,%70s,,Percent; Estimate; Some other race alone - Bachelor's degree or higher
+571,hc02_moe_vc63,str77,0,%77s,,Percent; Margin of Error; Some other race alone - Bachelor's degree or higher
+572,hc03_est_vc63,str67,0,%67s,,Male; Estimate; Some other race alone - Bachelor's degree or higher
+573,hc03_moe_vc63,str74,0,%74s,,Male; Margin of Error; Some other race alone - Bachelor's degree or higher
+574,hc04_est_vc63,str75,0,%75s,,Percent Male; Estimate; Some other race alone - Bachelor's degree or higher
+575,hc04_moe_vc63,strL,0,%9s,,Percent Male; Margin of Error; Some other race alone - Bachelor's degree or high
+576,hc05_est_vc63,str69,0,%69s,,Female; Estimate; Some other race alone - Bachelor's degree or higher
+577,hc05_moe_vc63,str76,0,%76s,,Female; Margin of Error; Some other race alone - Bachelor's degree or higher
+578,hc06_est_vc63,str77,0,%77s,,Percent Female; Estimate; Some other race alone - Bachelor's degree or higher
+579,hc06_moe_vc63,strL,0,%9s,,Percent Female; Margin of Error; Some other race alone - Bachelor's degree or hi
+580,hc01_est_vc65,str34,0,%34s,,Total; Estimate; Two or more races
+581,hc01_moe_vc65,str41,0,%41s,,Total; Margin of Error; Two or more races
+582,hc02_est_vc65,str36,0,%36s,,Percent; Estimate; Two or more races
+583,hc02_moe_vc65,str43,0,%43s,,Percent; Margin of Error; Two or more races
+584,hc03_est_vc65,str33,0,%33s,,Male; Estimate; Two or more races
+585,hc03_moe_vc65,str40,0,%40s,,Male; Margin of Error; Two or more races
+586,hc04_est_vc65,str41,0,%41s,,Percent Male; Estimate; Two or more races
+587,hc04_moe_vc65,str48,0,%48s,,Percent Male; Margin of Error; Two or more races
+588,hc05_est_vc65,str35,0,%35s,,Female; Estimate; Two or more races
+589,hc05_moe_vc65,str42,0,%42s,,Female; Margin of Error; Two or more races
+590,hc06_est_vc65,str43,0,%43s,,Percent Female; Estimate; Two or more races
+591,hc06_moe_vc65,str50,0,%50s,,Percent Female; Margin of Error; Two or more races
+592,hc01_est_vc66,str67,0,%67s,,Total; Estimate; Two or more races - High school graduate or higher
+593,hc01_moe_vc66,str74,0,%74s,,Total; Margin of Error; Two or more races - High school graduate or higher
+594,hc02_est_vc66,str69,0,%69s,,Percent; Estimate; Two or more races - High school graduate or higher
+595,hc02_moe_vc66,str76,0,%76s,,Percent; Margin of Error; Two or more races - High school graduate or higher
+596,hc03_est_vc66,str66,0,%66s,,Male; Estimate; Two or more races - High school graduate or higher
+597,hc03_moe_vc66,str73,0,%73s,,Male; Margin of Error; Two or more races - High school graduate or higher
+598,hc04_est_vc66,str74,0,%74s,,Percent Male; Estimate; Two or more races - High school graduate or higher
+599,hc04_moe_vc66,strL,0,%9s,,Percent Male; Margin of Error; Two or more races - High school graduate or highe
+600,hc05_est_vc66,str68,0,%68s,,Female; Estimate; Two or more races - High school graduate or higher
+601,hc05_moe_vc66,str75,0,%75s,,Female; Margin of Error; Two or more races - High school graduate or higher
+602,hc06_est_vc66,str76,0,%76s,,Percent Female; Estimate; Two or more races - High school graduate or higher
+603,hc06_moe_vc66,strL,0,%9s,,Percent Female; Margin of Error; Two or more races - High school graduate or hig
+604,hc01_est_vc67,str64,0,%64s,,Total; Estimate; Two or more races - Bachelor's degree or higher
+605,hc01_moe_vc67,str71,0,%71s,,Total; Margin of Error; Two or more races - Bachelor's degree or higher
+606,hc02_est_vc67,str66,0,%66s,,Percent; Estimate; Two or more races - Bachelor's degree or higher
+607,hc02_moe_vc67,str73,0,%73s,,Percent; Margin of Error; Two or more races - Bachelor's degree or higher
+608,hc03_est_vc67,str63,0,%63s,,Male; Estimate; Two or more races - Bachelor's degree or higher
+609,hc03_moe_vc67,str70,0,%70s,,Male; Margin of Error; Two or more races - Bachelor's degree or higher
+610,hc04_est_vc67,str71,0,%71s,,Percent Male; Estimate; Two or more races - Bachelor's degree or higher
+611,hc04_moe_vc67,str78,0,%78s,,Percent Male; Margin of Error; Two or more races - Bachelor's degree or higher
+612,hc05_est_vc67,str65,0,%65s,,Female; Estimate; Two or more races - Bachelor's degree or higher
+613,hc05_moe_vc67,str72,0,%72s,,Female; Margin of Error; Two or more races - Bachelor's degree or higher
+614,hc06_est_vc67,str73,0,%73s,,Percent Female; Estimate; Two or more races - Bachelor's degree or higher
+615,hc06_moe_vc67,strL,0,%9s,,Percent Female; Margin of Error; Two or more races - Bachelor's degree or higher
+616,hc01_est_vc69,str42,0,%42s,,Total; Estimate; Hispanic or Latino Origin
+617,hc01_moe_vc69,str49,0,%49s,,Total; Margin of Error; Hispanic or Latino Origin
+618,hc02_est_vc69,str44,0,%44s,,Percent; Estimate; Hispanic or Latino Origin
+619,hc02_moe_vc69,str51,0,%51s,,Percent; Margin of Error; Hispanic or Latino Origin
+620,hc03_est_vc69,str41,0,%41s,,Male; Estimate; Hispanic or Latino Origin
+621,hc03_moe_vc69,str48,0,%48s,,Male; Margin of Error; Hispanic or Latino Origin
+622,hc04_est_vc69,str49,0,%49s,,Percent Male; Estimate; Hispanic or Latino Origin
+623,hc04_moe_vc69,str56,0,%56s,,Percent Male; Margin of Error; Hispanic or Latino Origin
+624,hc05_est_vc69,str43,0,%43s,,Female; Estimate; Hispanic or Latino Origin
+625,hc05_moe_vc69,str50,0,%50s,,Female; Margin of Error; Hispanic or Latino Origin
+626,hc06_est_vc69,str51,0,%51s,,Percent Female; Estimate; Hispanic or Latino Origin
+627,hc06_moe_vc69,str58,0,%58s,,Percent Female; Margin of Error; Hispanic or Latino Origin
+628,hc01_est_vc70,str75,0,%75s,,Total; Estimate; Hispanic or Latino Origin - High school graduate or higher
+629,hc01_moe_vc70,strL,0,%9s,,Total; Margin of Error; Hispanic or Latino Origin - High school graduate or high
+630,hc02_est_vc70,str77,0,%77s,,Percent; Estimate; Hispanic or Latino Origin - High school graduate or higher
+631,hc02_moe_vc70,strL,0,%9s,,Percent; Margin of Error; Hispanic or Latino Origin - High school graduate or hi
+632,hc03_est_vc70,str74,0,%74s,,Male; Estimate; Hispanic or Latino Origin - High school graduate or higher
+633,hc03_moe_vc70,strL,0,%9s,,Male; Margin of Error; Hispanic or Latino Origin - High school graduate or highe
+634,hc04_est_vc70,strL,0,%9s,,Percent Male; Estimate; Hispanic or Latino Origin - High school graduate or high
+635,hc04_moe_vc70,strL,0,%9s,,Percent Male; Margin of Error; Hispanic or Latino Origin - High school graduate 
+636,hc05_est_vc70,str76,0,%76s,,Female; Estimate; Hispanic or Latino Origin - High school graduate or higher
+637,hc05_moe_vc70,strL,0,%9s,,Female; Margin of Error; Hispanic or Latino Origin - High school graduate or hig
+638,hc06_est_vc70,strL,0,%9s,,Percent Female; Estimate; Hispanic or Latino Origin - High school graduate or hi
+639,hc06_moe_vc70,strL,0,%9s,,Percent Female; Margin of Error; Hispanic or Latino Origin - High school graduat
+640,hc01_est_vc71,str72,0,%72s,,Total; Estimate; Hispanic or Latino Origin - Bachelor's degree or higher
+641,hc01_moe_vc71,strL,0,%9s,,Total; Margin of Error; Hispanic or Latino Origin - Bachelor's degree or higher
+642,hc02_est_vc71,str74,0,%74s,,Percent; Estimate; Hispanic or Latino Origin - Bachelor's degree or higher
+643,hc02_moe_vc71,strL,0,%9s,,Percent; Margin of Error; Hispanic or Latino Origin - Bachelor's degree or highe
+644,hc03_est_vc71,str71,0,%71s,,Male; Estimate; Hispanic or Latino Origin - Bachelor's degree or higher
+645,hc03_moe_vc71,strL,0,%9s,,Male; Margin of Error; Hispanic or Latino Origin - Bachelor's degree or higher
+646,hc04_est_vc71,strL,0,%9s,,Percent Male; Estimate; Hispanic or Latino Origin - Bachelor's degree or higher
+647,hc04_moe_vc71,strL,0,%9s,,Percent Male; Margin of Error; Hispanic or Latino Origin - Bachelor's degree or 
+648,hc05_est_vc71,str73,0,%73s,,Female; Estimate; Hispanic or Latino Origin - Bachelor's degree or higher
+649,hc05_moe_vc71,strL,0,%9s,,Female; Margin of Error; Hispanic or Latino Origin - Bachelor's degree or higher
+650,hc06_est_vc71,strL,0,%9s,,Percent Female; Estimate; Hispanic or Latino Origin - Bachelor's degree or highe
+651,hc06_moe_vc71,strL,0,%9s,,Percent Female; Margin of Error; Hispanic or Latino Origin - Bachelor's degree o
+652,hc01_est_vc74,strL,0,%9s,,Total; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVE
+653,hc01_moe_vc74,strL,0,%9s,,Total; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WH
+654,hc02_est_vc74,strL,0,%9s,,Percent; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM PO
+655,hc02_moe_vc74,strL,0,%9s,,Percent; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR 
+656,hc03_est_vc74,strL,0,%9s,,Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVER
+657,hc03_moe_vc74,strL,0,%9s,,Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHO
+658,hc04_est_vc74,strL,0,%9s,,Percent Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WH
+659,hc04_moe_vc74,strL,0,%9s,,Percent Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER
+660,hc05_est_vc74,strL,0,%9s,,Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POV
+661,hc05_moe_vc74,strL,0,%9s,,Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR W
+662,hc06_est_vc74,strL,0,%9s,,Percent Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR 
+663,hc06_moe_vc74,strL,0,%9s,,Percent Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OV
+664,hc01_est_vc75,strL,0,%9s,,Total; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVE
+665,hc01_moe_vc75,strL,0,%9s,,Total; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WH
+666,hc02_est_vc75,strL,0,%9s,,Percent; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM PO
+667,hc02_moe_vc75,strL,0,%9s,,Percent; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR 
+668,hc03_est_vc75,strL,0,%9s,,Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVER
+669,hc03_moe_vc75,strL,0,%9s,,Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHO
+670,hc04_est_vc75,strL,0,%9s,,Percent Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WH
+671,hc04_moe_vc75,strL,0,%9s,,Percent Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER
+672,hc05_est_vc75,strL,0,%9s,,Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POV
+673,hc05_moe_vc75,strL,0,%9s,,Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR W
+674,hc06_est_vc75,strL,0,%9s,,Percent Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR 
+675,hc06_moe_vc75,strL,0,%9s,,Percent Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OV
+676,hc01_est_vc76,strL,0,%9s,,Total; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVE
+677,hc01_moe_vc76,strL,0,%9s,,Total; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WH
+678,hc02_est_vc76,strL,0,%9s,,Percent; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM PO
+679,hc02_moe_vc76,strL,0,%9s,,Percent; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR 
+680,hc03_est_vc76,strL,0,%9s,,Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVER
+681,hc03_moe_vc76,strL,0,%9s,,Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHO
+682,hc04_est_vc76,strL,0,%9s,,Percent Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WH
+683,hc04_moe_vc76,strL,0,%9s,,Percent Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER
+684,hc05_est_vc76,strL,0,%9s,,Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POV
+685,hc05_moe_vc76,strL,0,%9s,,Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR W
+686,hc06_est_vc76,strL,0,%9s,,Percent Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR 
+687,hc06_moe_vc76,strL,0,%9s,,Percent Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OV
+688,hc01_est_vc77,strL,0,%9s,,Total; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVE
+689,hc01_moe_vc77,strL,0,%9s,,Total; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WH
+690,hc02_est_vc77,strL,0,%9s,,Percent; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM PO
+691,hc02_moe_vc77,strL,0,%9s,,Percent; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR 
+692,hc03_est_vc77,strL,0,%9s,,Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVER
+693,hc03_moe_vc77,strL,0,%9s,,Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHO
+694,hc04_est_vc77,strL,0,%9s,,Percent Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WH
+695,hc04_moe_vc77,strL,0,%9s,,Percent Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER
+696,hc05_est_vc77,strL,0,%9s,,Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POV
+697,hc05_moe_vc77,strL,0,%9s,,Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR W
+698,hc06_est_vc77,strL,0,%9s,,Percent Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR 
+699,hc06_moe_vc77,strL,0,%9s,,Percent Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OV
+700,hc01_est_vc80,strL,0,%9s,,Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUST
+701,hc01_moe_vc80,strL,0,%9s,,Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+702,hc02_est_vc80,strL,0,%9s,,Percent; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJU
+703,hc02_moe_vc80,strL,0,%9s,,Percent; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+704,hc03_est_vc80,strL,0,%9s,,Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUSTE
+705,hc03_moe_vc80,strL,0,%9s,,Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-
+706,hc04_est_vc80,strL,0,%9s,,Percent Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+707,hc04_moe_vc80,strL,0,%9s,,Percent Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 IN
+708,hc05_est_vc80,strL,0,%9s,,Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUS
+709,hc05_moe_vc80,strL,0,%9s,,Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATIO
+710,hc06_est_vc80,strL,0,%9s,,Percent Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+711,hc06_moe_vc80,strL,0,%9s,,Percent Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 
+712,hc01_est_vc81,strL,0,%9s,,Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUST
+713,hc01_moe_vc81,strL,0,%9s,,Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+714,hc02_est_vc81,strL,0,%9s,,Percent; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJU
+715,hc02_moe_vc81,strL,0,%9s,,Percent; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+716,hc03_est_vc81,strL,0,%9s,,Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUSTE
+717,hc03_moe_vc81,strL,0,%9s,,Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-
+718,hc04_est_vc81,strL,0,%9s,,Percent Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+719,hc04_moe_vc81,strL,0,%9s,,Percent Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 IN
+720,hc05_est_vc81,strL,0,%9s,,Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUS
+721,hc05_moe_vc81,strL,0,%9s,,Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATIO
+722,hc06_est_vc81,strL,0,%9s,,Percent Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+723,hc06_moe_vc81,strL,0,%9s,,Percent Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 
+724,hc01_est_vc82,strL,0,%9s,,Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUST
+725,hc01_moe_vc82,strL,0,%9s,,Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+726,hc02_est_vc82,strL,0,%9s,,Percent; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJU
+727,hc02_moe_vc82,strL,0,%9s,,Percent; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+728,hc03_est_vc82,strL,0,%9s,,Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUSTE
+729,hc03_moe_vc82,strL,0,%9s,,Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-
+730,hc04_est_vc82,strL,0,%9s,,Percent Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+731,hc04_moe_vc82,strL,0,%9s,,Percent Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 IN
+732,hc05_est_vc82,strL,0,%9s,,Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUS
+733,hc05_moe_vc82,strL,0,%9s,,Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATIO
+734,hc06_est_vc82,strL,0,%9s,,Percent Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+735,hc06_moe_vc82,strL,0,%9s,,Percent Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 
+736,hc01_est_vc83,strL,0,%9s,,Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUST
+737,hc01_moe_vc83,strL,0,%9s,,Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+738,hc02_est_vc83,strL,0,%9s,,Percent; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJU
+739,hc02_moe_vc83,strL,0,%9s,,Percent; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+740,hc03_est_vc83,strL,0,%9s,,Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUSTE
+741,hc03_moe_vc83,strL,0,%9s,,Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-
+742,hc04_est_vc83,strL,0,%9s,,Percent Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+743,hc04_moe_vc83,strL,0,%9s,,Percent Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 IN
+744,hc05_est_vc83,strL,0,%9s,,Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUS
+745,hc05_moe_vc83,strL,0,%9s,,Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATIO
+746,hc06_est_vc83,strL,0,%9s,,Percent Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+747,hc06_moe_vc83,strL,0,%9s,,Percent Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 
+748,hc01_est_vc84,strL,0,%9s,,Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUST
+749,hc01_moe_vc84,strL,0,%9s,,Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+750,hc02_est_vc84,strL,0,%9s,,Percent; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJU
+751,hc02_moe_vc84,strL,0,%9s,,Percent; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+752,hc03_est_vc84,strL,0,%9s,,Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUSTE
+753,hc03_moe_vc84,strL,0,%9s,,Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-
+754,hc04_est_vc84,strL,0,%9s,,Percent Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+755,hc04_moe_vc84,strL,0,%9s,,Percent Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 IN
+756,hc05_est_vc84,strL,0,%9s,,Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUS
+757,hc05_moe_vc84,strL,0,%9s,,Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATIO
+758,hc06_est_vc84,strL,0,%9s,,Percent Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+759,hc06_moe_vc84,strL,0,%9s,,Percent Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 
+760,hc01_est_vc85,strL,0,%9s,,Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUST
+761,hc01_moe_vc85,strL,0,%9s,,Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+762,hc02_est_vc85,strL,0,%9s,,Percent; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJU
+763,hc02_moe_vc85,strL,0,%9s,,Percent; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+764,hc03_est_vc85,strL,0,%9s,,Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUSTE
+765,hc03_moe_vc85,strL,0,%9s,,Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-
+766,hc04_est_vc85,strL,0,%9s,,Percent Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION
+767,hc04_moe_vc85,strL,0,%9s,,Percent Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 IN
+768,hc05_est_vc85,strL,0,%9s,,Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATION-ADJUS
+769,hc05_moe_vc85,strL,0,%9s,,Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATIO
+770,hc06_est_vc85,strL,0,%9s,,Percent Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 INFLATI
+771,hc06_moe_vc85,strL,0,%9s,,Percent Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2017 

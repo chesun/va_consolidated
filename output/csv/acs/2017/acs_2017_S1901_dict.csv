@@ -1,0 +1,132 @@
+order,name,type,isnumeric,format,vallab,varlab
+1,geoid,str20,0,%20s,,Id
+2,geoid2,str11,0,%11s,,Id2
+3,geodisplaylabel,str55,0,%55s,,Geography
+4,hc01_est_vc01,str27,0,%27s,,Households; Estimate; Total
+5,hc01_moe_vc01,str34,0,%34s,,Households; Margin of Error; Total
+6,hc02_est_vc01,str25,0,%25s,,Families; Estimate; Total
+7,hc02_moe_vc01,str32,0,%32s,,Families; Margin of Error; Total
+8,hc03_est_vc01,str40,0,%40s,,Married-couple families; Estimate; Total
+9,hc03_moe_vc01,str47,0,%47s,,Married-couple families; Margin of Error; Total
+10,hc04_est_vc01,str37,0,%37s,,Nonfamily households; Estimate; Total
+11,hc04_moe_vc01,str44,0,%44s,,Nonfamily households; Margin of Error; Total
+12,hc01_est_vc02,str39,0,%39s,,"Households; Estimate; Less than $10,000"
+13,hc01_moe_vc02,str46,0,%46s,,"Households; Margin of Error; Less than $10,000"
+14,hc02_est_vc02,str37,0,%37s,,"Families; Estimate; Less than $10,000"
+15,hc02_moe_vc02,str44,0,%44s,,"Families; Margin of Error; Less than $10,000"
+16,hc03_est_vc02,str52,0,%52s,,"Married-couple families; Estimate; Less than $10,000"
+17,hc03_moe_vc02,str59,0,%59s,,"Married-couple families; Margin of Error; Less than $10,000"
+18,hc04_est_vc02,str49,0,%49s,,"Nonfamily households; Estimate; Less than $10,000"
+19,hc04_moe_vc02,str56,0,%56s,,"Nonfamily households; Margin of Error; Less than $10,000"
+20,hc01_est_vc03,str40,0,%40s,,"Households; Estimate; $10,000 to $14,999"
+21,hc01_moe_vc03,str47,0,%47s,,"Households; Margin of Error; $10,000 to $14,999"
+22,hc02_est_vc03,str38,0,%38s,,"Families; Estimate; $10,000 to $14,999"
+23,hc02_moe_vc03,str45,0,%45s,,"Families; Margin of Error; $10,000 to $14,999"
+24,hc03_est_vc03,str53,0,%53s,,"Married-couple families; Estimate; $10,000 to $14,999"
+25,hc03_moe_vc03,str60,0,%60s,,"Married-couple families; Margin of Error; $10,000 to $14,999"
+26,hc04_est_vc03,str50,0,%50s,,"Nonfamily households; Estimate; $10,000 to $14,999"
+27,hc04_moe_vc03,str57,0,%57s,,"Nonfamily households; Margin of Error; $10,000 to $14,999"
+28,hc01_est_vc04,str40,0,%40s,,"Households; Estimate; $15,000 to $24,999"
+29,hc01_moe_vc04,str47,0,%47s,,"Households; Margin of Error; $15,000 to $24,999"
+30,hc02_est_vc04,str38,0,%38s,,"Families; Estimate; $15,000 to $24,999"
+31,hc02_moe_vc04,str45,0,%45s,,"Families; Margin of Error; $15,000 to $24,999"
+32,hc03_est_vc04,str53,0,%53s,,"Married-couple families; Estimate; $15,000 to $24,999"
+33,hc03_moe_vc04,str60,0,%60s,,"Married-couple families; Margin of Error; $15,000 to $24,999"
+34,hc04_est_vc04,str50,0,%50s,,"Nonfamily households; Estimate; $15,000 to $24,999"
+35,hc04_moe_vc04,str57,0,%57s,,"Nonfamily households; Margin of Error; $15,000 to $24,999"
+36,hc01_est_vc05,str40,0,%40s,,"Households; Estimate; $25,000 to $34,999"
+37,hc01_moe_vc05,str47,0,%47s,,"Households; Margin of Error; $25,000 to $34,999"
+38,hc02_est_vc05,str38,0,%38s,,"Families; Estimate; $25,000 to $34,999"
+39,hc02_moe_vc05,str45,0,%45s,,"Families; Margin of Error; $25,000 to $34,999"
+40,hc03_est_vc05,str53,0,%53s,,"Married-couple families; Estimate; $25,000 to $34,999"
+41,hc03_moe_vc05,str60,0,%60s,,"Married-couple families; Margin of Error; $25,000 to $34,999"
+42,hc04_est_vc05,str50,0,%50s,,"Nonfamily households; Estimate; $25,000 to $34,999"
+43,hc04_moe_vc05,str57,0,%57s,,"Nonfamily households; Margin of Error; $25,000 to $34,999"
+44,hc01_est_vc06,str40,0,%40s,,"Households; Estimate; $35,000 to $49,999"
+45,hc01_moe_vc06,str47,0,%47s,,"Households; Margin of Error; $35,000 to $49,999"
+46,hc02_est_vc06,str38,0,%38s,,"Families; Estimate; $35,000 to $49,999"
+47,hc02_moe_vc06,str45,0,%45s,,"Families; Margin of Error; $35,000 to $49,999"
+48,hc03_est_vc06,str53,0,%53s,,"Married-couple families; Estimate; $35,000 to $49,999"
+49,hc03_moe_vc06,str60,0,%60s,,"Married-couple families; Margin of Error; $35,000 to $49,999"
+50,hc04_est_vc06,str50,0,%50s,,"Nonfamily households; Estimate; $35,000 to $49,999"
+51,hc04_moe_vc06,str57,0,%57s,,"Nonfamily households; Margin of Error; $35,000 to $49,999"
+52,hc01_est_vc07,str40,0,%40s,,"Households; Estimate; $50,000 to $74,999"
+53,hc01_moe_vc07,str47,0,%47s,,"Households; Margin of Error; $50,000 to $74,999"
+54,hc02_est_vc07,str38,0,%38s,,"Families; Estimate; $50,000 to $74,999"
+55,hc02_moe_vc07,str45,0,%45s,,"Families; Margin of Error; $50,000 to $74,999"
+56,hc03_est_vc07,str53,0,%53s,,"Married-couple families; Estimate; $50,000 to $74,999"
+57,hc03_moe_vc07,str60,0,%60s,,"Married-couple families; Margin of Error; $50,000 to $74,999"
+58,hc04_est_vc07,str50,0,%50s,,"Nonfamily households; Estimate; $50,000 to $74,999"
+59,hc04_moe_vc07,str57,0,%57s,,"Nonfamily households; Margin of Error; $50,000 to $74,999"
+60,hc01_est_vc08,str40,0,%40s,,"Households; Estimate; $75,000 to $99,999"
+61,hc01_moe_vc08,str47,0,%47s,,"Households; Margin of Error; $75,000 to $99,999"
+62,hc02_est_vc08,str38,0,%38s,,"Families; Estimate; $75,000 to $99,999"
+63,hc02_moe_vc08,str45,0,%45s,,"Families; Margin of Error; $75,000 to $99,999"
+64,hc03_est_vc08,str53,0,%53s,,"Married-couple families; Estimate; $75,000 to $99,999"
+65,hc03_moe_vc08,str60,0,%60s,,"Married-couple families; Margin of Error; $75,000 to $99,999"
+66,hc04_est_vc08,str50,0,%50s,,"Nonfamily households; Estimate; $75,000 to $99,999"
+67,hc04_moe_vc08,str57,0,%57s,,"Nonfamily households; Margin of Error; $75,000 to $99,999"
+68,hc01_est_vc09,str42,0,%42s,,"Households; Estimate; $100,000 to $149,999"
+69,hc01_moe_vc09,str49,0,%49s,,"Households; Margin of Error; $100,000 to $149,999"
+70,hc02_est_vc09,str40,0,%40s,,"Families; Estimate; $100,000 to $149,999"
+71,hc02_moe_vc09,str47,0,%47s,,"Families; Margin of Error; $100,000 to $149,999"
+72,hc03_est_vc09,str55,0,%55s,,"Married-couple families; Estimate; $100,000 to $149,999"
+73,hc03_moe_vc09,str62,0,%62s,,"Married-couple families; Margin of Error; $100,000 to $149,999"
+74,hc04_est_vc09,str52,0,%52s,,"Nonfamily households; Estimate; $100,000 to $149,999"
+75,hc04_moe_vc09,str59,0,%59s,,"Nonfamily households; Margin of Error; $100,000 to $149,999"
+76,hc01_est_vc10,str42,0,%42s,,"Households; Estimate; $150,000 to $199,999"
+77,hc01_moe_vc10,str49,0,%49s,,"Households; Margin of Error; $150,000 to $199,999"
+78,hc02_est_vc10,str40,0,%40s,,"Families; Estimate; $150,000 to $199,999"
+79,hc02_moe_vc10,str47,0,%47s,,"Families; Margin of Error; $150,000 to $199,999"
+80,hc03_est_vc10,str55,0,%55s,,"Married-couple families; Estimate; $150,000 to $199,999"
+81,hc03_moe_vc10,str62,0,%62s,,"Married-couple families; Margin of Error; $150,000 to $199,999"
+82,hc04_est_vc10,str52,0,%52s,,"Nonfamily households; Estimate; $150,000 to $199,999"
+83,hc04_moe_vc10,str59,0,%59s,,"Nonfamily households; Margin of Error; $150,000 to $199,999"
+84,hc01_est_vc11,str38,0,%38s,,"Households; Estimate; $200,000 or more"
+85,hc01_moe_vc11,str45,0,%45s,,"Households; Margin of Error; $200,000 or more"
+86,hc02_est_vc11,str36,0,%36s,,"Families; Estimate; $200,000 or more"
+87,hc02_moe_vc11,str43,0,%43s,,"Families; Margin of Error; $200,000 or more"
+88,hc03_est_vc11,str51,0,%51s,,"Married-couple families; Estimate; $200,000 or more"
+89,hc03_moe_vc11,str58,0,%58s,,"Married-couple families; Margin of Error; $200,000 or more"
+90,hc04_est_vc11,str48,0,%48s,,"Nonfamily households; Estimate; $200,000 or more"
+91,hc04_moe_vc11,str55,0,%55s,,"Nonfamily households; Margin of Error; $200,000 or more"
+92,hc01_est_vc13,str45,0,%45s,,Households; Estimate; Median income (dollars)
+93,hc01_moe_vc13,str52,0,%52s,,Households; Margin of Error; Median income (dollars)
+94,hc02_est_vc13,str43,0,%43s,,Families; Estimate; Median income (dollars)
+95,hc02_moe_vc13,str50,0,%50s,,Families; Margin of Error; Median income (dollars)
+96,hc03_est_vc13,str58,0,%58s,,Married-couple families; Estimate; Median income (dollars)
+97,hc03_moe_vc13,str65,0,%65s,,Married-couple families; Margin of Error; Median income (dollars)
+98,hc04_est_vc13,str55,0,%55s,,Nonfamily households; Estimate; Median income (dollars)
+99,hc04_moe_vc13,str62,0,%62s,,Nonfamily households; Margin of Error; Median income (dollars)
+100,hc01_est_vc15,str43,0,%43s,,Households; Estimate; Mean income (dollars)
+101,hc01_moe_vc15,str50,0,%50s,,Households; Margin of Error; Mean income (dollars)
+102,hc02_est_vc15,str41,0,%41s,,Families; Estimate; Mean income (dollars)
+103,hc02_moe_vc15,str48,0,%48s,,Families; Margin of Error; Mean income (dollars)
+104,hc03_est_vc15,str56,0,%56s,,Married-couple families; Estimate; Mean income (dollars)
+105,hc03_moe_vc15,str63,0,%63s,,Married-couple families; Margin of Error; Mean income (dollars)
+106,hc04_est_vc15,str53,0,%53s,,Nonfamily households; Estimate; Mean income (dollars)
+107,hc04_moe_vc15,str60,0,%60s,,Nonfamily households; Margin of Error; Mean income (dollars)
+108,hc01_est_vc18,strL,0,%9s,,Households; Estimate; PERCENT ALLOCATED - Household income in the past 12 months
+109,hc01_moe_vc18,strL,0,%9s,,Households; Margin of Error; PERCENT ALLOCATED - Household income in the past 12
+110,hc02_est_vc18,strL,0,%9s,,Families; Estimate; PERCENT ALLOCATED - Household income in the past 12 months
+111,hc02_moe_vc18,strL,0,%9s,,Families; Margin of Error; PERCENT ALLOCATED - Household income in the past 12 m
+112,hc03_est_vc18,strL,0,%9s,,Married-couple families; Estimate; PERCENT ALLOCATED - Household income in the p
+113,hc03_moe_vc18,strL,0,%9s,,Married-couple families; Margin of Error; PERCENT ALLOCATED - Household income i
+114,hc04_est_vc18,strL,0,%9s,,Nonfamily households; Estimate; PERCENT ALLOCATED - Household income in the past
+115,hc04_moe_vc18,strL,0,%9s,,Nonfamily households; Margin of Error; PERCENT ALLOCATED - Household income in t
+116,hc01_est_vc19,str77,0,%77s,,Households; Estimate; PERCENT ALLOCATED - Family income in the past 12 months
+117,hc01_moe_vc19,strL,0,%9s,,Households; Margin of Error; PERCENT ALLOCATED - Family income in the past 12 mo
+118,hc02_est_vc19,str75,0,%75s,,Families; Estimate; PERCENT ALLOCATED - Family income in the past 12 months
+119,hc02_moe_vc19,strL,0,%9s,,Families; Margin of Error; PERCENT ALLOCATED - Family income in the past 12 mont
+120,hc03_est_vc19,strL,0,%9s,,Married-couple families; Estimate; PERCENT ALLOCATED - Family income in the past
+121,hc03_moe_vc19,strL,0,%9s,,Married-couple families; Margin of Error; PERCENT ALLOCATED - Family income in t
+122,hc04_est_vc19,strL,0,%9s,,Nonfamily households; Estimate; PERCENT ALLOCATED - Family income in the past 12
+123,hc04_moe_vc19,strL,0,%9s,,Nonfamily households; Margin of Error; PERCENT ALLOCATED - Family income in the 
+124,hc01_est_vc20,strL,0,%9s,,Households; Estimate; PERCENT ALLOCATED - Nonfamily income in the past 12 months
+125,hc01_moe_vc20,strL,0,%9s,,Households; Margin of Error; PERCENT ALLOCATED - Nonfamily income in the past 12
+126,hc02_est_vc20,strL,0,%9s,,Families; Estimate; PERCENT ALLOCATED - Nonfamily income in the past 12 months
+127,hc02_moe_vc20,strL,0,%9s,,Families; Margin of Error; PERCENT ALLOCATED - Nonfamily income in the past 12 m
+128,hc03_est_vc20,strL,0,%9s,,Married-couple families; Estimate; PERCENT ALLOCATED - Nonfamily income in the p
+129,hc03_moe_vc20,strL,0,%9s,,Married-couple families; Margin of Error; PERCENT ALLOCATED - Nonfamily income i
+130,hc04_est_vc20,strL,0,%9s,,Nonfamily households; Estimate; PERCENT ALLOCATED - Nonfamily income in the past
+131,hc04_moe_vc20,strL,0,%9s,,Nonfamily households; Margin of Error; PERCENT ALLOCATED - Nonfamily income in t

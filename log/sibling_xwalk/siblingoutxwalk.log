@@ -1,0 +1,3381 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  siblingoutxwalk
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> sibling_xwalk/siblingoutxwalk.smcl
+  log type:  text
+ opened on:  25 May 2026, 17:20:52
+
+. 
+. di as text _n "--------------------------------------------------------------
+------------------"
+
+-------------------------------------------------------------------------------
+> -
+
+. di as text "siblingoutxwalk.do — RUN START: `c(current_date)' `c(current_time
+> )'"
+siblingoutxwalk.do — RUN START: 25 May 2026 17:20:52
+
+. di as text "-----------------------------------------------------------------
+---------------"
+-------------------------------------------------------------------------------
+> -
+
+. 
+. 
+. /* file path macros -- LEGACY includes preserved per ADR-0021 (static
+>    predecessor helpers; not yet relocated).  $projdir of the predecessor
+>    maps to $caschls_projdir in our settings.do per the LEGACY PATHS comment
+>    block in do/settings.do.
+> 
+>    IMPORTANT — `$projdir` aliasing for LEGACY-include compatibility:
+>    Both `vafilemacros.doh` (L18-24) and `macros_va.doh` (L29-31) define
+>    locals like `local ufamilyxwalk "$projdir/dta/siblingxwalk/ufamilyxwalk"'.
+>    Stata expands `$projdir` at the line where the local is defined (during
+>    the include).  In the predecessor pipeline, $projdir was bound to the
+>    caschls dir at the outer caller.  In our consolidated repo, $projdir is
+>    NOT defined in do/settings.do (only $caschls_projdir is — per the
+>    "LEGACY PATHS" comment block).  Without aliasing, `$projdir` expands to
+>    empty string and `\`ufamilyxwalk'` resolves to `/dta/siblingxwalk/ufamilyx
+> walk`
+>    — a broken absolute path; the merge at "merge 1:1 state_student_id using
+>    \`ufamilyxwalk''" fails with file-not-found.  Alias here so both LEGACY
+>    includes resolve correctly.  This is the relocation-time pattern for any
+>    relocated script that includes a LEGACY .doh referencing `$projdir` —
+>    see MEMORY.md [LEARN:stata] 2026-04-30.  Side effect: $projdir remains
+>    set globally for the rest of the Stata session, which is benign (nothing
+>    else in the consolidated pipeline references $projdir).  */
+. global projdir "$caschls_projdir"
+
+. 
+. include $caschls_projdir/do/share/siblingvaregs/vafilemacros.doh
+
+. *****************************************************************************
+> ***
+. /* Macros for common core VA project folder file paths, and relevant datasets
+>  to make it possible
+> to use Matt's doh files  */
+. *****************************************************************************
+> ***
+. *****************************************************************************
+> ***
+. /* First written by Che Sun, 12/13/2021
+> 1/27/2022: changed mattdofiles path to the do files folder in project folder
+> after Matt updated the do files to reconcile file paths. Now direct run these
+> do files from the $vaprojdir/do_files_sbac folder*/
+. 
+. /* to include this in do files:
+> include $projdir/do/share/siblingvaregs/vafilemacros.doh
+>  */
+. 
+.  local vaprojdofiles "$vaprojdir/do_files"
+
+. 
+. *** macros for my own datasets
+. local va_dataset "$projdir/dta/common_core_va/va_dataset"
+
+. local va_g11_dataset "$projdir/dta/common_core_va/va_g11_dataset"
+
+. local va_g11_out_dataset "$projdir/dta/common_core_va/va_g11_out_dataset"
+
+. local siblingxwalk "$projdir/dta/siblingxwalk/siblingpairxwalk"
+
+. local ufamilyxwalk "$projdir/dta/siblingxwalk/ufamilyxwalk"
+
+. local k12_postsecondary_out_merge "$projdir/dta/common_core_va/k12_postsecond
+> ary_out_merge"
+
+. local sibling_out_xwalk "$projdir/dta/siblingxwalk/sibling_out_xwalk"
+
+. 
+. // VA macros
+. include $vaprojdir/do_files/sbac/macros_va.doh
+
+. /* CHANGE LOG
+> 4/28/2022: Added macro for sibling controls
+> 09/20/2022: Added delimiter : after comments
+> 10/31/2022: Changed naming convention for samples
+> b - base
+> l - loscore
+> a - acs
+> s - sibling
+> la - loscore and acs
+> ls - loscore and sibling
+> as - acs and sibling
+> las - loscore, acs and sibling
+> 
+> 05/31/2023: added distance control macros
+> 
+> 08/22/2024: added predicted ELA score spec controls 
+> */
+. 
+. #delimit ;
+delimiter now ;
+. *** file paths ;
+. local home $vaprojdir ;
+
+. local vaprojdofiles "$vaprojdir/do_files"
+> local ca_ed_lab "/home/research/ca_ed_lab" ;
+
+. local k12_test_scores "$vaprojdir/data/restricted_access/clean/k12_test_score
+> s" ;
+
+. local public_access "$vaprojdir/data/public_access" ;
+
+. local k12_public_schools "$vaprojdir/data/public_access/clean/k12_public_scho
+> ols" ;
+
+. local k12_test_scores_public "$vaprojdir/data/public_access/clean/k12_test_sc
+> ores" ;
+
+. local siblingxwalk "$projdir/dta/siblingxwalk/siblingpairxwalk";
+
+. local ufamilyxwalk "$projdir/dta/siblingxwalk/ufamilyxwalk";
+
+. local sibling_out_xwalk "$projdir/dta/siblingxwalk/sibling_out_xwalk";
+
+. **** Dates ;
+. local test_score_min_year
+>         2015
+>         ;
+
+. local test_score_max_year
+>         2018
+>         ;
+
+. local star_min_year
+>         2003
+>         ;
+
+. local star_max_year
+>         2013
+>         ;
+
+. local caaspp_min_year
+>         2015
+>         ;
+
+. local caaspp_max_year
+>         2019
+>         ;
+
+. local outcome_min_year
+>         2015
+>         ;
+
+. local outcome_max_year
+>         2018
+>         ;
+
+. **** Outcome Strings ;
+. local ela_str
+>         "ELA"
+>         ;
+
+. local math_str
+>         "Math"
+>         ;
+
+. local enr_str
+>         "Overall Enrollment"
+>         ;
+
+. local enr_2year_str
+>         "2-Year Enrollment"
+>         ;
+
+. local enr_4year_str
+>         "4-Year Enrollment"
+>         ;
+
+. **** Sibling Census Restricted Sample Controls Strings ;
+. local og_str
+>         "Original Specification"
+>         ;
+
+. local acs_str
+>         "Original + Census"
+>         ;
+
+. local sib_str
+>         "Original + Sibling"
+>         ;
+
+. local both_str
+>         "Original + Census + Sibling"
+>         ;
+
+. **** Value Added ;
+. local school_controls
+>         /*cohort_size*/
+>         ;
+
+. local demographic_controls
+>         age
+>         i.male
+>         i.eth_asian i.eth_hispanic i.eth_black i.eth_other
+>         i.econ_disadvantage
+>         i.limited_eng_prof
+>         i.disabled
+>         ;
+
+. local ela_score_controls
+>         i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score
+> )
+>         ;
+
+. // controls using predicted lag 1 ELA scores
+> local ela_scrhat_controls
+>         i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela
+> _z_score_hat)
+>         ;
+
+. local math_score_controls
+>         i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_sc
+> ore)
+>         ;
+
+. local peer_ela_score_controls
+>         i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_pr
+> ior_ela_z_score)
+>         ;
+
+. local peer_math_score_controls
+>         i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_
+> prior_math_z_score)
+>         ;
+
+. local peer_demographic_controls
+>         peer_age
+>         peer_male
+>         peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other
+>         peer_econ_disadvantage
+>         peer_limited_eng_prof
+>         peer_disabled
+>         ;
+
+. local va_control_vars "`school_controls' `demographic_controls'" ;
+
+. local va_control_vars : subinstr local va_control_vars "i." "", all ;
+
+. local va_control_vars : list uniq va_control_vars ;
+
+. local census_grade
+>         6
+>         ;
+
+. local census_controls
+>         /*eth_white_pct*/ eth_asian_pct eth_hispanic_pct eth_black_pct /*eth_
+> other_pct*/
+>         educ_hs_dropout_prop /*educ_deg_2year_prop*/ educ_deg_4year_plus_prop
+>         pov_fam_child_lt18_pct
+>         inc_median_hh
+>         ;
+
+. local peer_census_controls
+>         peer_eth_asian_pct  peer_eth_hispanic_pct  peer_eth_black_pct
+>         peer_educ_hs_dropout_prop  peer_educ_deg_4year_plus_prop
+>         peer_pov_fam_child_lt18_pct      peer_inc_median_hh
+>         ;
+
+. local sibling_controls
+>         i.has_older_sibling_enr_2year
+>         i.has_older_sibling_enr_4year
+>         ;
+
+. local peer_sibling_controls
+>         peer_has_older_sibling_enr_2year
+>         peer_has_older_sibling_enr_4year
+>         ;
+
+. // lag 1 older sibling controls ;
+> local sib_lag1_controls
+>         old1_sib_enr_2year
+>         old1_sib_enr_4year
+>         ;
+
+. // lag 2 older sibling controls ;
+> local sib_lag2_controls
+>         old2_sib_enr_2year
+>         old2_sib_enr_4year
+>         ;
+
+. // postsecondary distance controls
+> local d_controls
+>         mindist_any_nonprof_4yr
+>         mindist_ccc
+>         ;
+
+. **********************************************  ;
+. *** macros for STANDALONE control vars for running loops over all samples and
+>  specifications ;
+. //base specification controls ;
+> local b_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. //peer base controls ;
+> local peer_b_controls
+>         `peer_ela_score_controls'
+>         `peer_math_score_controls'
+>         `peer_demographic_controls'
+>         ;
+
+. // leave out score controls ;
+> local l_controls
+>         loscore
+>         ;
+
+. // peer leave out score controls ;
+> local peer_l_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         ;
+
+. local a_controls
+>         `census_controls'
+>         ;
+
+. local peer_a_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         ;
+
+. local s_controls
+>         `sibling_controls'
+>         ;
+
+. local peer_s_controls
+>         `peer_b_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. // control var groups for looping ;
+> local la_controls
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local peer_la_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         ;
+
+. local ls_controls
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local peer_ls_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_sibling_controls'
+>         ;
+
+. local as_controls
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_as_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. local las_controls
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_las_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. foreach control in b l a s la ls as las {;
+  2.         local `control'd_controls
+>                 ``control'_controls' `d_controls'
+>                 ;
+  3.         local peer_`control'd_controls
+>                 `peer_`control'_controls'
+>                 ;
+  4.         }
+>         ;
+
+. *** macros for control var COMBINATIONS for running loops over all samples an
+> d specifications ;
+. //base specification controls ;
+> local b_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. // predicted score spec controls
+> local b_scrhat_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_scrhat_controls'
+>         `math_score_controls'
+>         ;
+
+. local bd_spec_controls
+>         `b_spec_controls'
+>         `d_controls'
+>         ;
+
+. local bd_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // leave out prior score controls ;
+> local l_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local l_scrhat_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local ld_spec_controls
+>         `l_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ld_scrhat_spec_controls
+>         `l_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // ACS
+> local a_spec_controls
+>         `b_spec_controls'
+>         `census_controls'
+>         ;
+
+. local a_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `census_controls'
+>         ;
+
+. local ad_spec_controls
+>         `a_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ad_scrhat_spec_controls
+>         `a_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // sibling 
+> local s_spec_controls
+>         `b_spec_controls'
+>         `s_controls'
+>         ;
+
+. local s_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `s_controls'
+>         ;
+
+. local sd_spec_controls
+>         `s_spec_controls'
+>         `d_controls'
+>         ;
+
+. local sd_scrhat_spec_controls
+>         `s_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // loscores and acs 
+> local la_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local la_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local lad_spec_controls
+>         `la_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lad_scrhat_spec_controls
+>         `la_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ls_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local ls_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local lsd_spec_controls
+>         `ls_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lsd_scrhat_spec_controls
+>         `ls_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local as_spec_controls
+>         `b_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local as_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local asd_spec_controls
+>         `as_spec_controls'
+>         `d_controls'
+>         ;
+
+. local asd_scrhat_spec_controls
+>         `as_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local las_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local las_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local lasd_spec_controls
+>         `las_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lasd_scrhat_spec_controls
+>         `las_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // strings for all sample and control combinations ;
+> 
+> local b_str
+>         "base"
+>         ;
+
+. local bd_str
+>         `b_str'
+>         ;
+
+. local l_str
+>         "leave out score"
+>         ;
+
+. local ld_str
+>         `l_str'
+>         ;
+
+. local a_str
+>         "ACS"
+>         ;
+
+. local ad_str
+>         `a_str'
+>         ;
+
+. local s_str
+>         "sibling"
+>         ;
+
+. local sd_str
+>         `s_str'
+>         ;
+
+. local la_str
+>         "leave out score & ACS"
+>         ;
+
+. local lad_str
+>         `la_str'
+>         ;
+
+. local ls_str
+>         "leave out score & sibling"
+>         ;
+
+. local lsd_str
+>         `ls_str'
+>         ;
+
+. local as_str
+>         "ACS & sibling"
+>         ;
+
+. local asd_str
+>         `a_str'
+>         ;
+
+. local las_str
+>         "leave out score & ACS & sibling"
+>         ;
+
+. local lasd_str
+>         `las_str'
+>         ;
+
+. local d_str
+>         "postsecondary distance"
+>         ;
+
+. // strings for heterogeneity in persistence vars ;
+> local race_str
+>         "Race"
+>         ;
+
+. local male_str "Male";
+
+. local econ_disadvantage_str "Economically Disadvantaged";
+
+. local prop_ecn_disadv_str "Proportion Economically Disadvantaged"
+> 
+> local charter_str "Charter Status" ;
+
+. local inc_median_hh_xtile_str "Census Tract Median Household Income Decile";
+
+. local enr_black_hisp_prop_str "Proportion of Black and Hispanic Enrollment";
+
+. **** School Characteristics ;
+. local sch_chars
+>         fte_teach_pc fte_pupil_pc /*fte_admin_pc*/
+>         /*eng_learner_staff_pc*/
+>         new_teacher_prop
+>         /*educ_grad_sch_prop educ_associate_prop*/
+>         /*status_tenured_prop*/
+>         credential_full_prop
+>         /*authorization_stem_prop authorization_ela_prop*/
+>         c.male_prop##c.enr_male_prop
+>         c.eth_minority_prop##c.enr_minority_prop
+>         enr_total
+>         ;
+
+. local sch_char_vars "`sch_chars'" ;
+
+. local sch_char_vars : subinstr local sch_char_vars "i." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "c." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "##" " ", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "#" " ", all ;
+
+. local sch_char_vars : list uniq sch_char_vars ;
+
+. local dem_chars
+>         enr_male_prop
+>         enr_minority_prop
+>         frpm_prop el_prop
+>         enr_total
+>         ;
+
+. local dem_char_vars "`dem_chars'" ;
+
+. local dem_char_vars : list uniq dem_char_vars ;
+
+. local expenditures
+>         expenditures_instr_pc
+>         expenditures3000_pc
+>         expenditures4000_pc
+>         expenditures_other_pc
+>         expenditures7000_pc
+>         ;
+
+. local expenditure_vars "`expenditures'" ;
+
+. local expenditure_vars : list uniq expenditure_vars ;
+
+. local sch_char_control_vars : list sch_char_vars | dem_char_vars ;
+
+. local sch_char_control_vars : list sch_char_control_vars | expenditure_vars ;
+
+. #delimit cr
+delimiter now cr
+. 
+. 
+. * The predecessor cd'd to $vaprojdir before downstream merges (some helpers
+. * may rely on relative paths).  Preserved here for behavior parity; restored
+. * to $consolidated_dir at end of file so subsequent main.do invocations see
+. * the canonical CWD.
+. cd $vaprojdir
+/home/research/ca_ed_lab/projects/common_core_va
+
+. 
+. 
+. * --- timer (preserved from predecessor) ------------------------------------
+> --
+. timer on 1
+
+. 
+. 
+. *****************************************************************************
+> ***
+. *** This merges the entire k12 test score sample onto postsecondary outcomes
+. //the output dataset is used subsequently
+. use merge_id_k12_test_scores all_students_sample first_scores_sample ///
+>   dataset test cdscode school_id state_student_id year grade ///
+>   cohort_size ///
+>   using $vaprojdir/data/restricted_access/clean/k12_test_scores/k12_test_scor
+> es_clean.dta, clear
+(CST/SBAC Student Test Score Samples)
+
+. // merge on postsecondary Outcomes
+. do $vaprojdir/do_files/merge_k12_postsecondary.doh enr_only
+
+. version 16.1
+
+. 
+. *****************************************************
+. * First created by Matthew Naven on June 11, 2018 *
+. *****************************************************
+. 
+. local crosswalks "/home/research/ca_ed_lab/projects/common_core_va/data/restr
+> icted_access/clean/crosswalks/"
+
+. 
+. ***************
+. * Description *
+. ***************
+. /*
+> This file merges the K-12 data to the postsecondary data.
+> */
+. 
+. 
+. **********
+. * Macros *
+. **********
+. args enr_only
+
+. 
+. local min_nsc_hs_grad_year "2010"
+
+. local max_nsc_hs_grad_year "2019"
+
+. 
+. local min_nsc_enr_year "2010"
+
+. local max_nsc_enr_year "2020"
+
+. 
+. local min_nsc_deg_year "2011"
+
+. local max_nsc_deg_year "2020"
+
+. 
+. local min_ccc_enr_year "1993"
+
+. local max_ccc_enr_year "2017"
+
+. 
+. local min_ccc_deg_year "1993"
+
+. local max_ccc_deg_year "2016"
+
+. 
+. local min_csu_app_year "2002"
+
+. local max_csu_app_year "2017"
+
+. 
+. local min_csu_enr_year "2002"
+
+. local max_csu_enr_year "2017"
+
+. 
+. local min_csu_deg_year "2002"
+
+. local max_csu_deg_year "2016"
+
+. 
+. 
+. *****************
+. * Begin Do File *
+. *****************
+. **** K-12 Variables
+. gen year_grad_hs = year + (12 - grade)
+(35,459 missing values generated)
+
+. gen year_college = year + (13 - grade)
+(35,459 missing values generated)
+
+. 
+. 
+. 
+. 
+. **** Merge to K-12/NSC crosswalk
+. gen k12_nsc_match = 0
+
+. gen k12_nsc_2010_2017_match = 0
+
+. /*gen k12_nsc_2010_2018_match = 0*/
+. gen k12_nsc_2018cde_match = 0
+
+. gen k12_nsc_2019cde_match = 0
+
+. compress
+  variable year_grad_hs was float now int
+  variable year_college was float now int
+  variable k12_nsc_match was float now byte
+  variable k12_nsc_2010_2017_match was float now byte
+  variable k12_nsc_2018cde_match was float now byte
+  variable k12_nsc_2019cde_match was float now byte
+  (1,251,377,456 bytes saved)
+
+. 
+. 
+. ** NSC
+. merge m:1 state_student_id      using `crosswalks'/nsc_outcomes_crosswalk_ssi
+> d.dta, gen(merge_k12_nsc_ssid) keep(1 3 4
+>  5) update
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                    40,512,783
+        from master                40,512,783  (merge_k12_nsc_ssid==1)
+        from using                          0  (merge_k12_nsc_ssid==2)
+
+    Matched                        37,698,308
+        not updated                37,698,308  (merge_k12_nsc_ssid==3)
+        missing updated                     0  (merge_k12_nsc_ssid==4)
+        nonmissing conflict                 0  (merge_k12_nsc_ssid==5)
+    -----------------------------------------
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. replace k12_nsc_match = 1 if inlist(merge_k12_nsc_ssid, 3, 4, 5)
+(37,698,308 real changes made)
+
+. drop merge_k12_nsc_ssid
+
+. 
+. 
+. 
+. ** Edit NSC Variables
+. if "`enr_only'"=="enr_only" {
+.         local varlist "nsc_enr nsc_enr_lt2year nsc_enr_2year nsc_enr_4year ns
+> c_enr_ontime nsc_enr_ontime_lt2year nsc_e
+> nr_ontime_2year nsc_enr_ontime_4year"
+. }
+
+. else if "`enr_only'"!="enr_only" {
+.         local varlist "nsc_*"
+. }
+
+. * Replace NSC variables with missing if no chance of matching to the NSC data
+. foreach v of varlist `varlist' {
+  2.         replace `v' = . if k12_nsc_match==0
+  3. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. macro drop _varlist
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. if "`enr_only'"!="enr_only" {
+.         * Replace NSC persistence variables with missing if never enrolled
+.         foreach v of varlist nsc_persist_year2 nsc_persist_year3 nsc_persist_
+> year4 {
+  2.                 replace `v' = . if nsc_enr!=1
+  3.         }
+.         tab grade year
+. 
+.         forvalues t = 2 (1) 4 {
+  2.                 * Replace NSC persistence variables with 0 if they could h
+> ave matched to the NSC data but didn't
+.                 replace nsc_persist_year`t' = 0 if nsc_enr==1 & nsc_persist_y
+> ear`t'!=1 & k12_nsc_match==1 & year_grad_
+> hs + (`t' - 1)<=`max_nsc_enr_year' & !mi(year_grad_hs)
+  3.                 * Replace NSC persistence variables with missing if they c
+> ould not have matched to the NSC data
+.                 replace nsc_persist_year`t' = . if nsc_enr==1 & /*nsc_persist
+> _year`t'!=1 &*/ k12_nsc_match==1 & year_g
+> rad_hs + (`t' - 1)>`max_nsc_enr_year' & !mi(year_grad_hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist nsc_deg_lt2year {
+  2.                 * Replace NSC less-than-2-year degree variable with 0 if t
+> hey could have matched to the NSC data bu
+> t didn't
+.                 replace `v' = 0 if `v'!=1 & k12_nsc_match==1 & year_grad_hs +
+>  2<=`max_nsc_deg_year' & !mi(year_grad_hs
+> )
+  3.                 * Replace NSC less-than-2-year degree variable with missin
+> g if they could not have matched to the N
+> SC data
+.                 replace `v' = . if /*`v'!=1 &*/ k12_nsc_match==1 & year_grad_
+> hs + 2>`max_nsc_deg_year' & !mi(year_grad
+> _hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist nsc_deg_2year {
+  2.                 * Replace NSC 2-year degree variable with 0 if they could 
+> have matched to the NSC data but didn't
+.                 replace `v' = 0 if `v'!=1 & k12_nsc_match==1 & year_grad_hs +
+>  3<=`max_nsc_deg_year' & !mi(year_grad_hs
+> )
+  3.                 * Replace NSC 2-year degree variable with missing if they 
+> could not have matched to the NSC data
+.                 replace `v' = . if /*`v'!=1 &*/ k12_nsc_match==1 & year_grad_
+> hs + 3>`max_nsc_deg_year' & !mi(year_grad
+> _hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist nsc_deg_4year {
+  2.                 * Replace NSC 4-year degree variable with 0 if they could 
+> have matched to the NSC data but didn't
+.                 replace `v' = 0 if `v'!=1 & k12_nsc_match==1 & year_grad_hs +
+>  6<=`max_nsc_deg_year' & !mi(year_grad_hs
+> )
+  3.                 * Replace NSC 4-year degree variable with missing if they 
+> could not have matched to the NSC data
+.                 replace `v' = . if /*`v'!=1 &*/ k12_nsc_match==1 & year_grad_
+> hs + 6>`max_nsc_deg_year' & !mi(year_grad
+> _hs)
+  4.         }
+.         tab grade year
+. 
+.         * NSC degree receipt conditional on enrollment
+.         gen nsc_enr_deg_lt2year = nsc_deg_lt2year if nsc_enr_lt2year==1
+.         gen nsc_enr_deg_2year = nsc_deg_2year if nsc_enr_2year==1
+.         gen nsc_enr_deg_4year = nsc_deg_4year if nsc_enr_4year==1
+. }
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. 
+. 
+. 
+. **** Merge to K-12/CCC crosswalk
+. gen k12_ccc_match = 0
+
+. compress
+  variable k12_ccc_match was float now byte
+  (234,633,273 bytes saved)
+
+. 
+. merge m:1 state_student_id ///
+>         using `crosswalks'/k12_ccc_crosswalk.dta ///
+>         , gen(merge_k12_ccc) keep(1 3) keepusing(student_id)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                    58,166,990
+        from master                58,166,990  (merge_k12_ccc==1)
+        from using                          0  (merge_k12_ccc==2)
+
+    Matched                        20,044,101  (merge_k12_ccc==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. replace k12_ccc_match = 1 if merge_k12_ccc==3
+(20,044,101 real changes made)
+
+. drop merge_k12_ccc
+
+. 
+. 
+. **** Merge to CCC data
+. count if !mi(student_id)
+  20,044,101
+
+. 
+. merge m:1 student_id ///
+>         using `crosswalks'/ccc_outcomes_crosswalk.dta ///
+>         , gen(merge_k12_ccc) keep(1 3)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                    62,806,493
+        from master                62,806,493  (merge_k12_ccc==1)
+        from using                          0  (merge_k12_ccc==2)
+
+    Matched                        15,404,598  (merge_k12_ccc==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. 
+. ** Edit CCC Variables
+. foreach v of varlist ccc_enr {
+  2.         * Replace CCC enrollment with 0 if could have matched to the CCC d
+> ata but didn't
+.         replace `v' = 0 if `v'!=1 & inrange(year_grad_hs, `min_ccc_enr_year',
+>  `max_ccc_enr_year')
+  3.         * Replace CCC enrollment with missing if could not have matched to
+>  the CCC data
+.         replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs, `min_ccc_enr_y
+> ear', `max_ccc_enr_year')
+  4. }
+(34,923,079 real changes made)
+(4,914,853 real changes made, 4,914,853 to missing)
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. * CCC on-time enrollment
+. gen ccc_enr_ontime = 1 if ccc_enr==1 ///
+>         & (ccc_enr_start_year==year_grad_hs & inlist(ccc_enr_start_term, 5, 6
+> , 7, 8)) ///
+>         | (ccc_enr_start_year==year_grad_hs + 1 & inlist(ccc_enr_start_term, 
+> 1, 2, 3, 4))
+(73,489,255 missing values generated)
+
+. 
+. if "`enr_only'"!="enr_only" {
+.         * Replace CCC remediation and persistence variables with missing if n
+> ever enrolled
+.         foreach v of varlist ccc_remediation ccc_ela_remediation ccc_math_rem
+> ediation ///
+>                 ccc_persist_year2 ccc_persist_year3 ///
+>                 ccc_deg ccc_deg_c ccc_deg_a ccc_deg_b {
+  2.                 replace `v' = . if ccc_enr!=1
+  3.         }
+.         tab grade year
+. 
+.         forvalues t = 2 (1) 3 {
+  2.                 * Replace CCC persistence variables with 0 if they could h
+> ave matched to the CCC data but didn't
+.                 replace ccc_persist_year`t' = 0 if ccc_enr==1 & ccc_persist_y
+> ear`t'!=1 & k12_ccc_match==1 & year_grad_
+> hs + (`t' - 1)<=`max_ccc_enr_year' & !mi(year_grad_hs)
+  3.                 * Replace CCC persistence variables with missing if they c
+> ould not have matched to the CCC data
+.                 replace ccc_persist_year`t' = . if ccc_enr==1 & /*ccc_persist
+> _year`t'!=1 &*/ k12_ccc_match==1 & year_g
+> rad_hs + (`t' - 1)>`max_ccc_enr_year' & !mi(year_grad_hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist ccc_deg ccc_deg_c ccc_deg_a ccc_deg_b {
+  2.                 * Replace CCC degree variable with 0 if they could have ma
+> tched to the CCC data but didn't
+.                 replace `v' = 0 if `v'!=1 & inrange(year_grad_hs + 3, `min_cc
+> c_deg_year', `max_ccc_deg_year')
+  3.                 * Replace CCC degree variable with missing if they could n
+> ot have matched to the CCC data
+.                 replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs + 3, `m
+> in_ccc_deg_year', `max_ccc_deg_year')
+  4.         }
+.         tab grade year
+. }
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. 
+. 
+. 
+. **** Merge to K-12/CSU crosswalk
+. gen k12_csu_match = 0
+
+. compress
+  variable ccc_enr_year was int now byte
+  variable ccc_enr_ontime was float now byte
+  variable k12_csu_match was float now byte
+  (547,477,637 bytes saved)
+
+. 
+. merge m:1 state_student_id ///
+>         using `crosswalks'/k12_csu_crosswalk.dta ///
+>         , gen(merge_k12_csu) keep(1 3) keepusing(idunique)
+(label male already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                    69,663,712
+        from master                69,663,712  (merge_k12_csu==1)
+        from using                          0  (merge_k12_csu==2)
+
+    Matched                         8,547,379  (merge_k12_csu==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. replace k12_csu_match = 1 if merge_k12_csu==3
+(8,547,379 real changes made)
+
+. drop merge_k12_csu
+
+. 
+. 
+. **** Merge to CSU data
+. count if !mi(idunique)
+  8,547,379
+
+. 
+. merge m:1 idunique ///
+>         using `crosswalks'/csu_outcomes_crosswalk.dta ///
+>         , gen(merge_k12_csu) keep(1 3)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                    69,663,712
+        from master                69,663,712  (merge_k12_csu==1)
+        from using                          0  (merge_k12_csu==2)
+
+    Matched                         8,547,379  (merge_k12_csu==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. ** Edit CSU Variables
+. foreach v of varlist csu_enr {
+  2.         * Replace CSU enrollment with 0 if could have matched to the CSU d
+> ata but didn't
+.         replace `v' = 0 if `v'!=1 & inrange(year_grad_hs, `min_csu_enr_year',
+>  `max_csu_enr_year')
+  3.         * Replace CSU enrollment with missing if could not have matched to
+>  the CSU data
+.         replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs, `min_csu_enr_y
+> ear', `max_csu_enr_year')
+  4. }
+(36,886,821 real changes made)
+(21,376 real changes made, 21,376 to missing)
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. * CSU on-time enrollment
+. gen csu_enr_ontime = 1 if csu_enr==1 ///
+>         & (csu_enr_start_year==year_grad_hs & inlist(csu_enr_start_term, 3, 4
+> )) ///
+>         | (csu_enr_start_year==year_grad_hs + 1 & inlist(csu_enr_start_term, 
+> 1, 2))
+(75,529,857 missing values generated)
+
+. 
+. if "`enr_only'"!="enr_only" {
+.         foreach v of varlist csu_applied csu_applied_multiple csu_accepted {
+  2.                 * Replace CSU application with 0 if could have matched to 
+> the CSU data but didn't
+.                 replace `v' = 0 if `v'!=1 & inrange(year_grad_hs, `min_csu_ap
+> p_year', `max_csu_app_year')
+  3.                 * Replace CSU application with missing if could not have m
+> atched to the CSU data
+.                 replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs, `min_c
+> su_app_year', `max_csu_app_year')
+  4.         }
+.         tab grade year
+. 
+.         * Replace CSU acceptance with missing if never applied
+.         foreach v of varlist csu_accepted {
+  2.                 replace `v' = . if csu_applied!=1
+  3.         }
+.         tab grade year
+. 
+.         * Replace CSU remediation and persistence variables with missing if n
+> ever enrolled
+.         foreach v of varlist ///
+>                 csu_eng_remediation csu_math_remediation csu_first_maj_stem c
+> su_first_maj_other csu_first_maj_undecide
+> d ///
+>                 csu_persist_year2 csu_persist_year3 csu_persist_year4 ///
+>                 csu_deg csu_deg_stem csu_deg_other {
+  2.                 replace `v' = . if csu_enr!=1
+  3.         }
+.         tab grade year
+. 
+.         forvalues t = 2 (1) 4 {
+  2.                 * Replace CSU persistence variables with 0 if they could h
+> ave matched to the CSU data but didn't
+.                 replace csu_persist_year`t' = 0 if csu_enr==1 & csu_persist_y
+> ear`t'!=1 & k12_csu_match==1 & year_grad_
+> hs + (`t' - 1)<=`max_csu_enr_year' & !mi(year_grad_hs)
+  3.                 * Replace CSU persistence variables with missing if they c
+> ould not have matched to the CSU data
+.                 replace csu_persist_year`t' = . if csu_enr==1 & /*csu_persist
+> _year`t'!=1 &*/ k12_csu_match==1 & year_g
+> rad_hs + (`t' - 1)>`max_csu_enr_year' & !mi(year_grad_hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist csu_deg csu_deg_stem csu_deg_other {
+  2.                 * Replace CSU degree variable with 0 if they could have ma
+> tched to the CSU data but didn't
+.                 replace `v' = 0 if `v'!=1 & inrange(year_grad_hs + 6, `min_cs
+> u_deg_year', `max_csu_deg_year')
+  3.                 * Replace CSU degree variable with missing if they could n
+> ot have matched to the CSU data
+.                 replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs + 6, `m
+> in_csu_deg_year', `max_csu_deg_year')
+  4.         }
+.         tab grade year
+. 
+.         * CSU degree receipt conditional on STEM major
+.         gen csu_maj_stem_deg_stem = csu_deg_stem if csu_first_maj_stem==1
+.         gen csu_maj_stem_deg_other = csu_deg_other if csu_first_maj_stem==1
+. 
+.         * Replace CSU degree receipt conditional on STEM major with missing i
+> f never enrolled
+.         foreach v of varlist ///
+>                 csu_maj_stem_deg_stem csu_maj_stem_deg_other {
+  2.                 replace `v' = . if csu_enr!=1
+  3.         }
+.         tab grade year
+. }
+
+. 
+. 
+. 
+. 
+. **** Drop observations that had no chance of matching to CCC/CSU data
+. compress
+  variable csu_enr_ontime was float now byte
+  (234,633,273 bytes saved)
+
+. merge m:1 state_student_id ///
+>         using `crosswalks'/k12_unique_crosswalk.dta ///
+>         , gen(merge_k12_unique) keep(1 3)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                     9,212,283
+        from master                 9,212,283  (merge_k12_unique==1)
+        from using                          0  (merge_k12_unique==2)
+
+    Matched                        68,998,808  (merge_k12_unique==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. if "`enr_only'"=="enr_only" {
+.         local varlist_ccc "ccc_enr_*"
+.         local varlist_csu "csu_enr_*"
+. }
+
+. else if "`enr_only'"!="enr_only" {
+.         local varlist_ccc "ccc_*"
+.         local varlist_csu "csu_*"
+. }
+
+. * Replace CCC variables with missing if could not have matched to the CCC dat
+> a due to non-unique name/birth date/sex
+. foreach v of varlist `varlist_ccc' {
+  2.         replace `v' = . if k12_ccc_match==0 & uniq_first_last_bday_sex==0
+  3.         replace `v' = . if k12_ccc_match==0 & uniq_first3_last3_bday_sex==
+> 0 & inrange(year_grad_hs, 1993, 2011)
+  4. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. macro drop _varlist_ccc
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. * Replace CSU variables with missing if could not have matched to the CSU dat
+> a due to non-unique name/birth date/sex
+. foreach v of varlist `varlist_csu' {
+  2.         replace `v' = . if k12_csu_match==0 & uniq_first_last_bday_sex_mid
+> dle==0
+  3. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. macro drop _varlist_csu
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. 
+. 
+. 
+. **** All college outcomes
+. * Enrollment
+. gen enr = 1 if nsc_enr==1 /*| ccc_enr==1 | csu_enr==1*/
+(52,734,086 missing values generated)
+
+. replace enr = 0 if nsc_enr==0 & ccc_enr!=1 & csu_enr!=1
+(11,020,978 real changes made)
+
+. label var enr "Enrolled at a Postsecondary Institution"
+
+. 
+. gen enr_ontime = 1 if nsc_enr_ontime==1 | ccc_enr_ontime==1 | csu_enr_ontime=
+> =1
+(53,353,133 missing values generated)
+
+. replace enr_ontime = 0 if nsc_enr_ontime==0 & ccc_enr_ontime!=1 & csu_enr_ont
+> ime!=1
+(14,424,444 real changes made)
+
+. label var enr_ontime "Enrolled at a Postsecondary Institution"
+
+. 
+. gen enr_2year = 1 if nsc_enr_2year==1 | nsc_enr_lt2year==1 | ccc_enr==1
+(55,438,077 missing values generated)
+
+. replace enr_2year = 0 if nsc_enr_2year==0 & nsc_enr_lt2year==0 & ccc_enr!=1
+(17,719,087 real changes made)
+
+. label var enr_2year "Enrolled at a 2-Year College"
+
+. 
+. gen enr_ontime_2year = 1 if nsc_enr_ontime_2year==1 | nsc_enr_ontime_lt2year=
+> =1 | ccc_enr_ontime==1
+(63,306,973 missing values generated)
+
+. replace enr_ontime_2year = 0 if nsc_enr_ontime_2year==0 & nsc_enr_ontime_lt2y
+> ear==0 & ccc_enr_ontime!=1
+(23,930,470 real changes made)
+
+. label var enr_ontime_2year "Enrolled at a 2-Year College"
+
+. 
+. gen enr_4year = 1 if nsc_enr_4year==1 | csu_enr==1
+(65,039,762 missing values generated)
+
+. replace enr_4year = 0 if nsc_enr_4year==0 & csu_enr!=1
+(25,477,530 real changes made)
+
+. label var enr_4year "Enrolled at a 4-Year University"
+
+. 
+. replace enr_2year = 0 if enr_4year==1
+(6,473,220 real changes made)
+
+. 
+. gen enr_ontime_4year = 1 if nsc_enr_ontime_4year==1 | csu_enr_ontime==1
+(67,630,466 missing values generated)
+
+. replace enr_ontime_4year = 0 if nsc_enr_ontime_4year==0 & csu_enr_ontime!=1
+(27,579,834 real changes made)
+
+. label var enr_ontime_4year "Enrolled at a 4-Year University"
+
+. 
+. replace enr_ontime_2year = 0 if enr_ontime_4year==1
+(1,074,599 real changes made)
+
+. 
+. gen enr_pub = 1 if nsc_enr_pub==1 | ccc_enr==1 | csu_enr==1
+(49,795,537 missing values generated)
+
+. replace enr_pub = 0 if nsc_enr_pub==0 & ccc_enr!=1 & csu_enr!=1
+(12,626,066 real changes made)
+
+. label var enr_pub "Enrolled at a Public Institution"
+
+. 
+. gen enr_ontime_pub = 1 if nsc_enr_ontime_pub==1 | ccc_enr_ontime==1 | csu_enr
+> _ontime==1
+(55,371,294 missing values generated)
+
+. replace enr_ontime_pub = 0 if nsc_enr_ontime_pub==0 & ccc_enr_ontime!=1 & csu
+> _enr_ontime!=1
+(16,442,605 real changes made)
+
+. label var enr_ontime_pub "Enrolled at a Public Institution"
+
+. 
+. gen enr_priv = 1 if nsc_enr_priv==1
+(75,048,837 missing values generated)
+
+. replace enr_priv = 0 if nsc_enr_priv==0
+(34,536,054 real changes made)
+
+. label var enr_priv "Enrolled at a Private Institution"
+
+. 
+. replace enr_pub = 0 if enr_priv==1
+(1,557,166 real changes made)
+
+. 
+. gen enr_ontime_priv = 1 if nsc_enr_ontime_priv==1
+(76,035,765 missing values generated)
+
+. replace enr_ontime_priv = 0 if nsc_enr_ontime_priv==0
+(35,522,982 real changes made)
+
+. label var enr_ontime_priv "Enrolled at a Private Institution"
+
+. 
+. replace enr_ontime_pub = 0 if enr_ontime_priv==1
+(157,165 real changes made)
+
+. 
+. gen enr_instate = 1 if nsc_enr_instate==1 | ccc_enr==1 | csu_enr==1
+(50,052,148 missing values generated)
+
+. replace enr_instate = 0 if nsc_enr_instate==0 & ccc_enr!=1 & csu_enr!=1
+(12,882,677 real changes made)
+
+. label var enr_instate "Enrolled at a CA Institution"
+
+. 
+. gen enr_ontime_instate = 1 if nsc_enr_ontime_instate==1 | ccc_enr_ontime==1 |
+>  csu_enr_ontime==1
+(55,531,064 missing values generated)
+
+. replace enr_ontime_instate = 0 if nsc_enr_ontime_instate==0 & ccc_enr_ontime!
+> =1 & csu_enr_ontime!=1
+(16,602,375 real changes made)
+
+. label var enr_ontime_instate "Enrolled at a CA Institution"
+
+. 
+. gen enr_outstate = 1 if nsc_enr_outstate==1
+(74,938,537 missing values generated)
+
+. replace enr_outstate = 0 if nsc_enr_outstate==0
+(34,425,754 real changes made)
+
+. label var enr_outstate "Enrolled at an Out-of-State Institution"
+
+. 
+. replace enr_instate = 0 if enr_outstate==1
+(1,410,997 real changes made)
+
+. 
+. gen enr_ontime_outstate = 1 if nsc_enr_ontime_outstate==1
+(75,883,630 missing values generated)
+
+. replace enr_ontime_outstate = 0 if nsc_enr_ontime_outstate==0
+(35,370,847 real changes made)
+
+. label var enr_ontime_outstate "Enrolled at an Out-of-State Institution"
+
+. 
+. replace enr_ontime_instate = 0 if enr_ontime_outstate==1
+(149,640 real changes made)
+
+. 
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. * Persistence
+. if "`enr_only'"!="enr_only" {
+.         gen persist_year2 = 1 if nsc_persist_year2==1 | ccc_persist_year2==1 
+> | csu_persist_year2==1
+.         replace persist_year2 = 0 if nsc_persist_year2==0 & ccc_persist_year2
+> !=1 & csu_persist_year2!=1
+.         label var persist_year2 "Persisted to Year 2"
+. 
+.         gen persist_year3 = 1 if nsc_persist_year3==1 | ccc_persist_year3==1 
+> | csu_persist_year3==1
+.         replace persist_year3 = 0 if nsc_persist_year3==0 & ccc_persist_year3
+> !=1 & csu_persist_year3!=1
+.         label var persist_year3 "Persisted to Year 3"
+. 
+.         gen persist_year4 = 1 if nsc_persist_year4==1 /*| ccc_persist_year4==
+> 1*/ | csu_persist_year4==1
+.         replace persist_year4 = 0 if nsc_persist_year4==0 /*& ccc_persist_yea
+> r4!=1*/ & csu_persist_year4!=1
+.         label var persist_year4 "Persisted to Year 4"
+. }
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. * Degree
+. if "`enr_only'"!="enr_only" {
+.         gen deg = 1 if nsc_deg==1 | ccc_deg==1 | csu_deg==1
+.         replace deg = 0 if nsc_deg==0 & ccc_deg!=1 & csu_deg!=1
+.         label var deg "Received a College Degree"
+. 
+.         gen deg_2year = 1 if nsc_deg_2year==1 | ccc_deg==1
+.         replace deg_2year = 0 if nsc_deg_2year==0 & ccc_deg!=1
+.         label var deg_2year "Received a 2-Year College Degree"
+. 
+.         gen deg_4year = 1 if nsc_deg_4year==1 | csu_deg==1
+.         replace deg_4year = 0 if nsc_deg_4year==0 & csu_deg!=1
+.         label var deg_4year "Received a 4-Year College Degree"
+. }
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. 
+. * Use only NSC sample + values of 1 from other samples
+. if "`enr_only'"=="enr_only" {
+.         local varlist "enr enr_2year enr_4year enr_pub enr_priv enr_instate e
+> nr_outstate enr_ontime enr_ontime_2year e
+> nr_ontime_4year enr_ontime_pub enr_ontime_priv enr_ontime_instate enr_ontime_
+> outstate"
+. }
+
+. else if "`enr_only'"!="enr_only" {
+.         local varlist "enr enr_2year enr_4year enr_pub enr_priv enr_instate e
+> nr_outstate enr_ontime enr_ontime_2year e
+> nr_ontime_4year enr_ontime_pub enr_ontime_priv enr_ontime_instate enr_ontime_
+> outstate deg deg_2year deg_4year"
+. }
+
+. foreach v of varlist `varlist' {
+  2.         replace `v' = . if /*`v'==0 &*/ k12_nsc_match==0
+  3. }
+(0 real changes made)
+(3,343,312 real changes made, 3,343,312 to missing)
+(950,551 real changes made, 950,551 to missing)
+(3,343,312 real changes made, 3,343,312 to missing)
+(0 real changes made)
+(3,343,312 real changes made, 3,343,312 to missing)
+(0 real changes made)
+(1,584,094 real changes made, 1,584,094 to missing)
+(1,584,094 real changes made, 1,584,094 to missing)
+(462,151 real changes made, 462,151 to missing)
+(1,584,094 real changes made, 1,584,094 to missing)
+(0 real changes made)
+(1,584,094 real changes made, 1,584,094 to missing)
+(0 real changes made)
+
+. macro drop _varlist
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. 
+. * CCC
+. if "`enr_only'"!="enr_only" {
+.         gen ccc_transfer_4year = 1 if ccc_enr==1 & enr_4year==1
+.         replace ccc_transfer_4year = 0 if ccc_enr==1 & enr_4year==0
+.         replace ccc_transfer_4year = . ///
+>                 if (inlist(ccc_enr_start_year, `max_ccc_enr_year') & inlist(c
+> cc_enr_start_term, 7, 8)) ///
+>                 | (inlist(ccc_enr_start_year, `max_ccc_enr_year' + 1) & inlis
+> t(ccc_enr_start_term, 1, 2, 3, 4, 5, 6))
+.         label var ccc_transfer_4year "Transfered to 4-Year University"
+. 
+.         replace ccc_persist_year2 = 1 if ccc_persist_year2==0 & ccc_transfer_
+> 4year==1
+.         replace ccc_persist_year3 = 1 if ccc_persist_year3==0 & ccc_transfer_
+> 4year==1
+.         replace ccc_deg = 1 if ccc_deg==0 & ccc_transfer_4year==1
+.         replace ccc_deg_a = 1 if ccc_deg_a==0 & ccc_transfer_4year==1
+. }
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+. 
+. * CSU
+. if "`enr_only'"!="enr_only" {
+.         gen csu_transfer_uc = 1 if csu_enr==1 & nsc_enr_uc==1
+.         replace csu_transfer_uc = 0 if csu_enr==1 & nsc_enr_uc==0
+.         replace csu_transfer_uc = . ///
+>                 if (inlist(csu_enr_start_year, `max_csu_enr_year') & inlist(c
+> su_enr_start_term, 4)) ///
+>                 | (inlist(csu_enr_start_year, `max_csu_enr_year' + 1) & inlis
+> t(csu_enr_start_term, 1, 2, 3))
+.         label var csu_transfer_uc "Transfered to a University of California"
+. 
+.         gen csu_transfer_ucplus = 1 if csu_enr==1 & nsc_enr_ucplus==1
+.         replace csu_transfer_ucplus = 0 if csu_enr==1 & nsc_enr_ucplus==0
+.         replace csu_transfer_ucplus = . ///
+>                 if (inlist(csu_enr_start_year, `max_csu_enr_year') & inlist(c
+> su_enr_start_term, 4)) ///
+>                 | (inlist(csu_enr_start_year, `max_csu_enr_year' + 1) & inlis
+> t(csu_enr_start_term, 1, 2, 3))
+.         label var csu_transfer_ucplus "Transfered to a University of Californ
+> ia +"
+. 
+.         replace csu_persist_year2 = 1 if csu_persist_year2==0 & csu_transfer_
+> ucplus==1
+.         replace csu_persist_year3 = 1 if csu_persist_year3==0 & csu_transfer_
+> ucplus==1
+. }
+
+. tab grade year
+
+           |                                 Year of Spring Semester
+     Grade |      2003       2004       2005       2006       2007       2008  
+>      2009       2010 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         1 |         0          0          0          0          0          0  
+>         0          0 |         5 
+         2 |   494,177    487,523    476,367    470,413    484,418    489,091  
+>   481,092    477,606 | 5,327,095 
+         3 |   499,772    495,472    484,511    473,896    481,513    477,271  
+>   480,639    473,733 | 7,653,113 
+         4 |   508,797    511,007    505,440    489,753    487,048    482,271  
+>   478,382    474,542 | 7,750,961 
+         5 |   494,159    497,292    496,146    488,666    478,481    476,433  
+>   472,137    468,559 |10,051,560 
+         6 |   500,184    493,950    493,875    491,346    484,892    480,302  
+>   471,630    468,325 | 7,696,064 
+         7 |   519,757    518,924    509,807    504,022    501,594    498,879  
+>   490,793    482,145 | 7,857,893 
+         8 |   477,659    503,933    501,506    492,281    491,243    490,985  
+>   488,058    480,471 |10,061,397 
+         9 |   510,725    516,648    535,450    535,419    526,034    522,733  
+>   526,190    518,632 | 5,728,584 
+        10 |   458,177    476,105    482,259    502,705    500,734    495,999  
+>   498,203    499,817 | 7,268,772 
+        11 |   404,855    419,125    434,682    440,277    469,021    472,617  
+>   474,154    478,165 | 7,887,471 
+        12 |         0          0          0          0          0          0  
+>         0          0 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,868,262  4,919,979  4,920,043  4,888,778  4,904,978  4,886,581  
+> 4,861,278  4,821,995 |78,175,632 
+
+
+           |                                 Year of Spring Semester
+     Grade |      2011       2012       2013       2015       2016       2017  
+>      2018       2019 |     Total
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+         0 |         0          0          0          0          1          4  
+>         0          0 |         5 
+         1 |         0          0          0          0          1          2  
+>         0          2 |         5 
+         2 |   483,618    485,135    488,956      2,210      2,935      2,171  
+>     1,372         11 | 5,327,095 
+         3 |   471,973    476,890    480,152    490,476    480,279    470,945  
+>   446,465    469,126 | 7,653,113 
+         4 |   477,792    474,382    480,484    478,478    495,656    476,253  
+>   470,521    460,155 | 7,750,961 
+         5 |   474,646    468,929    467,252    943,465    968,084    976,692  
+>   938,837    941,782 |10,051,560 
+         6 |   466,779    471,619    466,351    471,558    480,305    479,849  
+>   495,306    479,793 | 7,696,064 
+         7 |   478,291    474,153    479,024    467,291    479,180    477,981  
+>   480,533    495,519 | 7,857,893 
+         8 |   473,610    469,747    467,499    930,621    942,422    946,953  
+>   943,694    960,715 |10,061,397 
+         9 |   510,690    498,467    493,701      1,184     10,064      2,695  
+>    13,213      6,739 | 5,728,584 
+        10 |   497,097    488,589    481,578    939,516    494,522    401,916  
+>    17,389     34,166 | 7,268,772 
+        11 |   480,215    477,126    475,645    479,654    488,163    527,563  
+>   617,543    748,666 | 7,887,471 
+        12 |         0          0          0          0      2,863     74,250  
+>   481,842    333,757 |   892,712 
+-----------+-------------------------------------------------------------------
+> ---------------------+----------
+     Total | 4,814,711  4,785,037  4,780,642  5,204,453  4,844,475  4,837,274  
+> 4,906,715  4,930,431 |78,175,632 
+
+. 
+end of do-file
+
+. drop enr enr_2year enr_4year
+
+. rename enr_ontime enr
+
+. rename enr_ontime_2year enr_2year
+
+. rename enr_ontime_4year enr_4year
+
+. drop if missing(state_student_id)
+(7,559,506 observations deleted)
+
+. 
+. //save the merged k12 to postsecondary outcome dataset (CANONICAL output per 
+> ADR-0021)
+. compress
+  variable enr was float now byte
+  variable enr_2year was float now byte
+  variable enr_4year was float now byte
+  variable enr_pub was float now byte
+  variable enr_ontime_pub was float now byte
+  variable enr_priv was float now byte
+  variable enr_ontime_priv was float now byte
+  variable enr_instate was float now byte
+  variable enr_ontime_instate was float now byte
+  variable enr_outstate was float now byte
+  variable enr_ontime_outstate was float now byte
+  (2,331,502,305 bytes saved)
+
+. label data "Full K-12 test scores merged to postsecondary outcomes"
+
+. save "$datadir_clean/common_core_va/k12_postsecondary_out_merge", replace
+(file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> common_core_va/k12_postsecondary_out_me
+    > rge.dta not found)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> common_core_va/k12_postsecondary_out_me
+    > rge.dta saved
+
+. 
+. 
+. 
+. 
+. *****************************************************************************
+> ***
+. //create sibling college outcome vars
+. //First load the k12 test score sample matched to postsecondary outcome data
+. 
+. use "$datadir_clean/common_core_va/k12_postsecondary_out_merge", clear
+(Full K-12 test scores merged to postsecondary outcomes)
+
+. 
+. //generate an indicator for observations matched to postsecondary outcomes da
+> ta
+. gen k12_postsec_match = 0
+
+. replace k12_postsec_match = 1 if k12_nsc_match == 1 | k12_ccc_match == 1 | k1
+> 2_csu_match == 1
+(44,451,783 real changes made)
+
+. label var k12_postsec_match "Indicator for k12 observation matched to postsec
+> ondary data (NSC, CCC, or CSU)"
+
+. 
+. //collapse to ssid level
+. collapse (max) enr enr_2year enr_4year k12_postsec_match, by(state_student_id
+> )
+
+. 
+. //merge on unique family id
+. merge 1:1 state_student_id using `ufamilyxwalk'
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                     8,711,591
+        from master                 8,711,591  (_merge==1)
+        from using                          0  (_merge==2)
+
+    Matched                         4,084,679  (_merge==3)
+    -----------------------------------------
+
+. /*
+> Result                      Number of obs
+>     -----------------------------------------
+>     Not matched                     8,718,171
+>         from master                 8,590,681  (_merge==1)
+>         from using                    127,490  (_merge==2)
+> 
+>     Matched                         3,957,189  (_merge==3)
+>     -----------------------------------------
+> 
+>  */
+. 
+. //keep only the sample of matched siblings
+. drop if missing(ufamilyid)
+(8,711,591 observations deleted)
+
+. //mark sibling sample who are matched to postsecondary outcomes for merged ob
+> servations
+. gen sibling_out_sample = 0
+
+. replace sibling_out_sample = 1 if _merge==3 & k12_postsec_match == 1
+(2,946,010 real changes made)
+
+. label var sibling_out_sample "Indicator for sibling sample that are matched t
+> o postsecondary outcomes"
+
+. drop _merge
+
+. 
+. /*
+> 
+> . count if k12_postsec_match == 1
+>   2,466,979
+> 
+> . count if k12_postsec_match == 1 & sibling_out_sample==1
+>   2,466,979
+> 
+> All of the k12_postsec matched observations were matched to the sibling sampl
+> e
+>  */
+. 
+. //mark students who have older siblings
+. gen has_older_sibling = 0
+
+. replace has_older_sibling = 1 if numsiblings_older > 0
+(2,370,123 real changes made)
+
+. label var has_older_sibling "Has at least 1 older sibling"
+
+. 
+. /* NEED TO CREATE PROPS ENROLLED FOR OLDER SIBLINGS  */
+. //number of siblings total in the family ranges from 1 to 10, so max number o
+> f older siblings is 9
+. 
+. /* this rangestat command calculates the sum of the variable for observations
+>  in
+> the interval between birth_order - lower_bound and birth_order - 1, which is 
+> all the older siblings  */
+. /* NOTE: rangestat treats missing enr vars as 0 */
+. 
+. /*
+> sort ufamilyid birth_order
+> gen lower_bound = -numsiblings_older
+> local outcomes enr enr_2year enr_4year
+> foreach i of local outcomes {
+>   rangestat (sum) `i', interval(birth_order, lower_bound, -1) by(ufamilyid)
+>   rename `i'_sum numsiblings_older_`i'
+>   label var numsiblings_older_`i' "Number of older siblings with `i'==1"
+>   gen propsiblings_older_`i' = numsiblings_older_`i' / numsiblings_older
+>   label var propsiblings_older_`i' "Proportion of older siblings with `i'==1"
+> }
+> 
+> drop lower_bound
+> */
+. 
+. /* Create dummies for whether the student has an older sibling who was matche
+> d to
+> postsecondary outcomes and who was enrolled in 2 year, and 4 year */
+. sort ufamilyid birth_order
+
+. gen lower_bound = -numsiblings_older
+
+. //create a dummy for whether at least one older sibling was matched to postse
+> condary outcomes
+. rangestat (sum) k12_postsec_match, interval(birth_order, lower_bound, -1) by(
+> ufamilyid)
+
+. rename k12_postsec_match_sum num_older_sibling_postsec_match
+
+. label var num_older_sibling_postsec_match "Number of older sibling matched to
+>  postsecondary outcomes"
+
+. 
+. /* SUPER IMPORTANT: STATA TREATS MISSING AS GREATER THAN ANY NONMISSING NUMBE
+> R!!!!!! */
+. gen has_older_sibling_postsec_match = 0
+
+. replace has_older_sibling_postsec_match = 1 if !missing(num_older_sibling_pos
+> tsec_match) & num_older_sibling_postsec_m
+> atch > 0
+(1,902,089 real changes made)
+
+. label var has_older_sibling_postsec_match "Has at least one older sibling mat
+> ched to postsecondary outcomes"
+
+. 
+. local outcomes enr enr_2year enr_4year
+
+. foreach i of local outcomes {
+  2.   rangestat (sum) `i' if has_older_sibling_postsec_match == 1, interval(bi
+> rth_order, lower_bound, -1) by(ufamilyid)
+  3.   rename `i'_sum numsiblings_older_`i'
+  4.   label var numsiblings_older_`i' "Number of older siblings that are match
+> ed to postsec outcomes with `i'==1"
+  5.   gen has_older_sibling_`i' = 0
+  6.   replace has_older_sibling_`i' = 1 if numsiblings_older_`i' > 0 & !missin
+> g(numsiblings_older_`i')
+  7.   label var has_older_sibling_`i' "Has at least 1 older sibling matched to
+>  postsec outcome and with `i' = 1"
+  8. }
+(271,114 real changes made)
+(164,994 real changes made)
+(122,266 real changes made)
+
+. 
+. drop lower_bound
+
+. 
+. // sample indicator for obs to use in VA with sibling 2 yr and 4 yr enrollmen
+> t controls
+. // This sample consists of obs with at least 1 sibling matched to postsec out
+> comes, and who have non-missing for the s
+> ibling controls
+. gen sibling_2y_4y_controls_sample = 0
+
+. replace sibling_2y_4y_controls_sample = 1 if !mi(has_older_sibling_enr_2year)
+>  & !mi(has_older_sibling_enr_4year) & sib
+> ling_out_sample==1
+(2,946,010 real changes made)
+
+. 
+. 
+. // lag 1 older sibling and lag 2 older sibling
+. // degenerate interval bound for lag 1 and lag 2 older siblings for rangestat
+. bysort ufamilyid: gen lag1_bound = birth_order - 1
+
+. bysort ufamilyid: gen lag2_bound = birth_order - 2
+
+. 
+. foreach outcome in enr enr_2year enr_4year {
+  2.   // enrollment for lag 1 older sibling
+.   rangestat (max) `outcome' if has_older_sibling_postsec_match == 1, interval
+> (birth_order, lag1_bound, lag1_bound) by(
+> ufamilyid)
+  3.   rename `outcome'_max old1_sib_`outcome'
+  4.   label var old1_sib_`outcome' "`outcome' for first older sibling"
+  5.   // enrollment for lag 2 older sibling
+.   rangestat (max) `outcome' if has_older_sibling_postsec_match == 1, interval
+> (birth_order, lag2_bound, lag2_bound) by(
+> ufamilyid)
+  6.   rename `outcome'_max old2_sib_`outcome'
+  7.   label var old2_sib_`outcome' "`outcome' for second older sibling"
+  8. 
+.   gen touse_sib_lag1_lag2_`outcome' = 0
+  9.   replace touse_sib_lag1_lag2_`outcome' = 1 if !mi(old1_sib_`outcome') & !
+> mi(old2_sib_`outcome')
+ 10. 
+. }
+(84,648 real changes made)
+(84,648 real changes made)
+(84,648 real changes made)
+
+. 
+. gen touse_sib_lag = 0
+
+. replace touse_sib_lag = 1 if touse_sib_lag1_lag2_enr_2year == 1 & touse_sib_l
+> ag1_lag2_enr_4year == 1
+(84,648 real changes made)
+
+. drop lag1_bound lag2_bound
+
+. 
+. 
+. 
+. 
+. //create sibling outcomes crosswalk (CANONICAL output per ADR-0021)
+. compress
+  variable k12_postsec_match was float now byte
+  variable sibling_out_sample was float now byte
+  variable has_older_sibling was float now byte
+  variable has_older_sibling_postsec_match was float now byte
+  variable has_older_sibling_enr was float now byte
+  variable has_older_sibling_enr_2year was float now byte
+  variable has_older_sibling_enr_4year was float now byte
+  variable sibling_2y_4y_controls_sample was float now byte
+  variable touse_sib_lag1_lag2_enr was float now byte
+  variable touse_sib_lag1_lag2_enr_2year was float now byte
+  variable touse_sib_lag1_lag2_enr_4year was float now byte
+  variable touse_sib_lag was float now byte
+  variable num_older_sibling_postsec_match was double now byte
+  variable numsiblings_older_enr was double now byte
+  variable numsiblings_older_enr_2year was double now byte
+  variable numsiblings_older_enr_4year was double now byte
+  variable old1_sib_enr was double now byte
+  variable old2_sib_enr was double now byte
+  variable old1_sib_enr_2year was double now byte
+  variable old2_sib_enr_2year was double now byte
+  variable old1_sib_enr_4year was double now byte
+  variable old2_sib_enr_4year was double now byte
+  (432,975,974 bytes saved)
+
+. label data "Sibling enrollment outcomes crosswalk organized by unique familie
+> s"
+
+. save "$datadir_clean/siblingxwalk/sibling_out_xwalk", replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/siblingxwalk/sibling_out_xwalk.dta
+    not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /siblingxwalk/sibling_out_xwalk.dta
+    saved
+
+. 
+. 
+. 
+. 
+. timer off 1
+
+. timer list
+   1:   2595.25 /        1 =    2595.2530
+
+. 
+. 
+. * --- WRAP-UP ---------------------------------------------------------------
+> --
+. 
+. di as text _n "--------------------------------------------------------------
+------------------"
+
+-------------------------------------------------------------------------------
+> -
+
+. di as text "siblingoutxwalk.do — RUN END: `c(current_date)' `c(current_time)'
+> "
+siblingoutxwalk.do — RUN END: 25 May 2026 18:04:07
+
+. di as text "-----------------------------------------------------------------
+---------------"
+-------------------------------------------------------------------------------
+> -
+
+. 
+. * Restore CWD to $consolidated_dir for subsequent main.do invocations
+. * (this file's `cd $vaprojdir` above was preserved for behavior parity).
+. cd "$consolidated_dir"
+/home/research/ca_ed_lab/projects/common_core_va/consolidated
+
+. 
+. cap log close siblingoutxwalk

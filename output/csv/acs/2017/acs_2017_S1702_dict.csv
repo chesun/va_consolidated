@@ -1,0 +1,604 @@
+order,name,type,isnumeric,format,vallab,varlab
+1,geoid,str20,0,%20s,,Id
+2,geoid2,str11,0,%11s,,Id2
+3,geodisplaylabel,str55,0,%55s,,Geography
+4,hc01_est_vc01,str41,0,%41s,,All families  - Total; Estimate; Families
+5,hc01_moe_vc01,str48,0,%48s,,All families  - Total; Margin of Error; Families
+6,hc02_est_vc01,str63,0,%63s,,All families  - Percent below poverty level; Estimate; Families
+7,hc02_moe_vc01,str70,0,%70s,,All families  - Percent below poverty level; Margin of Error; Families
+8,hc03_est_vc01,str52,0,%52s,,Married-couple families  - Total; Estimate; Families
+9,hc03_moe_vc01,str59,0,%59s,,Married-couple families  - Total; Margin of Error; Families
+10,hc04_est_vc01,str74,0,%74s,,Married-couple families  - Percent below poverty level; Estimate; Families
+11,hc04_moe_vc01,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; Familie
+12,hc05_est_vc01,str67,0,%67s,,"Female householder, no husband present  - Total; Estimate; Families"
+13,hc05_moe_vc01,str74,0,%74s,,"Female householder, no husband present  - Total; Margin of Error; Families"
+14,hc06_est_vc01,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+15,hc06_moe_vc01,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+16,hc01_est_vc02,strL,0,%9s,,All families  - Total; Estimate; With related children of householder under 18 y
+17,hc01_moe_vc02,strL,0,%9s,,All families  - Total; Margin of Error; With related children of householder und
+18,hc02_est_vc02,strL,0,%9s,,All families  - Percent below poverty level; Estimate; With related children of 
+19,hc02_moe_vc02,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; With related child
+20,hc03_est_vc02,strL,0,%9s,,Married-couple families  - Total; Estimate; With related children of householder
+21,hc03_moe_vc02,strL,0,%9s,,Married-couple families  - Total; Margin of Error; With related children of hous
+22,hc04_est_vc02,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; With related c
+23,hc04_moe_vc02,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; With re
+24,hc05_est_vc02,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; With related children"
+25,hc05_moe_vc02,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; With related c"
+26,hc06_est_vc02,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+27,hc06_moe_vc02,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+28,hc01_est_vc03,strL,0,%9s,,All families  - Total; Estimate; With related children of householder under 18 y
+29,hc01_moe_vc03,strL,0,%9s,,All families  - Total; Margin of Error; With related children of householder und
+30,hc02_est_vc03,strL,0,%9s,,All families  - Percent below poverty level; Estimate; With related children of 
+31,hc02_moe_vc03,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; With related child
+32,hc03_est_vc03,strL,0,%9s,,Married-couple families  - Total; Estimate; With related children of householder
+33,hc03_moe_vc03,strL,0,%9s,,Married-couple families  - Total; Margin of Error; With related children of hous
+34,hc04_est_vc03,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; With related c
+35,hc04_moe_vc03,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; With re
+36,hc05_est_vc03,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; With related children"
+37,hc05_moe_vc03,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; With related c"
+38,hc06_est_vc03,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+39,hc06_moe_vc03,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+40,hc01_est_vc04,strL,0,%9s,,All families  - Total; Estimate; With related children of householder under 18 y
+41,hc01_moe_vc04,strL,0,%9s,,All families  - Total; Margin of Error; With related children of householder und
+42,hc02_est_vc04,strL,0,%9s,,All families  - Percent below poverty level; Estimate; With related children of 
+43,hc02_moe_vc04,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; With related child
+44,hc03_est_vc04,strL,0,%9s,,Married-couple families  - Total; Estimate; With related children of householder
+45,hc03_moe_vc04,strL,0,%9s,,Married-couple families  - Total; Margin of Error; With related children of hous
+46,hc04_est_vc04,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; With related c
+47,hc04_moe_vc04,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; With re
+48,hc05_est_vc04,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; With related children"
+49,hc05_moe_vc04,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; With related c"
+50,hc06_est_vc04,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+51,hc06_moe_vc04,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+52,hc01_est_vc05,strL,0,%9s,,All families  - Total; Estimate; With related children of householder under 18 y
+53,hc01_moe_vc05,strL,0,%9s,,All families  - Total; Margin of Error; With related children of householder und
+54,hc02_est_vc05,strL,0,%9s,,All families  - Percent below poverty level; Estimate; With related children of 
+55,hc02_moe_vc05,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; With related child
+56,hc03_est_vc05,strL,0,%9s,,Married-couple families  - Total; Estimate; With related children of householder
+57,hc03_moe_vc05,strL,0,%9s,,Married-couple families  - Total; Margin of Error; With related children of hous
+58,hc04_est_vc05,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; With related c
+59,hc04_moe_vc05,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; With re
+60,hc05_est_vc05,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; With related children"
+61,hc05_moe_vc05,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; With related c"
+62,hc06_est_vc05,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+63,hc06_moe_vc05,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+64,hc01_est_vc09,strL,0,%9s,,All families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - Families w
+65,hc01_moe_vc09,strL,0,%9s,,All families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - Fam
+66,hc02_est_vc09,strL,0,%9s,,All families  - Percent below poverty level; Estimate; RACE AND HISPANIC OR LATI
+67,hc02_moe_vc09,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; RACE AND HISPANIC 
+68,hc03_est_vc09,strL,0,%9s,,Married-couple families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN -
+69,hc03_moe_vc09,strL,0,%9s,,Married-couple families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO O
+70,hc04_est_vc09,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; RACE AND HISPA
+71,hc04_moe_vc09,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; RACE AN
+72,hc05_est_vc09,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; RACE AND HISPANIC OR "
+73,hc05_moe_vc09,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; RACE AND HISPA"
+74,hc06_est_vc09,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+75,hc06_moe_vc09,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+76,hc01_est_vc10,strL,0,%9s,,All families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - Families w
+77,hc01_moe_vc10,strL,0,%9s,,All families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - Fam
+78,hc02_est_vc10,strL,0,%9s,,All families  - Percent below poverty level; Estimate; RACE AND HISPANIC OR LATI
+79,hc02_moe_vc10,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; RACE AND HISPANIC 
+80,hc03_est_vc10,strL,0,%9s,,Married-couple families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN -
+81,hc03_moe_vc10,strL,0,%9s,,Married-couple families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO O
+82,hc04_est_vc10,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; RACE AND HISPA
+83,hc04_moe_vc10,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; RACE AN
+84,hc05_est_vc10,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; RACE AND HISPANIC OR "
+85,hc05_moe_vc10,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; RACE AND HISPA"
+86,hc06_est_vc10,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+87,hc06_moe_vc10,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+88,hc01_est_vc11,strL,0,%9s,,All families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - Families w
+89,hc01_moe_vc11,strL,0,%9s,,All families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - Fam
+90,hc02_est_vc11,strL,0,%9s,,All families  - Percent below poverty level; Estimate; RACE AND HISPANIC OR LATI
+91,hc02_moe_vc11,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; RACE AND HISPANIC 
+92,hc03_est_vc11,strL,0,%9s,,Married-couple families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN -
+93,hc03_moe_vc11,strL,0,%9s,,Married-couple families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO O
+94,hc04_est_vc11,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; RACE AND HISPA
+95,hc04_moe_vc11,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; RACE AN
+96,hc05_est_vc11,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; RACE AND HISPANIC OR "
+97,hc05_moe_vc11,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; RACE AND HISPA"
+98,hc06_est_vc11,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+99,hc06_moe_vc11,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+100,hc01_est_vc12,strL,0,%9s,,All families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - Families w
+101,hc01_moe_vc12,strL,0,%9s,,All families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - Fam
+102,hc02_est_vc12,strL,0,%9s,,All families  - Percent below poverty level; Estimate; RACE AND HISPANIC OR LATI
+103,hc02_moe_vc12,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; RACE AND HISPANIC 
+104,hc03_est_vc12,strL,0,%9s,,Married-couple families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN -
+105,hc03_moe_vc12,strL,0,%9s,,Married-couple families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO O
+106,hc04_est_vc12,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; RACE AND HISPA
+107,hc04_moe_vc12,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; RACE AN
+108,hc05_est_vc12,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; RACE AND HISPANIC OR "
+109,hc05_moe_vc12,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; RACE AND HISPA"
+110,hc06_est_vc12,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+111,hc06_moe_vc12,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+112,hc01_est_vc13,strL,0,%9s,,All families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - Families w
+113,hc01_moe_vc13,strL,0,%9s,,All families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - Fam
+114,hc02_est_vc13,strL,0,%9s,,All families  - Percent below poverty level; Estimate; RACE AND HISPANIC OR LATI
+115,hc02_moe_vc13,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; RACE AND HISPANIC 
+116,hc03_est_vc13,strL,0,%9s,,Married-couple families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN -
+117,hc03_moe_vc13,strL,0,%9s,,Married-couple families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO O
+118,hc04_est_vc13,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; RACE AND HISPA
+119,hc04_moe_vc13,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; RACE AN
+120,hc05_est_vc13,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; RACE AND HISPANIC OR "
+121,hc05_moe_vc13,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; RACE AND HISPA"
+122,hc06_est_vc13,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+123,hc06_moe_vc13,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+124,hc01_est_vc14,strL,0,%9s,,All families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - Families w
+125,hc01_moe_vc14,strL,0,%9s,,All families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - Fam
+126,hc02_est_vc14,strL,0,%9s,,All families  - Percent below poverty level; Estimate; RACE AND HISPANIC OR LATI
+127,hc02_moe_vc14,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; RACE AND HISPANIC 
+128,hc03_est_vc14,strL,0,%9s,,Married-couple families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN -
+129,hc03_moe_vc14,strL,0,%9s,,Married-couple families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO O
+130,hc04_est_vc14,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; RACE AND HISPA
+131,hc04_moe_vc14,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; RACE AN
+132,hc05_est_vc14,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; RACE AND HISPANIC OR "
+133,hc05_moe_vc14,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; RACE AND HISPA"
+134,hc06_est_vc14,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+135,hc06_moe_vc14,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+136,hc01_est_vc15,strL,0,%9s,,All families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - Families w
+137,hc01_moe_vc15,strL,0,%9s,,All families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - Fam
+138,hc02_est_vc15,strL,0,%9s,,All families  - Percent below poverty level; Estimate; RACE AND HISPANIC OR LATI
+139,hc02_moe_vc15,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; RACE AND HISPANIC 
+140,hc03_est_vc15,strL,0,%9s,,Married-couple families  - Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN -
+141,hc03_moe_vc15,strL,0,%9s,,Married-couple families  - Total; Margin of Error; RACE AND HISPANIC OR LATINO O
+142,hc04_est_vc15,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; RACE AND HISPA
+143,hc04_moe_vc15,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; RACE AN
+144,hc05_est_vc15,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; RACE AND HISPANIC OR "
+145,hc05_moe_vc15,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; RACE AND HISPA"
+146,hc06_est_vc15,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+147,hc06_moe_vc15,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+148,hc01_est_vc17,str72,0,%72s,,All families  - Total; Estimate; Hispanic or Latino origin (of any race)
+149,hc01_moe_vc17,strL,0,%9s,,All families  - Total; Margin of Error; Hispanic or Latino origin (of any race)
+150,hc02_est_vc17,strL,0,%9s,,All families  - Percent below poverty level; Estimate; Hispanic or Latino origin
+151,hc02_moe_vc17,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; Hispanic or Latino
+152,hc03_est_vc17,strL,0,%9s,,Married-couple families  - Total; Estimate; Hispanic or Latino origin (of any ra
+153,hc03_moe_vc17,strL,0,%9s,,Married-couple families  - Total; Margin of Error; Hispanic or Latino origin (of
+154,hc04_est_vc17,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; Hispanic or La
+155,hc04_moe_vc17,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; Hispani
+156,hc05_est_vc17,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; Hispanic or Latino or"
+157,hc05_moe_vc17,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; Hispanic or La"
+158,hc06_est_vc17,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+159,hc06_moe_vc17,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+160,hc01_est_vc18,str68,0,%68s,,"All families  - Total; Estimate; White alone, not Hispanic or Latino"
+161,hc01_moe_vc18,str75,0,%75s,,"All families  - Total; Margin of Error; White alone, not Hispanic or Latino"
+162,hc02_est_vc18,strL,0,%9s,,"All families  - Percent below poverty level; Estimate; White alone, not Hispanic"
+163,hc02_moe_vc18,strL,0,%9s,,"All families  - Percent below poverty level; Margin of Error; White alone, not H"
+164,hc03_est_vc18,strL,0,%9s,,"Married-couple families  - Total; Estimate; White alone, not Hispanic or Latino"
+165,hc03_moe_vc18,strL,0,%9s,,"Married-couple families  - Total; Margin of Error; White alone, not Hispanic or "
+166,hc04_est_vc18,strL,0,%9s,,"Married-couple families  - Percent below poverty level; Estimate; White alone, n"
+167,hc04_moe_vc18,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; White a
+168,hc05_est_vc18,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; White alone, not Hisp"
+169,hc05_moe_vc18,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; White alone, n"
+170,hc06_est_vc18,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+171,hc06_moe_vc18,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+172,hc01_est_vc20,str51,0,%51s,,All families  - Total; Estimate; Householder worked
+173,hc01_moe_vc20,str58,0,%58s,,All families  - Total; Margin of Error; Householder worked
+174,hc02_est_vc20,str73,0,%73s,,All families  - Percent below poverty level; Estimate; Householder worked
+175,hc02_moe_vc20,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; Householder worked
+176,hc03_est_vc20,str62,0,%62s,,Married-couple families  - Total; Estimate; Householder worked
+177,hc03_moe_vc20,str69,0,%69s,,Married-couple families  - Total; Margin of Error; Householder worked
+178,hc04_est_vc20,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; Householder wo
+179,hc04_moe_vc20,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; Househo
+180,hc05_est_vc20,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; Householder worked"
+181,hc05_moe_vc20,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; Householder wo"
+182,hc06_est_vc20,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+183,hc06_moe_vc20,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+184,hc01_est_vc21,strL,0,%9s,,All families  - Total; Estimate; Householder worked - Householder worked full-ti
+185,hc01_moe_vc21,strL,0,%9s,,All families  - Total; Margin of Error; Householder worked - Householder worked 
+186,hc02_est_vc21,strL,0,%9s,,All families  - Percent below poverty level; Estimate; Householder worked - Hous
+187,hc02_moe_vc21,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; Householder worked
+188,hc03_est_vc21,strL,0,%9s,,Married-couple families  - Total; Estimate; Householder worked - Householder wor
+189,hc03_moe_vc21,strL,0,%9s,,Married-couple families  - Total; Margin of Error; Householder worked - Househol
+190,hc04_est_vc21,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; Householder wo
+191,hc04_moe_vc21,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; Househo
+192,hc05_est_vc21,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; Householder worked - "
+193,hc05_moe_vc21,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; Householder wo"
+194,hc06_est_vc21,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+195,hc06_moe_vc21,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+196,hc01_est_vc23,str62,0,%62s,,All families  - Total; Estimate; Householder 65 years and over
+197,hc01_moe_vc23,str69,0,%69s,,All families  - Total; Margin of Error; Householder 65 years and over
+198,hc02_est_vc23,strL,0,%9s,,All families  - Percent below poverty level; Estimate; Householder 65 years and 
+199,hc02_moe_vc23,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; Householder 65 yea
+200,hc03_est_vc23,str73,0,%73s,,Married-couple families  - Total; Estimate; Householder 65 years and over
+201,hc03_moe_vc23,strL,0,%9s,,Married-couple families  - Total; Margin of Error; Householder 65 years and over
+202,hc04_est_vc23,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; Householder 65
+203,hc04_moe_vc23,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; Househo
+204,hc05_est_vc23,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; Householder 65 years "
+205,hc05_moe_vc23,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; Householder 65"
+206,hc06_est_vc23,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+207,hc06_moe_vc23,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+208,hc01_est_vc25,strL,0,%9s,,All families  - Total; Estimate; Family received -- - Supplemental Security Inco
+209,hc01_moe_vc25,strL,0,%9s,,All families  - Total; Margin of Error; Family received -- - Supplemental Securi
+210,hc02_est_vc25,strL,0,%9s,,All families  - Percent below poverty level; Estimate; Family received -- - Supp
+211,hc02_moe_vc25,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; Family received --
+212,hc03_est_vc25,strL,0,%9s,,Married-couple families  - Total; Estimate; Family received -- - Supplemental Se
+213,hc03_moe_vc25,strL,0,%9s,,Married-couple families  - Total; Margin of Error; Family received -- - Suppleme
+214,hc04_est_vc25,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; Family receive
+215,hc04_moe_vc25,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; Family 
+216,hc05_est_vc25,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; Family received -- - "
+217,hc05_moe_vc25,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; Family receive"
+218,hc06_est_vc25,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+219,hc06_moe_vc25,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+220,hc01_est_vc26,strL,0,%9s,,All families  - Total; Estimate; Family received -- - Social security income in 
+221,hc01_moe_vc26,strL,0,%9s,,All families  - Total; Margin of Error; Family received -- - Social security inc
+222,hc02_est_vc26,strL,0,%9s,,All families  - Percent below poverty level; Estimate; Family received -- - Soci
+223,hc02_moe_vc26,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; Family received --
+224,hc03_est_vc26,strL,0,%9s,,Married-couple families  - Total; Estimate; Family received -- - Social security
+225,hc03_moe_vc26,strL,0,%9s,,Married-couple families  - Total; Margin of Error; Family received -- - Social s
+226,hc04_est_vc26,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; Family receive
+227,hc04_moe_vc26,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; Family 
+228,hc05_est_vc26,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; Family received -- - "
+229,hc05_moe_vc26,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; Family receive"
+230,hc06_est_vc26,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+231,hc06_moe_vc26,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+232,hc01_est_vc29,strL,0,%9s,,All families  - Total; Estimate; EDUCATIONAL ATTAINMENT OF HOUSEHOLDER - Less th
+233,hc01_moe_vc29,strL,0,%9s,,All families  - Total; Margin of Error; EDUCATIONAL ATTAINMENT OF HOUSEHOLDER - 
+234,hc02_est_vc29,strL,0,%9s,,All families  - Percent below poverty level; Estimate; EDUCATIONAL ATTAINMENT OF
+235,hc02_moe_vc29,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; EDUCATIONAL ATTAIN
+236,hc03_est_vc29,strL,0,%9s,,Married-couple families  - Total; Estimate; EDUCATIONAL ATTAINMENT OF HOUSEHOLDE
+237,hc03_moe_vc29,strL,0,%9s,,Married-couple families  - Total; Margin of Error; EDUCATIONAL ATTAINMENT OF HOU
+238,hc04_est_vc29,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; EDUCATIONAL AT
+239,hc04_moe_vc29,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; EDUCATI
+240,hc05_est_vc29,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; EDUCATIONAL ATTAINMEN"
+241,hc05_moe_vc29,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; EDUCATIONAL AT"
+242,hc06_est_vc29,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+243,hc06_moe_vc29,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+244,hc01_est_vc30,strL,0,%9s,,All families  - Total; Estimate; EDUCATIONAL ATTAINMENT OF HOUSEHOLDER - High sc
+245,hc01_moe_vc30,strL,0,%9s,,All families  - Total; Margin of Error; EDUCATIONAL ATTAINMENT OF HOUSEHOLDER - 
+246,hc02_est_vc30,strL,0,%9s,,All families  - Percent below poverty level; Estimate; EDUCATIONAL ATTAINMENT OF
+247,hc02_moe_vc30,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; EDUCATIONAL ATTAIN
+248,hc03_est_vc30,strL,0,%9s,,Married-couple families  - Total; Estimate; EDUCATIONAL ATTAINMENT OF HOUSEHOLDE
+249,hc03_moe_vc30,strL,0,%9s,,Married-couple families  - Total; Margin of Error; EDUCATIONAL ATTAINMENT OF HOU
+250,hc04_est_vc30,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; EDUCATIONAL AT
+251,hc04_moe_vc30,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; EDUCATI
+252,hc05_est_vc30,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; EDUCATIONAL ATTAINMEN"
+253,hc05_moe_vc30,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; EDUCATIONAL AT"
+254,hc06_est_vc30,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+255,hc06_moe_vc30,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+256,hc01_est_vc31,strL,0,%9s,,All families  - Total; Estimate; EDUCATIONAL ATTAINMENT OF HOUSEHOLDER - Some co
+257,hc01_moe_vc31,strL,0,%9s,,All families  - Total; Margin of Error; EDUCATIONAL ATTAINMENT OF HOUSEHOLDER - 
+258,hc02_est_vc31,strL,0,%9s,,All families  - Percent below poverty level; Estimate; EDUCATIONAL ATTAINMENT OF
+259,hc02_moe_vc31,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; EDUCATIONAL ATTAIN
+260,hc03_est_vc31,strL,0,%9s,,Married-couple families  - Total; Estimate; EDUCATIONAL ATTAINMENT OF HOUSEHOLDE
+261,hc03_moe_vc31,strL,0,%9s,,Married-couple families  - Total; Margin of Error; EDUCATIONAL ATTAINMENT OF HOU
+262,hc04_est_vc31,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; EDUCATIONAL AT
+263,hc04_moe_vc31,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; EDUCATI
+264,hc05_est_vc31,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; EDUCATIONAL ATTAINMEN"
+265,hc05_moe_vc31,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; EDUCATIONAL AT"
+266,hc06_est_vc31,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+267,hc06_moe_vc31,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+268,hc01_est_vc32,strL,0,%9s,,All families  - Total; Estimate; EDUCATIONAL ATTAINMENT OF HOUSEHOLDER - Bachelo
+269,hc01_moe_vc32,strL,0,%9s,,All families  - Total; Margin of Error; EDUCATIONAL ATTAINMENT OF HOUSEHOLDER - 
+270,hc02_est_vc32,strL,0,%9s,,All families  - Percent below poverty level; Estimate; EDUCATIONAL ATTAINMENT OF
+271,hc02_moe_vc32,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; EDUCATIONAL ATTAIN
+272,hc03_est_vc32,strL,0,%9s,,Married-couple families  - Total; Estimate; EDUCATIONAL ATTAINMENT OF HOUSEHOLDE
+273,hc03_moe_vc32,strL,0,%9s,,Married-couple families  - Total; Margin of Error; EDUCATIONAL ATTAINMENT OF HOU
+274,hc04_est_vc32,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; EDUCATIONAL AT
+275,hc04_moe_vc32,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; EDUCATI
+276,hc05_est_vc32,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; EDUCATIONAL ATTAINMEN"
+277,hc05_moe_vc32,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; EDUCATIONAL AT"
+278,hc06_est_vc32,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+279,hc06_moe_vc32,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+280,hc01_est_vc35,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF RELATED CHILDREN OF THE HOUSEHOLDER U
+281,hc01_moe_vc35,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF RELATED CHILDREN OF THE HOUSEH
+282,hc02_est_vc35,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF RELATED CHILDRE
+283,hc02_moe_vc35,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF RELATED 
+284,hc03_est_vc35,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF RELATED CHILDREN OF THE HO
+285,hc03_moe_vc35,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF RELATED CHILDREN OF
+286,hc04_est_vc35,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF RELA
+287,hc04_moe_vc35,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+288,hc05_est_vc35,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF RELATED CHI"
+289,hc05_moe_vc35,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF RELA"
+290,hc06_est_vc35,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+291,hc06_moe_vc35,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+292,hc01_est_vc36,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF RELATED CHILDREN OF THE HOUSEHOLDER U
+293,hc01_moe_vc36,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF RELATED CHILDREN OF THE HOUSEH
+294,hc02_est_vc36,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF RELATED CHILDRE
+295,hc02_moe_vc36,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF RELATED 
+296,hc03_est_vc36,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF RELATED CHILDREN OF THE HO
+297,hc03_moe_vc36,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF RELATED CHILDREN OF
+298,hc04_est_vc36,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF RELA
+299,hc04_moe_vc36,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+300,hc05_est_vc36,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF RELATED CHI"
+301,hc05_moe_vc36,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF RELA"
+302,hc06_est_vc36,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+303,hc06_moe_vc36,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+304,hc01_est_vc37,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF RELATED CHILDREN OF THE HOUSEHOLDER U
+305,hc01_moe_vc37,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF RELATED CHILDREN OF THE HOUSEH
+306,hc02_est_vc37,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF RELATED CHILDRE
+307,hc02_moe_vc37,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF RELATED 
+308,hc03_est_vc37,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF RELATED CHILDREN OF THE HO
+309,hc03_moe_vc37,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF RELATED CHILDREN OF
+310,hc04_est_vc37,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF RELA
+311,hc04_moe_vc37,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+312,hc05_est_vc37,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF RELATED CHI"
+313,hc05_moe_vc37,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF RELA"
+314,hc06_est_vc37,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+315,hc06_moe_vc37,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+316,hc01_est_vc38,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF RELATED CHILDREN OF THE HOUSEHOLDER U
+317,hc01_moe_vc38,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF RELATED CHILDREN OF THE HOUSEH
+318,hc02_est_vc38,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF RELATED CHILDRE
+319,hc02_moe_vc38,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF RELATED 
+320,hc03_est_vc38,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF RELATED CHILDREN OF THE HO
+321,hc03_moe_vc38,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF RELATED CHILDREN OF
+322,hc04_est_vc38,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF RELA
+323,hc04_moe_vc38,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+324,hc05_est_vc38,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF RELATED CHI"
+325,hc05_moe_vc38,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF RELA"
+326,hc06_est_vc38,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+327,hc06_moe_vc38,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+328,hc01_est_vc41,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF OWN CHILDREN OF THE HOUSEHOLDER UNDER
+329,hc01_moe_vc41,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF OWN CHILDREN OF THE HOUSEHOLDE
+330,hc02_est_vc41,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF OWN CHILDREN OF
+331,hc02_moe_vc41,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF OWN CHIL
+332,hc03_est_vc41,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF OWN CHILDREN OF THE HOUSEH
+333,hc03_moe_vc41,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF OWN CHILDREN OF THE
+334,hc04_est_vc41,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF OWN 
+335,hc04_moe_vc41,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+336,hc05_est_vc41,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF OWN CHILDRE"
+337,hc05_moe_vc41,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF OWN "
+338,hc06_est_vc41,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+339,hc06_moe_vc41,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+340,hc01_est_vc42,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF OWN CHILDREN OF THE HOUSEHOLDER UNDER
+341,hc01_moe_vc42,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF OWN CHILDREN OF THE HOUSEHOLDE
+342,hc02_est_vc42,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF OWN CHILDREN OF
+343,hc02_moe_vc42,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF OWN CHIL
+344,hc03_est_vc42,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF OWN CHILDREN OF THE HOUSEH
+345,hc03_moe_vc42,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF OWN CHILDREN OF THE
+346,hc04_est_vc42,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF OWN 
+347,hc04_moe_vc42,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+348,hc05_est_vc42,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF OWN CHILDRE"
+349,hc05_moe_vc42,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF OWN "
+350,hc06_est_vc42,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+351,hc06_moe_vc42,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+352,hc01_est_vc43,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF OWN CHILDREN OF THE HOUSEHOLDER UNDER
+353,hc01_moe_vc43,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF OWN CHILDREN OF THE HOUSEHOLDE
+354,hc02_est_vc43,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF OWN CHILDREN OF
+355,hc02_moe_vc43,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF OWN CHIL
+356,hc03_est_vc43,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF OWN CHILDREN OF THE HOUSEH
+357,hc03_moe_vc43,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF OWN CHILDREN OF THE
+358,hc04_est_vc43,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF OWN 
+359,hc04_moe_vc43,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+360,hc05_est_vc43,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF OWN CHILDRE"
+361,hc05_moe_vc43,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF OWN "
+362,hc06_est_vc43,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+363,hc06_moe_vc43,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+364,hc01_est_vc44,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF OWN CHILDREN OF THE HOUSEHOLDER UNDER
+365,hc01_moe_vc44,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF OWN CHILDREN OF THE HOUSEHOLDE
+366,hc02_est_vc44,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF OWN CHILDREN OF
+367,hc02_moe_vc44,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF OWN CHIL
+368,hc03_est_vc44,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF OWN CHILDREN OF THE HOUSEH
+369,hc03_moe_vc44,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF OWN CHILDREN OF THE
+370,hc04_est_vc44,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF OWN 
+371,hc04_moe_vc44,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+372,hc05_est_vc44,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF OWN CHILDRE"
+373,hc05_moe_vc44,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF OWN "
+374,hc06_est_vc44,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+375,hc06_moe_vc44,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+376,hc01_est_vc47,str70,0,%70s,,All families  - Total; Estimate; NUMBER OF PEOPLE IN FAMILY - 2 people
+377,hc01_moe_vc47,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF PEOPLE IN FAMILY - 2 people
+378,hc02_est_vc47,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF PEOPLE IN FAMIL
+379,hc02_moe_vc47,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF PEOPLE I
+380,hc03_est_vc47,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF PEOPLE IN FAMILY - 2 peopl
+381,hc03_moe_vc47,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF PEOPLE IN FAMILY - 
+382,hc04_est_vc47,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF PEOP
+383,hc04_moe_vc47,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+384,hc05_est_vc47,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF PEOPLE IN F"
+385,hc05_moe_vc47,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF PEOP"
+386,hc06_est_vc47,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+387,hc06_moe_vc47,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+388,hc01_est_vc48,str75,0,%75s,,All families  - Total; Estimate; NUMBER OF PEOPLE IN FAMILY - 3 or 4 people
+389,hc01_moe_vc48,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF PEOPLE IN FAMILY - 3 or 4 peop
+390,hc02_est_vc48,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF PEOPLE IN FAMIL
+391,hc02_moe_vc48,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF PEOPLE I
+392,hc03_est_vc48,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF PEOPLE IN FAMILY - 3 or 4 
+393,hc03_moe_vc48,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF PEOPLE IN FAMILY - 
+394,hc04_est_vc48,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF PEOP
+395,hc04_moe_vc48,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+396,hc05_est_vc48,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF PEOPLE IN F"
+397,hc05_moe_vc48,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF PEOP"
+398,hc06_est_vc48,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+399,hc06_moe_vc48,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+400,hc01_est_vc49,str75,0,%75s,,All families  - Total; Estimate; NUMBER OF PEOPLE IN FAMILY - 5 or 6 people
+401,hc01_moe_vc49,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF PEOPLE IN FAMILY - 5 or 6 peop
+402,hc02_est_vc49,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF PEOPLE IN FAMIL
+403,hc02_moe_vc49,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF PEOPLE I
+404,hc03_est_vc49,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF PEOPLE IN FAMILY - 5 or 6 
+405,hc03_moe_vc49,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF PEOPLE IN FAMILY - 
+406,hc04_est_vc49,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF PEOP
+407,hc04_moe_vc49,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+408,hc05_est_vc49,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF PEOPLE IN F"
+409,hc05_moe_vc49,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF PEOP"
+410,hc06_est_vc49,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+411,hc06_moe_vc49,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+412,hc01_est_vc50,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF PEOPLE IN FAMILY - 7 or more people
+413,hc01_moe_vc50,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF PEOPLE IN FAMILY - 7 or more p
+414,hc02_est_vc50,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF PEOPLE IN FAMIL
+415,hc02_moe_vc50,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF PEOPLE I
+416,hc03_est_vc50,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF PEOPLE IN FAMILY - 7 or mo
+417,hc03_moe_vc50,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF PEOPLE IN FAMILY - 
+418,hc04_est_vc50,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF PEOP
+419,hc04_moe_vc50,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+420,hc05_est_vc50,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF PEOPLE IN F"
+421,hc05_moe_vc50,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF PEOP"
+422,hc06_est_vc50,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+423,hc06_moe_vc50,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+424,hc01_est_vc53,str73,0,%73s,,All families  - Total; Estimate; NUMBER OF WORKERS IN FAMILY - No workers
+425,hc01_moe_vc53,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF WORKERS IN FAMILY - No workers
+426,hc02_est_vc53,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF WORKERS IN FAMI
+427,hc02_moe_vc53,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF WORKERS 
+428,hc03_est_vc53,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF WORKERS IN FAMILY - No wor
+429,hc03_moe_vc53,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF WORKERS IN FAMILY -
+430,hc04_est_vc53,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF WORK
+431,hc04_moe_vc53,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+432,hc05_est_vc53,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF WORKERS IN "
+433,hc05_moe_vc53,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF WORK"
+434,hc06_est_vc53,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+435,hc06_moe_vc53,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+436,hc01_est_vc54,str71,0,%71s,,All families  - Total; Estimate; NUMBER OF WORKERS IN FAMILY - 1 worker
+437,hc01_moe_vc54,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF WORKERS IN FAMILY - 1 worker
+438,hc02_est_vc54,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF WORKERS IN FAMI
+439,hc02_moe_vc54,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF WORKERS 
+440,hc03_est_vc54,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF WORKERS IN FAMILY - 1 work
+441,hc03_moe_vc54,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF WORKERS IN FAMILY -
+442,hc04_est_vc54,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF WORK
+443,hc04_moe_vc54,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+444,hc05_est_vc54,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF WORKERS IN "
+445,hc05_moe_vc54,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF WORK"
+446,hc06_est_vc54,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+447,hc06_moe_vc54,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+448,hc01_est_vc55,str72,0,%72s,,All families  - Total; Estimate; NUMBER OF WORKERS IN FAMILY - 2 workers
+449,hc01_moe_vc55,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF WORKERS IN FAMILY - 2 workers
+450,hc02_est_vc55,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF WORKERS IN FAMI
+451,hc02_moe_vc55,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF WORKERS 
+452,hc03_est_vc55,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF WORKERS IN FAMILY - 2 work
+453,hc03_moe_vc55,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF WORKERS IN FAMILY -
+454,hc04_est_vc55,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF WORK
+455,hc04_moe_vc55,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+456,hc05_est_vc55,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF WORKERS IN "
+457,hc05_moe_vc55,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF WORK"
+458,hc06_est_vc55,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+459,hc06_moe_vc55,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+460,hc01_est_vc56,strL,0,%9s,,All families  - Total; Estimate; NUMBER OF WORKERS IN FAMILY - 3 or more workers
+461,hc01_moe_vc56,strL,0,%9s,,All families  - Total; Margin of Error; NUMBER OF WORKERS IN FAMILY - 3 or more 
+462,hc02_est_vc56,strL,0,%9s,,All families  - Percent below poverty level; Estimate; NUMBER OF WORKERS IN FAMI
+463,hc02_moe_vc56,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; NUMBER OF WORKERS 
+464,hc03_est_vc56,strL,0,%9s,,Married-couple families  - Total; Estimate; NUMBER OF WORKERS IN FAMILY - 3 or m
+465,hc03_moe_vc56,strL,0,%9s,,Married-couple families  - Total; Margin of Error; NUMBER OF WORKERS IN FAMILY -
+466,hc04_est_vc56,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; NUMBER OF WORK
+467,hc04_moe_vc56,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; NUMBER 
+468,hc05_est_vc56,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; NUMBER OF WORKERS IN "
+469,hc05_moe_vc56,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; NUMBER OF WORK"
+470,hc06_est_vc56,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+471,hc06_moe_vc56,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+472,hc01_est_vc59,strL,0,%9s,,All families  - Total; Estimate; INCOME DEFICIT - Mean income deficit for famili
+473,hc01_moe_vc59,strL,0,%9s,,All families  - Total; Margin of Error; INCOME DEFICIT - Mean income deficit for
+474,hc02_est_vc59,strL,0,%9s,,All families  - Percent below poverty level; Estimate; INCOME DEFICIT - Mean inc
+475,hc02_moe_vc59,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; INCOME DEFICIT - M
+476,hc03_est_vc59,strL,0,%9s,,Married-couple families  - Total; Estimate; INCOME DEFICIT - Mean income deficit
+477,hc03_moe_vc59,strL,0,%9s,,Married-couple families  - Total; Margin of Error; INCOME DEFICIT - Mean income 
+478,hc04_est_vc59,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; INCOME DEFICIT
+479,hc04_moe_vc59,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; INCOME 
+480,hc05_est_vc59,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; INCOME DEFICIT - Mean"
+481,hc05_moe_vc59,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; INCOME DEFICIT"
+482,hc06_est_vc59,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+483,hc06_moe_vc59,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+484,hc01_est_vc62,str56,0,%56s,,All families  - Total; Estimate; TENURE - Owner occupied
+485,hc01_moe_vc62,str63,0,%63s,,All families  - Total; Margin of Error; TENURE - Owner occupied
+486,hc02_est_vc62,strL,0,%9s,,All families  - Percent below poverty level; Estimate; TENURE - Owner occupied
+487,hc02_moe_vc62,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; TENURE - Owner occ
+488,hc03_est_vc62,str67,0,%67s,,Married-couple families  - Total; Estimate; TENURE - Owner occupied
+489,hc03_moe_vc62,str74,0,%74s,,Married-couple families  - Total; Margin of Error; TENURE - Owner occupied
+490,hc04_est_vc62,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; TENURE - Owner
+491,hc04_moe_vc62,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; TENURE 
+492,hc05_est_vc62,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; TENURE - Owner occupi"
+493,hc05_moe_vc62,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; TENURE - Owner"
+494,hc06_est_vc62,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+495,hc06_moe_vc62,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+496,hc01_est_vc63,str57,0,%57s,,All families  - Total; Estimate; TENURE - Renter Occupied
+497,hc01_moe_vc63,str64,0,%64s,,All families  - Total; Margin of Error; TENURE - Renter Occupied
+498,hc02_est_vc63,strL,0,%9s,,All families  - Percent below poverty level; Estimate; TENURE - Renter Occupied
+499,hc02_moe_vc63,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; TENURE - Renter Oc
+500,hc03_est_vc63,str68,0,%68s,,Married-couple families  - Total; Estimate; TENURE - Renter Occupied
+501,hc03_moe_vc63,str75,0,%75s,,Married-couple families  - Total; Margin of Error; TENURE - Renter Occupied
+502,hc04_est_vc63,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; TENURE - Rente
+503,hc04_moe_vc63,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; TENURE 
+504,hc05_est_vc63,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; TENURE - Renter Occup"
+505,hc05_moe_vc63,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; TENURE - Rente"
+506,hc06_est_vc63,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+507,hc06_moe_vc63,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+508,hc01_est_vc66,strL,0,%9s,,All families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE FOLLOWING PO
+509,hc01_moe_vc66,strL,0,%9s,,All families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELOW THE FOLLO
+510,hc02_est_vc66,strL,0,%9s,,All families  - Percent below poverty level; Estimate; ALL FAMILIES WITH INCOME 
+511,hc02_moe_vc66,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; ALL FAMILIES WITH 
+512,hc03_est_vc66,strL,0,%9s,,Married-couple families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE F
+513,hc03_moe_vc66,strL,0,%9s,,Married-couple families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELO
+514,hc04_est_vc66,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; ALL FAMILIES W
+515,hc04_moe_vc66,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; ALL FAM
+516,hc05_est_vc66,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; ALL FAMILIES WITH INC"
+517,hc05_moe_vc66,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; ALL FAMILIES W"
+518,hc06_est_vc66,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+519,hc06_moe_vc66,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+520,hc01_est_vc67,strL,0,%9s,,All families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE FOLLOWING PO
+521,hc01_moe_vc67,strL,0,%9s,,All families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELOW THE FOLLO
+522,hc02_est_vc67,strL,0,%9s,,All families  - Percent below poverty level; Estimate; ALL FAMILIES WITH INCOME 
+523,hc02_moe_vc67,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; ALL FAMILIES WITH 
+524,hc03_est_vc67,strL,0,%9s,,Married-couple families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE F
+525,hc03_moe_vc67,strL,0,%9s,,Married-couple families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELO
+526,hc04_est_vc67,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; ALL FAMILIES W
+527,hc04_moe_vc67,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; ALL FAM
+528,hc05_est_vc67,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; ALL FAMILIES WITH INC"
+529,hc05_moe_vc67,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; ALL FAMILIES W"
+530,hc06_est_vc67,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+531,hc06_moe_vc67,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+532,hc01_est_vc68,strL,0,%9s,,All families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE FOLLOWING PO
+533,hc01_moe_vc68,strL,0,%9s,,All families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELOW THE FOLLO
+534,hc02_est_vc68,strL,0,%9s,,All families  - Percent below poverty level; Estimate; ALL FAMILIES WITH INCOME 
+535,hc02_moe_vc68,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; ALL FAMILIES WITH 
+536,hc03_est_vc68,strL,0,%9s,,Married-couple families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE F
+537,hc03_moe_vc68,strL,0,%9s,,Married-couple families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELO
+538,hc04_est_vc68,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; ALL FAMILIES W
+539,hc04_moe_vc68,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; ALL FAM
+540,hc05_est_vc68,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; ALL FAMILIES WITH INC"
+541,hc05_moe_vc68,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; ALL FAMILIES W"
+542,hc06_est_vc68,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+543,hc06_moe_vc68,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+544,hc01_est_vc69,strL,0,%9s,,All families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE FOLLOWING PO
+545,hc01_moe_vc69,strL,0,%9s,,All families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELOW THE FOLLO
+546,hc02_est_vc69,strL,0,%9s,,All families  - Percent below poverty level; Estimate; ALL FAMILIES WITH INCOME 
+547,hc02_moe_vc69,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; ALL FAMILIES WITH 
+548,hc03_est_vc69,strL,0,%9s,,Married-couple families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE F
+549,hc03_moe_vc69,strL,0,%9s,,Married-couple families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELO
+550,hc04_est_vc69,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; ALL FAMILIES W
+551,hc04_moe_vc69,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; ALL FAM
+552,hc05_est_vc69,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; ALL FAMILIES WITH INC"
+553,hc05_moe_vc69,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; ALL FAMILIES W"
+554,hc06_est_vc69,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+555,hc06_moe_vc69,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+556,hc01_est_vc70,strL,0,%9s,,All families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE FOLLOWING PO
+557,hc01_moe_vc70,strL,0,%9s,,All families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELOW THE FOLLO
+558,hc02_est_vc70,strL,0,%9s,,All families  - Percent below poverty level; Estimate; ALL FAMILIES WITH INCOME 
+559,hc02_moe_vc70,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; ALL FAMILIES WITH 
+560,hc03_est_vc70,strL,0,%9s,,Married-couple families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE F
+561,hc03_moe_vc70,strL,0,%9s,,Married-couple families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELO
+562,hc04_est_vc70,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; ALL FAMILIES W
+563,hc04_moe_vc70,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; ALL FAM
+564,hc05_est_vc70,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; ALL FAMILIES WITH INC"
+565,hc05_moe_vc70,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; ALL FAMILIES W"
+566,hc06_est_vc70,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+567,hc06_moe_vc70,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+568,hc01_est_vc71,strL,0,%9s,,All families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE FOLLOWING PO
+569,hc01_moe_vc71,strL,0,%9s,,All families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELOW THE FOLLO
+570,hc02_est_vc71,strL,0,%9s,,All families  - Percent below poverty level; Estimate; ALL FAMILIES WITH INCOME 
+571,hc02_moe_vc71,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; ALL FAMILIES WITH 
+572,hc03_est_vc71,strL,0,%9s,,Married-couple families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE F
+573,hc03_moe_vc71,strL,0,%9s,,Married-couple families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELO
+574,hc04_est_vc71,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; ALL FAMILIES W
+575,hc04_moe_vc71,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; ALL FAM
+576,hc05_est_vc71,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; ALL FAMILIES WITH INC"
+577,hc05_moe_vc71,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; ALL FAMILIES W"
+578,hc06_est_vc71,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+579,hc06_moe_vc71,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+580,hc01_est_vc72,strL,0,%9s,,All families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE FOLLOWING PO
+581,hc01_moe_vc72,strL,0,%9s,,All families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELOW THE FOLLO
+582,hc02_est_vc72,strL,0,%9s,,All families  - Percent below poverty level; Estimate; ALL FAMILIES WITH INCOME 
+583,hc02_moe_vc72,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; ALL FAMILIES WITH 
+584,hc03_est_vc72,strL,0,%9s,,Married-couple families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE F
+585,hc03_moe_vc72,strL,0,%9s,,Married-couple families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELO
+586,hc04_est_vc72,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; ALL FAMILIES W
+587,hc04_moe_vc72,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; ALL FAM
+588,hc05_est_vc72,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; ALL FAMILIES WITH INC"
+589,hc05_moe_vc72,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; ALL FAMILIES W"
+590,hc06_est_vc72,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+591,hc06_moe_vc72,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"
+592,hc01_est_vc73,strL,0,%9s,,All families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE FOLLOWING PO
+593,hc01_moe_vc73,strL,0,%9s,,All families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELOW THE FOLLO
+594,hc02_est_vc73,strL,0,%9s,,All families  - Percent below poverty level; Estimate; ALL FAMILIES WITH INCOME 
+595,hc02_moe_vc73,strL,0,%9s,,All families  - Percent below poverty level; Margin of Error; ALL FAMILIES WITH 
+596,hc03_est_vc73,strL,0,%9s,,Married-couple families  - Total; Estimate; ALL FAMILIES WITH INCOME BELOW THE F
+597,hc03_moe_vc73,strL,0,%9s,,Married-couple families  - Total; Margin of Error; ALL FAMILIES WITH INCOME BELO
+598,hc04_est_vc73,strL,0,%9s,,Married-couple families  - Percent below poverty level; Estimate; ALL FAMILIES W
+599,hc04_moe_vc73,strL,0,%9s,,Married-couple families  - Percent below poverty level; Margin of Error; ALL FAM
+600,hc05_est_vc73,strL,0,%9s,,"Female householder, no husband present  - Total; Estimate; ALL FAMILIES WITH INC"
+601,hc05_moe_vc73,strL,0,%9s,,"Female householder, no husband present  - Total; Margin of Error; ALL FAMILIES W"
+602,hc06_est_vc73,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Estimate;"
+603,hc06_moe_vc73,strL,0,%9s,,"Female householder, no husband present  - Percent below poverty level; Margin of"

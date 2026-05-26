@@ -1,0 +1,428 @@
+order,name,type,isnumeric,format,vallab,varlab
+1,geoid,str20,0,%20s,,Id
+2,geoid2,str11,0,%11s,,Id2
+3,geodisplaylabel,str55,0,%55s,,Geography
+4,hc01_est_vc01,str33,0,%33s,,Total; Estimate; Total population
+5,hc01_moe_vc01,str40,0,%40s,,Total; Margin of Error; Total population
+6,hc02_est_vc01,str62,0,%62s,,Native; born in state of residence; Estimate; Total population
+7,hc02_moe_vc01,str69,0,%69s,,Native; born in state of residence; Margin of Error; Total population
+8,hc03_est_vc01,str67,0,%67s,,Native; born in other state in the U.S.; Estimate; Total population
+9,hc03_moe_vc01,str74,0,%74s,,Native; born in other state in the U.S.; Margin of Error; Total population
+10,hc04_est_vc01,str53,0,%53s,,Native; born outside U.S.; Estimate; Total population
+11,hc04_moe_vc01,str60,0,%60s,,Native; born outside U.S.; Margin of Error; Total population
+12,hc01_est_vc03,str36,0,%36s,,Total; Estimate; AGE - Under 5 years
+13,hc01_moe_vc03,str43,0,%43s,,Total; Margin of Error; AGE - Under 5 years
+14,hc02_est_vc03,str65,0,%65s,,Native; born in state of residence; Estimate; AGE - Under 5 years
+15,hc02_moe_vc03,str72,0,%72s,,Native; born in state of residence; Margin of Error; AGE - Under 5 years
+16,hc03_est_vc03,str70,0,%70s,,Native; born in other state in the U.S.; Estimate; AGE - Under 5 years
+17,hc03_moe_vc03,str77,0,%77s,,Native; born in other state in the U.S.; Margin of Error; AGE - Under 5 years
+18,hc04_est_vc03,str56,0,%56s,,Native; born outside U.S.; Estimate; AGE - Under 5 years
+19,hc04_moe_vc03,str63,0,%63s,,Native; born outside U.S.; Margin of Error; AGE - Under 5 years
+20,hc01_est_vc04,str36,0,%36s,,Total; Estimate; AGE - 5 to 17 years
+21,hc01_moe_vc04,str43,0,%43s,,Total; Margin of Error; AGE - 5 to 17 years
+22,hc02_est_vc04,str65,0,%65s,,Native; born in state of residence; Estimate; AGE - 5 to 17 years
+23,hc02_moe_vc04,str72,0,%72s,,Native; born in state of residence; Margin of Error; AGE - 5 to 17 years
+24,hc03_est_vc04,str70,0,%70s,,Native; born in other state in the U.S.; Estimate; AGE - 5 to 17 years
+25,hc03_moe_vc04,str77,0,%77s,,Native; born in other state in the U.S.; Margin of Error; AGE - 5 to 17 years
+26,hc04_est_vc04,str56,0,%56s,,Native; born outside U.S.; Estimate; AGE - 5 to 17 years
+27,hc04_moe_vc04,str63,0,%63s,,Native; born outside U.S.; Margin of Error; AGE - 5 to 17 years
+28,hc01_est_vc05,str37,0,%37s,,Total; Estimate; AGE - 18 to 24 years
+29,hc01_moe_vc05,str44,0,%44s,,Total; Margin of Error; AGE - 18 to 24 years
+30,hc02_est_vc05,str66,0,%66s,,Native; born in state of residence; Estimate; AGE - 18 to 24 years
+31,hc02_moe_vc05,str73,0,%73s,,Native; born in state of residence; Margin of Error; AGE - 18 to 24 years
+32,hc03_est_vc05,str71,0,%71s,,Native; born in other state in the U.S.; Estimate; AGE - 18 to 24 years
+33,hc03_moe_vc05,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; AGE - 18 to 24 years
+34,hc04_est_vc05,str57,0,%57s,,Native; born outside U.S.; Estimate; AGE - 18 to 24 years
+35,hc04_moe_vc05,str64,0,%64s,,Native; born outside U.S.; Margin of Error; AGE - 18 to 24 years
+36,hc01_est_vc06,str37,0,%37s,,Total; Estimate; AGE - 25 to 44 years
+37,hc01_moe_vc06,str44,0,%44s,,Total; Margin of Error; AGE - 25 to 44 years
+38,hc02_est_vc06,str66,0,%66s,,Native; born in state of residence; Estimate; AGE - 25 to 44 years
+39,hc02_moe_vc06,str73,0,%73s,,Native; born in state of residence; Margin of Error; AGE - 25 to 44 years
+40,hc03_est_vc06,str71,0,%71s,,Native; born in other state in the U.S.; Estimate; AGE - 25 to 44 years
+41,hc03_moe_vc06,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; AGE - 25 to 44 years
+42,hc04_est_vc06,str57,0,%57s,,Native; born outside U.S.; Estimate; AGE - 25 to 44 years
+43,hc04_moe_vc06,str64,0,%64s,,Native; born outside U.S.; Margin of Error; AGE - 25 to 44 years
+44,hc01_est_vc07,str37,0,%37s,,Total; Estimate; AGE - 45 to 54 years
+45,hc01_moe_vc07,str44,0,%44s,,Total; Margin of Error; AGE - 45 to 54 years
+46,hc02_est_vc07,str66,0,%66s,,Native; born in state of residence; Estimate; AGE - 45 to 54 years
+47,hc02_moe_vc07,str73,0,%73s,,Native; born in state of residence; Margin of Error; AGE - 45 to 54 years
+48,hc03_est_vc07,str71,0,%71s,,Native; born in other state in the U.S.; Estimate; AGE - 45 to 54 years
+49,hc03_moe_vc07,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; AGE - 45 to 54 years
+50,hc04_est_vc07,str57,0,%57s,,Native; born outside U.S.; Estimate; AGE - 45 to 54 years
+51,hc04_moe_vc07,str64,0,%64s,,Native; born outside U.S.; Margin of Error; AGE - 45 to 54 years
+52,hc01_est_vc08,str37,0,%37s,,Total; Estimate; AGE - 55 to 64 years
+53,hc01_moe_vc08,str44,0,%44s,,Total; Margin of Error; AGE - 55 to 64 years
+54,hc02_est_vc08,str66,0,%66s,,Native; born in state of residence; Estimate; AGE - 55 to 64 years
+55,hc02_moe_vc08,str73,0,%73s,,Native; born in state of residence; Margin of Error; AGE - 55 to 64 years
+56,hc03_est_vc08,str71,0,%71s,,Native; born in other state in the U.S.; Estimate; AGE - 55 to 64 years
+57,hc03_moe_vc08,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; AGE - 55 to 64 years
+58,hc04_est_vc08,str57,0,%57s,,Native; born outside U.S.; Estimate; AGE - 55 to 64 years
+59,hc04_moe_vc08,str64,0,%64s,,Native; born outside U.S.; Margin of Error; AGE - 55 to 64 years
+60,hc01_est_vc09,str37,0,%37s,,Total; Estimate; AGE - 65 to 74 years
+61,hc01_moe_vc09,str44,0,%44s,,Total; Margin of Error; AGE - 65 to 74 years
+62,hc02_est_vc09,str66,0,%66s,,Native; born in state of residence; Estimate; AGE - 65 to 74 years
+63,hc02_moe_vc09,str73,0,%73s,,Native; born in state of residence; Margin of Error; AGE - 65 to 74 years
+64,hc03_est_vc09,str71,0,%71s,,Native; born in other state in the U.S.; Estimate; AGE - 65 to 74 years
+65,hc03_moe_vc09,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; AGE - 65 to 74 years
+66,hc04_est_vc09,str57,0,%57s,,Native; born outside U.S.; Estimate; AGE - 65 to 74 years
+67,hc04_moe_vc09,str64,0,%64s,,Native; born outside U.S.; Margin of Error; AGE - 65 to 74 years
+68,hc01_est_vc10,str40,0,%40s,,Total; Estimate; AGE - 75 years and over
+69,hc01_moe_vc10,str47,0,%47s,,Total; Margin of Error; AGE - 75 years and over
+70,hc02_est_vc10,str69,0,%69s,,Native; born in state of residence; Estimate; AGE - 75 years and over
+71,hc02_moe_vc10,str76,0,%76s,,Native; born in state of residence; Margin of Error; AGE - 75 years and over
+72,hc03_est_vc10,str74,0,%74s,,Native; born in other state in the U.S.; Estimate; AGE - 75 years and over
+73,hc03_moe_vc10,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; AGE - 75 years and ove
+74,hc04_est_vc10,str60,0,%60s,,Native; born outside U.S.; Estimate; AGE - 75 years and over
+75,hc04_moe_vc10,str67,0,%67s,,Native; born outside U.S.; Margin of Error; AGE - 75 years and over
+76,hc01_est_vc12,str35,0,%35s,,Total; Estimate; Median age (years)
+77,hc01_moe_vc12,str42,0,%42s,,Total; Margin of Error; Median age (years)
+78,hc02_est_vc12,str64,0,%64s,,Native; born in state of residence; Estimate; Median age (years)
+79,hc02_moe_vc12,str71,0,%71s,,Native; born in state of residence; Margin of Error; Median age (years)
+80,hc03_est_vc12,str69,0,%69s,,Native; born in other state in the U.S.; Estimate; Median age (years)
+81,hc03_moe_vc12,str76,0,%76s,,Native; born in other state in the U.S.; Margin of Error; Median age (years)
+82,hc04_est_vc12,str55,0,%55s,,Native; born outside U.S.; Estimate; Median age (years)
+83,hc04_moe_vc12,str62,0,%62s,,Native; born outside U.S.; Margin of Error; Median age (years)
+84,hc01_est_vc15,str27,0,%27s,,Total; Estimate; SEX - Male
+85,hc01_moe_vc15,str34,0,%34s,,Total; Margin of Error; SEX - Male
+86,hc02_est_vc15,str56,0,%56s,,Native; born in state of residence; Estimate; SEX - Male
+87,hc02_moe_vc15,str63,0,%63s,,Native; born in state of residence; Margin of Error; SEX - Male
+88,hc03_est_vc15,str61,0,%61s,,Native; born in other state in the U.S.; Estimate; SEX - Male
+89,hc03_moe_vc15,str68,0,%68s,,Native; born in other state in the U.S.; Margin of Error; SEX - Male
+90,hc04_est_vc15,str47,0,%47s,,Native; born outside U.S.; Estimate; SEX - Male
+91,hc04_moe_vc15,str54,0,%54s,,Native; born outside U.S.; Margin of Error; SEX - Male
+92,hc01_est_vc16,str29,0,%29s,,Total; Estimate; SEX - Female
+93,hc01_moe_vc16,str36,0,%36s,,Total; Margin of Error; SEX - Female
+94,hc02_est_vc16,str58,0,%58s,,Native; born in state of residence; Estimate; SEX - Female
+95,hc02_moe_vc16,str65,0,%65s,,Native; born in state of residence; Margin of Error; SEX - Female
+96,hc03_est_vc16,str63,0,%63s,,Native; born in other state in the U.S.; Estimate; SEX - Female
+97,hc03_moe_vc16,str70,0,%70s,,Native; born in other state in the U.S.; Margin of Error; SEX - Female
+98,hc04_est_vc16,str49,0,%49s,,Native; born outside U.S.; Estimate; SEX - Female
+99,hc04_moe_vc16,str56,0,%56s,,Native; born outside U.S.; Margin of Error; SEX - Female
+100,hc01_est_vc19,str62,0,%62s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One race
+101,hc01_moe_vc19,str69,0,%69s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - One race
+102,hc02_est_vc19,strL,0,%9s,,Native; born in state of residence; Estimate; RACE AND HISPANIC OR LATINO ORIGIN
+103,hc02_moe_vc19,strL,0,%9s,,Native; born in state of residence; Margin of Error; RACE AND HISPANIC OR LATINO
+104,hc03_est_vc19,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; RACE AND HISPANIC OR LATINO O
+105,hc03_moe_vc19,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; RACE AND HISPANIC OR L
+106,hc04_est_vc19,strL,0,%9s,,Native; born outside U.S.; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One ra
+107,hc04_moe_vc19,strL,0,%9s,,Native; born outside U.S.; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN -
+108,hc01_est_vc20,str70,0,%70s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One race - White
+109,hc01_moe_vc20,str77,0,%77s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - One race - White
+110,hc02_est_vc20,strL,0,%9s,,Native; born in state of residence; Estimate; RACE AND HISPANIC OR LATINO ORIGIN
+111,hc02_moe_vc20,strL,0,%9s,,Native; born in state of residence; Margin of Error; RACE AND HISPANIC OR LATINO
+112,hc03_est_vc20,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; RACE AND HISPANIC OR LATINO O
+113,hc03_moe_vc20,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; RACE AND HISPANIC OR L
+114,hc04_est_vc20,strL,0,%9s,,Native; born outside U.S.; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One ra
+115,hc04_moe_vc20,strL,0,%9s,,Native; born outside U.S.; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN -
+116,hc01_est_vc21,strL,0,%9s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One race - Black or Africa
+117,hc01_moe_vc21,strL,0,%9s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - One race - Black or
+118,hc02_est_vc21,strL,0,%9s,,Native; born in state of residence; Estimate; RACE AND HISPANIC OR LATINO ORIGIN
+119,hc02_moe_vc21,strL,0,%9s,,Native; born in state of residence; Margin of Error; RACE AND HISPANIC OR LATINO
+120,hc03_est_vc21,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; RACE AND HISPANIC OR LATINO O
+121,hc03_moe_vc21,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; RACE AND HISPANIC OR L
+122,hc04_est_vc21,strL,0,%9s,,Native; born outside U.S.; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One ra
+123,hc04_moe_vc21,strL,0,%9s,,Native; born outside U.S.; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN -
+124,hc01_est_vc22,strL,0,%9s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One race - American Indian
+125,hc01_moe_vc22,strL,0,%9s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - One race - American
+126,hc02_est_vc22,strL,0,%9s,,Native; born in state of residence; Estimate; RACE AND HISPANIC OR LATINO ORIGIN
+127,hc02_moe_vc22,strL,0,%9s,,Native; born in state of residence; Margin of Error; RACE AND HISPANIC OR LATINO
+128,hc03_est_vc22,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; RACE AND HISPANIC OR LATINO O
+129,hc03_moe_vc22,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; RACE AND HISPANIC OR L
+130,hc04_est_vc22,strL,0,%9s,,Native; born outside U.S.; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One ra
+131,hc04_moe_vc22,strL,0,%9s,,Native; born outside U.S.; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN -
+132,hc01_est_vc23,str70,0,%70s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One race - Asian
+133,hc01_moe_vc23,str77,0,%77s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - One race - Asian
+134,hc02_est_vc23,strL,0,%9s,,Native; born in state of residence; Estimate; RACE AND HISPANIC OR LATINO ORIGIN
+135,hc02_moe_vc23,strL,0,%9s,,Native; born in state of residence; Margin of Error; RACE AND HISPANIC OR LATINO
+136,hc03_est_vc23,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; RACE AND HISPANIC OR LATINO O
+137,hc03_moe_vc23,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; RACE AND HISPANIC OR L
+138,hc04_est_vc23,strL,0,%9s,,Native; born outside U.S.; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One ra
+139,hc04_moe_vc23,strL,0,%9s,,Native; born outside U.S.; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN -
+140,hc01_est_vc24,strL,0,%9s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One race - Native Hawaiian
+141,hc01_moe_vc24,strL,0,%9s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - One race - Native H
+142,hc02_est_vc24,strL,0,%9s,,Native; born in state of residence; Estimate; RACE AND HISPANIC OR LATINO ORIGIN
+143,hc02_moe_vc24,strL,0,%9s,,Native; born in state of residence; Margin of Error; RACE AND HISPANIC OR LATINO
+144,hc03_est_vc24,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; RACE AND HISPANIC OR LATINO O
+145,hc03_moe_vc24,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; RACE AND HISPANIC OR L
+146,hc04_est_vc24,strL,0,%9s,,Native; born outside U.S.; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One ra
+147,hc04_moe_vc24,strL,0,%9s,,Native; born outside U.S.; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN -
+148,hc01_est_vc25,strL,0,%9s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One race - Some other race
+149,hc01_moe_vc25,strL,0,%9s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - One race - Some oth
+150,hc02_est_vc25,strL,0,%9s,,Native; born in state of residence; Estimate; RACE AND HISPANIC OR LATINO ORIGIN
+151,hc02_moe_vc25,strL,0,%9s,,Native; born in state of residence; Margin of Error; RACE AND HISPANIC OR LATINO
+152,hc03_est_vc25,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; RACE AND HISPANIC OR LATINO O
+153,hc03_moe_vc25,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; RACE AND HISPANIC OR L
+154,hc04_est_vc25,strL,0,%9s,,Native; born outside U.S.; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - One ra
+155,hc04_moe_vc25,strL,0,%9s,,Native; born outside U.S.; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN -
+156,hc01_est_vc26,str71,0,%71s,,Total; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - Two or more races
+157,hc01_moe_vc26,strL,0,%9s,,Total; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN - Two or more races
+158,hc02_est_vc26,strL,0,%9s,,Native; born in state of residence; Estimate; RACE AND HISPANIC OR LATINO ORIGIN
+159,hc02_moe_vc26,strL,0,%9s,,Native; born in state of residence; Margin of Error; RACE AND HISPANIC OR LATINO
+160,hc03_est_vc26,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; RACE AND HISPANIC OR LATINO O
+161,hc03_moe_vc26,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; RACE AND HISPANIC OR L
+162,hc04_est_vc26,strL,0,%9s,,Native; born outside U.S.; Estimate; RACE AND HISPANIC OR LATINO ORIGIN - Two or
+163,hc04_moe_vc26,strL,0,%9s,,Native; born outside U.S.; Margin of Error; RACE AND HISPANIC OR LATINO ORIGIN -
+164,hc01_est_vc28,str56,0,%56s,,Total; Estimate; Hispanic or Latino origin (of any race)
+165,hc01_moe_vc28,str63,0,%63s,,Total; Margin of Error; Hispanic or Latino origin (of any race)
+166,hc02_est_vc28,strL,0,%9s,,Native; born in state of residence; Estimate; Hispanic or Latino origin (of any 
+167,hc02_moe_vc28,strL,0,%9s,,Native; born in state of residence; Margin of Error; Hispanic or Latino origin (
+168,hc03_est_vc28,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; Hispanic or Latino origin (of
+169,hc03_moe_vc28,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; Hispanic or Latino ori
+170,hc04_est_vc28,str76,0,%76s,,Native; born outside U.S.; Estimate; Hispanic or Latino origin (of any race)
+171,hc04_moe_vc28,strL,0,%9s,,Native; born outside U.S.; Margin of Error; Hispanic or Latino origin (of any ra
+172,hc01_est_vc29,str52,0,%52s,,"Total; Estimate; White alone, not Hispanic or Latino"
+173,hc01_moe_vc29,str59,0,%59s,,"Total; Margin of Error; White alone, not Hispanic or Latino"
+174,hc02_est_vc29,strL,0,%9s,,"Native; born in state of residence; Estimate; White alone, not Hispanic or Latin"
+175,hc02_moe_vc29,strL,0,%9s,,"Native; born in state of residence; Margin of Error; White alone, not Hispanic o"
+176,hc03_est_vc29,strL,0,%9s,,"Native; born in other state in the U.S.; Estimate; White alone, not Hispanic or "
+177,hc03_moe_vc29,strL,0,%9s,,"Native; born in other state in the U.S.; Margin of Error; White alone, not Hispa"
+178,hc04_est_vc29,str72,0,%72s,,"Native; born outside U.S.; Estimate; White alone, not Hispanic or Latino"
+179,hc04_moe_vc29,strL,0,%9s,,"Native; born outside U.S.; Margin of Error; White alone, not Hispanic or Latino"
+180,hc01_est_vc32,strL,0,%9s,,Total; Estimate; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH - Populati
+181,hc01_moe_vc32,strL,0,%9s,,Total; Margin of Error; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH - P
+182,hc02_est_vc32,strL,0,%9s,,Native; born in state of residence; Estimate; LANGUAGE SPOKEN AT HOME AND ABILIT
+183,hc02_moe_vc32,strL,0,%9s,,Native; born in state of residence; Margin of Error; LANGUAGE SPOKEN AT HOME AND
+184,hc03_est_vc32,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; LANGUAGE SPOKEN AT HOME AND A
+185,hc03_moe_vc32,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; LANGUAGE SPOKEN AT HOM
+186,hc04_est_vc32,strL,0,%9s,,Native; born outside U.S.; Estimate; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEA
+187,hc04_moe_vc32,strL,0,%9s,,Native; born outside U.S.; Margin of Error; LANGUAGE SPOKEN AT HOME AND ABILITY 
+188,hc01_est_vc33,strL,0,%9s,,Total; Estimate; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH - Populati
+189,hc01_moe_vc33,strL,0,%9s,,Total; Margin of Error; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH - P
+190,hc02_est_vc33,strL,0,%9s,,Native; born in state of residence; Estimate; LANGUAGE SPOKEN AT HOME AND ABILIT
+191,hc02_moe_vc33,strL,0,%9s,,Native; born in state of residence; Margin of Error; LANGUAGE SPOKEN AT HOME AND
+192,hc03_est_vc33,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; LANGUAGE SPOKEN AT HOME AND A
+193,hc03_moe_vc33,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; LANGUAGE SPOKEN AT HOM
+194,hc04_est_vc33,strL,0,%9s,,Native; born outside U.S.; Estimate; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEA
+195,hc04_moe_vc33,strL,0,%9s,,Native; born outside U.S.; Margin of Error; LANGUAGE SPOKEN AT HOME AND ABILITY 
+196,hc01_est_vc34,strL,0,%9s,,Total; Estimate; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH - Populati
+197,hc01_moe_vc34,strL,0,%9s,,Total; Margin of Error; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH - P
+198,hc02_est_vc34,strL,0,%9s,,Native; born in state of residence; Estimate; LANGUAGE SPOKEN AT HOME AND ABILIT
+199,hc02_moe_vc34,strL,0,%9s,,Native; born in state of residence; Margin of Error; LANGUAGE SPOKEN AT HOME AND
+200,hc03_est_vc34,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; LANGUAGE SPOKEN AT HOME AND A
+201,hc03_moe_vc34,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; LANGUAGE SPOKEN AT HOM
+202,hc04_est_vc34,strL,0,%9s,,Native; born outside U.S.; Estimate; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEA
+203,hc04_moe_vc34,strL,0,%9s,,Native; born outside U.S.; Margin of Error; LANGUAGE SPOKEN AT HOME AND ABILITY 
+204,hc01_est_vc35,strL,0,%9s,,Total; Estimate; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH - Populati
+205,hc01_moe_vc35,strL,0,%9s,,Total; Margin of Error; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH - P
+206,hc02_est_vc35,strL,0,%9s,,Native; born in state of residence; Estimate; LANGUAGE SPOKEN AT HOME AND ABILIT
+207,hc02_moe_vc35,strL,0,%9s,,Native; born in state of residence; Margin of Error; LANGUAGE SPOKEN AT HOME AND
+208,hc03_est_vc35,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; LANGUAGE SPOKEN AT HOME AND A
+209,hc03_moe_vc35,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; LANGUAGE SPOKEN AT HOM
+210,hc04_est_vc35,strL,0,%9s,,Native; born outside U.S.; Estimate; LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEA
+211,hc04_moe_vc35,strL,0,%9s,,Native; born outside U.S.; Margin of Error; LANGUAGE SPOKEN AT HOME AND ABILITY 
+212,hc01_est_vc38,str62,0,%62s,,Total; Estimate; MARITAL STATUS - Population 15 years and over
+213,hc01_moe_vc38,str69,0,%69s,,Total; Margin of Error; MARITAL STATUS - Population 15 years and over
+214,hc02_est_vc38,strL,0,%9s,,Native; born in state of residence; Estimate; MARITAL STATUS - Population 15 yea
+215,hc02_moe_vc38,strL,0,%9s,,Native; born in state of residence; Margin of Error; MARITAL STATUS - Population
+216,hc03_est_vc38,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; MARITAL STATUS - Population 1
+217,hc03_moe_vc38,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; MARITAL STATUS - Popul
+218,hc04_est_vc38,strL,0,%9s,,Native; born outside U.S.; Estimate; MARITAL STATUS - Population 15 years and ov
+219,hc04_moe_vc38,strL,0,%9s,,Native; born outside U.S.; Margin of Error; MARITAL STATUS - Population 15 years
+220,hc01_est_vc39,str78,0,%78s,,Total; Estimate; MARITAL STATUS - Population 15 years and over - Never married
+221,hc01_moe_vc39,strL,0,%9s,,Total; Margin of Error; MARITAL STATUS - Population 15 years and over - Never ma
+222,hc02_est_vc39,strL,0,%9s,,Native; born in state of residence; Estimate; MARITAL STATUS - Population 15 yea
+223,hc02_moe_vc39,strL,0,%9s,,Native; born in state of residence; Margin of Error; MARITAL STATUS - Population
+224,hc03_est_vc39,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; MARITAL STATUS - Population 1
+225,hc03_moe_vc39,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; MARITAL STATUS - Popul
+226,hc04_est_vc39,strL,0,%9s,,Native; born outside U.S.; Estimate; MARITAL STATUS - Population 15 years and ov
+227,hc04_moe_vc39,strL,0,%9s,,Native; born outside U.S.; Margin of Error; MARITAL STATUS - Population 15 years
+228,hc01_est_vc40,strL,0,%9s,,"Total; Estimate; MARITAL STATUS - Population 15 years and over - Now married, ex"
+229,hc01_moe_vc40,strL,0,%9s,,Total; Margin of Error; MARITAL STATUS - Population 15 years and over - Now marr
+230,hc02_est_vc40,strL,0,%9s,,Native; born in state of residence; Estimate; MARITAL STATUS - Population 15 yea
+231,hc02_moe_vc40,strL,0,%9s,,Native; born in state of residence; Margin of Error; MARITAL STATUS - Population
+232,hc03_est_vc40,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; MARITAL STATUS - Population 1
+233,hc03_moe_vc40,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; MARITAL STATUS - Popul
+234,hc04_est_vc40,strL,0,%9s,,Native; born outside U.S.; Estimate; MARITAL STATUS - Population 15 years and ov
+235,hc04_moe_vc40,strL,0,%9s,,Native; born outside U.S.; Margin of Error; MARITAL STATUS - Population 15 years
+236,hc01_est_vc41,strL,0,%9s,,Total; Estimate; MARITAL STATUS - Population 15 years and over - Divorced or sep
+237,hc01_moe_vc41,strL,0,%9s,,Total; Margin of Error; MARITAL STATUS - Population 15 years and over - Divorced
+238,hc02_est_vc41,strL,0,%9s,,Native; born in state of residence; Estimate; MARITAL STATUS - Population 15 yea
+239,hc02_moe_vc41,strL,0,%9s,,Native; born in state of residence; Margin of Error; MARITAL STATUS - Population
+240,hc03_est_vc41,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; MARITAL STATUS - Population 1
+241,hc03_moe_vc41,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; MARITAL STATUS - Popul
+242,hc04_est_vc41,strL,0,%9s,,Native; born outside U.S.; Estimate; MARITAL STATUS - Population 15 years and ov
+243,hc04_moe_vc41,strL,0,%9s,,Native; born outside U.S.; Margin of Error; MARITAL STATUS - Population 15 years
+244,hc01_est_vc42,str72,0,%72s,,Total; Estimate; MARITAL STATUS - Population 15 years and over - Widowed
+245,hc01_moe_vc42,strL,0,%9s,,Total; Margin of Error; MARITAL STATUS - Population 15 years and over - Widowed
+246,hc02_est_vc42,strL,0,%9s,,Native; born in state of residence; Estimate; MARITAL STATUS - Population 15 yea
+247,hc02_moe_vc42,strL,0,%9s,,Native; born in state of residence; Margin of Error; MARITAL STATUS - Population
+248,hc03_est_vc42,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; MARITAL STATUS - Population 1
+249,hc03_moe_vc42,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; MARITAL STATUS - Popul
+250,hc04_est_vc42,strL,0,%9s,,Native; born outside U.S.; Estimate; MARITAL STATUS - Population 15 years and ov
+251,hc04_moe_vc42,strL,0,%9s,,Native; born outside U.S.; Margin of Error; MARITAL STATUS - Population 15 years
+252,hc01_est_vc45,str70,0,%70s,,Total; Estimate; EDUCATIONAL ATTAINMENT - Population 25 years and over
+253,hc01_moe_vc45,str77,0,%77s,,Total; Margin of Error; EDUCATIONAL ATTAINMENT - Population 25 years and over
+254,hc02_est_vc45,strL,0,%9s,,Native; born in state of residence; Estimate; EDUCATIONAL ATTAINMENT - Populatio
+255,hc02_moe_vc45,strL,0,%9s,,Native; born in state of residence; Margin of Error; EDUCATIONAL ATTAINMENT - Po
+256,hc03_est_vc45,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; EDUCATIONAL ATTAINMENT - Popu
+257,hc03_moe_vc45,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; EDUCATIONAL ATTAINMENT
+258,hc04_est_vc45,strL,0,%9s,,Native; born outside U.S.; Estimate; EDUCATIONAL ATTAINMENT - Population 25 year
+259,hc04_moe_vc45,strL,0,%9s,,Native; born outside U.S.; Margin of Error; EDUCATIONAL ATTAINMENT - Population 
+260,hc01_est_vc46,strL,0,%9s,,Total; Estimate; EDUCATIONAL ATTAINMENT - Population 25 years and over - Less th
+261,hc01_moe_vc46,strL,0,%9s,,Total; Margin of Error; EDUCATIONAL ATTAINMENT - Population 25 years and over - 
+262,hc02_est_vc46,strL,0,%9s,,Native; born in state of residence; Estimate; EDUCATIONAL ATTAINMENT - Populatio
+263,hc02_moe_vc46,strL,0,%9s,,Native; born in state of residence; Margin of Error; EDUCATIONAL ATTAINMENT - Po
+264,hc03_est_vc46,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; EDUCATIONAL ATTAINMENT - Popu
+265,hc03_moe_vc46,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; EDUCATIONAL ATTAINMENT
+266,hc04_est_vc46,strL,0,%9s,,Native; born outside U.S.; Estimate; EDUCATIONAL ATTAINMENT - Population 25 year
+267,hc04_moe_vc46,strL,0,%9s,,Native; born outside U.S.; Margin of Error; EDUCATIONAL ATTAINMENT - Population 
+268,hc01_est_vc47,strL,0,%9s,,Total; Estimate; EDUCATIONAL ATTAINMENT - Population 25 years and over - High sc
+269,hc01_moe_vc47,strL,0,%9s,,Total; Margin of Error; EDUCATIONAL ATTAINMENT - Population 25 years and over - 
+270,hc02_est_vc47,strL,0,%9s,,Native; born in state of residence; Estimate; EDUCATIONAL ATTAINMENT - Populatio
+271,hc02_moe_vc47,strL,0,%9s,,Native; born in state of residence; Margin of Error; EDUCATIONAL ATTAINMENT - Po
+272,hc03_est_vc47,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; EDUCATIONAL ATTAINMENT - Popu
+273,hc03_moe_vc47,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; EDUCATIONAL ATTAINMENT
+274,hc04_est_vc47,strL,0,%9s,,Native; born outside U.S.; Estimate; EDUCATIONAL ATTAINMENT - Population 25 year
+275,hc04_moe_vc47,strL,0,%9s,,Native; born outside U.S.; Margin of Error; EDUCATIONAL ATTAINMENT - Population 
+276,hc01_est_vc48,strL,0,%9s,,Total; Estimate; EDUCATIONAL ATTAINMENT - Population 25 years and over - Some co
+277,hc01_moe_vc48,strL,0,%9s,,Total; Margin of Error; EDUCATIONAL ATTAINMENT - Population 25 years and over - 
+278,hc02_est_vc48,strL,0,%9s,,Native; born in state of residence; Estimate; EDUCATIONAL ATTAINMENT - Populatio
+279,hc02_moe_vc48,strL,0,%9s,,Native; born in state of residence; Margin of Error; EDUCATIONAL ATTAINMENT - Po
+280,hc03_est_vc48,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; EDUCATIONAL ATTAINMENT - Popu
+281,hc03_moe_vc48,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; EDUCATIONAL ATTAINMENT
+282,hc04_est_vc48,strL,0,%9s,,Native; born outside U.S.; Estimate; EDUCATIONAL ATTAINMENT - Population 25 year
+283,hc04_moe_vc48,strL,0,%9s,,Native; born outside U.S.; Margin of Error; EDUCATIONAL ATTAINMENT - Population 
+284,hc01_est_vc49,strL,0,%9s,,Total; Estimate; EDUCATIONAL ATTAINMENT - Population 25 years and over - Bachelo
+285,hc01_moe_vc49,strL,0,%9s,,Total; Margin of Error; EDUCATIONAL ATTAINMENT - Population 25 years and over - 
+286,hc02_est_vc49,strL,0,%9s,,Native; born in state of residence; Estimate; EDUCATIONAL ATTAINMENT - Populatio
+287,hc02_moe_vc49,strL,0,%9s,,Native; born in state of residence; Margin of Error; EDUCATIONAL ATTAINMENT - Po
+288,hc03_est_vc49,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; EDUCATIONAL ATTAINMENT - Popu
+289,hc03_moe_vc49,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; EDUCATIONAL ATTAINMENT
+290,hc04_est_vc49,strL,0,%9s,,Native; born outside U.S.; Estimate; EDUCATIONAL ATTAINMENT - Population 25 year
+291,hc04_moe_vc49,strL,0,%9s,,Native; born outside U.S.; Margin of Error; EDUCATIONAL ATTAINMENT - Population 
+292,hc01_est_vc50,strL,0,%9s,,Total; Estimate; EDUCATIONAL ATTAINMENT - Population 25 years and over - Graduat
+293,hc01_moe_vc50,strL,0,%9s,,Total; Margin of Error; EDUCATIONAL ATTAINMENT - Population 25 years and over - 
+294,hc02_est_vc50,strL,0,%9s,,Native; born in state of residence; Estimate; EDUCATIONAL ATTAINMENT - Populatio
+295,hc02_moe_vc50,strL,0,%9s,,Native; born in state of residence; Margin of Error; EDUCATIONAL ATTAINMENT - Po
+296,hc03_est_vc50,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; EDUCATIONAL ATTAINMENT - Popu
+297,hc03_moe_vc50,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; EDUCATIONAL ATTAINMENT
+298,hc04_est_vc50,strL,0,%9s,,Native; born outside U.S.; Estimate; EDUCATIONAL ATTAINMENT - Population 25 year
+299,hc04_moe_vc50,strL,0,%9s,,Native; born outside U.S.; Margin of Error; EDUCATIONAL ATTAINMENT - Population 
+300,hc01_est_vc53,strL,0,%9s,,Total; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLATION-AD
+301,hc01_moe_vc53,strL,0,%9s,,Total; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLA
+302,hc02_est_vc53,strL,0,%9s,,Native; born in state of residence; Estimate; INDIVIDUALS' INCOME IN THE PAST 12
+303,hc02_moe_vc53,strL,0,%9s,,Native; born in state of residence; Margin of Error; INDIVIDUALS' INCOME IN THE 
+304,hc03_est_vc53,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; INDIVIDUALS' INCOME IN THE PA
+305,hc03_moe_vc53,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; INDIVIDUALS' INCOME IN
+306,hc04_est_vc53,strL,0,%9s,,Native; born outside U.S.; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (
+307,hc04_moe_vc53,strL,0,%9s,,Native; born outside U.S.; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 M
+308,hc01_est_vc54,strL,0,%9s,,Total; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLATION-AD
+309,hc01_moe_vc54,strL,0,%9s,,Total; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLA
+310,hc02_est_vc54,strL,0,%9s,,Native; born in state of residence; Estimate; INDIVIDUALS' INCOME IN THE PAST 12
+311,hc02_moe_vc54,strL,0,%9s,,Native; born in state of residence; Margin of Error; INDIVIDUALS' INCOME IN THE 
+312,hc03_est_vc54,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; INDIVIDUALS' INCOME IN THE PA
+313,hc03_moe_vc54,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; INDIVIDUALS' INCOME IN
+314,hc04_est_vc54,strL,0,%9s,,Native; born outside U.S.; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (
+315,hc04_moe_vc54,strL,0,%9s,,Native; born outside U.S.; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 M
+316,hc01_est_vc55,strL,0,%9s,,Total; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLATION-AD
+317,hc01_moe_vc55,strL,0,%9s,,Total; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLA
+318,hc02_est_vc55,strL,0,%9s,,Native; born in state of residence; Estimate; INDIVIDUALS' INCOME IN THE PAST 12
+319,hc02_moe_vc55,strL,0,%9s,,Native; born in state of residence; Margin of Error; INDIVIDUALS' INCOME IN THE 
+320,hc03_est_vc55,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; INDIVIDUALS' INCOME IN THE PA
+321,hc03_moe_vc55,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; INDIVIDUALS' INCOME IN
+322,hc04_est_vc55,strL,0,%9s,,Native; born outside U.S.; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (
+323,hc04_moe_vc55,strL,0,%9s,,Native; born outside U.S.; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 M
+324,hc01_est_vc56,strL,0,%9s,,Total; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLATION-AD
+325,hc01_moe_vc56,strL,0,%9s,,Total; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLA
+326,hc02_est_vc56,strL,0,%9s,,Native; born in state of residence; Estimate; INDIVIDUALS' INCOME IN THE PAST 12
+327,hc02_moe_vc56,strL,0,%9s,,Native; born in state of residence; Margin of Error; INDIVIDUALS' INCOME IN THE 
+328,hc03_est_vc56,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; INDIVIDUALS' INCOME IN THE PA
+329,hc03_moe_vc56,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; INDIVIDUALS' INCOME IN
+330,hc04_est_vc56,strL,0,%9s,,Native; born outside U.S.; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (
+331,hc04_moe_vc56,strL,0,%9s,,Native; born outside U.S.; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 M
+332,hc01_est_vc57,strL,0,%9s,,Total; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLATION-AD
+333,hc01_moe_vc57,strL,0,%9s,,Total; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLA
+334,hc02_est_vc57,strL,0,%9s,,Native; born in state of residence; Estimate; INDIVIDUALS' INCOME IN THE PAST 12
+335,hc02_moe_vc57,strL,0,%9s,,Native; born in state of residence; Margin of Error; INDIVIDUALS' INCOME IN THE 
+336,hc03_est_vc57,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; INDIVIDUALS' INCOME IN THE PA
+337,hc03_moe_vc57,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; INDIVIDUALS' INCOME IN
+338,hc04_est_vc57,strL,0,%9s,,Native; born outside U.S.; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (
+339,hc04_moe_vc57,strL,0,%9s,,Native; born outside U.S.; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 M
+340,hc01_est_vc58,strL,0,%9s,,Total; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLATION-AD
+341,hc01_moe_vc58,strL,0,%9s,,Total; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLA
+342,hc02_est_vc58,strL,0,%9s,,Native; born in state of residence; Estimate; INDIVIDUALS' INCOME IN THE PAST 12
+343,hc02_moe_vc58,strL,0,%9s,,Native; born in state of residence; Margin of Error; INDIVIDUALS' INCOME IN THE 
+344,hc03_est_vc58,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; INDIVIDUALS' INCOME IN THE PA
+345,hc03_moe_vc58,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; INDIVIDUALS' INCOME IN
+346,hc04_est_vc58,strL,0,%9s,,Native; born outside U.S.; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (
+347,hc04_moe_vc58,strL,0,%9s,,Native; born outside U.S.; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 M
+348,hc01_est_vc59,strL,0,%9s,,Total; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLATION-AD
+349,hc01_moe_vc59,strL,0,%9s,,Total; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLA
+350,hc02_est_vc59,strL,0,%9s,,Native; born in state of residence; Estimate; INDIVIDUALS' INCOME IN THE PAST 12
+351,hc02_moe_vc59,strL,0,%9s,,Native; born in state of residence; Margin of Error; INDIVIDUALS' INCOME IN THE 
+352,hc03_est_vc59,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; INDIVIDUALS' INCOME IN THE PA
+353,hc03_moe_vc59,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; INDIVIDUALS' INCOME IN
+354,hc04_est_vc59,strL,0,%9s,,Native; born outside U.S.; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (
+355,hc04_moe_vc59,strL,0,%9s,,Native; born outside U.S.; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 M
+356,hc01_est_vc60,strL,0,%9s,,Total; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLATION-AD
+357,hc01_moe_vc60,strL,0,%9s,,Total; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLA
+358,hc02_est_vc60,strL,0,%9s,,Native; born in state of residence; Estimate; INDIVIDUALS' INCOME IN THE PAST 12
+359,hc02_moe_vc60,strL,0,%9s,,Native; born in state of residence; Margin of Error; INDIVIDUALS' INCOME IN THE 
+360,hc03_est_vc60,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; INDIVIDUALS' INCOME IN THE PA
+361,hc03_moe_vc60,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; INDIVIDUALS' INCOME IN
+362,hc04_est_vc60,strL,0,%9s,,Native; born outside U.S.; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (
+363,hc04_moe_vc60,strL,0,%9s,,Native; born outside U.S.; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 M
+364,hc01_est_vc61,strL,0,%9s,,Total; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLATION-AD
+365,hc01_moe_vc61,strL,0,%9s,,Total; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (IN 2017 INFLA
+366,hc02_est_vc61,strL,0,%9s,,Native; born in state of residence; Estimate; INDIVIDUALS' INCOME IN THE PAST 12
+367,hc02_moe_vc61,strL,0,%9s,,Native; born in state of residence; Margin of Error; INDIVIDUALS' INCOME IN THE 
+368,hc03_est_vc61,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; INDIVIDUALS' INCOME IN THE PA
+369,hc03_moe_vc61,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; INDIVIDUALS' INCOME IN
+370,hc04_est_vc61,strL,0,%9s,,Native; born outside U.S.; Estimate; INDIVIDUALS' INCOME IN THE PAST 12 MONTHS (
+371,hc04_moe_vc61,strL,0,%9s,,Native; born outside U.S.; Margin of Error; INDIVIDUALS' INCOME IN THE PAST 12 M
+372,hc01_est_vc63,str40,0,%40s,,Total; Estimate; Median income (dollars)
+373,hc01_moe_vc63,str47,0,%47s,,Total; Margin of Error; Median income (dollars)
+374,hc02_est_vc63,str69,0,%69s,,Native; born in state of residence; Estimate; Median income (dollars)
+375,hc02_moe_vc63,str76,0,%76s,,Native; born in state of residence; Margin of Error; Median income (dollars)
+376,hc03_est_vc63,str74,0,%74s,,Native; born in other state in the U.S.; Estimate; Median income (dollars)
+377,hc03_moe_vc63,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; Median income (dollars
+378,hc04_est_vc63,str60,0,%60s,,Native; born outside U.S.; Estimate; Median income (dollars)
+379,hc04_moe_vc63,str67,0,%67s,,Native; born outside U.S.; Margin of Error; Median income (dollars)
+380,hc01_est_vc66,strL,0,%9s,,Total; Estimate; POVERTY STATUS IN THE PAST 12 MONTHS - Population for whom pove
+381,hc01_moe_vc66,strL,0,%9s,,Total; Margin of Error; POVERTY STATUS IN THE PAST 12 MONTHS - Population for wh
+382,hc02_est_vc66,strL,0,%9s,,Native; born in state of residence; Estimate; POVERTY STATUS IN THE PAST 12 MONT
+383,hc02_moe_vc66,strL,0,%9s,,Native; born in state of residence; Margin of Error; POVERTY STATUS IN THE PAST 
+384,hc03_est_vc66,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; POVERTY STATUS IN THE PAST 12
+385,hc03_moe_vc66,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; POVERTY STATUS IN THE 
+386,hc04_est_vc66,strL,0,%9s,,Native; born outside U.S.; Estimate; POVERTY STATUS IN THE PAST 12 MONTHS - Popu
+387,hc04_moe_vc66,strL,0,%9s,,Native; born outside U.S.; Margin of Error; POVERTY STATUS IN THE PAST 12 MONTHS
+388,hc01_est_vc67,strL,0,%9s,,Total; Estimate; POVERTY STATUS IN THE PAST 12 MONTHS - Population for whom pove
+389,hc01_moe_vc67,strL,0,%9s,,Total; Margin of Error; POVERTY STATUS IN THE PAST 12 MONTHS - Population for wh
+390,hc02_est_vc67,strL,0,%9s,,Native; born in state of residence; Estimate; POVERTY STATUS IN THE PAST 12 MONT
+391,hc02_moe_vc67,strL,0,%9s,,Native; born in state of residence; Margin of Error; POVERTY STATUS IN THE PAST 
+392,hc03_est_vc67,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; POVERTY STATUS IN THE PAST 12
+393,hc03_moe_vc67,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; POVERTY STATUS IN THE 
+394,hc04_est_vc67,strL,0,%9s,,Native; born outside U.S.; Estimate; POVERTY STATUS IN THE PAST 12 MONTHS - Popu
+395,hc04_moe_vc67,strL,0,%9s,,Native; born outside U.S.; Margin of Error; POVERTY STATUS IN THE PAST 12 MONTHS
+396,hc01_est_vc68,strL,0,%9s,,Total; Estimate; POVERTY STATUS IN THE PAST 12 MONTHS - Population for whom pove
+397,hc01_moe_vc68,strL,0,%9s,,Total; Margin of Error; POVERTY STATUS IN THE PAST 12 MONTHS - Population for wh
+398,hc02_est_vc68,strL,0,%9s,,Native; born in state of residence; Estimate; POVERTY STATUS IN THE PAST 12 MONT
+399,hc02_moe_vc68,strL,0,%9s,,Native; born in state of residence; Margin of Error; POVERTY STATUS IN THE PAST 
+400,hc03_est_vc68,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; POVERTY STATUS IN THE PAST 12
+401,hc03_moe_vc68,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; POVERTY STATUS IN THE 
+402,hc04_est_vc68,strL,0,%9s,,Native; born outside U.S.; Estimate; POVERTY STATUS IN THE PAST 12 MONTHS - Popu
+403,hc04_moe_vc68,strL,0,%9s,,Native; born outside U.S.; Margin of Error; POVERTY STATUS IN THE PAST 12 MONTHS
+404,hc01_est_vc69,strL,0,%9s,,Total; Estimate; POVERTY STATUS IN THE PAST 12 MONTHS - Population for whom pove
+405,hc01_moe_vc69,strL,0,%9s,,Total; Margin of Error; POVERTY STATUS IN THE PAST 12 MONTHS - Population for wh
+406,hc02_est_vc69,strL,0,%9s,,Native; born in state of residence; Estimate; POVERTY STATUS IN THE PAST 12 MONT
+407,hc02_moe_vc69,strL,0,%9s,,Native; born in state of residence; Margin of Error; POVERTY STATUS IN THE PAST 
+408,hc03_est_vc69,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; POVERTY STATUS IN THE PAST 12
+409,hc03_moe_vc69,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; POVERTY STATUS IN THE 
+410,hc04_est_vc69,strL,0,%9s,,Native; born outside U.S.; Estimate; POVERTY STATUS IN THE PAST 12 MONTHS - Popu
+411,hc04_moe_vc69,strL,0,%9s,,Native; born outside U.S.; Margin of Error; POVERTY STATUS IN THE PAST 12 MONTHS
+412,hc01_est_vc72,str55,0,%55s,,Total; Estimate; PERCENT ALLOCATED - Citizenship status
+413,hc01_moe_vc72,str62,0,%62s,,Total; Margin of Error; PERCENT ALLOCATED - Citizenship status
+414,hc02_est_vc72,strL,0,%9s,,Native; born in state of residence; Estimate; PERCENT ALLOCATED - Citizenship st
+415,hc02_moe_vc72,strL,0,%9s,,Native; born in state of residence; Margin of Error; PERCENT ALLOCATED - Citizen
+416,hc03_est_vc72,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; PERCENT ALLOCATED - Citizensh
+417,hc03_moe_vc72,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; PERCENT ALLOCATED - Ci
+418,hc04_est_vc72,str75,0,%75s,,Native; born outside U.S.; Estimate; PERCENT ALLOCATED - Citizenship status
+419,hc04_moe_vc72,strL,0,%9s,,Native; born outside U.S.; Margin of Error; PERCENT ALLOCATED - Citizenship stat
+420,hc01_est_vc73,str51,0,%51s,,Total; Estimate; PERCENT ALLOCATED - Place of birth
+421,hc01_moe_vc73,str58,0,%58s,,Total; Margin of Error; PERCENT ALLOCATED - Place of birth
+422,hc02_est_vc73,strL,0,%9s,,Native; born in state of residence; Estimate; PERCENT ALLOCATED - Place of birth
+423,hc02_moe_vc73,strL,0,%9s,,Native; born in state of residence; Margin of Error; PERCENT ALLOCATED - Place o
+424,hc03_est_vc73,strL,0,%9s,,Native; born in other state in the U.S.; Estimate; PERCENT ALLOCATED - Place of 
+425,hc03_moe_vc73,strL,0,%9s,,Native; born in other state in the U.S.; Margin of Error; PERCENT ALLOCATED - Pl
+426,hc04_est_vc73,str71,0,%71s,,Native; born outside U.S.; Estimate; PERCENT ALLOCATED - Place of birth
+427,hc04_moe_vc73,strL,0,%9s,,Native; born outside U.S.; Margin of Error; PERCENT ALLOCATED - Place of birth
