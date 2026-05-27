@@ -552,8 +552,60 @@ That's the end-to-end recipe. Every command above is one that was sanity-checked
 
 ---
 
+## 11. Iterative debugging strategy for long-running pipelines
+
+A pattern that emerged across the M4 attempts but didn't crystallize until late: **don't re-run already-successful phases between debug iterations.** When a Stata batch run takes hours (Phase 3 VA estimation on this project) and crashes mid-pipeline, the next attempt should skip the upstream work that already produced correct outputs.
+
+### The mechanism (in this project's `do/main.do`)
+
+Three granularity levels available:
+
+| Level | Mechanism | Lines | Use case |
+|---|---|---|---|
+| Coarsest | Top-level `run_*` toggles | 90-96 | "Phase X succeeded; skip it entirely" |
+| Mid | Sub-toggles inside phases (`do_touse_va`, `do_create_samples`, `do_va`) | per phase | "Re-run VA estimation but skip sample reconstruction" |
+| Finest | Comment out individual `do do/...` lines | inline | "One specific file already finished" |
+
+The mid + coarse mechanisms exist because the project author anticipated the run-once-cached pattern. Use them.
+
+### Workflow rhythm
+
+After a failed attempt:
+
+1. Read the master log to identify which phases completed cleanly
+2. Set `local run_<phase> 0` for each completed phase at the top of main.do
+3. Keep the acceptance-run flag on (so its mid-level sub-toggles still apply where phases DO run)
+4. Launch the iteration
+5. After fixing + verifying success, advance the toggles forward
+
+### The reset-before-deploy discipline (CRITICAL)
+
+Before the final deploy that becomes the offboarding deliverable:
+
+- Reset ALL `run_*` toggles back to 1
+- Run a `git diff origin/main..HEAD -- do/main.do` to confirm no debug-state toggle changes remain
+- Add this as an explicit pre-launch checklist item in the M4 protocol
+
+Forgetting to reset would silently ship an incomplete pipeline to the custodian. The risk pattern:
+
+1. Comment out (or toggle off) a successful invocation while debugging
+2. Forget to un-comment / re-toggle
+3. Final acceptance run is silently incomplete
+4. Deliverable lacks some output the README promises
+5. Successor (months later, no Christina available) hits an unexplained missing-output error
+
+Mitigation rhythm: prefer toggles to comments (visually loud vs visually invisible), and always confirm-reset with `git diff` immediately before the acceptance run.
+
+### Why this didn't crystallize earlier
+
+The first ~3 M4 attempts in 2026-05-16 to 2026-05-18 all crashed in Phase 1 (the comment-bug sweep cycle), so there was nothing to skip. Attempts #4-#6 in 2026-05-25 to 2026-05-26 progressed further into the pipeline, and the multi-hour cost of re-running upstream phases finally became visible. The pattern is general: long-running pipelines with chain dependencies want **per-phase skip toggles** baked in from day one, not retrofitted after a debug cycle reveals the need.
+
+---
+
 ## Closing thought for the future guide
 
 The biggest meta-lesson from this 36-hour iteration: **set up the safety net BEFORE you need it**. The pre-push hook, gitignore patterns, and sparse-checkout config all existed before the deliberate-trip test confirmed them. Without those, the natural muscle memory of `git add . && git commit -m '...'` would have leaked restricted data into a public repo on the first careless push.
 
 The corollary: **test the safety net deliberately.** A guard you haven't tripped is a guard you don't actually have.
+
+And a third, late-arrived insight from the M4 cycle: **debug iteratively from where you crashed, not from the top.** Long-running pipelines need per-phase skip toggles AND a discipline to reset them before deploy. Either alone breaks: skip toggles without reset-discipline means shipping an incomplete pipeline; reset-discipline without skip toggles means wasting hours per debug cycle.
