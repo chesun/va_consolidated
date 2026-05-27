@@ -1,6 +1,6 @@
 # TODO — VA Consolidated (CEL Value-Added Project)
 
-Last updated: 2026-05-26 (M4 attempt #4 r(601) hotfix landed `184ff0d`; Scribe-safety gitignore + pre-push hook landed `e31fe15`; Christina removed Scribe-side `.git/` 2026-05-25; setup plan rewritten as linear 5-step procedure; workflow-sync README regression flagged for restoration)
+Last updated: 2026-05-26 (M4 attempt #4 r(601) hotfix landed `184ff0d`; Scribe-safety gitignore + pre-push hook landed `e31fe15`; Christina removed Scribe-side `.git/` 2026-05-25; setup plan rewritten as linear 5-step procedure; workflow-sync README regression flagged for restoration; M4 attempt #5/#6 surfaced touse_va.do dead include — resolved via Phase 1b §4.3 partial pull-forward)
 
 ## Active (next-up)
 
@@ -34,7 +34,7 @@ Last updated: 2026-05-26 (M4 attempt #4 r(601) hotfix landed `184ff0d`; Scribe-s
 - [ ] **Phase 1a §3.5 — Golden-master verification (M4)** — see Active above.
 - [ ] **Phase 1b — Bug fixes by priority** (per plan v3 §4):
   - **§4.2 — Code corrections:** ADR-0011 sums→means in `imputedcategoryindex.do` + `compcasecategoryindex.do`.
-  - **§4.3 — Naming/clarity:** ADR-0016 pooledrr rename, ADR-0015 Filipino-into-Asian comment, ADR-0013 mattschlchar dormant-branch comment, **plus carry-forward Minor doc-string drift items** from Steps 9-10 round-2 deductions (per `quality_reports/reviews/2026-05-08_step-10-batches-10bc_coder_review.md` round-2 carry-forward list).
+  - **§4.3 — Naming/clarity:** ADR-0016 pooledrr rename, ADR-0015 Filipino-into-Asian comment, ADR-0013 mattschlchar dormant-branch comment, **plus carry-forward Minor doc-string drift items** from Steps 9-10 round-2 deductions (per `quality_reports/reviews/2026-05-08_step-10-batches-10bc_coder_review.md` round-2 carry-forward list). **PARTIAL DONE 2026-05-26:** `do/samples/touse_va.do:262` dead include resolved by repointing `create_prior_scores.doh` → `create_prior_scores_v1.doh` per ADR-0009 v1-canonical (pulled forward from §4.3 to unblock M4 attempt #6; see `2026-05-26_dead-include-fix-and-m4-override-restore_coder_review.md`).
   - **§4.1 — Paper-text corrections:** ADR-0010 footnote, ADR-0014 old-draft note. **DEFERRED post-handoff** per Christina 2026-05-07; coordinate with senior coauthor on a separate timeline. Effectively retired from Phase 1.
 - [ ] **Phase 1c §5.1 — Cosmetic cleanup** — dead-code archival, log/translate sweep (per-do-file logging convention from §5.1 step 2). Includes `out_drift_limit.doh` (identified as dead in Step 3 batch 3a; deferred there).
 - [ ] **Phase 1c §5.2 — README polish + cold-read** (PRE-DRAFT done at `7c02750` 2026-04-29 — ~311-line offboarding-era operator README per ADR-0018; improved at `ab79be9` 2026-04-30 + `1f7c8d8` 2026-04-30; writer-critic 86/100; 2 Minors deferred to §5.4 polish: m1 em-dash density, m7 status-note Phase-1c jargon). **REGRESSION 2026-05-XX: workflow-sync commit `287b8df` overwrote the project README with the generic 220-line workflow template** (Pedro Sant'Anna "Claude Code Research Workflow" intro). **Restoration step** (do before Phase 1c §5.4 cold-read): `git show 1f7c8d8:README.md > README.md && git add README.md && git commit -m "fix: restore project README clobbered by workflow-sync 287b8df"`. Then Phase 1c §5.4 polish + cold-read test proceeds as planned. File transfer is operator-choice per ADR-0020.

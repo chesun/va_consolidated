@@ -3,7 +3,7 @@
 **Reviewer:** coder-critic
 **Target:** `do/main.do` (Phase 2 M4 override removal; +18/-5 in single block)
 **Score:** 88/100
-**Status:** Active
+**Status:** Superseded by [archive/2026-05-26_dead-include-fix-and-m4-override-restore_coder_review.md](archive/2026-05-26_dead-include-fix-and-m4-override-restore_coder_review.md) — the trim approved here was reverted later same day after M4 attempt #6 surfaced the cache-missing symptom (cached samples live at LEGACY `$vaprojdir` paths, not CANONICAL `$datadir_clean`); the dead include that prompted the trim was resolved (Phase 1b §4.3 partial) and the M4 override restored to its original three-toggle form.
 **Supersedes:** n/a (distinct target slug from `2026-05-25_main-do-clean-va-reorder` and `2026-05-17_main-m4-flag`)
 **Mode:** Full (Phase 1c §5.4 acceptance-run hotfix; paper-affecting indirectly via VA chain — highest-severity calibration per `.claude/rules/phase-1-review.md` §1 Tier 2)
 

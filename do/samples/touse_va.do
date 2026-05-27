@@ -49,7 +49,9 @@ INPUTS
       do/va/helpers/macros_va.doh        — VA-pipeline locals (relocated 2026-04-30)
       do/samples/create_diff_school_prop.doh
                                           — diff-school-prop indicator builder
-      do/samples/create_prior_scores.doh — DEAD INCLUDE (see CONVENTION DEVIATIONS below)
+      do/samples/create_prior_scores_v1.doh
+                                          — v1-canonical prior-score macro builder per ADR-0009
+                                          (repointed 2026-05-26; was dead include — see CONVENTION DEVIATIONS below)
 
 OUTPUTS
     CANONICAL (write per ADR-0021 sandbox principle):
@@ -79,7 +81,9 @@ RELOCATION HISTORY (per plan v3 §3.3 step 2 batch 2b, applied 2026-05-07)
           -> `do "$matt_files_dir/merge_k12_postsecondary.doh"' (Matt's, untouched per ADR-0017)
       - L129 `include do_files/sbac/create_diff_school_prop.doh'
             -> `include $consolidated_dir/do/samples/create_diff_school_prop.doh' (relocated 2026-04-30 batch 2a)
-      - L131 `include do_files/sbac/create_prior_scores.doh' — VERBATIM (see DEAD INCLUDE)
+      - L131 `include do_files/sbac/create_prior_scores.doh'
+              -> `include $consolidated_dir/do/samples/create_prior_scores_v1.doh'
+              (originally VERBATIM dead include; RESOLVED 2026-05-26 per ADR-0009 v1-canonical; see CONVENTION DEVIATIONS)
       - L194 save target: relative `data/sbac/va_samples.dta'
                        -> CANONICAL `$datadir_clean/sbac/va_samples.dta'
                        (matches read path in do/samples/create_va_sample.doh:9)
@@ -87,18 +91,26 @@ RELOCATION HISTORY (per plan v3 §3.3 step 2 batch 2b, applied 2026-05-07)
                      -> `$logdir/touse_va.{smcl,log}'
 
 CONVENTION DEVIATIONS (verbatim preservation per ADR-0021)
-    DEAD INCLUDE at L131: `include $consolidated_dir/do/samples/create_prior_scores.doh' refers to
-    a file that was DELETED 2022-12-29 in the v1/v2 prior-score refactor (commit
-    f8764bf in cde_va_project_fork; see also ADR-0009 declaring v1 canonical).
-    The unsuffixed `create_prior_scores.doh' has not existed since.  This dead
-    include has been latent in the predecessor `touse_va.do' for 3+ years
-    because `do_touse_va' is gated 0 in `do_all.do:110' — the script is never
-    actually run in the production pipeline.  Preserved verbatim here per
-    ADR-0021's "behavior-preserving" mandate (Phase 1a is path-only repointing;
-    no analysis-logic edits).  Phase 1b §4.3 (naming/clarity) will resolve by
-    repointing to `create_prior_scores_v1.doh' per ADR-0009 v1-canonical, OR
-    by archiving touse_va.do entirely if its `va_samples.dta' output is
-    deemed permanently cached.  Tracked in TODO.md.
+    DEAD INCLUDE at L131 — RESOLVED 2026-05-26 (Phase 1b §4.3 partial; pulled
+    forward to unblock M4 attempt #6, which exercised the script for the
+    first time in 3+ years and hit r(601) on the dead include).
+
+    Original problem: `include $consolidated_dir/do/samples/create_prior_scores.doh'
+    referred to a file that was DELETED 2022-12-29 in the v1/v2 prior-score
+    refactor (commit f8764bf in cde_va_project_fork; see also ADR-0009 declaring
+    v1 canonical).  The unsuffixed `create_prior_scores.doh' has not existed
+    since.  This dead include was latent in the predecessor `touse_va.do' for
+    3+ years because `do_touse_va' is gated 0 in `do_all.do:110' — the script
+    is never actually run in the predecessor production pipeline.
+
+    Resolution: repointed to `create_prior_scores_v1.doh' per ADR-0009
+    v1-canonical.  v1 is the prior-score spec used in the paper, so applying
+    v1 prior-score logic in `touse_va.do' is the correct behavior that should
+    always have applied (the dead include never actually populated prior-score
+    macros, leaving the script in an undefined state if ever run).  No paper-
+    impact concern: predecessor never ran the script, so no production output
+    changes; the run-once-cached `va_samples.dta' the consolidated pipeline
+    generates is now produced with proper v1 prior-score logic.
 
 ORIGINAL CHANGE LOG (preserved from predecessor; written by Matthew Naven, edited by Che Sun)
     First created by Matthew Naven on August 30, 2018.
@@ -256,10 +268,10 @@ rename enr_ontime_4year enr_4year
 ******************************** 11th Grade (8th Grade ELA Controls, 6th Grade Math Controls)
 include $consolidated_dir/do/samples/create_diff_school_prop.doh
 
-* DEAD INCLUDE — see CONVENTION DEVIATIONS in header.  File deleted 2022-12-29
-* in v1/v2 prior-score refactor; touse_va.do gated OFF in predecessor and in
-* main.do, so this never executes in production.  Phase 1b §4.3 resolves.
-include $consolidated_dir/do/samples/create_prior_scores.doh
+* DEAD INCLUDE RESOLVED 2026-05-26 — repointed to v1-canonical per ADR-0009
+* (Phase 1b §4.3 partial pulled forward to unblock M4 attempt #6).  See header
+* CONVENTION DEVIATIONS block for full diagnosis.
+include $consolidated_dir/do/samples/create_prior_scores_v1.doh
 
 **** Test Score Sample
 foreach subject in ela math {
