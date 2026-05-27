@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/qoiclean/staff/staffqoiclean181
 > 9_1718.smcl
   log type:  text
- opened on:  18 May 2026, 12:13:13
+ opened on:  26 May 2026, 17:41:34
 
 . 
 . /* the code for cleaning 1819 and 1718 is exactly the same, so use loop */
@@ -447,9 +447,6 @@
   variable missing111 was double now byte
   variable missing112 was double now byte
   (1,111,815 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/staff/staffqoiclean17
-    > 18.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/staff/staffqoiclean17
     > 18.dta saved
@@ -657,9 +654,6 @@ file
   variable missing111 was double now byte
   variable missing112 was double now byte
   (775,529 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/staff/staffqoiclean18
-    > 19.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/staff/staffqoiclean18
     > 19.dta saved

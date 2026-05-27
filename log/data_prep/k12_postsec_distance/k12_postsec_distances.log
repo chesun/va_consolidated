@@ -5,7 +5,7 @@
 > data_prep/k12_postsec_distance/k12_postse
 > c_distances.smcl
   log type:  text
- opened on:  18 May 2026, 12:07:27
+ opened on:  26 May 2026, 17:35:48
 
 . 
 . 
@@ -302,14 +302,14 @@ file /home/tmp/St48258.000002 saved as .dta format
 
 . destring latitude longitude, replace force
 latitude: contains nonnumeric characters; replaced as double
-(4769 missing values generated)
+(4770 missing values generated)
 longitude: contains nonnumeric characters; replaced as double
-(4769 missing values generated)
+(4770 missing values generated)
 
 . gen mi_geo_coord = 0
 
 . replace mi_geo_coord = 1 if mi(latitude) | mi(longitude)
-(4,769 real changes made)
+(4,770 real changes made)
 
 . 
 . /////////////////////////////////////////////////////////////////////////////
@@ -350,11 +350,11 @@ file
 . foreach coll in uc csu pub4yr any_nonprof_4yr ccc {
   2.         gen mindist_`coll'=distance if `coll'==1
   3. }
-(7,029,981 missing values generated)
-(6,839,329 missing values generated)
-(6,716,767 missing values generated)
-(4,987,281 missing values generated)
-(5,586,473 missing values generated)
+(7,029,990 missing values generated)
+(6,839,352 missing values generated)
+(6,716,799 missing values generated)
+(4,987,440 missing values generated)
+(5,586,588 missing values generated)
 
 . 
 . collapse (min) mindist_*, by(cdscode)

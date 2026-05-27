@@ -2,7 +2,7 @@
       name:  clean_sch_char
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_sch_char.smcl
   log type:  text
- opened on:  18 May 2026, 12:07:07
+ opened on:  26 May 2026, 17:35:30
 
 . 
 . 
@@ -813,6 +813,7 @@ estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/es
 datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/data
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
@@ -830,7 +831,6 @@ cb_k12_main:    /home/research/ca_ed_lab/projects/common_core_va/estimates/va_cf
 cb_calschls_2:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfactor/allsvyqoimeans
 cb_calschls_1:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfactor/imputedallsvyqoimeans
 vadtadir:       /home/research/ca_ed_lab/projects/common_core_va/data/sbac
-projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 S_level:        95
 F1:             help advice;
 F2:             describe;
@@ -2174,7 +2174,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 
 . /* create a dataset for school characteristics for each year */
 . snapshot save
-snapshot 2 created at 18 May 2026 12:07
+snapshot 4 created at 26 May 2026 17:35
 
 . 
 . forvalues spring_year = `test_score_min_year' (1) `test_score_max_year' {
@@ -2196,6 +2196,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:     20.07 /        1 =      20.0650
+   1:     17.98 /        1 =      17.9810
 
 . cap log close clean_sch_char

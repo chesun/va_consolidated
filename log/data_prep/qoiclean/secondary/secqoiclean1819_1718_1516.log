@@ -5,7 +5,7 @@
 > data_prep/qoiclean/secondary/secqoiclean1
 > 819_1718_1516.smcl
   log type:  text
- opened on:  18 May 2026, 12:12:44
+ opened on:  26 May 2026, 17:41:01
 
 . 
 . /* ssc install elabel, replace //install the elabel package for easy renaming
@@ -588,10 +588,6 @@ note: label truncated to 80 characters
   variable verytrue39 was double now int
   variable verytrue40 was double now int
   (1,390,005 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> calschls/qoiclean/secondary/secqoiclean
-    > 1516.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 > calschls/qoiclean/secondary/secqoiclean
@@ -861,10 +857,6 @@ note: label truncated to 80 characters
   variable verytrue39 was double now int
   variable verytrue40 was double now int
   (1,444,190 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> calschls/qoiclean/secondary/secqoiclean
-    > 1718.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 > calschls/qoiclean/secondary/secqoiclean
@@ -1134,10 +1126,6 @@ note: label truncated to 80 characters
   variable verytrue39 was double now int
   variable verytrue40 was double now int
   (1,185,723 bytes saved)
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> calschls/qoiclean/secondary/secqoiclean
-    > 1819.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 > calschls/qoiclean/secondary/secqoiclean

@@ -5,7 +5,7 @@
 > data_prep/responserate/secresponserate.sm
 > cl
   log type:  text
- opened on:  18 May 2026, 12:13:15
+ opened on:  26 May 2026, 17:41:35
 
 . 
 . use $datadir_clean/calschls/demotrim/secondary/trimsecdemo1415, replace
@@ -238,10 +238,6 @@
   (106,785 bytes saved)
 
 . save $datadir_clean/calschls/responserate/secresponserate, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> calschls/responserate/secresponserate.d
-    > ta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 > calschls/responserate/secresponserate.d

@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/responserate/trimparentdemo.smc
 > l
   log type:  text
- opened on:  18 May 2026, 12:13:15
+ opened on:  26 May 2026, 17:41:35
 
 . 
 . /* rename variables in the secondary demographics datasets to indicate year, keep only vars needed to calculate respon
@@ -32,9 +32,6 @@ note: label truncated to 80 characters
   (0 bytes saved)
 
 . save $datadir_clean/calschls/demotrim/parent/trimparentdemo1415, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
-    > 1415.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
     > 1415.dta saved
@@ -61,9 +58,6 @@ note: label truncated to 80 characters
   (0 bytes saved)
 
 . save $datadir_clean/calschls/demotrim/parent/trimparentdemo1516, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
-    > 1516.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
     > 1516.dta saved
@@ -90,9 +84,6 @@ note: label truncated to 80 characters
   (0 bytes saved)
 
 . save $datadir_clean/calschls/demotrim/parent/trimparentdemo1617, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
-    > 1617.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
     > 1617.dta saved
@@ -119,9 +110,6 @@ note: label truncated to 80 characters
   (0 bytes saved)
 
 . save $datadir_clean/calschls/demotrim/parent/trimparentdemo1718, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
-    > 1718.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
     > 1718.dta saved
@@ -148,9 +136,6 @@ note: label truncated to 80 characters
   (0 bytes saved)
 
 . save $datadir_clean/calschls/demotrim/parent/trimparentdemo1819, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
-    > 1819.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/demotrim/parent/trimparentdemo
     > 1819.dta saved

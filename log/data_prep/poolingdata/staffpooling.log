@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/poolingdata/staffpooling.smcl
   log type:  text
- opened on:  18 May 2026, 12:13:16
+ opened on:  26 May 2026, 17:41:37
 
 . 
 . /* first append all years to make a pnael dataset to calculate pooled stats *
@@ -212,10 +212,6 @@
   (808,704 bytes saved)
 
 . save $datadir_clean/calschls/poolingdata/staffpooledstats, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> calschls/poolingdata/staffpooledstats.d
-    > ta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 > calschls/poolingdata/staffpooledstats.d

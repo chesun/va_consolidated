@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/qoiclean/secondary/secqoiclean1
 > 415.smcl
   log type:  text
- opened on:  18 May 2026, 12:12:31
+ opened on:  26 May 2026, 17:40:50
 
 . 
 . use $datadir_clean/calschls/secondary/sec1415, clear
@@ -462,9 +462,6 @@ note: label truncated to 80 characters
   (691,740 bytes saved)
 
 .   save $datadir_clean/calschls/qoiclean/secondary/secqoiclean1415, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/secondary/secqoiclean
-    > 1415.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/secondary/secqoiclean
     > 1415.dta saved

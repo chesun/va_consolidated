@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > sibling_xwalk/siblingoutxwalk.smcl
   log type:  text
- opened on:  25 May 2026, 17:20:52
+ opened on:  26 May 2026, 17:41:37
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "siblingoutxwalk.do — RUN START: `c(current_date)' `c(current_time
 > )'"
-siblingoutxwalk.do — RUN START: 25 May 2026 17:20:52
+siblingoutxwalk.do — RUN START: 26 May 2026 17:41:37
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -3069,10 +3069,6 @@ end of do-file
 . label data "Full K-12 test scores merged to postsecondary outcomes"
 
 . save "$datadir_clean/common_core_va/k12_postsecondary_out_merge", replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> common_core_va/k12_postsecondary_out_me
-    > rge.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 > common_core_va/k12_postsecondary_out_me
@@ -3335,9 +3331,6 @@ file
 > s"
 
 . save "$datadir_clean/siblingxwalk/sibling_out_xwalk", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
-> d/siblingxwalk/sibling_out_xwalk.dta
-    not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 > /siblingxwalk/sibling_out_xwalk.dta
     saved
@@ -3349,7 +3342,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:   2595.25 /        1 =    2595.2530
+   1:   2807.73 /        1 =    2807.7330
 
 . 
 . 
@@ -3364,7 +3357,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 
 . di as text "siblingoutxwalk.do — RUN END: `c(current_date)' `c(current_time)'
 > "
-siblingoutxwalk.do — RUN END: 25 May 2026 18:04:07
+siblingoutxwalk.do — RUN END: 26 May 2026 18:28:25
 
 . di as text "-----------------------------------------------------------------
 ---------------"

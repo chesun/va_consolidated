@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_staffschoolfte
 > .smcl
   log type:  text
- opened on:  18 May 2026, 12:06:00
+ opened on:  26 May 2026, 17:34:26
 
 . 
 . graph drop _all
@@ -815,6 +815,7 @@ estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/es
 datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/data
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/csu_outcomes_cr
                 > osswalk.dta
@@ -832,7 +833,6 @@ cb_k12_main:    /home/research/ca_ed_lab/projects/common_core_va/estimates/va_cf
 cb_calschls_2:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfactor/allsvyqoimeans
 cb_calschls_1:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfactor/imputedallsvyqoimeans
 vadtadir:       /home/research/ca_ed_lab/projects/common_core_va/data/sbac
-projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 S_level:        95
 F1:             help advice;
 F2:             describe;
@@ -2077,6 +2077,6 @@ file
 . timer off 1
 
 . timer list
-   1:     48.91 /        1 =      48.9130
+   1:     46.00 /        1 =      45.9990
 
 . cap log close clean_staffschoolfte

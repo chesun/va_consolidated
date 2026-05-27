@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/prepare/enrollmentclean.smcl
   log type:  text
- opened on:  18 May 2026, 12:08:32
+ opened on:  26 May 2026, 17:36:56
 
 . 
 . local enrdtaname `" "enr1415" "enr1516" "enr1617" "enr1718" "enr1819" "'  //c
@@ -2207,6 +2207,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/prepare/enrollmentclean.smcl
   log type:  text
- closed on:  18 May 2026, 12:09:38
+ closed on:  26 May 2026, 17:38:02
 -------------------------------------------------------------------------------
 > -----------------------------------------

@@ -2,7 +2,7 @@
       name:  secpooling
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/poolingdata/secpooling.smcl
   log type:  text
- opened on:  18 May 2026, 12:13:15
+ opened on:  26 May 2026, 17:41:36
 
 . 
 . /* ssc install _gwtmean, replace //package to allow use of weights in egen mean  */
@@ -270,9 +270,6 @@ note: label truncated to 80 characters
   (2,579,370 bytes saved)
 
 . save $datadir_clean/calschls/poolingdata/secpooledstats, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/poolingdata/secpooledstats.dta
-    not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/poolingdata/secpooledstats.dta
     saved
@@ -306,9 +303,6 @@ file
   (0 bytes saved)
 
 . save $datadir_clean/calschls/analysisready/secanalysisready, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/analysisready/secanalysisready
-    > .dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/analysisready/secanalysisready
     > .dta saved

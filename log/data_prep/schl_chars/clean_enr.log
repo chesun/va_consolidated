@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/clean_enr.smcl
   log type:  text
- opened on:  18 May 2026, 12:04:14
+ opened on:  26 May 2026, 17:32:41
 
 . 
 . graph drop _all
@@ -846,6 +846,7 @@ datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
 > ata
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
 > d_access/clean/crosswalks/csu_outcomes_cr
@@ -873,7 +874,6 @@ cb_calschls_2:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfac
 cb_calschls_1:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfac
 > tor/imputedallsvyqoimeans
 vadtadir:       /home/research/ca_ed_lab/projects/common_core_va/data/sbac
-projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 S_level:        95
 F1:             help advice;
 F2:             describe;
@@ -3545,6 +3545,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:     16.99 /        1 =      16.9900
+   1:     17.42 /        1 =      17.4180
 
 . cap log close clean_enr

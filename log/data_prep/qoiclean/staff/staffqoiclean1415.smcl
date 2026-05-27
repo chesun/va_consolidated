@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/qoiclean/staff/staffqoiclean141
 > 5.smcl
   log type:  text
- opened on:  18 May 2026, 12:13:12
+ opened on:  26 May 2026, 17:41:33
 
 . 
 . use $datadir_clean/calschls/staff/staff1415, clear
@@ -676,9 +676,6 @@
   (601,952 bytes saved)
 
 . save $datadir_clean/calschls/qoiclean/staff/staffqoiclean1415, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/staff/staffqoiclean14
-    > 15.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/qoiclean/staff/staffqoiclean14
     > 15.dta saved

@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/acs/clean_acs_census_tract.smcl
   log type:  text
- opened on:  18 May 2026, 10:31:07
+ opened on:  26 May 2026, 16:00:29
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "clean_acs_census_tract.do — RUN START: `c(current_date)' `c(curre
 > nt_time)'"
-clean_acs_census_tract.do — RUN START: 18 May 2026 10:31:07
+clean_acs_census_tract.do — RUN START: 26 May 2026 16:00:29
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -812,6 +812,7 @@ datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/d
 > ata
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
+projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 ReS_jv2:        0 1
 cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricte
 > d_access/clean/crosswalks/csu_outcomes_cr
@@ -839,7 +840,6 @@ cb_calschls_2:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfac
 cb_calschls_1:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfac
 > tor/imputedallsvyqoimeans
 vadtadir:       /home/research/ca_ed_lab/projects/common_core_va/data/sbac
-projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 S_level:        95
 F1:             help advice;
 F2:             describe;
@@ -15951,6 +15951,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:   5547.05 /        1 =    5547.0540
+   1:   5490.09 /        1 =    5490.0860
 
 . cap log close clean_acs_census_tract

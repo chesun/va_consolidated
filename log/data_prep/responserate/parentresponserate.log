@@ -5,7 +5,7 @@
 > data_prep/responserate/parentresponserate
 > .smcl
   log type:  text
- opened on:  18 May 2026, 12:13:15
+ opened on:  26 May 2026, 17:41:36
 
 . 
 . use $datadir_clean/calschls/demotrim/parent/trimparentdemo1415, replace
@@ -282,10 +282,6 @@
   (89,285 bytes saved)
 
 . save $datadir_clean/calschls/responserate/parentresponserate, replace
-(file
-    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
-> calschls/responserate/parentresponserat
-    > e.dta not found)
 file
     /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 > calschls/responserate/parentresponserat
