@@ -581,3 +581,70 @@ c13fbc0 docs: scribe-setup Step 6 — first-push auth + deliberate-trip hook tes
 3. Monitor through Phase 5 trailer (where clean_va.do now invokes per the hotfix). If it passes, run smoke tier of M4 golden-master comparison per `quality_reports/plans/2026-05-17_m4-golden-master-protocol.md`.
 4. Phase 1c §5.2 README restoration still deferred.
 5. Phase 1c §5.4 acceptance run includes ADR-0022 revisit (keep git-on-Scribe or revert?).
+
+---
+
+## 2026-05-27 continuation — M4 attempt #5/#6 diagnosis + dead-include resolution + attempt #7 in flight
+
+Continued from end of 2026-05-26 working block. M4 attempt #5 (post-Option-A trim from commit `1ae9cf7`) launched on Scribe; crashed at a new error site. Diagnosis revealed yesterday's Option-A trim was based on an incorrect cache assumption. Resolved by fixing the dead include in touse_va.do (Phase 1b §4.3 partial pull-forward) and restoring the M4 override to its original three-toggle form.
+
+### Per-step rollup
+
+**M4 attempt #5 failure.** Master log `log/main_25-May-2026_15-38-40.smcl:53837` showed `r(601)` at `do/va/va_score_all.do` reading `data/cleaned/va_samples_v1/score_b.dta` — file not found. Yesterday's Option-A trim removed the M4 override that flipped `do_touse_va = 1` + `do_create_samples = 1`, on the assumption that the cached sample dtas existed on Scribe. That assumption was wrong.
+
+**Christina confirmed (2026-05-27):** the cached `va_samples.dta` + `score_*.dta` exist on Scribe but at LEGACY `$vaprojdir` predecessor paths, NOT at CANONICAL `$datadir_clean` paths the consolidated VA-estimation chain reads from. So M4 must regenerate them at CANONICAL paths — which requires running `touse_va.do` + `create_*_samples.do` under M4. Which means restoring the override. Which means fixing the dead include that was the original blocker.
+
+**Decision: Phase 1b §4.3 partial pull-forward.** Per touse_va.do header lines 99-100, the documented resolution for the dead include is "repointing to `create_prior_scores_v1.doh` per ADR-0009 v1-canonical." One-line fix to touse_va.do:262. Plus header CONVENTION DEVIATIONS annotation + INPUTS block update.
+
+**Two-file edit.**
+
+  - `do/samples/touse_va.do`:
+    - L262: `create_prior_scores.doh` → `create_prior_scores_v1.doh`
+    - CONVENTION DEVIATIONS block (lines 89-101): annotated RESOLVED 2026-05-26 with full rationale + no-paper-impact justification
+    - INPUTS block line 52 + RELOCATION HISTORY line 82: updated for the resolved include (these were the Major/Minor doc-stale findings from coder-critic, addressed pre-commit)
+  - `do/main.do`: restored M4 override at Phase 2 (do_touse_va + do_create_samples flip ON under m4_acceptance_run); reverted yesterday's `1ae9cf7` doc-drift fixes at header CONVENTIONS + ACCEPTANCE-RUN MASTER OVERRIDE + runtime `di cond()` — all back to the original three-toggle form, with new explanatory note that the dead include is now resolved.
+
+**Coder-critic PASS 94/100.** Variable-chain traced (create_prior_scores_v1.doh:63-78 generates `prior_ela/math_z_score` + peer variants; macros_va.doh:204-225 references those; touse_va.do:278-287, 303-312 calls markout against them) — confirmed the include is load-bearing, not decorative. Without it, `markout` would have hit undefined-variable errors (the bug was latent only because predecessor `do_all.do:110` gated `do_touse_va = 0` for 3+ years).
+
+**Supersession bookkeeping per agents.md §2a.** Prior `2026-05-26_main-do-m4-override-trim_coder_review.md` (which approved the Option-A trim at 88/100): Status -> Superseded by the new review; moved to `quality_reports/reviews/archive/`. INDEX.md updated with new entry at 94/100. TODO.md Phase 1b §4.3 entry annotated PARTIAL DONE.
+
+**M4 attempt #7 in flight (as of 2026-05-27).** After commit `70ec04e` pushed + pulled on Scribe, Christina launched the next attempt. Progressed past Phase 1 (data prep), Phase 2 (touse_va + create_*_samples with the fixed dead include) — confirming both fixes work. Currently in Phase 3 VA estimation, the multi-hour bottleneck. Wall-clock monitoring via `caffeinate -is` on the laptop keeping the SSH session + `tail -f log/va/va_score_all.smcl` alive.
+
+### Today's commits
+
+```
+70ec04e phase-1b(§4.3 partial)+phase-1c(§5.4): touse_va.do dead include resolved + main.do M4 override restored
+aeed850 docs(handoff): learnings doc — Section 11 iterative debugging strategy
+536e8f5 docs(handoff): learnings doc — Section 12 detached monitoring (screen/tmux/nohup)
+```
+
+3 commits.
+
+### Lab presentation news
+
+Christina confirmed 2026-05-27 that Sherrie (CEL faculty) has confirmed a presentation slot for Christina on workflow + best practices in front of the whole lab, target end of June / early July 2026. Learnings doc header updated to reflect new mission: source material for the presentation AND a future written guide, not just the latter. Sections 11 (iterative debugging strategy) + 12 (detached monitoring with screen/tmux/nohup tradeoffs) added today were both directly prompted by user questions during this session — confirming the doc's value as a working capture surface.
+
+### Process learnings (cumulative — append, #25-27)
+
+25. **Predecessor cache assumptions need explicit verification before relying on them.** Yesterday's Option-A trim of the M4 override assumed cached `va_samples.dta` + `score_*.dta` existed on Scribe at CANONICAL `$datadir_clean` paths. They existed at LEGACY `$vaprojdir` paths only. M4 attempt #5 crashed in Phase 3 (hours into the run) because of this. **Verification cost:** asking Christina "do these files exist at the CANONICAL path on Scribe?" before applying the trim would have caught it in seconds. **Generalizable rule:** for any decision that depends on "this file exists on Scribe", get explicit confirmation of the EXACT path (CANONICAL vs LEGACY) before committing the decision.
+
+26. **Latent bugs in gated-off code surface the moment the gate flips.** touse_va.do's dead include sat undetected for 3+ years because predecessor `do_all.do:110` always set `do_touse_va = 0`. The moment M4's override flipped it to 1, the script ran for the first time and the dead include surfaced as `r(601)`. **Generalizable rule:** when adding an acceptance-run override that exercises previously-gated code paths, audit each newly-active script for latent bugs BEFORE launching the multi-hour run. Cheap pre-flight grep beats hours of failed batch.
+
+27. **Documentation drift in just-edited files is a recurring deduction class.** Both 2026-05-26 commits (the trim AND the restore) had Major doc-staleness findings from coder-critic about doc surfaces describing the OLD behavior post-edit. **Generalizable rule:** after substantively changing a configurable's behavior, grep the file (and any cross-referencing files) for the previous behavior's description and either remove or update. Should be part of pre-commit self-check.
+
+### Status (end of 2026-05-27 working block)
+
+- **Phase 1a §3.5 (M4):** attempt #7 currently in flight; past Phase 1 + Phase 2; Phase 3 VA estimation running (multi-hour). Outcome pending.
+- **Scribe state:** synced to origin; sparse-checkout active; pre-push hook verified; PAT cached; canonical git identity set.
+- **Tree (laptop):** in sync with origin; latest commit `536e8f5`.
+- **ADR ledger:** 22 Decided + 1 amendment + 1 Superseded (ADR-0020 → 0022).
+- **TODO:** 1 Active (M4 attempt #7 outcome → either golden-master smoke or next diagnosis); Phase 1b §4.3 annotated PARTIAL DONE.
+- **Total commits 2026-05-27:** 3 (1 code, 2 docs).
+
+### Next session pickup
+
+1. Wait for M4 attempt #7 to complete on Scribe (or fail)
+2. If success: commit logs as audit trail; launch M4 golden-master smoke per `quality_reports/plans/2026-05-17_m4-golden-master-protocol.md`
+3. If failure: diagnose, fix, attempt #8
+4. Either way: TODO entries continue accumulating for any Phase 1b §4.3 + 1c §5.4 carry-forward items
+5. Closer to presentation date (end of June / early July): distillation pass on the learnings doc → slide outline
