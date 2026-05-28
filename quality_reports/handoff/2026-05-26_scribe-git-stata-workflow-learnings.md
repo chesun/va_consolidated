@@ -1,9 +1,9 @@
 # Scribe + Stata + Git Workflow: Lab Guide Source Material
 
-**Date:** 2026-05-26
-**Status:** Raw learnings document — source material for a future lab-internal guide
-**Audience:** Christina (author of the future guide); incidentally also any successor reading this archive
-**Scope:** Lessons from setting up a fresh git workflow on Scribe for the `va_consolidated` project, written so the gotchas don't have to be rediscovered
+**Date:** 2026-05-26 (started; living doc, last appended 2026-05-27)
+**Status:** Raw learnings document — source material for Christina's CEL lab presentation (target: end of June / early July 2026) AND a future lab-internal written guide
+**Audience:** Christina (author of the presentation + guide); incidentally also any successor reading this archive
+**Scope:** Lessons from setting up a fresh git workflow on Scribe for the `va_consolidated` project, plus broader Stata batch-job + multi-machine workflow patterns, written so the gotchas don't have to be rediscovered by the next person in the lab
 
 This document is **not** the lab guide itself. It's a collection of concrete learnings — each rooted in a specific failure or near-miss from the 2026-05-25 to 2026-05-26 work block — that should be reorganized into prescriptive guidance when the guide gets written. Each section names the trap, explains the underlying mechanism, and gives the recovery pattern.
 
@@ -599,6 +599,103 @@ Mitigation rhythm: prefer toggles to comments (visually loud vs visually invisib
 ### Why this didn't crystallize earlier
 
 The first ~3 M4 attempts in 2026-05-16 to 2026-05-18 all crashed in Phase 1 (the comment-bug sweep cycle), so there was nothing to skip. Attempts #4-#6 in 2026-05-25 to 2026-05-26 progressed further into the pipeline, and the multi-hour cost of re-running upstream phases finally became visible. The pattern is general: long-running pipelines with chain dependencies want **per-phase skip toggles** baked in from day one, not retrofitted after a debug cycle reveals the need.
+
+---
+
+## 12. Detached monitoring for long-running Stata batch jobs
+
+A long Stata batch run (Phase 3 VA estimation on this project = hours; full M4 acceptance = potentially overnight) creates two related but distinct concerns:
+
+1. **Process survival** — does the job finish if I close my laptop / lose SSH / disconnect?
+2. **Live monitoring** — can I watch progress without staying tethered to one terminal?
+
+Three approaches; pick based on which concern dominates.
+
+### Approach A: `nohup` (fire-and-forget; no reattach)
+
+```bash
+nohup stata-mp -b do do/main.do &
+```
+
+- `nohup` detaches the Stata process from the controlling terminal
+- `&` puts it in the background of the current shell
+- Process survives SSH disconnect, laptop sleep, network drop, terminal close — anything short of the server itself shutting down
+- Output goes to `nohup.out` in the cwd (you can `tail -f nohup.out` while connected)
+
+**Tradeoff:** once you disconnect, you can't reattach to see live output. You can only `tail -f` the log files after reconnecting — which works, but you've lost any in-progress "scroll back to see context" view.
+
+### Approach B: `screen` (persistent reattachable session)
+
+The interactive way most people learn first:
+
+```bash
+screen -S m4              # creates + attaches to a session named "m4"
+stata-mp -b do do/main.do # type the command interactively
+# Ctrl-A then D to detach (drop back to your shell; session keeps running)
+screen -r m4              # reattach later — even from a different machine
+```
+
+The one-liner fire-and-forget way that's harder to discover:
+
+```bash
+screen -d -m -S m4 bash -c 'stata-mp -b do do/main.do'
+```
+
+- `-d -m` together = "start in detached mode" (special-cased idiom)
+- `-S m4` names the session for later `screen -r m4`
+- `bash -c '...'` passes the command directly instead of opening an interactive shell
+
+Both forms produce the same result: a named persistent session you can reattach to from any machine, any time. The one-liner is scriptable; the interactive form is fine for ad-hoc launches.
+
+**Useful screen recipes:**
+
+```bash
+screen -ls           # list all your sessions (attached + detached)
+screen -r m4         # reattach to "m4"
+screen -d m4         # force-detach m4 from another terminal (e.g., if you left it attached on your work computer and are now on your laptop)
+screen -X -S m4 quit # kill the m4 session entirely (Stata too)
+```
+
+Inside an attached session: `Ctrl-A D` to detach, `Ctrl-A K` to kill the current window, `Ctrl-A ?` for help.
+
+`tmux` is the modern equivalent with better defaults; same concepts, different keys (`Ctrl-B` instead of `Ctrl-A`).
+
+### Approach C: `nohup` + `caffeinate -is` on the laptop
+
+If you started with nohup but want live `tail -f` to keep streaming through the night:
+
+```bash
+# On Scribe (or remote):
+nohup stata-mp -b do do/main.do &
+
+# On laptop, in a separate terminal, after SSHing to Scribe:
+caffeinate -is ssh chesun1@scribe 'tail -f /path/to/log/main_*.smcl'
+```
+
+- `caffeinate -i` prevents idle sleep on macOS
+- `caffeinate -s` prevents system sleep on AC power
+- Wrapping a command makes caffeinate stay active until that command exits
+
+The job survives via nohup; the laptop stays awake via caffeinate, so the tail keeps streaming.
+
+**Caveat:** server-side SSH idle timeouts may still kick you off even if the laptop stays awake. caffeinate doesn't fix that. If your SSH session dies but the laptop is still awake, reconnect + `tail -f` to resume.
+
+### Comparison: when to use which
+
+| Approach | Process survival | Live monitoring after disconnect | Cross-machine resume | Complexity |
+|---|---|---|---|---|
+| `nohup &` | ✓ | Via re-SSH + `tail -f` only | n/a (no session) | Lowest |
+| `screen -S` (interactive) | ✓ | ✓ (reattach) | ✓ | Low |
+| `screen -d -m -S` (one-liner) | ✓ | ✓ (reattach) | ✓ | Low-medium (more flags) |
+| `nohup &` + `caffeinate -is tail` | ✓ | ✓ (laptop stays awake; tail keeps streaming) | ✗ (tied to the laptop's SSH session) | Medium (two tools) |
+
+**Recommendation for the lab:** `screen` or `tmux` is the right default for long batch jobs. The detachable-session model handles both process survival AND monitoring with one tool, and lets you switch machines mid-run (work computer → laptop at home → phone via Termius). The `screen -d -m -S` one-liner is great for scripted launches; the interactive `screen -S` is fine for ad-hoc.
+
+`nohup` is appropriate when you genuinely don't need to see live output — e.g., a setup script that runs once and emails when done.
+
+### Generalizable principle
+
+**Long-running jobs deserve detachable monitoring.** The wall-clock cost of "I have to keep my laptop open in this exact state" or "I lost my output buffer when the connection dropped" compounds over a project. Spending 30 seconds learning `screen` (or 10 minutes if you also want `tmux`) pays back across years of long batch jobs.
 
 ---
 
