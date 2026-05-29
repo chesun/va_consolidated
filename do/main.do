@@ -48,8 +48,13 @@ CONVENTIONS
       script is relocated, the per-commit checklist (per phase-1-review.md
       §2) requires cross-checking the one-liner against the relocated
       script's header and updating it if the script's role differs.
-    - main.do itself opens a master log at $logdir/main.smcl that captures
-      the orchestration layer (which phases ran, runtime, exit codes).
+    - main.do itself opens a master log at $logdir/main.smcl.  [2026-05-28]
+      The master log captures only the orchestration layer (which phases
+      ran, runtime, exit codes), not the full sub-do transcript.  Each phase
+      body runs with the master log suspended (named-log off at the start of
+      the phase, named-log on at the end), so sub-do output goes only to the
+      per-file logs.  This keeps the master log small and pushable; the
+      per-file logs hold the detail.
 
 REFERENCES
     Plan v3 §3.4 (main.do construction)
@@ -134,6 +139,7 @@ if `run_data_prep' {
     di as text _n(2) "{hline 80}"
     di as text "PHASE 1: DATA PREP"
     di as text "{hline 80}"
+    log off master   // orchestration-only: suspend master during phase body (see file header)
 
     * Phase 1a §3.3 step 9 COMPLETE 2026-05-08 — Christina-owned data-prep
     * scripts relocated under do/data_prep/.  5 batches (9a-9e) landed;
@@ -215,6 +221,7 @@ if `run_data_prep' {
     * .dta outputs are pre-existing inputs that merge_k12_postsecondary.doh
     * consumes when called by Christina's sample-construction code (in the
     * run_samples block below).
+    log on master    // resume master for the orchestration layer
 }
 
 
@@ -226,6 +233,7 @@ if `run_samples' {
     di as text _n(2) "{hline 80}"
     di as text "PHASE 2: SAMPLE CONSTRUCTION"
     di as text "{hline 80}"
+    log off master   // orchestration-only: suspend master during phase body (see file header)
 
     * Sample-construction sub-toggles (mirror predecessor `do_all.do' gates
     * for behavior parity).  Both touse_va and create_*_samples are
@@ -284,6 +292,7 @@ if `run_samples' {
     * helpers (merge_loscore.doh, merge_sib.doh, merge_va_smp_acs.doh,
     * merge_lag2_ela.doh from cde sbac).  Until then, create_score_samples.do
     * and create_out_samples.do call them via LEGACY $vaprojdir paths.
+    log on master    // resume master for the orchestration layer
 }
 
 
@@ -295,6 +304,7 @@ if `run_va_estimation' {
     di as text _n(2) "{hline 80}"
     di as text "PHASE 3: VA ESTIMATION"
     di as text "{hline 80}"
+    log off master   // orchestration-only: suspend master during phase body (see file header)
 
     * VA estimation sub-toggle (mirrors predecessor `do_all.do:160' for
     * behavior parity).  All four entry points are run-once-cached: outputs
@@ -373,6 +383,7 @@ if `run_va_estimation' {
     * active script — all 4 entry points include `drift_limit.doh' which already
     * defines both score_drift_limit and out_drift_limit).  Defer to Phase 1c §5.1
     * archival.
+    log on master    // resume master for the orchestration layer
 }
 
 
@@ -384,6 +395,7 @@ if `run_va_tables' {
     di as text _n(2) "{hline 80}"
     di as text "PHASE 4: VA TABLES + FIGURES"
     di as text "{hline 80}"
+    log off master   // orchestration-only: suspend master during phase body (see file header)
 
     * TODO Phase 1a §3.3 step 10 (VA-specific share/ producers): paper-shipping
     * VA tables and figures (per ADR-0012, _tab.do CSVs are local-review-only;
@@ -397,6 +409,7 @@ if `run_va_tables' {
     * bucket; main.do splits VA-specific producers (Phase 4, depend on
     * va_estimation outputs) from non-VA producers (Phase 6, e.g.,
     * sample_counts_tab, base_sum_stats_tab, survey-VA tables).
+    log on master    // resume master for the orchestration layer
 }
 
 
@@ -408,6 +421,7 @@ if `run_survey_va' {
     di as text _n(2) "{hline 80}"
     di as text "PHASE 5: SURVEY VA"
     di as text "{hline 80}"
+    log off master   // orchestration-only: suspend master during phase body (see file header)
 
     * RELOCATED 2026-05-08 per plan v3 §3.3 steps 7+10+11 (+ Step 9 batch 9f
     * trailer clean_va.do, moved 2026-05-25; see NOTE below) — Survey VA chain.
@@ -441,6 +455,7 @@ if `run_survey_va' {
 
     * Phase 1a §3.3 step 8 COMPLETE — `alpha.do' archived to `do/_archive/exploratory/' per ADR-0010.
     * Phase 1a §3.3 step 11 COMPLETE — `allsvymerge.do' + `testscore.do' relocated ACTIVE above (chain producers, not exploratory as initially flagged); `allsvyfactor.do' archived to `do/_archive/exploratory/' per ADR-0010 (truly exploratory; no chain consumers).
+    log on master    // resume master for the orchestration layer
 }
 
 
@@ -452,6 +467,7 @@ if `run_paper_outputs' {
     di as text _n(2) "{hline 80}"
     di as text "PHASE 6: PAPER OUTPUTS"
     di as text "{hline 80}"
+    log off master   // orchestration-only: suspend master during phase body (see file header)
 
     * Phase 1a §3.3 step 10 IN PROGRESS — share/ paper producers relocated
     * under do/share/.  3-batch split (10a-10c); landing batches incrementally.
@@ -484,6 +500,7 @@ if `run_paper_outputs' {
     do do/share/svyvaregs/allvaregs.do                  // run all VA-on-survey regressions (svyvaregs umbrella)
     * NOTE: do/share/outcomesumstats/nsc2019new/k12_nsc2019_merge.doh is a helper `include'd by callers — not directly invoked from main.do.
     * NOTE: do/survey_va/mattschlchar.do (relocated this batch per ADR-0013) is invoked from Phase 5 via the existing wiring or separately by Table 8 producers.
+    log on master    // resume master for the orchestration layer
 }
 
 
@@ -495,6 +512,7 @@ if `run_data_checks' {
     di as text _n(2) "{hline 80}"
     di as text "PHASE 7: AUTOMATED DATA CHECKS"
     di as text "{hline 80}"
+    log off master   // orchestration-only: suspend master during phase body (see file header)
 
     * Phase 1c §5.3 — six check files per the design memo
     * (quality_reports/reviews/2026-04-28_data-checks-design.md).
@@ -510,6 +528,7 @@ if `run_data_checks' {
     do do/check/check_va_estimates.do    // assert VA estimate ranges + counts within expected envelopes
     do do/check/check_survey_indices.do  // assert CalSCHLS indices in [-2,2] (means per ADR-0011)
     do do/check/check_paper_outputs.do   // assert paper table cells match historical magnitudes
+    log on master    // resume master for the orchestration layer
 }
 
 
