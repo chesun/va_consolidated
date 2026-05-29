@@ -180,6 +180,11 @@ foreach version in v1 v2 {
           // heterogeneity by prior score decile
           //-------------------------------------------------------------
 
+          * GATE: prior-score-decile heterogeneity. Single source of truth = $run_prior_score in
+          * do/settings.do. Producer (reg_out_va_all.do / reg_out_va_dk_all.do) and ALL consumers
+          * (<x>_tab.do, <x>_fig.do) MUST gate on the same global; a disabled producer otherwise leaves
+          * consumers reading missing .ster -> r(601). [2026-05-28]
+          if "$run_prior_score" != "0" {
           foreach prior_subject in ela math {
             di "interaction with prior `prior_subject' score deciles"
 
@@ -216,6 +221,7 @@ foreach version in v1 v2 {
 
 
           }
+          } // end gate: $run_prior_score (DK prior-decile estimation)
 
 
 

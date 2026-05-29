@@ -5,9 +5,9 @@ do/va/reg_out_va_all.do — regress postsec outcomes on score VA + heterogeneity
 PURPOSE
     Regress postsecondary outcomes (enr / enr_2year / enr_4year) on test-score
     VA estimates (ELA, Math, both).  Heterogeneity by prior-score deciles
-    (gated off by `local run_prior_score = 0`), race, sex, econ-disadvantage,
-    charter, median-hh-income decile (las sample only).  Two control sets
-    per regression: base + matching-VA-controls.
+    (gated on $run_prior_score from do/settings.do; default 1 = on), race,
+    sex, econ-disadvantage, charter, median-hh-income decile (las sample
+    only).  Two control sets per regression: base + matching-VA-controls.
 
 INVOKED FROM
     `do/main.do' Phase 3 (run_va_estimation block); after batch 3c1 utilities.
@@ -289,8 +289,11 @@ foreach version in v1 v2 {
             // ---------------------------------------------------------------
             // single subject VA interacted with single subject prior score decile
             // ---------------------------------------------------------------
-            local run_prior_score = 0
-            if `run_prior_score' == 1 {
+            * GATE: prior-score-decile heterogeneity. Single source of truth = $run_prior_score in
+            * do/settings.do. Producer (reg_out_va_all.do / reg_out_va_dk_all.do) and ALL consumers
+            * (<x>_tab.do, <x>_fig.do) MUST gate on the same global; a disabled producer otherwise leaves
+            * consumers reading missing .ster -> r(601). [2026-05-28]
+            if "$run_prior_score" != "0" {
               foreach prior_subject in ela math {
                   di "Heterogeneity: `subject' VA interacted with prior `prior_subject' score deciles"
 

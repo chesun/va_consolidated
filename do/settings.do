@@ -208,6 +208,22 @@ set linesize 120
 * in main.do (reproducibility)."  Set here so every entry point gets it.
 set seed 20260428
 
+
+/*==============================================================================
+BEHAVIOR / CONFIG TOGGLES (not paths)
+==============================================================================*/
+
+* Single source of truth for prior-score-decile heterogeneity.  The PRODUCER
+* scripts (reg_out_va_all.do, reg_out_va_dk_all.do) write the
+* het_reg_<x>_x_prior_<x>.ster estimates only when this is on; ALL CONSUMERS
+* (reg_out_va_all_tab.do, reg_out_va_all_fig.do, reg_out_va_dk_all_tab.do)
+* gate their .ster reads on the same global.  Flipping this to 0 disables the
+* producer AND the consumers together, so a disabled producer can never leave
+* a consumer reading a missing .ster -> r(601).  Gate condition used verbatim
+* everywhere: `if "$run_prior_score" != "0"` (unset == on; only explicit 0
+* disables).  [2026-05-28]
+global run_prior_score 1
+
 * Confirm $consolidated_dir resolves before main.do tries to use it.
 capture confirm file "$consolidated_dir"
 if _rc {

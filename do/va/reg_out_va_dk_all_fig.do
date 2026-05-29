@@ -138,7 +138,11 @@ foreach version in v1 v2 {
   //------------------------------------------------------------------------------
   // make figures for heterogeneity regression by prior score decile
   //------------------------------------------------------------------------------
-
+  * GATE: prior-score-decile heterogeneity. Single source of truth = $run_prior_score in
+  * do/settings.do. Producer (reg_out_va_all.do / reg_out_va_dk_all.do) and ALL consumers
+  * (<x>_tab.do, <x>_fig.do, va_scatter.do) MUST gate on the same global; a disabled producer
+  * otherwise leaves consumers reading missing .ster / .gph -> r(601). [2026-05-28]
+  if "$run_prior_score" != "0" {
   foreach sample in b las {
     di "outcome sample: `sample'"
     foreach control of local `sample'_sample_controls {
@@ -262,6 +266,7 @@ foreach version in v1 v2 {
 
     }
   }
+  } // end gate: $run_prior_score (DK prior-score-decile figures + combine panels)
 
 }
 

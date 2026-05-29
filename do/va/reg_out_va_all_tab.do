@@ -366,6 +366,11 @@ foreach version in v1 v2 {
   // enrollment on single subject test score VA, heterogeneity by prior score decile
   //------------------------------------------------------------------------------
 
+  * GATE: prior-score-decile heterogeneity. Single source of truth = $run_prior_score in
+  * do/settings.do. Producer (reg_out_va_all.do / reg_out_va_dk_all.do) and ALL consumers
+  * (this file + <x>_fig.do) MUST gate on the same global; a disabled producer otherwise leaves
+  * consumers reading missing .ster -> r(601). [2026-05-28]
+  if "$run_prior_score" != "0" {
   /* foreach outcome in enr enr_2year enr_4year {
     di "outcome: `outcome'"
 
@@ -430,12 +435,18 @@ foreach version in v1 v2 {
 
   }
  */
+  } // end gate: $run_prior_score (single-subject prior-decile tables)
 
 
   //------------------------------------------------------------------------------
   // enrollment on both subject test score VA, heterogeneity by prior score decile
   //------------------------------------------------------------------------------
 
+  * GATE: prior-score-decile heterogeneity. Single source of truth = $run_prior_score in
+  * do/settings.do. Producer (reg_out_va_all.do / reg_out_va_dk_all.do) and ALL consumers
+  * (this file + <x>_fig.do) MUST gate on the same global; a disabled producer otherwise leaves
+  * consumers reading missing .ster -> r(601). [2026-05-28]
+  if "$run_prior_score" != "0" {
   /* foreach outcome in enr enr_2year enr_4year {
     di "outcome: `outcome'"
 
@@ -494,6 +505,7 @@ foreach version in v1 v2 {
 
 
   } */
+  } // end gate: $run_prior_score (both-subject prior-decile tables)
 
 
 }
