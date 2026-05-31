@@ -2,7 +2,7 @@
       name:  cds_nces_xwalk
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/cds_nces_xwalk.smcl
   log type:  text
- opened on:  26 May 2026, 17:32:00
+ opened on:  26 May 2026, 22:20:10
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "cds_nces_xwalk.do — RUN START: `c(current_date)' `c(current_time)'"
-cds_nces_xwalk.do — RUN START: 26 May 2026 17:32:00
+cds_nces_xwalk.do — RUN START: 26 May 2026 22:20:10
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------

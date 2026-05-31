@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/clean_locale.smcl
   log type:  text
- opened on:  26 May 2026, 17:32:01
+ opened on:  26 May 2026, 22:20:11
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -14,7 +14,7 @@
 > -
 
 . di as text "clean_locale.do — RUN START: `c(current_date)' `c(current_time)'"
-clean_locale.do — RUN START: 26 May 2026 17:32:01
+clean_locale.do — RUN START: 26 May 2026 22:20:11
 
 . di as text "-----------------------------------------------------------------
 ---------------"

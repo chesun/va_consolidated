@@ -2,7 +2,7 @@
       name:  touse_va
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/samples/touse_va.smcl
   log type:  text
- opened on:  25 May 2026, 18:04:07
+ opened on:  26 May 2026, 23:16:01
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "touse_va.do — RUN START: `c(current_date)' `c(current_time)'"
-touse_va.do — RUN START: 25 May 2026 18:04:07
+touse_va.do — RUN START: 26 May 2026 23:16:01
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -785,23 +785,6 @@ estimates_dir:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/es
 datadir:        /home/research/ca_ed_lab/projects/common_core_va/consolidated/data
 consolidated_dir:
                 /home/research/ca_ed_lab/projects/common_core_va/consolidated
-cb_csu:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/csu_outcomes_cr
-                > osswalk.dta
-cb_k12_csu_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/k12_csu_crosswa
-                > lk.dta
-cb_ccc:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/ccc_outcomes_cr
-                > osswalk.dta
-cb_k12_ccc_xw:  /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/k12_ccc_crosswa
-                > lk.dta
-cb_nsc:         /home/research/ca_ed_lab/projects/common_core_va/data/restricted_access/clean/crosswalks/nsc_outcomes_cr
-                > osswalk_ssid.dta
-cb_sch_char:    /home/research/ca_ed_lab/projects/common_core_va/data/sch_char.dta
-cb_k12_pre_va:  /home/research/ca_ed_lab/projects/common_core_va/data/va_samples_v1/score_b.dta
-cb_k12_main:    /home/research/ca_ed_lab/projects/common_core_va/estimates/va_cfr_all_v1/va_est_dta/va_all_schl_char.dta
-cb_calschls_2:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfactor/allsvyqoimeans
-cb_calschls_1:  /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/allsvyfactor/imputedallsvyqoimeans
-vadtadir:       /home/research/ca_ed_lab/projects/common_core_va/data/sbac
-S_level:        95
 F1:             help advice;
 F2:             describe;
 F7:             save
@@ -812,6 +795,8 @@ S_StataSE:      SE
 S_CONSOLE:      console
 S_OS:           Unix
 S_MACH:         PC (64-bit x86-64)
+S_level:        95
+S_MODE:         batch
 _sch_char_control_vars:
                 fte_teach_pc fte_pupil_pc new_teacher_prop credential_full_prop male_prop enr_male_prop
                 eth_minority_prop enr_minority_prop enr_total frpm_prop el_prop expenditures_instr_pc
@@ -2933,54 +2918,352 @@ end of do-file
 
 . 
 . 
-. * DEAD INCLUDE — see CONVENTION DEVIATIONS in header.  File deleted 2022-12-29
-. * in v1/v2 prior-score refactor; touse_va.do gated OFF in predecessor and in
-. * main.do, so this never executes in production.  Phase 1b §4.3 resolves.
-. include $consolidated_dir/do/samples/create_prior_scores.doh
-file /home/research/ca_ed_lab/projects/common_core_va/consolidated/do/samples/create_prior_scores.doh not found
-r(601);
+. * DEAD INCLUDE RESOLVED 2026-05-26 — repointed to v1-canonical per ADR-0009
+. * (Phase 1b §4.3 partial pulled forward to unblock M4 attempt #6).  See header
+. * CONVENTION DEVIATIONS block for full diagnosis.
+. include $consolidated_dir/do/samples/create_prior_scores_v1.doh
 
-end of do-file
-r(601);
-.     }
-r(601);
-.     if `do_create_samples' {
-.         do do/samples/create_score_samples.do          // build 7 test-score VA samples × 2 prior-score versions (v1/v
-> 2 per ADR-0009); writes $datadir_clean/va_samples_v[12]/score_*.dta
-.         do do/samples/create_out_samples.do            // build 7 outcome VA samples × 2 prior-score versions; writes 
-> $datadir_clean/va_samples_v[12]/out_*.dta
-.     }
+. /*------------------------------------------------------------------------------
+> do/samples/create_prior_scores_v1.doh — prior-score controls (v1: differing ELA/Math)
+> ================================================================================
+> 
+> PURPOSE
+>     Construct `prior_ela_z_score' / `peer_prior_ela_z_score' /
+>     `prior_math_z_score' / `peer_prior_math_z_score' for the VA estimation
+>     sample.  v1 uses DIFFERENT lag/grade prior controls for ELA and Math
+>     (per the predecessor 12/29/2022 spec).  v1 is the CANONICAL prior-score
+>     spec used in the paper per ADR-0009.
+> 
+>     ELA prior-score wiring per cohort:
+>       - Spring 2015 cohort: 8th-grade ELA (spring 2012)
+>       - Spring 2016 cohort: 8th-grade ELA (spring 2013)
+>       - Spring 2017 cohort: 7th-grade ELA (spring 2013)  [L4 not L3]
+>       - Spring 2018 cohort: 8th-grade ELA (spring 2015)
+>     Math prior-score wiring per cohort:
+>       - Spring 2015 cohort: 6th-grade math (spring 2010)
+>       - Spring 2016 cohort: 6th-grade math (spring 2011)
+>       - Spring 2017 cohort: 6th-grade math (spring 2012)
+>       - Spring 2018 cohort: 8th-grade math (spring 2015)
+> 
+> INCLUDED FROM
+>     `do/samples/create_va_g11_sample.doh' (base; byte-equivalent to v1) +
+>     `do/samples/create_va_g11_sample_v1.doh' +
+>     `do/samples/create_va_g11_out_sample.doh' (base) +
+>     `do/samples/create_va_g11_out_sample_v1.doh'.
+>     Requires parent-scope locals `star_min_year', `star_max_year',
+>     `caaspp_min_year', `caaspp_max_year' (defined by `do/va/helpers/macros_va.doh').
+>     Requires parent-scope dataset variables `L3_cst_ela_z_score',
+>     `L3_sbac_ela_z_score', `L4_cst_ela_z_score', `L5_cst_math_z_score',
+>     `L3_sbac_math_z_score', plus their `peer_*' variants (merged in by
+>     `do/samples/create_va_sample.doh' before this fragment runs).
+> 
+> ROLE IN ADR-0021 SANDBOX
+>     Pure `gen'/`replace'/`label var' on in-memory dataset; no save / export
+>     / log.  No `$global' references.
+> 
+> RELOCATION HISTORY (per ADR-0021, applied 2026-04-30)
+>     Source:      cde_va_project_fork/do_files/sbac/create_prior_scores_v1.doh
+>     Destination: do/samples/create_prior_scores_v1.doh
+>     Body verbatim from predecessor.  No path repointing (no `$global' or
+>     relative-path references).
+>     Predecessor caller-update protocol: predecessor callers untouched per
+>     plan v3 §3.3 step 5 parenthetical.
+> 
+> REFERENCES
+>     Plan v3 §3.3 step 2 (sample construction)
+>     ADRs:    0009 (v1 prior-score canonical), 0021 (description convention)
+> ------------------------------------------------------------------------------*/
 . 
-.     * NOTE: plan v3 main.do template (lines 175-176) listed
-.     * create_va_sib_acs_restr_smp.do + create_va_sib_acs_out_restr_smp.do at
-.     * this site, but per ADR-0004 those files are deprecated (caschls
-.     * siblingvaregs subtree) and belong in the Step 6 archive batch, not
-.     * Step 2 active relocation.  The plan v3 template will be corrected when
-.     * Step 6 lands.
+. **************** Prior Scores
+. /* Original version of VA sample: different prior score controls for ELA and Math
+> VA Test Score Controls
+> updated 12/29/2022 by Christina Sun
+> 
+> Spring 2015 cohort use 8th grade ELA (spring 2012) and 6th grade math (spring 2010)
+> Spring 2016 cohort use 8th grade ELA  (spring 2013) and 6th grade math (spring 2011)
+> Spring 2017 cohort use 7th grade ELA  (spring 2013) and 6th grade math (spring 2012)
+> Spring 2018 cohort use 8th grade ELA  (spring 2015) and 8th grade math (spring 2015)
+>  */
+. ******** ELA
+. gen prior_ela_z_score = L3_cst_ela_z_score if inrange(year, `star_min_year' + 3, `star_max_year' + 3) & year!=2017
+(55,405,139 missing values generated)
+
+. replace prior_ela_z_score = L3_sbac_ela_z_score if inrange(year, `caaspp_min_year' + 3, `caaspp_max_year' + 3) & year!
+> =2017
+(3,393,213 real changes made)
+
+. replace prior_ela_z_score = L4_cst_ela_z_score if year==2017
+(1,607,809 real changes made)
+
+. label var prior_ela_z_score "Prior ELA Z-Score"
+
+. gen peer_prior_ela_z_score = peer_L3_cst_ela_z_score if inrange(year, `star_min_year' + 3, `star_max_year' + 3) & year
+> !=2017
+(44,182,423 missing values generated)
+
+. replace peer_prior_ela_z_score = peer_L3_sbac_ela_z_score if inrange(year, `caaspp_min_year' + 3, `caaspp_max_year' + 
+> 3) & year!=2017
+(5,229,934 real changes made)
+
+. replace peer_prior_ela_z_score = peer_L4_cst_ela_z_score if year==2017
+(2,445,454 real changes made)
+
+. label var peer_prior_ela_z_score "Peer Avg. Prior ELA Z-Score"
+
 . 
-.     * TODO Phase 1a §3.3 step 2 batch 2c: relocate sample-construction merge
-.     * helpers (merge_loscore.doh, merge_sib.doh, merge_va_smp_acs.doh,
-.     * merge_lag2_ela.doh from cde sbac).  Until then, create_score_samples.do
-.     * and create_out_samples.do call them via LEGACY $vaprojdir paths.
-. }
-r(601);
+. ******** Math
+. gen prior_math_z_score = L5_cst_math_z_score if inrange(year, `star_min_year' + 5, `star_max_year' + 5) & !inrange(yea
+> r, `caaspp_min_year' + 3, `caaspp_max_year' + 3)
+(65,260,130 missing values generated)
 
-end of do-file
+. replace prior_math_z_score = L3_sbac_math_z_score if inrange(year, `caaspp_min_year' + 3, `caaspp_max_year' + 3)
+(3,402,278 real changes made)
 
-r(601);
+. label var prior_math_z_score "Prior Math Z-Score"
 
-. log close
-      name:  <unnamed>
-       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/acs/clean_acs_census_tract.smcl
-  log type:  text
- closed on:  25 May 2026, 19:16:00
-------------------------------------------------------------------------------------------------------------------------
+. gen peer_prior_math_z_score = peer_L5_cst_math_z_score if inrange(year, `star_min_year' + 5, `star_max_year' + 5) & !i
+> nrange(year, `caaspp_min_year' + 3, `caaspp_max_year' + 3)
+(57,374,093 missing values generated)
 
-. di as text _n
+. replace peer_prior_math_z_score = peer_L3_sbac_math_z_score if inrange(year, `caaspp_min_year' + 3, `caaspp_max_year' 
+> + 3)
+(5,229,954 real changes made)
 
+. label var peer_prior_math_z_score "Peer Avg. Prior Math Z-Score"
 
+. 
+. 
+. **** Test Score Sample
+. foreach subject in ela math {
+  2.         mark touse_g11_`subject' ///
+>                 if grade==11 & dataset=="CAASPP" & inrange(year, `test_score_min_year', `test_score_max_year') ///
+>                 & diff_school_prop>=0.95 ///
+>                 & first_scores_sample==1
+  3.         markout touse_g11_`subject' ///
+>                 sbac_`subject'_z_score ///
+>                 school_id i.year ///
+>                 `school_controls' ///
+>                 `demographic_controls' ///
+>                 `ela_score_controls' ///
+>                 `math_score_controls' ///
+>                 `peer_demographic_controls' ///
+>                 `peer_ela_score_controls' ///
+>                 `peer_math_score_controls'
+  4. 
+.         replace touse_g11_`subject' = 0 if touse==0
+  5. 
+.         egen n_g11_`subject' = count(state_student_id) ///
+>                 if touse_g11_`subject'==1 ///
+>                 , by(cdscode year)
+  6.         replace touse_g11_`subject' = 0 if n_g11_`subject'<7
+  7. }
+(106,757 real changes made)
+(76,978,577 missing values generated)
+(252 real changes made)
+(105,482 real changes made)
+(76,983,917 missing values generated)
+(259 real changes made)
 
-. di as text _n "ddd"
+. 
+. **** Postsecondary Outcomes Sample
+. foreach outcome in enr enr_2year enr_4year {
+  2.         mark touse_g11_`outcome' ///
+>                 if grade==11 & dataset=="CAASPP" & inrange(year, `outcome_min_year', `outcome_max_year') ///
+>                 & diff_school_prop>=0.95 ///
+>                 & first_scores_sample==1
+  3.         markout touse_g11_`outcome' ///
+>                 `outcome' ///
+>                 school_id i.year ///
+>                 `school_controls' ///
+>                 `demographic_controls' ///
+>                 `ela_score_controls' ///
+>                 `math_score_controls' ///
+>                 `peer_demographic_controls' ///
+>                 `peer_ela_score_controls' ///
+>                 `peer_math_score_controls'
+  4. 
+.         replace touse_g11_`outcome' = 0 if touse==0
+  5. 
+.         egen n_g11_`outcome' = count(state_student_id) ///
+>                 if touse_g11_`outcome'==1 ///
+>                 , by(cdscode year)
+  6.         replace touse_g11_`outcome' = 0 if n_g11_`outcome'<7
+  7. }
+(110,013 real changes made)
+(76,955,432 missing values generated)
+(234 real changes made)
+(110,013 real changes made)
+(76,955,432 missing values generated)
+(234 real changes made)
+(110,013 real changes made)
+(76,955,432 missing values generated)
+(234 real changes made)
 
-ddd
+. 
+. **** Sample Tabulations
+. foreach v of varlist touse* {
+  2.         tab year `v'
+  3. }
 
+   Year of |
+    Spring |         touse
+  Semester |         0          1 |     Total
+-----------+----------------------+----------
+      2003 |   290,194  4,578,082 | 4,868,276 
+      2004 |   299,264  4,620,729 | 4,919,993 
+      2005 |   273,006  4,647,049 | 4,920,055 
+      2006 |   246,960  4,641,936 | 4,888,896 
+      2007 |   243,459  4,661,639 | 4,905,098 
+      2008 |   241,420  4,645,161 | 4,886,581 
+      2009 |   216,063  4,645,215 | 4,861,278 
+      2010 |   214,470  4,607,525 | 4,821,995 
+      2011 |   206,775  4,607,936 | 4,814,711 
+      2012 |   188,195  4,596,842 | 4,785,037 
+      2013 |   178,710  4,601,932 | 4,780,642 
+      2015 | 1,007,032  4,197,421 | 5,204,453 
+      2016 |   162,218  4,682,738 | 4,844,956 
+      2017 |   167,000  4,670,670 | 4,837,670 
+      2018 |   177,338  4,729,377 | 4,906,715 
+      2019 |   209,934  4,720,497 | 4,930,431 
+-----------+----------------------+----------
+     Total | 4,322,038 73,854,749 |78,176,787 
+
+   Year of |
+    Spring |     touse_g11_ela
+  Semester |         0          1 |     Total
+-----------+----------------------+----------
+      2003 | 4,868,276          0 | 4,868,276 
+      2004 | 4,919,993          0 | 4,919,993 
+      2005 | 4,920,055          0 | 4,920,055 
+      2006 | 4,888,896          0 | 4,888,896 
+      2007 | 4,905,098          0 | 4,905,098 
+      2008 | 4,886,581          0 | 4,886,581 
+      2009 | 4,861,278          0 | 4,861,278 
+      2010 | 4,821,995          0 | 4,821,995 
+      2011 | 4,814,711          0 | 4,814,711 
+      2012 | 4,785,037          0 | 4,785,037 
+      2013 | 4,780,642          0 | 4,780,642 
+      2015 | 4,910,238    294,215 | 5,204,453 
+      2016 | 4,545,235    299,721 | 4,844,956 
+      2017 | 4,527,939    309,731 | 4,837,670 
+      2018 | 4,578,120    328,595 | 4,906,715 
+      2019 | 4,930,431          0 | 4,930,431 
+-----------+----------------------+----------
+     Total |76,944,525  1,232,262 |78,176,787 
+
+   Year of |
+    Spring |    touse_g11_math
+  Semester |         0          1 |     Total
+-----------+----------------------+----------
+      2003 | 4,868,276          0 | 4,868,276 
+      2004 | 4,919,993          0 | 4,919,993 
+      2005 | 4,920,055          0 | 4,920,055 
+      2006 | 4,888,896          0 | 4,888,896 
+      2007 | 4,905,098          0 | 4,905,098 
+      2008 | 4,886,581          0 | 4,886,581 
+      2009 | 4,861,278          0 | 4,861,278 
+      2010 | 4,821,995          0 | 4,821,995 
+      2011 | 4,814,711          0 | 4,814,711 
+      2012 | 4,785,037          0 | 4,785,037 
+      2013 | 4,780,642          0 | 4,780,642 
+      2015 | 4,911,667    292,786 | 5,204,453 
+      2016 | 4,546,533    298,423 | 4,844,956 
+      2017 | 4,529,410    308,260 | 4,837,670 
+      2018 | 4,579,269    327,446 | 4,906,715 
+      2019 | 4,930,431          0 | 4,930,431 
+-----------+----------------------+----------
+     Total |76,949,872  1,226,915 |78,176,787 
+
+   Year of |
+    Spring |     touse_g11_enr
+  Semester |         0          1 |     Total
+-----------+----------------------+----------
+      2003 | 4,868,276          0 | 4,868,276 
+      2004 | 4,919,993          0 | 4,919,993 
+      2005 | 4,920,055          0 | 4,920,055 
+      2006 | 4,888,896          0 | 4,888,896 
+      2007 | 4,905,098          0 | 4,905,098 
+      2008 | 4,886,581          0 | 4,886,581 
+      2009 | 4,861,278          0 | 4,861,278 
+      2010 | 4,821,995          0 | 4,821,995 
+      2011 | 4,814,711          0 | 4,814,711 
+      2012 | 4,785,037          0 | 4,785,037 
+      2013 | 4,780,642          0 | 4,780,642 
+      2015 | 4,890,568    313,885 | 5,204,453 
+      2016 | 4,532,338    312,618 | 4,844,956 
+      2017 | 4,533,846    303,824 | 4,837,670 
+      2018 | 4,581,617    325,098 | 4,906,715 
+      2019 | 4,930,431          0 | 4,930,431 
+-----------+----------------------+----------
+     Total |76,921,362  1,255,425 |78,176,787 
+
+   Year of |
+    Spring |  touse_g11_enr_2year
+  Semester |         0          1 |     Total
+-----------+----------------------+----------
+      2003 | 4,868,276          0 | 4,868,276 
+      2004 | 4,919,993          0 | 4,919,993 
+      2005 | 4,920,055          0 | 4,920,055 
+      2006 | 4,888,896          0 | 4,888,896 
+      2007 | 4,905,098          0 | 4,905,098 
+      2008 | 4,886,581          0 | 4,886,581 
+      2009 | 4,861,278          0 | 4,861,278 
+      2010 | 4,821,995          0 | 4,821,995 
+      2011 | 4,814,711          0 | 4,814,711 
+      2012 | 4,785,037          0 | 4,785,037 
+      2013 | 4,780,642          0 | 4,780,642 
+      2015 | 4,890,568    313,885 | 5,204,453 
+      2016 | 4,532,338    312,618 | 4,844,956 
+      2017 | 4,533,846    303,824 | 4,837,670 
+      2018 | 4,581,617    325,098 | 4,906,715 
+      2019 | 4,930,431          0 | 4,930,431 
+-----------+----------------------+----------
+     Total |76,921,362  1,255,425 |78,176,787 
+
+   Year of |
+    Spring |  touse_g11_enr_4year
+  Semester |         0          1 |     Total
+-----------+----------------------+----------
+      2003 | 4,868,276          0 | 4,868,276 
+      2004 | 4,919,993          0 | 4,919,993 
+      2005 | 4,920,055          0 | 4,920,055 
+      2006 | 4,888,896          0 | 4,888,896 
+      2007 | 4,905,098          0 | 4,905,098 
+      2008 | 4,886,581          0 | 4,886,581 
+      2009 | 4,861,278          0 | 4,861,278 
+      2010 | 4,821,995          0 | 4,821,995 
+      2011 | 4,814,711          0 | 4,814,711 
+      2012 | 4,785,037          0 | 4,785,037 
+      2013 | 4,780,642          0 | 4,780,642 
+      2015 | 4,890,568    313,885 | 5,204,453 
+      2016 | 4,532,338    312,618 | 4,844,956 
+      2017 | 4,533,846    303,824 | 4,837,670 
+      2018 | 4,581,617    325,098 | 4,906,715 
+      2019 | 4,930,431          0 | 4,930,431 
+-----------+----------------------+----------
+     Total |76,921,362  1,255,425 |78,176,787 
+
+. 
+. 
+. 
+. 
+. keep merge_id_k12_test_scores touse*
+
+. sort merge_id_k12_test_scores
+
+. compress
+  (0 bytes saved)
+
+. save "$datadir_clean/sbac/va_samples.dta", replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sbac/va_samples.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sbac/va_samples.dta saved
+
+. 
+. 
+. timer off 1
+
+. timer list
+   1:   6536.14 /        1 =    6536.1390
+
+. 
+. cap log close touse_va

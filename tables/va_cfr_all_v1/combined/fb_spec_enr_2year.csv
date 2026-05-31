@@ -1,0 +1,26 @@
+="enr_2year specification and forecast bias tests results"
+
+="",="g11_enr_2year_r",="g11_enr_2year_r_peer",="g11_enr_2year_r",="g11_enr_2year_r_peer",="g11_enr_2year_r",="g11_enr_2year_r_peer",="g11_enr_2year_r",="g11_enr_2year_r_peer"
+
+="Specification Test:",="ref.",="",="ref.",="",="ref.",="",="ref.",=""
+
+="va_cfr_g11_enr_2year",="0.985",="",="0.992",="",="0.993",="",="0.997",=""
+="",="(0.006)",="",="(0.008)",="",="(0.008)",="",="(0.010)",=""
+
+="va_cfr_g11_enr_2year_peer",="",="0.993",="",="0.996",="",="1.019",="",="1.026"
+="",="",="(0.007)",="",="(0.012)",="",="(0.018)",="",="(0.019)"
+
+="N",="1251707",="1251707",="423751",="423751",="423751",="423559",="423751",="423559"
+="b_fb_score",="",="",="0.000",="0.001",="",="",="",=""
+="se_fb_score",="",="",="0.000",="0.000",="",="",="",=""
+="b_fb_sibling",="",="",="0.020",="0.021",="",="",="",=""
+="se_fb_sibling",="",="",="0.001",="0.001",="",="",="",=""
+="b_fb_acs",="",="",="0.147",="0.050",="0.147",="0.040",="",=""
+="se_fb_acs",="",="",="0.009",="0.007",="0.009",="0.008",="",=""
+="b_fb_score_acs_sibling",="",="",="0.164",="0.069",="",="",="",=""
+="se_fb_score_acs_sibling",="",="",="0.009",="0.007",="",="",="",=""
+="sample",="base",="base",="leave out score & ACS & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling"
+="control",="base",="base",="base",="base",="leave out score & sibling",="leave out score & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling"
+="peer",="N",="Y",="N",="Y",="N",="Y",="N",="Y"
+
+="Standard errors in parentheses"

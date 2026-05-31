@@ -1,0 +1,26 @@
+="ela specification and forecast bias tests results"
+
+="",="sbac_g11_ela_r",="sbac_g11_ela_r_peer",="sbac_g11_ela_r",="sbac_g11_ela_r_peer",="sbac_g11_ela_r",="sbac_g11_ela_r_peer",="sbac_g11_ela_r",="sbac_g11_ela_r_peer"
+
+="Specification Test:",="ref.",="",="ref.",="",="ref.",="",="ref.",=""
+
+="va_cfr_g11_ela",="0.974",="",="1.003",="",="1.003",="",="1.004",=""
+="",="(0.018)",="",="(0.026)",="",="(0.025)",="",="(0.026)",=""
+
+="va_cfr_g11_ela_peer",="",="0.982",="",="1.009",="",="1.008",="",="1.007"
+="",="",="(0.020)",="",="(0.027)",="",="(0.027)",="",="(0.028)"
+
+="N",="1228544",="1228544",="410058",="410058",="410058",="409876",="410058",="409876"
+="b_fb_score",="",="",="-0.007",="-0.010",="",="",="",=""
+="se_fb_score",="",="",="0.004",="0.003",="",="",="",=""
+="b_fb_sibling",="",="",="0.001",="0.001",="",="",="",=""
+="se_fb_sibling",="",="",="0.000",="0.000",="",="",="",=""
+="b_fb_acs",="",="",="0.023",="0.005",="0.023",="0.005",="",=""
+="se_fb_acs",="",="",="0.004",="0.002",="0.004",="0.002",="",=""
+="b_fb_score_acs_sibling",="",="",="0.017",="-0.003",="",="",="",=""
+="se_fb_score_acs_sibling",="",="",="0.005",="0.004",="",="",="",=""
+="sample",="base",="base",="leave out score & ACS & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling"
+="control",="base",="base",="base",="base",="leave out score & sibling",="leave out score & sibling",="leave out score & ACS & sibling",="leave out score & ACS & sibling"
+="peer",="N",="Y",="N",="Y",="N",="Y",="N",="Y"
+
+="Standard errors in parentheses"

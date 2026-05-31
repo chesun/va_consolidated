@@ -95,8 +95,8 @@ PHASE TOGGLES  (set to 1 to run the phase, 0 to skip)
 * Default: every phase ON.  Production / acceptance runs (ADR-0018) require
 * every toggle ON, including run_data_checks.  Dev iteration can toggle off
 * upstream phases if their cached outputs are still valid.
-local run_data_prep         1
-local run_samples           1
+local run_data_prep         0
+local run_samples           0
 local run_va_estimation     1
 local run_va_tables         1
 local run_survey_va         1

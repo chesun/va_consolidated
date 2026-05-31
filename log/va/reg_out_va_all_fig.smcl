@@ -1,0 +1,1620 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  reg_out_va_all_fig
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/va/reg_out_va_all_fig.smcl
+  log type:  text
+ opened on:  29 May 2026, 15:53:19
+
+. 
+. di as text _n "{hline 80}"
+
+--------------------------------------------------------------------------------
+
+. di as text "reg_out_va_all_fig.do — RUN START: `c(current_date)' `c(current_time)'"
+reg_out_va_all_fig.do — RUN START: 29 May 2026 15:53:19
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. 
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. set seed 1984
+
+. 
+. 
+. local date1 = c(current_date)
+
+. local time1 = c(current_time)
+
+. 
+. 
+. include $consolidated_dir/do/va/helpers/macros_va.doh
+
+. /*------------------------------------------------------------------------------
+> do/va/helpers/macros_va.doh — VA project file paths, dates, controls, strings
+> ================================================================================
+> 
+> PURPOSE
+>     Define the canonical VA-pipeline locals consumed across Phase 3+
+>     estimation, table-producer, figure-producer, and heterogeneity scripts:
+>     - Restricted-access K12 data paths.
+>     - Sibling crosswalk paths (cross-references caschls predecessor).
+>     - Cohort-year ranges (test_score / star / caaspp / outcome).
+>     - Outcome strings (ELA, Math, enrollment).
+>     - Control-variable groupings (school, demographic, score, peer, census,
+>       sibling, distance, scrhat — predicted-score variants).
+>     - Per-spec control combinations (b/l/a/s/la/ls/as/las and their `d'-augmented
+>       variants per ADR-0009 + 2023-04-30 distance addition).
+>     - String labels for sample × control display.
+>     - School-characteristics + demographic-characteristics + expenditure groups.
+> 
+> INCLUDED FROM
+>     Phase 3+ VA estimation/table/figure scripts under `do/va/' and `do/share/va/'.
+>     Typically the FIRST helper-include in any consuming script (sets up the
+>     parent-scope locals consumed by `drift_limit.doh' and
+>     `macros_va_all_samples_controls.doh').
+> 
+>     Uses Stata's `#delimit ;' syntax (semicolons end statements) per the
+>     predecessor convention.  The closing `#delimit cr' restores default
+>     line-end semantics for the calling script.
+> 
+> ROLE IN ADR-0021 SANDBOX
+>     Pure local definitions; no save / export / log; sandbox-trivially clean.
+>     Reads from LEGACY paths via global expansion at include-time:
+>       - $vaprojdir/data/restricted_access/clean/k12_test_scores
+>         (LEGACY restricted-access K12 raw data)
+>       - $vaprojdir/data/public_access/...
+>         (LEGACY public-access subdirs)
+>       - $caschls_projdir/dta/siblingxwalk/{siblingpairxwalk,ufamilyxwalk}
+>         (LEGACY-static predecessor sibling-pair / unique-family crosswalks)
+>     Reads from CANONICAL paths:
+>       - $datadir_clean/siblingxwalk/sibling_out_xwalk
+>         (sibling-outcomes crosswalk built by relocated
+>          do/sibling_xwalk/siblingoutxwalk.do per ADR-0005; producer at L338)
+> 
+> RELOCATION HISTORY (per ADR-0005 + ADR-0021, applied 2026-04-30)
+>     Source:      cde_va_project_fork/do_files/sbac/macros_va.doh
+>     Destination: do/va/helpers/macros_va.doh
+>     Path repointing per ADR-0021 sandbox amendment ("paths only; analysis
+>     logic preserved verbatim"):
+>       - L29-31: `$projdir/dta/siblingxwalk/<file>' -> `$caschls_projdir/dta/siblingxwalk/<file>'
+>         (3 references: siblingxwalk, ufamilyxwalk, sibling_out_xwalk)
+>         Reason: $projdir is NOT defined in do/settings.do; $caschls_projdir
+>         is the explicit-named global per the LEGACY PATHS comment block.
+>         Repointing here eliminates the include-time `$projdir' alias-need
+>         for any future calling script (per the [LEARN:stata] 2026-04-30
+>         pattern surfaced in the siblingoutxwalk.do round-1 review).
+>       - $vaprojdir references (L22-28) preserved unchanged — $vaprojdir
+>         IS defined in do/settings.do as the predecessor cde_va_project_fork
+>         dir; LEGACY-static restricted-access K12 paths are READS-only
+>         per ADR-0021.
+>     Predecessor caller-update protocol: predecessor callers untouched in
+>     this commit per plan v3 §3.3 step 5 parenthetical.
+>     Analysis logic preserved verbatim (the cross-product of controls, the
+>     string labels, the cohort-year ranges, the school-char groupings — all
+>     byte-equivalent to the predecessor).
+> 
+> ORIGINAL CHANGE LOG (preserved from predecessor)
+>     2022-04-28: Added macro for sibling controls.
+>     2022-09-20: Added delimiter `;' after comments.
+>     2022-10-31: Changed naming convention for samples (b/l/a/s/la/ls/as/las).
+>     2023-05-31: Added distance control macros.
+>     2024-08-22: Added predicted ELA score spec controls (`scrhat' variants).
+> 
+> REFERENCES
+>     Plan v3 §3.3 step 1 (helpers/macros)
+>     ADRs:    0009 (v1 prior-score canonical), 0017 (Matt's files untouched —
+>              $vaprojdir paths are LEGACY-static reads), 0021 (description
+>              convention; sandbox-write rule; path-globals-only amendment)
+>     Audit:   chunk-2 (file structure verification); chunk-3 (control
+>              specifications cross-checked against paper Tables 2-3)
+>     MEMORY:  [LEARN:stata] 2026-04-30 ($projdir explicit-rename pattern)
+> ------------------------------------------------------------------------------*/
+. 
+. 
+. /* CHANGE LOG
+> 4/28/2022: Added macro for sibling controls
+> 09/20/2022: Added delimiter : after comments
+> 10/31/2022: Changed naming convention for samples
+> b - base
+> l - loscore
+> a - acs
+> s - sibling
+> la - loscore and acs
+> ls - loscore and sibling
+> as - acs and sibling
+> las - loscore, acs and sibling
+> 
+> 05/31/2023: added distance control macros
+> 
+> 08/22/2024: added predicted ELA score spec controls
+> */
+. 
+. #delimit ;
+delimiter now ;
+. *** file paths ;
+. local home $vaprojdir ;
+
+. local vaprojdofiles "$vaprojdir/do_files"
+> local ca_ed_lab "/home/research/ca_ed_lab" ;
+
+. local k12_test_scores "$vaprojdir/data/restricted_access/clean/k12_test_scores" ;
+
+. local public_access "$vaprojdir/data/public_access" ;
+
+. local k12_public_schools "$vaprojdir/data/public_access/clean/k12_public_schools" ;
+
+. local k12_test_scores_public "$vaprojdir/data/public_access/clean/k12_test_scores" ;
+
+. local siblingxwalk "$caschls_projdir/dta/siblingxwalk/siblingpairxwalk";
+
+. local ufamilyxwalk "$caschls_projdir/dta/siblingxwalk/ufamilyxwalk";
+
+. local sibling_out_xwalk "$datadir_clean/siblingxwalk/sibling_out_xwalk";
+
+. **** Dates ;
+. local test_score_min_year
+>         2015
+>         ;
+
+. local test_score_max_year
+>         2018
+>         ;
+
+. local star_min_year
+>         2003
+>         ;
+
+. local star_max_year
+>         2013
+>         ;
+
+. local caaspp_min_year
+>         2015
+>         ;
+
+. local caaspp_max_year
+>         2019
+>         ;
+
+. local outcome_min_year
+>         2015
+>         ;
+
+. local outcome_max_year
+>         2018
+>         ;
+
+. **** Outcome Strings ;
+. local ela_str
+>         "ELA"
+>         ;
+
+. local math_str
+>         "Math"
+>         ;
+
+. local enr_str
+>         "Overall Enrollment"
+>         ;
+
+. local enr_2year_str
+>         "2-Year Enrollment"
+>         ;
+
+. local enr_4year_str
+>         "4-Year Enrollment"
+>         ;
+
+. **** Sibling Census Restricted Sample Controls Strings ;
+. local og_str
+>         "Original Specification"
+>         ;
+
+. local acs_str
+>         "Original + Census"
+>         ;
+
+. local sib_str
+>         "Original + Sibling"
+>         ;
+
+. local both_str
+>         "Original + Census + Sibling"
+>         ;
+
+. **** Value Added ;
+. local school_controls
+>         /*cohort_size*/
+>         ;
+
+. local demographic_controls
+>         age
+>         i.male
+>         i.eth_asian i.eth_hispanic i.eth_black i.eth_other
+>         i.econ_disadvantage
+>         i.limited_eng_prof
+>         i.disabled
+>         ;
+
+. local ela_score_controls
+>         i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
+>         ;
+
+. // controls using predicted lag 1 ELA scores
+> local ela_scrhat_controls
+>         i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
+>         ;
+
+. local math_score_controls
+>         i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score)
+>         ;
+
+. local peer_ela_score_controls
+>         i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
+>         ;
+
+. local peer_math_score_controls
+>         i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score)
+>         ;
+
+. local peer_demographic_controls
+>         peer_age
+>         peer_male
+>         peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other
+>         peer_econ_disadvantage
+>         peer_limited_eng_prof
+>         peer_disabled
+>         ;
+
+. local va_control_vars "`school_controls' `demographic_controls'" ;
+
+. local va_control_vars : subinstr local va_control_vars "i." "", all ;
+
+. local va_control_vars : list uniq va_control_vars ;
+
+. local census_grade
+>         6
+>         ;
+
+. local census_controls
+>         /*eth_white_pct*/ eth_asian_pct eth_hispanic_pct eth_black_pct /*eth_other_pct*/
+>         educ_hs_dropout_prop /*educ_deg_2year_prop*/ educ_deg_4year_plus_prop
+>         pov_fam_child_lt18_pct
+>         inc_median_hh
+>         ;
+
+. local peer_census_controls
+>         peer_eth_asian_pct  peer_eth_hispanic_pct  peer_eth_black_pct
+>         peer_educ_hs_dropout_prop  peer_educ_deg_4year_plus_prop
+>         peer_pov_fam_child_lt18_pct      peer_inc_median_hh
+>         ;
+
+. local sibling_controls
+>         i.has_older_sibling_enr_2year
+>         i.has_older_sibling_enr_4year
+>         ;
+
+. local peer_sibling_controls
+>         peer_has_older_sibling_enr_2year
+>         peer_has_older_sibling_enr_4year
+>         ;
+
+. // lag 1 older sibling controls ;
+> local sib_lag1_controls
+>         old1_sib_enr_2year
+>         old1_sib_enr_4year
+>         ;
+
+. // lag 2 older sibling controls ;
+> local sib_lag2_controls
+>         old2_sib_enr_2year
+>         old2_sib_enr_4year
+>         ;
+
+. // postsecondary distance controls
+> local d_controls
+>         mindist_any_nonprof_4yr
+>         mindist_ccc
+>         ;
+
+. **********************************************  ;
+. *** macros for STANDALONE control vars for running loops over all samples and specifications ;
+. //base specification controls ;
+> local b_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. //peer base controls ;
+> local peer_b_controls
+>         `peer_ela_score_controls'
+>         `peer_math_score_controls'
+>         `peer_demographic_controls'
+>         ;
+
+. // leave out score controls ;
+> local l_controls
+>         loscore
+>         ;
+
+. // peer leave out score controls ;
+> local peer_l_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         ;
+
+. local a_controls
+>         `census_controls'
+>         ;
+
+. local peer_a_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         ;
+
+. local s_controls
+>         `sibling_controls'
+>         ;
+
+. local peer_s_controls
+>         `peer_b_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. // control var groups for looping ;
+> local la_controls
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local peer_la_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         ;
+
+. local ls_controls
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local peer_ls_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_sibling_controls'
+>         ;
+
+. local as_controls
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_as_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. local las_controls
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_las_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. foreach control in b l a s la ls as las {;
+  2.         local `control'd_controls
+>                 ``control'_controls' `d_controls'
+>                 ;
+  3.         local peer_`control'd_controls
+>                 `peer_`control'_controls'
+>                 ;
+  4.         }
+>         ;
+
+. *** macros for control var COMBINATIONS for running loops over all samples and specifications ;
+. //base specification controls ;
+> local b_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. // predicted score spec controls
+> local b_scrhat_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_scrhat_controls'
+>         `math_score_controls'
+>         ;
+
+. local bd_spec_controls
+>         `b_spec_controls'
+>         `d_controls'
+>         ;
+
+. local bd_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // leave out prior score controls ;
+> local l_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local l_scrhat_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local ld_spec_controls
+>         `l_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ld_scrhat_spec_controls
+>         `l_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // ACS
+> local a_spec_controls
+>         `b_spec_controls'
+>         `census_controls'
+>         ;
+
+. local a_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `census_controls'
+>         ;
+
+. local ad_spec_controls
+>         `a_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ad_scrhat_spec_controls
+>         `a_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // sibling
+> local s_spec_controls
+>         `b_spec_controls'
+>         `s_controls'
+>         ;
+
+. local s_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `s_controls'
+>         ;
+
+. local sd_spec_controls
+>         `s_spec_controls'
+>         `d_controls'
+>         ;
+
+. local sd_scrhat_spec_controls
+>         `s_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // loscores and acs
+> local la_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local la_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local lad_spec_controls
+>         `la_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lad_scrhat_spec_controls
+>         `la_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ls_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local ls_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local lsd_spec_controls
+>         `ls_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lsd_scrhat_spec_controls
+>         `ls_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local as_spec_controls
+>         `b_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local as_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local asd_spec_controls
+>         `as_spec_controls'
+>         `d_controls'
+>         ;
+
+. local asd_scrhat_spec_controls
+>         `as_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local las_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local las_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local lasd_spec_controls
+>         `las_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lasd_scrhat_spec_controls
+>         `las_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // strings for all sample and control combinations ;
+> 
+> local b_str
+>         "base"
+>         ;
+
+. local bd_str
+>         `b_str'
+>         ;
+
+. local l_str
+>         "leave out score"
+>         ;
+
+. local ld_str
+>         `l_str'
+>         ;
+
+. local a_str
+>         "ACS"
+>         ;
+
+. local ad_str
+>         `a_str'
+>         ;
+
+. local s_str
+>         "sibling"
+>         ;
+
+. local sd_str
+>         `s_str'
+>         ;
+
+. local la_str
+>         "leave out score & ACS"
+>         ;
+
+. local lad_str
+>         `la_str'
+>         ;
+
+. local ls_str
+>         "leave out score & sibling"
+>         ;
+
+. local lsd_str
+>         `ls_str'
+>         ;
+
+. local as_str
+>         "ACS & sibling"
+>         ;
+
+. local asd_str
+>         `as_str'
+>         ;
+
+. local las_str
+>         "leave out score & ACS & sibling"
+>         ;
+
+. local lasd_str
+>         `las_str'
+>         ;
+
+. local d_str
+>         "postsecondary distance"
+>         ;
+
+. // strings for heterogeneity in persistence vars ;
+> local race_str
+>         "Race"
+>         ;
+
+. local male_str "Male";
+
+. local econ_disadvantage_str "Economically Disadvantaged";
+
+. local prop_ecn_disadv_str "Proportion Economically Disadvantaged" ;
+
+. local charter_str "Charter Status" ;
+
+. local inc_median_hh_xtile_str "Census Tract Median Household Income Decile";
+
+. local enr_black_hisp_prop_str "Proportion of Black and Hispanic Enrollment";
+
+. **** School Characteristics ;
+. local sch_chars
+>         fte_teach_pc fte_pupil_pc /*fte_admin_pc*/
+>         /*eng_learner_staff_pc*/
+>         new_teacher_prop
+>         /*educ_grad_sch_prop educ_associate_prop*/
+>         /*status_tenured_prop*/
+>         credential_full_prop
+>         /*authorization_stem_prop authorization_ela_prop*/
+>         c.male_prop##c.enr_male_prop
+>         c.eth_minority_prop##c.enr_minority_prop
+>         enr_total
+>         ;
+
+. local sch_char_vars "`sch_chars'" ;
+
+. local sch_char_vars : subinstr local sch_char_vars "i." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "c." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "##" " ", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "#" " ", all ;
+
+. local sch_char_vars : list uniq sch_char_vars ;
+
+. local dem_chars
+>         enr_male_prop
+>         enr_minority_prop
+>         frpm_prop el_prop
+>         enr_total
+>         ;
+
+. local dem_char_vars "`dem_chars'" ;
+
+. local dem_char_vars : list uniq dem_char_vars ;
+
+. local expenditures
+>         expenditures_instr_pc
+>         expenditures3000_pc
+>         expenditures4000_pc
+>         expenditures_other_pc
+>         expenditures7000_pc
+>         ;
+
+. local expenditure_vars "`expenditures'" ;
+
+. local expenditure_vars : list uniq expenditure_vars ;
+
+. local sch_char_control_vars : list sch_char_vars | dem_char_vars ;
+
+. local sch_char_control_vars : list sch_char_control_vars | expenditure_vars ;
+
+. #delimit cr
+delimiter now cr
+. 
+. 
+. 
+. // macros for different VA estimates to be used in each sample
+. local b_sample_controls b bd
+
+. local las_sample_controls b ls las bd lsd lasd
+
+. 
+. 
+. foreach version in v1 v2 {
+  2. 
+.   //------------------------------------------------------------------------------
+.   // assign non-heterogeneity regression coefficients to scalars
+.   //------------------------------------------------------------------------------
+. 
+.   foreach sample in b las {
+  3.     di "outcome sample: `sample'"
+  4.     foreach control of local `sample'_sample_controls {
+  5.       di "VA control: `control'"
+  6.       foreach outcome in enr enr_2year enr_4year {
+  7.         di "dependent var: `outcome'"
+  8. 
+.           // loop over VA estimates without peer and with peer controls
+.           forvalues i = 1/2 {
+  9.             if `i'==1 {
+ 10.               local peer
+ 11.             }
+ 12.             if `i'==2 {
+ 13.               local peer _p
+ 14.             }
+ 15.             di "peer controls in VA estimates (empty if no peer, _p if peer): `peer'"
+ 16.             //-------------------------------------------------------------
+.             // regressions on single subject VA estimate
+.             //-------------------------------------------------------------
+.             foreach subject in ela math {
+ 17.               di "subject: `subject'"
+ 18. 
+.               // estimate from outcome regs with base controls
+.               est use $estimates_dir/va_cfr_all_`version'/reg_out_va/reg_`outcome'_va_`subject'_`sample'_sp_`control'_
+> ct`peer'.ster
+ 19. 
+.               tempname `outcome'_`subject'_`sample'_`control'`peer'
+ 20.               scalar ``outcome'_`subject'_`sample'_`control'`peer'' = _b[va_`subject'_`sample'_sp_`control'_ct`peer
+> ']
+ 21. 
+.               // estimates from outcome regs with matching controls as used in VA estimation
+.               est use $estimates_dir/va_cfr_all_`version'/reg_out_va/reg_`outcome'_va_`subject'_`sample'_sp_`control'_
+> ct`peer'_m.ster
+ 22.               tempname `outcome'_`subject'_`sample'_`control'`peer'_m
+ 23.               scalar ``outcome'_`subject'_`sample'_`control'`peer'_m' = _b[va_`subject'_`sample'_sp_`control'_ct`pe
+> er']
+ 24.             }
+ 25. 
+.           //-------------------------------------------------------------
+.           // regressions on both subject VA estimate
+.           //-------------------------------------------------------------
+.           // estimate from outcome regs with base controls
+.           est use $estimates_dir/va_cfr_all_`version'/reg_out_va/reg_`outcome'_va_ela_math_`sample'_sp_`control'_ct`pe
+> er'.ster
+ 26.           foreach subject in ela math {
+ 27.             tempname `outcome'_`subject'_`sample'_`control'`peer'_b
+ 28.             scalar ``outcome'_`subject'_`sample'_`control'`peer'_b' = _b[va_`subject'_`sample'_sp_`control'_ct`peer
+> ']
+ 29.           }
+ 30. 
+.           // estimates from outcome regs with matching controls as used in VA estimation
+.           est use $estimates_dir/va_cfr_all_`version'/reg_out_va/reg_`outcome'_va_ela_math_`sample'_sp_`control'_ct`pe
+> er'_m.ster
+ 31.           foreach subject in ela math {
+ 32.             tempname `outcome'_`subject'_`sample'_`control'`peer'_b_m
+ 33.             scalar ``outcome'_`subject'_`sample'_`control'`peer'_b_m' = _b[va_`subject'_`sample'_sp_`control'_ct`pe
+> er']
+ 34.           }
+ 35. 
+.         }
+ 36.       }
+ 37.     }
+ 38.   }
+ 39. 
+. 
+. 
+.   //------------------------------------------------------------------------------
+.   // figures for single subject VA regression, heterogeneity by prior score decile
+.   //------------------------------------------------------------------------------
+.   * GATE: prior-score-decile heterogeneity. Single source of truth = $run_prior_score in
+.   * do/settings.do. Producer (reg_out_va_all.do / reg_out_va_dk_all.do) and ALL consumers
+.   * (this file + <x>_tab.do) MUST gate on the same global; a disabled producer otherwise leaves
+.   * consumers reading missing .ster -> r(601). [2026-05-28]
+.   if "$run_prior_score" != "0" {
+ 40.   foreach sample in b las {
+ 41.     di "outcome sample: `sample'"
+ 42.     foreach control of local `sample'_sample_controls {
+ 43.       di "VA control: `control'"
+ 44.       foreach outcome in enr enr_2year enr_4year {
+ 45.         di "dependent var: `outcome'"
+ 46.         foreach subject in ela math {
+ 47.           di "`subject' test score"
+ 48.           foreach prior_subject in ela math {
+ 49.             di "interaction with prior `prior_subject' score deciles"
+ 50. 
+.             // loop over VA estimates without peer and with peer controls
+.             forvalues i = 1/2 {
+ 51.               if `i'==1 {
+ 52.                 local peer
+ 53.                 local peer_str "without"
+ 54.               }
+ 55.               if `i'==2 {
+ 56.                 local peer _p
+ 57.                 local peer_str "with"
+ 58.               }
+ 59.               di "peer controls in VA estimates (empty if no peer, _p if peer): `peer'"
+ 60. 
+.                 forvalues i = 1/2 {
+ 61.                   if `i'==1 {
+ 62.                     local match
+ 63.                     local match_str "base"
+ 64.                   }
+ 65.                   if `i'==2 {
+ 66.                     local match _m
+ 67.                     local match_str "matching"
+ 68.                   }
+ 69. 
+.                   est use $estimates_dir/va_cfr_all_`version'/reg_out_va/het_reg_`outcome'_va_`subject'_x_prior_`prior
+> _subject'_`sample'_sp_`control'_ct`peer'`match'.ster
+ 70. 
+.                   // convert estimation results into a dataset
+.                   parmest, norestore
+ 71. 
+.                   // keep only the interaction parameters
+.                   keep if strpos(parm, "prior_`prior_subject'_z_score_xtile#c.va_`subject'_`sample'_sp_`control'_ct`pe
+> er'") != 0
+ 72. 
+.                   // generate a var that is the decile number of the prior score, from 1 to 10
+.                   gen xtile = subinstr(substr(parm, 1, strpos(parm, ".")-1), "b", "", .)
+ 73.                   // convert xtile var into a numeric var
+.                   destring xtile, replace
+ 74. 
+.                   // twoway graph 1) bar graph of coefficient estimates 2) rcap for 90% CI
+.                   // draw horizontal yline at the coefficient estimate from regression with only the subject VA, no in
+> teraction
+.                   #delimit ;
+delimiter now ;
+.                   twoway
+>                     (bar estimate xtile, color(%50))
+>                     (rcap min95 max95 xtile, color(%50))
+>                     , yline(`=``outcome'_`subject'_`sample'_`control'`peer'`match''', lcolor(%30))
+>                     yline(0, lcolor(black%30))
+>                     legend(off)
+>                     ytitle("Coefficient Estimate")
+>                     xtitle("Prior ``prior_subject'_str' Score Decile")
+>                     /* title("``outcome'_str' on ``subject'_str' VA (`peer_str' peer controls) interacted with w/ prio
+> r ``prior_subject'_str' Score Decile"
+>                     , size(vsmall))
+>                     subtitle("``sample'_str' sample and ``control'_str' controls", size(vsmall)) */
+>                   ;
+ 75.                   #delimit cr
+delimiter now cr
+. 
+.                   graph export $figures_dir/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subject'_x_
+> prior_`prior_subject'_`sample'_sp_`control'_ct`peer'`match'.pdf, replace
+ 76. 
+. 
+.                   // redraw the graph with different titles to be used for combining into panels
+.                   #delimit ;
+delimiter now ;
+.                   twoway
+>                     (bar estimate xtile, color(%50))
+>                     (rcap min95 max95 xtile, color(%50))
+>                     , yline(`=``outcome'_`subject'_`sample'_`control'`peer'`match''', lcolor(%30))
+>                     yline(0, lcolor(black%30))
+>                     legend(off)
+>                     ytitle("Coefficient Estimate")
+>                     xtitle("Prior ``prior_subject'_str' Score Decile")
+>                     /* title("``sample'_str' sample and ``control'_str' controls"
+>                     , size(vsmall))
+>                     subtitle("VA `peer_str' peer controls. Reg has `match_str' VA controls", size(vsmall)) */
+>                     saving($output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subjec
+> t'_x_prior_`prior_subject'_`sample'_sp_`control'_ct`peer'`match', replace)
+>                   ;
+ 77.                   #delimit cr
+delimiter now cr
+. 
+.                 }
+ 78. 
+. 
+. 
+. 
+. 
+.               }
+ 79. 
+. 
+. 
+.           }
+ 80. 
+. 
+. 
+.         }
+ 81.       }
+ 82.     }
+ 83.   }
+ 84.   } // end gate: $run_prior_score (prior-score-decile figures)
+ 85. 
+. 
+.   //------------------------------------------------------------------------------
+.   // figures for single subject VA regression, heterogeneity by race, sex, econ disadvantage, charter, and median inco
+> me decile
+.   //------------------------------------------------------------------------------
+.   foreach sample in b las {
+ 86.     di "outcome sample: `sample'"
+ 87.     foreach control of local `sample'_sample_controls {
+ 88.       di "VA control: `control'"
+ 89.       foreach outcome in enr enr_2year enr_4year {
+ 90.         di "dependent var: `outcome'"
+ 91.         foreach subject in ela math {
+ 92.           di "`subject' test score"  
+ 93.             if "`sample'" == "las" {
+ 94.               local het_char_vars race male econ_disadvantage charter inc_median_hh_xtile
+ 95.             } 
+ 96.             else {
+ 97.               local het_char_vars race male econ_disadvantage charter
+ 98. 
+.             }
+ 99.           foreach het_char of local het_char_vars {
+100.             di "interaction with race, sex, econ disadvantage, and median income"
+101. 
+.             // loop over VA estimates without peer and with peer controls
+.             forvalues i = 1/2 {
+102.               if `i'==1 {
+103.                 local peer
+104.                 local peer_str "without"
+105.               }
+106.               if `i'==2 {
+107.                 local peer _p
+108.                 local peer_str "with"
+109.               }
+110.               di "peer controls in VA estimates (empty if no peer, _p if peer): `peer'"
+111. 
+.                 forvalues i = 1/2 {
+112.                   if `i'==1 {
+113.                     local match
+114.                     local match_str "base"
+115.                   }
+116.                   if `i'==2 {
+117.                     local match _m
+118.                     local match_str "matching"
+119.                   }
+120. 
+.                   est use $estimates_dir/va_cfr_all_`version'/reg_out_va/het_reg_`outcome'_va_`subject'_x_`het_char'_`
+> sample'_sp_`control'_ct`peer'`match'.ster
+121. 
+.                   // convert estimation results into a dataset
+.                   parmest, norestore
+122.                   //---------------------------------------------
+.                   // graph for continuous het char income median 
+.                   /* manipulate data if it is xtiles */
+.                   if "`het_char'" == "inc_median_hh_xtile" {
+123.                     // keep only the interaction parameters
+.                     keep if strpos(parm, "xtile#c.va") != 0
+124. 
+.                     // generate a var that is the decile number of the prior score, from 1 to 10
+.                     gen xtile = subinstr(substr(parm, 1, strpos(parm, ".")-1), "b", "", .)
+125.                     // convert xtile var into a numeric var
+.                     destring xtile, replace
+126. 
+.                     // twoway graph 1) bar graph of coefficient estimates 2) rcap for 90% CI
+.                     // draw horizontal yline at the coefficient estimate from regression with only the subject VA, no 
+> interaction
+.                     #delimit ;
+delimiter now ;
+.                     twoway
+>                       (bar estimate xtile, color(%50))
+>                       (rcap min95 max95 xtile, color(%50))
+>                       , yline(`=``outcome'_`subject'_`sample'_`control'`peer'`match''', lcolor(%30))
+>                       yline(0, lcolor(black%30))
+>                       legend(off)
+>                       ytitle("Coefficient Estimate")
+>                       xtitle("``het_char'_str'")
+>                       /* title("``outcome'_str' on ``subject'_str' VA (`peer_str' peer controls) interacted with w/ pr
+> ior ``prior_subject'_str' Score Decile"
+>                       , size(vsmall))
+>                       subtitle("``sample'_str' sample and ``control'_str' controls", size(vsmall)) */
+>                     ;
+127.                     #delimit cr
+delimiter now cr
+. 
+.                     graph export $figures_dir/va_cfr_all_`version'/het_reg_chars/het_reg_`outcome'_va_`subject'_x_`het
+> _char'_`sample'_sp_`control'_ct`peer'`match'.pdf, replace
+128. 
+. 
+.                     // redraw the graph with different titles to be used for combining into panels
+.                     #delimit ;
+delimiter now ;
+.                     twoway
+>                       (bar estimate xtile, color(%50))
+>                       (rcap min95 max95 xtile, color(%50))
+>                       , yline(`=``outcome'_`subject'_`sample'_`control'`peer'`match''', lcolor(%30))
+>                       yline(0, lcolor(black%30))
+>                       legend(off)
+>                       ytitle("Coefficient Estimate")
+>                       xtitle("``het_char'_str'")  
+>                       /* title("``sample'_str' sample and ``control'_str' controls"
+>                       , size(vsmall))
+>                       subtitle("VA `peer_str' peer controls. Reg has `match_str' VA controls", size(vsmall)) */
+>                       saving($output_dir/gph_files/va_cfr_all_`version'/het_reg_chars/het_reg_`outcome'_va_`subject'_x
+> _`het_char'_`sample'_sp_`control'_ct`peer'`match', replace)
+>                     ;
+129.                     #delimit cr
+delimiter now cr
+.                   }
+130. 
+.                   // ------------------------------------------
+.                   // graph for het by categorical variables race, sex, econ disadvantage
+.                   if "`het_char'" != "inc_median_hh_xtile" {
+131.                     /* keep only interaction parameters */
+.                     keep if strpos(parm, "`het_char'#c.va") != 0
+132.                     // generate a var that is the category of het char
+.                     gen `het_char'_cat = subinstr(substr(parm, 1, strpos(parm, ".")-1), "b", "", .)
+133.                     destring `het_char'_cat, replace
+134. 
+.                     /* race: 1 "Black" 2 "Hispanic" 3 "Asian" 4 "White" 5 "Other" */
+.                     local race_xlabel `"1 "Black" 2 "Hispanic" 3 "Asian" 4 "White" 5 "Other""'
+135.                     local charter_xlabel `"0 "Non-Charter" 1 "Charter""'
+136.                     local male_xlabel `"0 "Female" 1 "Male""'
+137.                     local econ_disadvantage_xlabel `"0 "Not Disadvantaged" 1 "Economically Disadvantaged""'
+138. 
+.                     #delimit ;
+delimiter now ;
+.                     twoway
+>                       (bar estimate `het_char'_cat, color(%50))
+>                       (rcap min95 max95 `het_char'_cat, color(%50))
+>                       , yline(`=``outcome'_`subject'_`sample'_`control'`peer'`match''', lcolor(%30))
+>                       yline(0, lcolor(black%30))
+>                       legend(off)
+>                       ytitle("Coefficient Estimate")
+>                       xtitle("``het_char'_str'")
+>                       xlabel(``het_char'_xlabel')
+>                       /* title("``outcome'_str' on ``subject'_str' VA (`peer_str' peer controls) interacted with w/ pr
+> ior ``prior_subject'_str' Score Decile"
+>                       , size(vsmall))
+>                       subtitle("``sample'_str' sample and ``control'_str' controls", size(vsmall)) */
+>                     ;
+139.                     #delimit cr
+delimiter now cr
+. 
+.                     graph export $figures_dir/va_cfr_all_`version'/het_reg_chars/het_reg_`outcome'_va_`subject'_x_`het
+> _char'_`sample'_sp_`control'_ct`peer'`match'.pdf, replace
+140. 
+. 
+.                     // redraw the graph with different titles to be used for combining into panels
+.                     #delimit ;
+delimiter now ;
+.                     twoway
+>                       (bar estimate `het_char'_cat, color(%50))
+>                       (rcap min95 max95 `het_char'_cat, color(%50))
+>                       , yline(`=``outcome'_`subject'_`sample'_`control'`peer'`match''', lcolor(%30))
+>                       yline(0, lcolor(black%30))
+>                       legend(off)
+>                       ytitle("Coefficient Estimate")
+>                       xtitle("``het_char'_str'", size(small))
+>                       xlabel(``het_char'_xlabel', labsize(small)) 
+>                       /* title("``sample'_str' sample and ``control'_str' controls"
+>                       , size(vsmall))
+>                       subtitle("VA `peer_str' peer controls. Reg has `match_str' VA controls", size(vsmall)) */
+>                       saving($output_dir/gph_files/va_cfr_all_`version'/het_reg_chars/het_reg_`outcome'_va_`subject'_x
+> _`het_char'_`sample'_sp_`control'_ct`peer'`match', replace)
+>                     ;
+141.                     #delimit cr
+delimiter now cr
+.                   }
+142. 
+. 
+. 
+.                 }
+143. 
+. 
+. 
+. 
+. 
+.               }
+144. 
+. 
+. 
+.           }
+145. 
+. 
+. 
+.         }
+146.       }
+147.     }
+148.   }
+149. 
+. 
+. 
+. 
+. 
+.   //------------------------------------------------------------------------------
+.   // figures for both subject VA regression, heterogeneity by prior score decile
+.   //------------------------------------------------------------------------------
+.   * GATE: prior-score-decile heterogeneity. Single source of truth = $run_prior_score in
+.   * do/settings.do. Producer (reg_out_va_all.do / reg_out_va_dk_all.do) and ALL consumers
+.   * (this file + <x>_tab.do) MUST gate on the same global; a disabled producer otherwise leaves
+.   * consumers reading missing .ster -> r(601). [2026-05-28]
+.   if "$run_prior_score" != "0" {
+150.   foreach sample in b las {
+151.     di "outcome sample: `sample'"
+152.     foreach control of local `sample'_sample_controls {
+153.       di "VA control: `control'"
+154.       foreach outcome in enr enr_2year enr_4year {
+155.         di "dependent var: `outcome'"
+156. 
+.           foreach prior_subject in ela math {
+157.             di "interaction with prior `prior_subject' score deciles"
+158. 
+.             // loop over VA estimates without peer and with peer controls
+.             forvalues i = 1/2 {
+159.               if `i'==1 {
+160.                 local peer
+161.                 local peer_str "without"
+162.               }
+163.               if `i'==2 {
+164.                 local peer _p
+165.                 local peer_str "with"
+166.               }
+167.               di "peer controls in VA estimates (empty if no peer, _p if peer): `peer'"
+168. 
+.                 forvalues i = 1/2 {
+169.                   if `i'==1 {
+170.                     local match
+171.                     local match_str "base"
+172.                   }
+173.                   if `i'==2 {
+174.                     local match _m
+175.                     local match_str "matching"
+176.                   }
+177. 
+.                   est use $estimates_dir/va_cfr_all_`version'/reg_out_va/het_reg_`outcome'_va_ela_math_x_prior_`prior_
+> subject'_`sample'_sp_`control'_ct`peer'`match'.ster
+178. 
+.                   // convert estimation results into a dataset
+.                   parmest, norestore
+179. 
+.                   // keep only the interaction parameters
+.                   keep if strpos(parm, "prior_`prior_subject'_z_score_xtile#c.va_ela_`sample'_sp_`control'_ct`peer'")!
+> =0 | strpos(parm, "prior_`prior_subject'_z_score_xtile#c.va_math_`sample'_sp_`control'_ct`peer'")!=0
+180. 
+. 
+.                   // generate a var that is the decile number of the prior score, from 1 to 10
+.                   gen xtile = subinstr(substr(parm, 1, strpos(parm, ".")-1), "b", "", .)
+181.                   // convert xtile var into a numeric var
+.                   destring xtile, replace
+182. 
+.                   // twoway graph 1) bar graph of coefficient estimates 2) rcap for 90% CI
+.                   // yline 1: coefficient estimate of ELA VA from regression with both subject VA without interactions
+.                   // yline 2: coefficient estimate of Math VA from regression with both subject VA without interaction
+> s
+.                   #delimit ;
+delimiter now ;
+.                   twoway
+>                     (bar estimate xtile, color(%30))
+>                     (rcap min95 max95 xtile, color(%30))
+>                     , yline(`=``outcome'_ela_`sample'_`control'`peer'_b`match''', lcolor(%30))
+>                      yline(`=``outcome'_math_`sample'_`control'`peer'_b`match''', lcolor(%30))
+>                      yline(0, lcolor(black%30))
+>                     legend(off)
+>                     ytitle("Coefficient Estimate")
+>                     xtitle("Prior ``prior_subject'_str' Score Decile")
+>                     /* title("``outcome'_str' on Math and ELA VA (`peer_str' peer controls) interacted with w/ prior `
+> `prior_subject'_str' Score Decile"
+>                     , size(vsmall))
+>                     subtitle("``sample'_str' sample and ``control'_str' controls", size(vsmall)) */
+>                   ;
+183.                   #delimit cr
+delimiter now cr
+. 
+.                   graph export $figures_dir/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_prior
+> _`prior_subject'_`sample'_sp_`control'_ct`peer'`match'.pdf, replace
+184. 
+. 
+.                   // redraw the graph with different titles to be used for combining into panels
+.                   #delimit ;
+delimiter now ;
+.                   twoway
+>                     (bar estimate xtile, color(%30))
+>                     (rcap min95 max95 xtile, color(%30))
+>                     , yline(`=``outcome'_ela_`sample'_`control'`peer'_b`match''', lcolor(%30))
+>                      yline(`=``outcome'_math_`sample'_`control'`peer'_b`match''', lcolor(%30))
+>                      yline(0, lcolor(black%30))
+>                     legend(off)
+>                     ytitle("Coefficient Estimate")
+>                     xtitle("Prior ``prior_subject'_str' Score Decile")
+>                     /* title("``sample'_str' sample and ``control'_str' controls"
+>                     , size(vsmall))
+>                     subtitle("VA `peer_str' peer controls. Reg has `match_str' VA controls", size(vsmall)) */
+>                     saving($output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_
+> prior_`prior_subject'_`sample'_sp_`control'_ct`peer'`match', replace)
+>                   ;
+185.                   #delimit cr
+delimiter now cr
+. 
+.                 }
+186. 
+. 
+. 
+. 
+. 
+.               }
+187. 
+. 
+. 
+.           }
+188. 
+.       }
+189.     }
+190.   }
+191. 
+. 
+. 
+.   //------------------------------------------------------------------------------
+.   // combine figures into panels
+.   // only include b sample b ct, p/np and las sample las control, p/np
+.   //------------------------------------------------------------------------------
+.   foreach outcome in enr enr_2year enr_4year {
+192.     di "y var: `outcome'. x var: `outcome' dk va"
+193.     foreach prior_subject in ela math {
+194.       di "interaction with prior `prior_subject' score decile"
+195. 
+.       // panels for regressions on single subject VA
+.       foreach subject in ela math {
+196.         di "RHS VA subject: `subject'"
+197. 
+.         #delimit ;
+delimiter now ;
+.         graph combine
+>           $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subject'_x_prior_`prior
+> _subject'_b_sp_b_ct.gph
+>           $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subject'_x_prior_`prior
+> _subject'_b_sp_b_ct_p_m.gph
+>           $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subject'_x_prior_`prior
+> _subject'_las_sp_las_ct.gph
+>           $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subject'_x_prior_`prior
+> _subject'_las_sp_las_ct_p_m.gph
+>           , xcommon ycommon
+>           title("``outcome'_str' on ``subject'_str' VA interacted with w/ prior ``prior_subject'_str' Score Decile", s
+> ize(small))
+>           ;
+198.         #delimit cr
+delimiter now cr
+. 
+.         // single subject VA with distance controls
+.         graph export $figures_dir/va_cfr_all_`version'/het_reg_combined_panels/score_va/het_reg_`outcome'_va_`subject'
+> _x_prior_`prior_subject'_combined.pdf, replace
+199. 
+.         #delimit ;
+delimiter now ;
+.         graph combine
+>           $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subject'_x_prior_`prior
+> _subject'_b_sp_bd_ct.gph
+>           $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subject'_x_prior_`prior
+> _subject'_b_sp_bd_ct_p_m.gph
+>           $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subject'_x_prior_`prior
+> _subject'_las_sp_lasd_ct.gph
+>           $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_`subject'_x_prior_`prior
+> _subject'_las_sp_lasd_ct_p_m.gph
+>           , xcommon ycommon
+>           title("``outcome'_str' on ``subject'_str' VA interacted with w/ prior ``prior_subject'_str' Score Decile", s
+> ize(small))
+>           ;
+200.         #delimit cr
+delimiter now cr
+. 
+.         graph export $figures_dir/va_cfr_all_`version'/het_reg_combined_panels/score_va/het_reg_distance_`outcome'_va_
+> `subject'_x_prior_`prior_subject'_combined.pdf, replace
+201. 
+. 
+. 
+.       }
+202. 
+. 
+.       // panels for regressions on both subject VA
+.       #delimit ;
+delimiter now ;
+.       graph combine
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_prior_`prior_subjec
+> t'_b_sp_b_ct.gph
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_prior_`prior_subjec
+> t'_b_sp_b_ct_p_m.gph
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_prior_`prior_subjec
+> t'_las_sp_las_ct.gph
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_prior_`prior_subjec
+> t'_las_sp_las_ct_p_m.gph
+>         , xcommon ycommon
+>         title("``outcome'_str' on ELA and Math VA interacted with w/ prior ``prior_subject'_str' Score Decile", size(s
+> mall))
+>         ;
+203.       #delimit cr
+delimiter now cr
+. 
+.       graph export $figures_dir/va_cfr_all_`version'/het_reg_combined_panels/score_va/het_reg_`outcome'_va_both_x_prio
+> r_x_prior_`prior_subject'_combined.pdf, replace
+204. 
+. 
+.       // both subject VA with distance controls
+.       #delimit ;
+delimiter now ;
+.       graph combine
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_prior_`prior_subjec
+> t'_b_sp_bd_ct.gph
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_prior_`prior_subjec
+> t'_b_sp_bd_ct_p_m.gph
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_prior_`prior_subjec
+> t'_las_sp_lasd_ct.gph
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_`outcome'_va_both_x_prior_`prior_subjec
+> t'_las_sp_lasd_ct_p_m.gph
+>         , xcommon ycommon
+>         title("``outcome'_str' on ELA and Math VA interacted with w/ prior ``prior_subject'_str' Score Decile", size(s
+> mall))
+>         ;
+205.       #delimit cr
+delimiter now cr
+. 
+.       graph export $figures_dir/va_cfr_all_`version'/het_reg_combined_panels/score_va/het_reg_distance_`outcome'_va_bo
+> th_x_prior_`prior_subject'_combined.pdf, replace
+206. 
+. 
+.     }
+207.   }
+208.   } // end gate: $run_prior_score (both-subject prior-decile figures + combine panels)
+209. 
+. }
+outcome sample: b
+VA control: b
+dependent var: enr
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_2year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_4year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+VA control: bd
+dependent var: enr
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_2year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_4year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+outcome sample: las
+VA control: b
+dependent var: enr
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_2year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_4year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+VA control: ls
+dependent var: enr
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_2year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_4year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+VA control: las
+dependent var: enr
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_2year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_4year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+VA control: bd
+dependent var: enr
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_2year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_4year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+VA control: lsd
+dependent var: enr
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_2year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_4year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+VA control: lasd
+dependent var: enr
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_2year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+dependent var: enr_4year
+peer controls in VA estimates (empty if no peer, _p if peer): 
+subject: ela
+subject: math
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+subject: ela
+subject: math
+outcome sample: b
+VA control: b
+dependent var: enr
+ela test score
+interaction with prior ela score deciles
+peer controls in VA estimates (empty if no peer, _p if peer): 
+(46 observations deleted)
+xtile: all characters numeric; replaced as byte
+unable to save PDF file
+r(691);
+
+end of do-file
+r(691);
+.         do do/va/reg_out_va_dk_all.do                  // regress postsec outcomes on Deep Knowledge VA; heterogeneity
+>  by prior-score decile; writes $estimates_dir/.../reg_out_va/
+.         do do/va/reg_out_va_dk_all_tab.do              // paper-shipping CSV tables of DK VA regressions; writes $tabl
+> es_dir/.../reg_out_va_dk/
+.         do do/va/reg_out_va_dk_all_fig.do              // paper-shipping figures of DK VA heterogeneity; writes $figur
+> es_dir/.../ + $output_dir/gph_files/.../
+. 
+.         * RELOCATED 2026-05-08 per plan v3 §3.3 step 3 batch 3d — sibling-lag
+.         * forecast-bias diagnostic (not paper-reported per do_all.do comment).
+.         * Reads score_s sample dta from batch 2b; produces .ster + summary CSV.
+.         do do/va/va_score_sib_lag.do                   // sibling-lag FB diagnostic for score VA; lag-1 older-sibling 
+> controls + lag-2 FB leave-out; writes $estimates_dir/.../{vam,spec_test,fb_test,va_est_dta}/
+.         do do/va/va_out_sib_lag.do                     // sibling-lag FB diagnostic for outcome VA (mirror of score va
+> riant)
+.         do do/va/va_sib_lag_spec_fb_tab.do             // combined spec+FB summary CSV for sibling-lag diagnostic spec
+> s; writes $tables_dir/.../combined/sib_lag_fb_spec_<outcome>.csv
+. 
+.         * RELOCATED 2026-05-08 per plan v3 §3.3 step 4 — heterogeneity.
+.         * Reads merged VA estimates (from merge_va_est.do, batch 3c1) +
+.         * sch_char.dta (LEGACY, Step 9 deferred); produces VA-by-school-char
+.         * regressions + paper Table 8 panel + figures.
+.         * NOTE: plan v3 mentioned `pass_through/` as a Step 4 destination, but
+.         * the predecessor has no pass_through/ directory.  Step 4 = 4 va_het files only.
+.         do do/va/heterogeneity/va_het.do               // VA heterogeneity by district + school chars; produces va_all
+> _schl_char.dta + paper Table 8 panel LaTeX (var_across_district + corr_char)
+.         do do/va/heterogeneity/va_corr_schl_char.do    // VA-by-school-char regressions per (sample × control × peer ×
+>  het_char) cell; writes $estimates_dir/.../va_het/<...>.ster
+.         do do/va/heterogeneity/va_corr_schl_char_fig.do // paper figures: VA distribution by school chars (scatter + d
+> ensity); writes $figures_dir/.../va_het/<...>.pdf
+.         do do/va/heterogeneity/persist_het_student_char_fig.do // combined-panel figures for outcome-VA persistence by
+>  student chars; reads .gph from batch 3c2 reg_out_va_all_fig.do
+.     }
+r(691);
+. 
+.     * NOTE: predecessor `out_drift_limit.doh' is DEAD CODE (never included by any
+.     * active script — all 4 entry points include `drift_limit.doh' which already
+.     * defines both score_drift_limit and out_drift_limit).  Defer to Phase 1c §5.1
+.     * archival.
+.     log on master    // resume master for the orchestration layer
+. }
+r(691);
+
+end of do-file
+r(691);

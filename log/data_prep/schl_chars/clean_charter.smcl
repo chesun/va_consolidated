@@ -2,7 +2,7 @@
       name:  clean_charter
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_charter.smcl
   log type:  text
- opened on:  26 May 2026, 17:35:13
+ opened on:  26 May 2026, 22:23:25
 . 
 . }
 
@@ -63,8 +63,8 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 .     local time2 = c(current_time)
 . 
 .     di "do file start time: `date1' `time1' "
-do file start time: 26 May 2026 17:35:12 
+do file start time: 26 May 2026 22:23:24 
 .     di "do file end time: `date2' `time2' "
-do file end time: 26 May 2026 17:35:13 
+do file end time: 26 May 2026 22:23:25 
 . 
 .     cap log close clean_charter
