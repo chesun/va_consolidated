@@ -5,10 +5,9 @@
      Keep this file under ~150 lines — Claude loads it every session.
      Based on clo-author (Hugo Sant'Anna) + infrastructure from Pedro Sant'Anna. -->
 
-**Project:** [YOUR PROJECT NAME]
-**Institution:** [YOUR INSTITUTION]
+**Project:** Value Added Project
+**Institution:** California Education Lab, UC Davis
 **Branch:** main
-**Analysis roots:** do/, py/, figures/, tables/, paper/, talks/, preambles/
 
 ---
 
@@ -19,8 +18,8 @@
 - **Single source of truth** -- Paper `main.tex` is authoritative; talks and supplements derive from it
 - **Quality gates** -- weighted aggregate score; nothing ships below 80/100; see `quality.md`
 - **Worker-critic pairs** -- every creator has a paired critic; critics never edit files
+- **Phase 1 review (hard gate)** -- every Phase 1 code commit goes through coder-critic at 80/100 before push; commit message footer records the verdict (see `phase-1-review.md`)
 - **Primary source first** -- before citing a paper in a load-bearing artifact, read the PDF and produce reading notes in `master_supporting_docs/literature/reading_notes/`; hooks block edits otherwise (see `primary-source-first.md`)
-- **Evidence gating** -- a verdict is only as good as the evidence it carries; gate on *claims*, not actions; verdicts are `{PASS, UNVERIFIED, FAIL}` (never a silent default-PASS), and the verification mechanism scales to checkability (block only deterministic Tier-1 checks; advise+deduct for judgment). A no-logic-change claim is gated against the residue the recorder writes to the verification ledger (see `adversarial-default.md` § Evidence gating and `.claude/references/evidence-gating-detail.md`)
 - **Decisions are ADRs** -- substantive design, identification, or specification decisions live in `decisions/NNNN_slug.md`; analysis docs hold reasoning, ADRs hold the record (see `decision-log.md`)
 - **Track TODOs** -- project root `TODO.md` tracks open work (Active / Up Next / Waiting / Backlog / Done); update after completing any task (see `todo-tracking.md`)
 - **[LEARN] tags** -- when corrected, save `[LEARN:category] wrong → right` to MEMORY.md
@@ -38,38 +37,54 @@
 ## Folder Structure
 
 ```
-[YOUR-PROJECT]/
-├── CLAUDE.MD                    # This file
-├── TODO.md                      # Active work tracker (see todo-tracking.md)
-├── .claude/                     # Rules, skills, agents, hooks
-├── decisions/                   # ADRs — NNNN_slug.md, append-only (see decision-log.md)
-├── Bibliography_base.bib        # Centralized bibliography
-├── paper/                       # Main LaTeX manuscript (source of truth)
-│   ├── main.tex                 # Primary paper file
-│   └── sections/                # Section-level .tex files
-├── talks/                       # Derivative Beamer presentations
-│   ├── job_market_talk.tex      # 45-60 min, full results
-│   ├── seminar_talk.tex         # 30-45 min, standard seminar
-│   ├── short_talk.tex           # 15 min, conference session
-│   └── lightning_talk.tex       # 5 min, spiel/elevator pitch
-├── data/                        # Project data
+va_consolidated/
+├── CLAUDE.md                    # This file
+├── README.md, LICENSE, MEMORY.md, TODO.md
+├── SESSION_REPORT.md            # Mirrored to .claude/SESSION_REPORT.md
+├── .claude/                     # Rules, skills, agents, hooks, state
+├── decisions/                   # ADRs — NNNN_slug.md, append-only
+├── quality_reports/             # Plans, session logs, reviews, audits
+│
+├── ado/                         # Custom-modified .ado packages (vam shrinkage etc.)
+│
+├── do/                          # Stata pipeline (root-level; no scripts/ parent)
+│   ├── main.do                  # SINGLE Stata pipeline entry point (phase toggles)
+│   ├── settings.do              # Hostname-branched paths (Scribe vs other)
+│   ├── _archive/                # Historical / superseded
+│   ├── upstream/                # Stata data prep producing static project inputs
+│   ├── local/                   # Local-machine ad-hoc keepers
+│   ├── sibling_xwalk/           # Sibling-crosswalk pipeline
+│   ├── data_prep/               # Cleaning + raw-to-clean transformations
+│   │   ├── acs/, schl_chars/, k12_postsec_distance/, prepare/, caschls_qoiclean/
+│   ├── samples/                 # Sample construction
+│   ├── va/                      # VA estimation (helpers, score, outcome, pass_through, heterogeneity)
+│   ├── survey_va/               # CalSCHLS index + survey-VA regressions
+│   ├── share/                   # Generic tab/figure helpers
+│   ├── check/, debug/, explore/ # Verification / ad-hoc / exploratory
+│
+├── py/                          # Python (root-level)
+│   └── upstream/                # Geocoding scripts (preserved for completeness)
+│
+├── data/
 │   ├── raw/                     # Original untouched data (often gitignored)
-│   └── cleaned/                 # Processed datasets ready for analysis
-├── output/                      # Intermediate results (logs, temp files)
-├── figures/                     # Final figures (.pdf, .png) referenced in paper
-├── tables/                      # Final tables (.tex) referenced in paper
-├── supplementary/               # Online appendix and supplements
-├── replication/                 # Replication package for deposit
+│   └── cleaned/                 # Processed datasets
+├── output/                      # Logs, intermediate non-paper outputs
+├── figures/                     # Mirrors paths the paper LaTeX expects (share/va/v1/, share/survey/, etc.)
+├── tables/                      # Mirrors paper paths (share/va/pub/, share/survey/pub/)
+├── log/                         # Stata log files
+│
+├── paper/                       # Empty for current milestone (paper canonical = ~/github_repos/va_paper_clone)
+├── talks/                       # Beamer presentations (deferred)
+├── supplementary/               # Online appendix
+├── replication/                 # Replication package for deposit (post-consolidation)
 ├── preambles/header.tex         # LaTeX headers / shared preamble
-├── scripts/                     # Analysis code (Stata primary, R/Python secondary)
-├── quality_reports/             # Plans, session logs, reviews, scores
-├── explorations/                # Research sandbox (see rules)
+├── explorations/                # Research sandbox
 ├── templates/                   # Session log, quality report templates
 └── master_supporting_docs/      # Reference papers and data docs
     ├── literature/              # Primary sources (gated by primary-source-first hook)
     │   ├── papers/              # PDFs of cited papers (surname_year naming)
-    │   └── reading_notes/       # One .md per cited paper (see README.md)
-    └── supporting_papers/       # Methodology references, textbook chapters (not load-bearing)
+    │   └── reading_notes/       # One .md per cited paper
+    └── supporting_papers/       # Methodology references (not load-bearing)
 ```
 
 ---
@@ -77,14 +92,16 @@
 ## Commands
 
 ```bash
-# Paper compilation (3-pass, pdflatex)
-cd Paper && pdflatex -interaction=nonstopmode main.tex
-BIBINPUTS=..:$BIBINPUTS bibtex main
-pdflatex -interaction=nonstopmode main.tex
-pdflatex -interaction=nonstopmode main.tex
+# Pipeline run (on Scribe via SSH)
+cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+stata -b do do/main.do
 
-# Talk compilation (pdflatex with preambles)
-cd Talks && TEXINPUTS=../Preambles:$TEXINPUTS pdflatex -interaction=nonstopmode talk.tex
+# Paper compilation (canonical paper lives in ~/github_repos/va_paper_clone)
+cd ~/github_repos/va_paper_clone/paper
+pdflatex -interaction=nonstopmode common_core_va_v2.tex
+BIBINPUTS=../literature/bibtex:$BIBINPUTS bibtex common_core_va_v2
+pdflatex -interaction=nonstopmode common_core_va_v2.tex
+pdflatex -interaction=nonstopmode common_core_va_v2.tex
 ```
 
 ---
@@ -120,7 +137,7 @@ See `quality.md` for weighted aggregation formula.
 | `/balance [treatment]` | Generate balance tables (Stata/R) |
 | `/event-study [spec]` | Event study plots with pre-trends and CIs |
 | `/compile-latex [file]` | 3-pass pdflatex + bibtex (papers and talks) |
-| `/tools [subcommand]` | Utilities: commit, compile, validate-bib, context-status, learn, sync-status, propagate, sync-overlays, list-consumers |
+| `/tools [subcommand]` | Utilities: commit, validate-bib, context-status, learn, etc. |
 
 ---
 
