@@ -2117,3 +2117,151 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 1. Christina executes 5-step Scribe-setup on Scribe per `quality_reports/plans/2026-05-25_scribe-setup.md` v5
 2. M4 attempt #5 launch: `nohup stata-mp -b do do/main.do &`
 3. Monitor through Phase 5 (clean_va.do now invoked here per fix); if it passes, run smoke tier of M4 golden-master
+
+## 2026-05-31 — VA figure PDF-save mkdir fix + r(601) re-diagnosis
+
+**Operations:**
+- Diagnosed user-reported "PDF can't be saved / subdirs under figures/va_cfr_all_v* not created" via Explore + coder subagents against `log/main_26-May-2026_20-50-27.smcl` (119MB, Scribe).
+- Edited `do/va/reg_out_va_all_fig.do` (+14 `cap mkdir`), `do/va/reg_out_va_dk_all_fig.do` (+10 `cap mkdir`), `do/main.do:356` (stale "gated off" comment).
+- Wrote `quality_reports/reviews/2026-05-31_va-fig-pdf-save-debug.md` + session log; added ledger rows (diagnosis + mkdir-coverage PASS×2 + no-logic-change UNVERIFIED×2); created `quality_reports/research_journal.md`.
+
+**Decisions:**
+- Two distinct bugs, not one. Bug #1 (the May-26 termination) is `r(601)` `est use ... .ster not found` from a producer/consumer prior-score-decile gate desync — already fixed pre-session in `e8d47aa` (2026-05-28). Bug #2 (the mkdir/PDF-save bug the user described) is real, separate, latent — fixed this session.
+- Corrected the coder subagent's `clear all`-wipes-global theory: a wiped global reads as on for BOTH producer and consumer, so it cannot explain producer-off/consumer-on. The real cause is the pre-`e8d47aa` gate mismatch.
+
+**Results:**
+- mkdir fix: every `graph export`/`saving()` target dir now has parent-before-child `cap mkdir` (v1+v2, under $figures_dir and $output_dir/gph_files); `/* */` balance unchanged.
+- Code-only; not run (Scribe-only runtime, air-gapped). No local log of the actual r(603) PDF-save failure exists.
+
+**Commits:**
+- None — `reg_out_va_all_fig.do`, `reg_out_va_dk_all_fig.do`, `main.do` modified, uncommitted (coder-critic dispatch pending per phase-1-review.md).
+
+**Status:**
+- Done: diagnosis, mkdir fix, stale-comment fix, housekeeping.
+- Pending: coder-critic on the two figure files → commit → push to Scribe → re-run phase 3.
+
+## 2026-05-31 (cont.) — va_score_sib_lag / va_out_sib_lag r(111) fix
+
+**Operations:**
+- Diagnosed `log/va/va_score_sib_lag.smcl:841-845` r(111) `variable old1_sib_enr_2year not found` in `vam controls()`.
+- Traced: lag controls old1_sib_enr_*/old2_sib_enr_* (macros_va.doh:270-279) are built in siblingoutxwalk.do:314-327 + saved to crosswalk, but merge_sib.doh:64 `keepusing(touse* *sibling*)` drops them before score_s/out_s are saved.
+- Compared against predecessor fork (`~/github_repos/cde_va_project_fork`): merge_sib.doh byte-identical; predecessor .log (2023-03) ran clean, .smcl (2024-07) shows identical r(111).
+- Fix (Option B): added scoped `merge m:1 state_student_id using sibling_out_xwalk, keepusing(old1_sib_enr_2year old1_sib_enr_4year old2_sib_enr_2year old2_sib_enr_4year)` after both `use` sites in `do/va/va_score_sib_lag.do` + `do/va/va_out_sib_lag.do`.
+- Wrote `quality_reports/reviews/2026-05-31_va-score-sib-lag-r111-debug.md`; added ledger rows.
+
+**Decisions:**
+- NOT a relocation regression — pre-existing latent bug in predecessor too. Surfaced now because m4_acceptance_run=1 forces do_create_samples=1 (fresh sample rebuild vs predecessor cached .dta).
+- Chose Option B (scoped re-merge in the 2 diagnostics) over A (broaden merge_sib.doh — touches shared paper samples) and C (gate off — defers). B keeps shared sample .dta byte-identical for M4 golden-master parity. User confirmed B.
+
+**Results:**
+- Both files patched at both use-sites (VA-est + FB-test); comment balance 4=4; no `*/`-glob hazard (hook caught + rephrased a first attempt).
+- Code-only; not run (Scribe-only, air-gapped).
+
+**Commits:**
+- None — now 5 files uncommitted this session (2 fig mkdir + main.do + 2 sib_lag). coder-critic dispatch pending.
+
+**Status:**
+- Done: r(111) diagnosis + Option-B fix + housekeeping.
+- Pending: coder-critic on all in-scope files → commit → push to Scribe → re-run.
+
+## 2026-05-31 (cont.) — mattschlchar.do missing-dataset fix + ADR-0023 (vendoring)
+
+**Operations:**
+- Diagnosed M4 error at `do/survey_va/mattschlchar.do:139` (`use $datadir_clean/schoolchar/mattschlchar` — file absent): the `clean` toggle (line 68) is 0 per ADR-0013, but the `if clean==0 {}` block was EMPTY, so the cleaned dataset was never provisioned into the sandbox; the `clean==1` rebuild branch is unusable (Matt's user dir access lost).
+- Filled the `clean==0` block: `use $datadir_raw/upstream/mattschlchar` → `save $datadir_clean/schoolchar/mattschlchar`. Updated header INPUTS.
+- Created `data/raw/upstream/` (.gitkeep + path-stub README.md per ADR-0008 convention); added `.gitignore` exceptions (README + .gitkeep tracked, .dta stays Scribe-only).
+- Wrote ADR-0023 (vendoring as runtime source; supersedes ADR-0013 in part); marked ADR-0013 "Superseded in part by #0023"; updated decisions/README.md index.
+
+**Decisions:**
+- Chose vendoring (Option: static copy into `consolidated/data/raw/upstream/`) over live-read from `$caschls_projdir` each run. Keeps the pipeline self-contained per ADR-0021; decouples runtime from the caschls predecessor dir. User chose vendoring.
+- Differs from ADR-0008 (insurance backup, runtime unchanged): here the vendored copy IS the runtime source because the original raw source is gone.
+
+**Results:**
+- Path derived from globals (`$datadir_raw` settings.do:103, source `$caschls_projdir` :136 = the path Christina gave); no hardcoded abs paths in code. Comment balance 2=2.
+- Requires a ONE-TIME manual step on Scribe: `cp $caschls_projdir/dta/schoolchar/mattschlchar.dta $datadir_raw/upstream/mattschlchar.dta` before re-run.
+
+**Commits:**
+- None — mattschlchar.do + .gitignore + 2 ADR files + README + data/raw/upstream/ stub, all uncommitted. Now 6 code/data files + ADR/doc changes uncommitted this session.
+
+**Status:**
+- Done: diagnosis + clean==0 fix + vendoring scaffold + ADR-0023.
+- Pending: Christina runs the vendoring cp on Scribe; coder-critic on mattschlchar.do; commit; re-run.
+
+## 2026-05-31 (cont.) — Phase 4 empty-no-op placeholder cleanup in main.do
+
+**Operations:**
+- Investigated the Phase 4 (`run_va_tables`) TODO stub flagged by Christina: body was only `<table producers>`/`<figure producers>` placeholders + phantom path `do/share/va/` (nonexistent).
+- Ran an orphan sweep: every active `do/` producer is wired into main.do; 4 non-invoked files all explained (m4_golden_master harness, hd2021 sub-script, reconcile_cdscodes dead-code, codebook_export util).
+- Replaced the stub with an accurate NOTE; set `run_va_tables 0` with inline annotation. No `do` calls added/moved.
+
+**Decisions:**
+- Verdict: Phase 4 was an overlooked loose end (empty toggled-on phase + stale TODO describing a producer split that never happened) but NOT a functional bug — all VA table/figure producers already run in Phase 6 (batch 10a); VA spec/FB tables run in Phase 3.
+- Chose Option: convert stub to NOTE + keep producers in Phase 6 (over moving them into Phase 4). Minimal churn, preserves phase numbering referenced by plan v3/ADRs, no reorder risk mid-M4. User confirmed.
+- Confirmed the `/* */` wraps around Phase 3 + Phase 5 bodies are Christina's LOCAL debug-skips (committed main.do has them active) — normal between-attempts pattern, left as-is.
+
+**Results:**
+- main.do hash b1b1ef786989; comment balance 13=13 working (12=12 HEAD, +1 = local debug wrap). No placeholders/TODO/phantom-path remain in Phase 4.
+
+**Commits:**
+- None — main.do uncommitted (now also carries the prior sib_lag-comment + mattschlchar-comment context plus this Phase 4 edit). coder-critic pending.
+
+**Status:**
+- Done: Phase 4 diagnosis + cleanup + orphan-sweep verification.
+- Pending: coder-critic; commit; (Christina) vendor mattschlchar.dta on Scribe; re-run.
+
+## 2026-05-31 (cont.) — Adversarial review of mkdir-sweep plan (3 independent reviewers)
+
+**Operations:**
+- Dispatched 3 fresh-context Explore agents (refute-don't-approve), lenses: detector-completeness, Stata-fix-correctness, strategy/ROI.
+- Verified top claims against repo. Wrote `quality_reports/reviews/2026-05-31_mkdir-sweep-plan_adversarial_review.md`; set plan status REVISION NEEDED.
+
+**Key findings (verified):**
+- CONFIRMED recon gap: `do/share/va_scatter.do:176` + `do/share/kdensity.do:170` have the SAME loop-var-dir bug (`$figures_dir/share/va/`+version+`/` never mkdir'd) and were NOT in the plan's 6-file candidate list → general all-files pass is mandatory, not optional.
+- REJECT `ensure_dir` helper for M4 (space-path fragility per R2). [Corrected R2's "//home" claim — wrong; Stata compresses empty list tokens. But the space-path defect is real.]
+- NEW guard from R2: LEGACY-path check — an uncovered write to $caschls_projdir/$vaprojdir must be a path-REPOINT (ADR-0021), not an mkdir. indexreg/indexhorse write to CANONICAL ($estimates_dir/$output_dir) so safe.
+- R3 (strategy): challenged static-detector-as-oracle as verification theater (Scribe is ground truth). My adjudication: keep a LIGHTWEIGHT static pass as cheap DISCOVERY (batches the find, saves N hours-long Scribe round-trips), but the fix=explicit cap mkdir is the deliverable and the next Scribe run is the only pass/fail. Defer helper + pre-commit --check to post-M4; permanent guard = Phase-7 RUNTIME check_dirs.do, not a Tier-1 hook.
+
+**Decisions:**
+- Plan → REVISION NEEDED. Revised shape: (1) lightweight static discovery ~1h; (2) fix confirmed set now incl. newly-found va_scatter+kdensity; (3) defer ensure_dir + pre-commit; (4) runtime guard post-green.
+
+**Status:**
+- Done: adversarial review + verdict on disk; plan status updated.
+- Pending: user decision on revised shape; then implement discovery + fixes. Still-uncommitted batch from earlier this session unchanged (coder-critic pending).
+
+## 2026-06-01 — mkdir-coverage sweep EXECUTED (revised-shape, post-adversarial-review)
+
+**Operations:**
+- Built `py/sweep_mkdir_coverage.py` (static detector: 12 write verbs, ///-join, /* */-strip, `foreach v in <lit>` loop-expansion matcher, LEGACY-path flag). Ran it.
+- Discovery: 15 distinct gaps across 14 files (recon had found 6 → review's "broaden scope" verdict confirmed). 0 LEGACY (initial 6 LEGACY flags were header-comment false positives, suppressed by block-comment stripping).
+- Dispatched fresh-context coder to apply fixes; independently re-verified: detector exits 0; nested-loop fix (seccoverageanalysis sec`year'/gr`i') correct per-level; .doh fragment mkdir before first real save (L56 save is tempfile, correctly ignored); /* */ balance unchanged all 14 files.
+- Ledger: +1 detector row +14 mkdir-coverage PASS rows. Reports + discovery list on disk.
+
+**Decisions:**
+- Followed revised plan shape (per 3-reviewer adversarial round): lightweight static DISCOVERY (not detector-as-oracle), explicit cap mkdir as fix, next Scribe run as final pass/fail. ensure_dir helper + pre-commit --check DEFERRED post-M4 (R2 proved helper fragile; R3 warned of pre-commit over-fire). Permanent guard = future Phase-7 runtime check, not Tier-1 hook.
+- Detector false-positive control was essential: naive matcher reported 210 sites; loop-literal-expansion + block-comment stripping cut to 100 sites / 15 true gaps. Validated by clearing already-fixed files (reg_out_va_all_fig) and genuinely-covered files (va_score_all v1/v2).
+
+**Files (14 fixed + 1 new tool):** base_sum_stats_tab, sample_counts_tab, siblingxwalk/uniquefamily, outcomesumstats/nsc2019new/k12_nsc2019_merge.doh, demographics/{elem,parent,sec}coverageanalysis, kdensity, va_scatter, reg_out_va_tab, va_var_explain (do/share/); survey_va/{indexregwithdemo,indexhorseracewithdemo}; va/va_sib_lag_spec_fb_tab; py/sweep_mkdir_coverage.py.
+
+**Commits:** None — all uncommitted; coder-critic pending. This sweep's 14 files join the session's earlier uncommitted batch.
+
+**Status:**
+- Done: detector + 15-gap fix, independently verified clean.
+- Pending: coder-critic on the batch; commit; (Christina) vendor mattschlchar.dta on Scribe; M4 re-run (the only true verification).
+
+## 2026-06-01 — Adversarial review of mkdir-coverage CODE CHANGES (2 reviewers)
+
+**Operations:**
+- 2 fresh-context Explore reviewers (refute-don't-approve): (1) Stata fix correctness [independent loop-tracing of all 14 files], (2) detector soundness/false-negatives. Verified the 2 actionable claims myself. Wrote `quality_reports/reviews/2026-06-01_mkdir-fixes_adversarial_review.md`.
+
+**Verdict: fixes hold — 13/14 VERIFIED CLEAN, 1 cosmetic LOW (works as-is). No code change triggered.**
+- R1: every LOOPVAR mkdir confirmed inside the binding loop, var in scope; nested seccoverage fix correct (sec`year' in year-loop, /gr`i' in i-loop, parent-before-child); parent chains complete; .doh fragment ordering correct (L56 save is tempfile); no #delimit hazard; only cap mkdir added; all CANONICAL targets.
+- R1 sole finding: va_var_explain.do:113 redundant mkdir placed after a `use` from same dir — reviewer severity LOW, "code works." Decided: leave as-is (harmless; not worth churning a no-logic-change file mid-M4 for cosmetics).
+- R2: detector "0" is sound for detected patterns, NOT a completeness proof (already disclosed). Verified the dangerous direction (covered_by_expansion wrongly suppressing a leaf-gap) does NOT occur — matcher expands the FULL path, requires every expanded form in mkdirs. `file write` false-neg dismissed: only in m4_golden_master.do (NOT in active pipeline; and it targets a file handle, not a dir).
+
+**Decisions:**
+- Accept fixes as correct. No defect requires a change. Static=discovery, Scribe=verdict (unchanged framing).
+- Optional post-M4: va_var_explain L113 reorder (bundle, not standalone); extend detector for `file open` handles / `foreach of local` dir-levels only if they enter the active pipeline.
+
+**Status:**
+- Done: adversarial review of the code changes; verdict on disk.
+- Pending: coder-critic on the full session batch; commit; (Christina) vendor mattschlchar.dta; M4 re-run.
