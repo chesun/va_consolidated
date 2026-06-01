@@ -108,6 +108,10 @@ master_supporting_docs/literature/papers/**/*.pdf
 !/data/cleaned/
 /data/raw/*
 !/data/raw/.gitkeep
+!/data/raw/upstream/
+/data/raw/upstream/*
+!/data/raw/upstream/.gitkeep
+!/data/raw/upstream/README.md
 /data/cleaned/*
 !/data/cleaned/.gitkeep
 

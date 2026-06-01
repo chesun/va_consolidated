@@ -101,7 +101,7 @@ What this commits us to. What it rules out. Open questions it creates.
 | [0010](0010_paper-alpha-canonical.md) | Paper-reported α from `indexalpha.do`; `alpha.do` archived as exploratory | 2026-04-27 | Decided | Specification |
 | [0011](0011_survey-indices-as-means.md) | Survey indices computed as means, not sums; code fix in `imputedcategoryindex.do` + `compcasecategoryindex.do` | 2026-04-27 | Decided | Specification |
 | [0012](0012_tab-csvs-local-review-only.md) | `_tab.do` CSV outputs are local-review-only; paper tables come from `share/` | 2026-04-27 | Decided | Specification |
-| [0013](0013_mattschlchar-gate-kept.md) | `mattschlchar.do` clean-gate kept; `sch_char.dta` consumed as-is, not reproduced | 2026-04-27 | Decided | Data |
+| [0013](0013_mattschlchar-gate-kept.md) | `mattschlchar.do` clean-gate kept; `sch_char.dta` consumed as-is, not reproduced | 2026-04-27 | Superseded in part by #0023 | Data |
 | [0014](0014_old-paper-draft-preserved.md) | Old paper draft `common_core_va.tex` preserved as historical artifact | 2026-04-27 | Decided | Infrastructure |
 | [0015](0015_filipino-asian-recoding-intentional.md) | Filipino-into-Asian race recoding intentional; documented in code | 2026-04-27 | Decided | Data |
 | [0016](0016_pooledrr-renamed-by-scope.md) | `pooledrr` variable renamed by scope across the four producers | 2026-04-27 | Decided | Specification |
@@ -111,6 +111,7 @@ What this commits us to. What it rules out. Open questions it creates.
 | [0020](0020_sync-mechanism-operator-choice.md) | File transfer is operator-choice (FileZilla today); refines ADR-0007 sync model; rest of ADR-0007 stands | 2026-04-28 | Superseded by #0022 | Infrastructure |
 | [0021](0021_main-settings-relocation-and-self-contained-sandbox.md) | main.do + settings.do relocated under do/; consolidated/ is self-contained sandbox (no writes to legacy paths); every do file carries a header description + main.do one-liner | 2026-04-29 | Decided | Infrastructure |
 | [0022](0022_scribe-git-sync-provisional.md) | Git repo on Scribe (provisional through end of project) supersedes FileZilla drag-and-drop; sparse-checkout excludes Claude-only paths; pre-push hook prevents data-leak pushes; revisit at Phase 1c §5.4 acceptance run | 2026-05-26 | Decided | Infrastructure |
+| [0023](0023_mattschlchar-vendored-as-runtime-source.md) | `mattschlchar.dta` vendored into `data/raw/upstream/` as the active runtime source (predecessor access lost); fills the empty `clean==0` block; supersedes ADR-0013's consume-as-is posture in part | 2026-05-31 | Decided | Data |
 
 ---
 

@@ -1,9 +1,16 @@
 # 0013: `mattschlchar.do` clean-gate kept; `sch_char.dta` consumed as-is, not reproduced
 
 - **Date:** 2026-04-27
-- **Status:** Decided
+- **Status:** Superseded in part by #0023
 - **Scope:** Data
 - **Data quality:** Full context
+
+> **Partial supersession (2026-05-31):** ADR-0023 replaces this ADR's
+> "`mattschlchar.dta` consumed as-is from its predecessor path, no vendoring"
+> posture with vendoring into `data/raw/upstream/` as the runtime source, after
+> access to the predecessor path's upstream context was lost during the M4 run.
+> The rest of this ADR stands: the `clean = 0` gate is kept, the `clean = 1`
+> rebuild branch stays dormant, no rebuild from Matt's raw sources is attempted.
 
 ## Context
 

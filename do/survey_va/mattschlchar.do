@@ -10,10 +10,11 @@ INVOKED FROM
     (or as a helper `include'd by sister scripts).
 
 INPUTS (verified via grep on file body)
+    $datadir_raw/upstream/mattschlchar  (VENDORED — already-cleaned school-char file, per ADR-0023; provisions the CHAIN file under clean==0)
     $datadir_clean/schoolchar/elprop  (CHAIN read)
-    $datadir_clean/schoolchar/mattschlchar  (CHAIN read)
+    $datadir_clean/schoolchar/mattschlchar  (CHAIN read; provisioned from the vendored copy above under clean==0)
     $vaprojdir/data/restricted_access/clean/k12_test_scores/k12_test_scores_clean.dta  (LEGACY)
-    /home/research/ca_ed_lab/msnaven/common_core_va/data/sch_char  (LEGACY hardcoded; per ADR-0013 dormant rebuild branch)
+    /home/research/ca_ed_lab/msnaven/common_core_va/data/sch_char  (LEGACY hardcoded; per ADR-0013 dormant rebuild branch — source no longer accessible)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/schoolchar/elprop
@@ -60,6 +61,7 @@ cap mkdir "$logdir"
 cap mkdir "$logdir/survey_va"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/schoolchar"
+cap mkdir "$datadir_raw/upstream"
 
 
 log using "$logdir/survey_va/mattschlchar.smcl", replace text name(mattschlchar)
@@ -115,6 +117,23 @@ if `clean' == 1 {
 
   label data "School Characterstics data by Matt Naven, cleaned by Che Sun"
 
+  save $datadir_clean/schoolchar/mattschlchar, replace
+}
+
+// if cannot access Matt's folder, read the vendored copy of the already-cleaned
+// dataset.  The clean==1 rebuild branch above is permanently dormant (ADR-0013)
+// and its raw source (Matt's user dir) is no longer accessible, so the cleaned
+// mattschlchar.dta is vendored into the consolidated sandbox per ADR-0023.
+// Provision the CHAIN file at $datadir_clean/schoolchar/mattschlchar from the
+// vendored raw copy so the downstream `use' at the consumption block below finds it.
+// To (re)vendor on Scribe (one-time / fresh-setup):
+//   cp $caschls_projdir/dta/schoolchar/mattschlchar.dta $datadir_raw/upstream/mattschlchar.dta
+if `clean' == 0 {
+        di "macro clean is toggled to 0"
+
+    noi cap cp "$caschls_projdir/dta/schoolchar/mattschlchar.dta" ///
+        "$consolidated_dir/data/raw/upstream/mattschlchar.dta"
+  use $datadir_raw/upstream/mattschlchar, clear
   save $datadir_clean/schoolchar/mattschlchar, replace
 }
 
