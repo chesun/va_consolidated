@@ -417,7 +417,12 @@ do $vaprojdir/do_files/sbac/merge_va_smp_acs.doh ///
 include $consolidated_dir/do/samples/merge_sib.doh */
 
 // merge to Postsecondary Outcomes
-do do_files/merge_k12_postsecondary.doh enr_only
+// 2026-06-01: repointed relative `do_files/...' -> $vaprojdir/do_files/... (matching
+// the first-block call at L215).  Predecessor relied on `cd $vaprojdir' (removed in
+// relocation per header) for this relative path to resolve; without the cd, CWD is
+// $consolidated_dir and the relative path hit r(601).  $vaprojdir/do_files/ == the
+// canonical $matt_files_dir (Matt's untouched file per ADR-0017).
+do $vaprojdir/do_files/merge_k12_postsecondary.doh enr_only
 
 replace age=age/365
 
