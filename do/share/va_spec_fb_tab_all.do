@@ -21,8 +21,8 @@ INPUTS (verified via grep on file body)
     $tables_dir/share/va/check/va_score_`version'.tex  (LEGACY)
     $tables_dir/share/va/pub/va_out_`version'.tex  (LEGACY)
     $tables_dir/share/va/pub/va_score_`version'.tex  (LEGACY)
-    $estimates_dir/va_cfr_all_`version'/fb_test/fb_`va_outcome'_all.dta  (LEGACY)
-    $estimates_dir/va_cfr_all_`version'/spec_test/spec_`va_outcome'_all.dta  (LEGACY)
+    $tables_dir/va_cfr_all_`version'/fb_test/fb_`va_outcome'_all.dta  (CHAIN read; regsave summary table from va_{out,score}_fb_test_tab.do, per ADR-0024)
+    $tables_dir/va_cfr_all_`version'/spec_test/spec_`va_outcome'_all.dta  (CHAIN read; regsave summary table from va_{out,score}_spec_test_tab.do, per ADR-0024)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $logdir/share/va_spec_fb_tab_all.smcl (via log using)
@@ -41,7 +41,14 @@ RELOCATION (per plan v3 §3.3 step 10 batch 10a, applied 2026-05-08)
       include $vaprojdir/do_files/sbac/<x>.doh           -> include $consolidated_dir/do/{va/helpers,samples}/<x>.doh
         (per Step 1/2 helper relocation; covers macros_va, drift_limit, create_diff_school_prop, create_prior_scores_v1/v2, merge_loscore, merge_sib, merge_lag2_ela, merge_va_smp_acs, create_va_g11_sample_v1/v2, create_va_g11_out_sample_v1/v2)
       $estimates_dir/va_cfr_all_<v>/<x> -> $estimates_dir/va_cfr_all_<v>/<x> (CHAIN read from Step 3)
-      $estimates_dir/va_cfr_all_<v>/<x> -> $estimates_dir/va_cfr_all_<v>/<x> (CHAIN read; predecessor stored intermediate regsave dtas under tables/, consolidated relocates under $estimates_dir/)
+      $vaprojdir/tables/va_cfr_all_<v>/{fb_test,spec_test}/{fb,spec}_<outcome>_all.dta
+        -> $tables_dir/va_cfr_all_<v>/{fb_test,spec_test}/...  (CHAIN read; these are
+        regsave SUMMARY tables produced by va_{out,score}_{fb,spec}_test_tab.do, which
+        write to $tables_dir.  CORRECTED 2026-06-01 per ADR-0024: an earlier note here
+        wrongly said these relocate under $estimates_dir/, and the two reads below were
+        repointed accordingly -> r(601) because producers write to $tables_dir.  Rule:
+        regsave .dta summary TABLES live under $tables_dir; raw .ster ESTIMATES under
+        $estimates_dir.)
       $vaprojdir/figures/share/<x> -> $figures_dir/share/<x> (CANONICAL paper-shipping)
       $vaprojdir/tables/share/<x> -> $tables_dir/share/<x> (CANONICAL paper-shipping)
       $vaprojdir/data/va_samples_v1/<x> -> kept LEGACY (sample data; out of Step 10 scope)
@@ -139,7 +146,12 @@ foreach version in v1 v2 {
     //---------------------------------------------------------------
     // first set up forecast bias test results
     //---------------------------------------------------------------
-    use $estimates_dir/va_cfr_all_`version'/fb_test/fb_`va_outcome'_all.dta, clear
+    // 2026-06-01: repointed $estimates_dir -> $tables_dir to match the producers.
+    // The fb_<outcome>_all.dta summary tables are regsave'd by va_{out,score}_fb_test_tab.do
+    // to $tables_dir/va_cfr_all_<v>/fb_test/ (and read back there internally); this
+    // consumer read at $estimates_dir was the lone outlier -> r(601). These are
+    // table-class summary .dta files; $tables_dir is the correct root (cf. tables.md).
+    use $tables_dir/va_cfr_all_`version'/fb_test/fb_`va_outcome'_all.dta, clear
 
 		gen column=1 if va_sample=="b" & va_control=="b" & peer_controls==0
     replace column=2 if va_sample=="las" & va_control=="b" & peer_controls==0
@@ -200,7 +212,9 @@ foreach version in v1 v2 {
     // then set up specification test results
     //---------------------------------------------------------------
 
-    use $estimates_dir/va_cfr_all_`version'/spec_test/spec_`va_outcome'_all.dta, clear
+    // 2026-06-01: repointed $estimates_dir -> $tables_dir to match the producers
+    // (va_{out,score}_spec_test_tab.do regsave to $tables_dir/.../spec_test/). See fb_test note above.
+    use $tables_dir/va_cfr_all_`version'/spec_test/spec_`va_outcome'_all.dta, clear
 
     gen column=1 if va_sample=="b" & va_control=="b" & peer_controls==0
     replace column=2 if va_sample=="las" & va_control=="b" & peer_controls==0

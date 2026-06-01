@@ -112,6 +112,7 @@ What this commits us to. What it rules out. Open questions it creates.
 | [0021](0021_main-settings-relocation-and-self-contained-sandbox.md) | main.do + settings.do relocated under do/; consolidated/ is self-contained sandbox (no writes to legacy paths); every do file carries a header description + main.do one-liner | 2026-04-29 | Decided | Infrastructure |
 | [0022](0022_scribe-git-sync-provisional.md) | Git repo on Scribe (provisional through end of project) supersedes FileZilla drag-and-drop; sparse-checkout excludes Claude-only paths; pre-push hook prevents data-leak pushes; revisit at Phase 1c §5.4 acceptance run | 2026-05-26 | Decided | Infrastructure |
 | [0023](0023_mattschlchar-vendored-as-runtime-source.md) | `mattschlchar.dta` vendored into `data/raw/upstream/` as the active runtime source (predecessor access lost); fills the empty `clean==0` block; supersedes ADR-0013's consume-as-is posture in part | 2026-05-31 | Decided | Data |
+| [0024](0024_tables-vs-estimates-dir-for-regsave-summaries.md) | regsave summary `.dta` tables (`fb_*_all`, `spec_*_all`) live under `$tables_dir`, raw `.ster` estimates under `$estimates_dir`; fixes va_spec_fb_tab_all r(601) producer/consumer root mismatch; refines ADR-0021, supersedes the misleading file-header relocation note | 2026-06-01 | Decided | Specification |
 
 ---
 
