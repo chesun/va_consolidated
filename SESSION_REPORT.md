@@ -2265,3 +2265,18 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 **Status:**
 - Done: adversarial review of the code changes; verdict on disk.
 - Pending: coder-critic on the full session batch; commit; (Christina) vendor mattschlchar.dta; M4 re-run.
+
+## 2026-06-01 — base_sum_stats_tab.do r(601) cached-toggle fix (Option C)
+
+**Operations:**
+- Diagnosed `log/share/base_sum_stats_tab.smcl:936` r(601) `base_nodrop.dta not found`. Same class as mattschlchar/ADR-0023: create_sample=0 skips the build block, then `if create_sample==0 { use base_nodrop.dta }` loads a never-built cache; predecessor relied on a legacy-path cache the ADR-0021 sandbox doesn't inherit.
+- Fix (Option C, user-chosen): `cap confirm file base_nodrop.dta` -> `if _rc local create_sample=1` (rebuild if cache absent, self-heal). Also fixed latent relative-path L143/156 `data/sbac/va_samples.dta` -> `$datadir_clean/sbac/va_samples.dta`.
+- coder-critic PASS 90/100; confirmed the critical point — rebuild leaves correct memory state (save doesn't clear; no clear/preserve mismatch L273->L292). Committed 11f7ca0.
+
+**Decisions:**
+- Option C over A (always rebuild) / B (vendor like ADR-0023): self-heals on fresh sandbox, keeps cache-fast on re-runs.
+- Honest runtime risk (static can't clear): rebuild block now runs `do $vaprojdir/.../merge_k12_postsecondary.doh` (Matt's file, ADR-0017) for the first time on a fresh sandbox — next Scribe run is pass/fail.
+
+**Status:**
+- Done: 6th fix this session, committed. main.do still uncommitted (user runtime changes).
+- Pending: Scribe M4 re-run (the only true verification).
