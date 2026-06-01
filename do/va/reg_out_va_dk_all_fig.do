@@ -53,11 +53,24 @@ v2: same prior score controls for ELA and math
  */
 
 * --- output-directory prep (CANONICAL) ---------------------------------------
+* Stata mkdir does NOT create intermediate parents; create one level at a time,
+* parent-before-child, for every graph-export / saving() target dir in this file
+* (under BOTH $figures_dir and $output_dir/gph_files, for BOTH v1 and v2).
 cap mkdir "$figures_dir"
 cap mkdir "$figures_dir/va_cfr_all_v1"
+cap mkdir "$figures_dir/va_cfr_all_v1/het_reg_dk_prior_score"
+cap mkdir "$figures_dir/va_cfr_all_v1/het_reg_combined_panels"
+cap mkdir "$figures_dir/va_cfr_all_v1/het_reg_combined_panels/dk_va"
 cap mkdir "$figures_dir/va_cfr_all_v2"
+cap mkdir "$figures_dir/va_cfr_all_v2/het_reg_dk_prior_score"
+cap mkdir "$figures_dir/va_cfr_all_v2/het_reg_combined_panels"
+cap mkdir "$figures_dir/va_cfr_all_v2/het_reg_combined_panels/dk_va"
 cap mkdir "$output_dir"
 cap mkdir "$output_dir/gph_files"
+cap mkdir "$output_dir/gph_files/va_cfr_all_v1"
+cap mkdir "$output_dir/gph_files/va_cfr_all_v1/het_reg_dk_prior_score"
+cap mkdir "$output_dir/gph_files/va_cfr_all_v2"
+cap mkdir "$output_dir/gph_files/va_cfr_all_v2/het_reg_dk_prior_score"
 cap mkdir "$logdir"
 
 
