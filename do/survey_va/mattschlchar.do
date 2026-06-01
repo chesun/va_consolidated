@@ -131,7 +131,7 @@ if `clean' == 1 {
 if `clean' == 0 {
         di "macro clean is toggled to 0"
 
-    noi cap cp "$caschls_projdir/dta/schoolchar/mattschlchar.dta" ///
+    noi cap copy "$caschls_projdir/dta/schoolchar/mattschlchar.dta" ///
         "$consolidated_dir/data/raw/upstream/mattschlchar.dta"
   use $datadir_raw/upstream/mattschlchar, clear
   save $datadir_clean/schoolchar/mattschlchar, replace
