@@ -114,3 +114,13 @@ Scribe re-run to confirm.
 
 **Now 5 files uncommitted this session:** reg_out_va_all_fig.do, reg_out_va_dk_all_fig.do, main.do,
 va_score_sib_lag.do, va_out_sib_lag.do. coder-critic dispatch still pending before commit.
+
+---
+
+## Addendum 2026-06-01 (cont.) — bugs 6-7 committed + latent-issue adversarial workflow
+
+- **base_sum_stats r(601) #1 (cached toggle)** — Option C fail-soft guard; coder-critic 90/100; committed `11f7ca0`.
+- **base_sum_stats r(601) #2 (merge_k12 relative path)** — L420 `do do_files/merge_k12_postsecondary.doh` (relative; relocation dropped the `cd $vaprojdir`) repointed to `$vaprojdir/do_files/...` matching L215. coder-critic 92/100; committed `f58a406` (+docs `4875dad`). My base_nodrop guard WORKED (log confirms rebuild fired) — this was a distinct deeper bug.
+- **Commits this session** (main.do EXCLUDED per user — runtime changes): `6efbbf4` figs r603, `eab4a10` sib-lag r111, `e614a92` mkdir sweep (14 files+detector), `c3069c3` mattschlchar vendoring+ADR-0023, `11f7ca0` base_nodrop guard, `f58a406` merge_k12 path, + doc commits.
+- **Latent-issue adversarial WORKFLOW launched** (wf_5ea1ac93-c94, background): 7 candidate sites × (investigate → refute → synthesize). Two classes: (A) legacy `$vaprojdir/data/va_samples_v1` reads with a canonical `$datadir_clean` producer (provenance divergence); (B) CWD-dependent relative `do_files/` paths guarded by a `cd`. Awaiting completion → apply confirmed-safe fixes, coder-critic gate, commit; defer ADR-needing ones to TODO backlog. main.do stays uncommitted.
+- **Known follow-up already in TODO backlog:** base_sum_stats:403 legacy score_las read.

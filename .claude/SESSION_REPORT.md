@@ -2295,3 +2295,21 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 **Status:**
 - Done: 7th fix this session, committed. main.do still uncommitted (user runtime changes).
 - Pending: next Scribe M4 re-run (the only true verification; this run got further than the last, into the kitchen-sink block).
+
+## 2026-06-01 — Latent-issue adversarial workflow (APPLY NOW: empty — deferred)
+
+**Operations:**
+- Ran adversarial Workflow wf_5ea1ac93-c94 (15 agents: 7 latent-issue sites × investigate→refute→synthesize) over 2 classes: legacy va_samples reads with a canonical producer, and CWD-dependent relative do_files/ paths.
+- Outcome: ALL 7 deferred. 4 repoints REFUTED as regressions, 1 AMENDED (needs ADR), 2 CONFIRMED-but-NO-CHANGE (orphan/dead code). APPLY NOW empty.
+- Independently verified the root cause. Wrote quality_reports/reviews/2026-06-01_latent-issues-adversarial-workflow.md; added 3 backlog items to TODO.
+
+**Key finding (verified):**
+- ROOT CAUSE is in main.do orchestration, NOT the read lines: run_samples=0 (L99) and m4_acceptance_run forces do_create_samples=1 only INSIDE `if run_samples` (L261-263), so Phase 2 never builds canonical $datadir_clean samples. Every proposed LEGACY→CANONICAL repoint would swap an r(601) on the legacy path for an r(601) on the never-produced canonical path = regression. The workflow's conservative "defer all" is correct.
+- NOTE: this toggle state is also the user's current deliberate dev-iteration config — legacy reads currently WORK (legacy files present on Scribe); the issues are latent for a true fresh acceptance run.
+
+**Decisions:**
+- NO CODE CHANGED this turn. main.do stays user-owned (the run_samples fix is theirs to make). Deferred items → TODO backlog, blocked on the main.do run_samples fix.
+
+**Status:**
+- Done: adversarial workflow + verified verdict + docs/backlog.
+- Pending: Christina's call on the main.do run_samples=1-under-m4 orchestration fix (unblocks the repoints); next Scribe M4 run.
