@@ -99,6 +99,17 @@ foreach version in v1 v2 {
   foreach subject in ela math {
     use $datadir_clean/va_samples_`version'/score_s if touse_g11_`subject'==1 & touse_sib_lag==1, clear
 
+    // Re-attach lag-1 and lag-2 older-sibling enrollment controls.  These vars
+    // (old1_sib_enr_2year, old1_sib_enr_4year, old2_sib_enr_2year,
+    // old2_sib_enr_4year) are built in do/sibling_xwalk/siblingoutxwalk.do but
+    // dropped before score_s is saved, because merge_sib.doh restricts its merge
+    // to keepusing(touse, sibling)-pattern vars.  This sibling-lag diagnostic and
+    // va_out_sib_lag.do are their only consumers, so re-merge them here from the
+    // crosswalk.  Key state_student_id is student-level; crosswalk is one row per
+    // student (m:1).  See quality_reports/reviews/2026-05-31_va-score-sib-lag-r111-debug.md.
+    merge m:1 state_student_id using "$datadir_clean/siblingxwalk/sibling_out_xwalk", ///
+      nogen keep(1 3) keepusing(old1_sib_enr_2year old1_sib_enr_4year old2_sib_enr_2year old2_sib_enr_4year)
+
     vam sbac_`subject'_z_score ///
       , teacher(school_id) year(year) class(school_id) ///
       controls( ///
@@ -139,6 +150,17 @@ foreach version in v1 v2 {
 
   foreach subject in ela math {
     use $datadir_clean/va_samples_`version'/score_s if touse_g11_`subject'==1 & touse_sib_lag==1, clear
+
+    // Re-attach lag-1 and lag-2 older-sibling enrollment controls.  These vars
+    // (old1_sib_enr_2year, old1_sib_enr_4year, old2_sib_enr_2year,
+    // old2_sib_enr_4year) are built in do/sibling_xwalk/siblingoutxwalk.do but
+    // dropped before score_s is saved, because merge_sib.doh restricts its merge
+    // to keepusing(touse, sibling)-pattern vars.  This sibling-lag diagnostic and
+    // va_out_sib_lag.do are their only consumers, so re-merge them here from the
+    // crosswalk.  Key state_student_id is student-level; crosswalk is one row per
+    // student (m:1).  See quality_reports/reviews/2026-05-31_va-score-sib-lag-r111-debug.md.
+    merge m:1 state_student_id using "$datadir_clean/siblingxwalk/sibling_out_xwalk", ///
+      nogen keep(1 3) keepusing(old1_sib_enr_2year old1_sib_enr_4year old2_sib_enr_2year old2_sib_enr_4year)
 
     vam sbac_`subject'_z_score ///
       , teacher(school_id) year(year) class(school_id) ///
