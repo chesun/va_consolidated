@@ -2313,3 +2313,19 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 **Status:**
 - Done: adversarial workflow + verified verdict + docs/backlog.
 - Pending: Christina's call on the main.do run_samples=1-under-m4 orchestration fix (unblocks the repoints); next Scribe M4 run.
+
+## 2026-06-01 — va_spec_fb_tab_all r(601) ($tables_dir vs $estimates_dir) + ADR-0024
+
+**Operations:**
+- Run cleared base_sum_stats, pushed deeper into Phase 6; errored at va_spec_fb_tab_all.do (log:992) r(601) `estimates/.../fb_test/fb_ela_all.dta not found`.
+- Diagnosed producer/consumer root mismatch: 4 producers regsave fb/spec _all.dta to $tables_dir (+read back there); this consumer read from $estimates_dir. Caused by a wrong file-header relocation note applied to the read but not the writes.
+- Fix: repoint 2 consumer reads $estimates_dir -> $tables_dir; correct header note + stale INPUTS labels. coder-critic PASS 88/100. Committed e3af3d3.
+- Wrote ADR-0024 (regsave summary .dta -> $tables_dir; raw .ster -> $estimates_dir; refines ADR-0021; supersedes only the un-ratified header note). Follow-up sweep: va_var_explain* read reg_va_*_all.dta from $estimates_dir but self-contained (producer==consumer) — NOT a bug, left as-is.
+
+**Decisions:**
+- Fixed consumer (2 lines) not producers (16 lines): majority + consumer's own mkdir block already on $tables_dir; table-class regsave .dta per tables.md. User confirmed direction + requested the ADR.
+- ADR framing verified honest: no prior ADR decided $estimates_dir for these (only a file-header note); ADR-0024 refines ADR-0021, supersedes the note.
+
+**Status:**
+- Done: 8th fix this session, committed + ADR-0024. main.do still uncommitted (user runtime).
+- Pending: next Scribe run (path-correcting, not output-altering; deeper into Phase 6 each time).
