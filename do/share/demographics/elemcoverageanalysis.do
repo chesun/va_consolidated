@@ -79,6 +79,7 @@ grstyle set color white, opacity(25): histogram_line //set color white and opaci
 
 foreach i of local years {
   use $caschls_projdir/dta/demographics/analysis/elementary/elemdemo`i'analysis, clear
+  cap mkdir "$output_dir/graph/svycoverage/elemcoverage/elem`i'"
 
   local elemgrades 3 4 5 6 //create a local macro for the grades in the elementary survey data
   foreach j of local elemgrades {

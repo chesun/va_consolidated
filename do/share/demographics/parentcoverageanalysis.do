@@ -70,6 +70,7 @@ local years `" "1415" "1516" "1617" "1718" "1819" "' //local macro for elementar
 
 foreach year of local years {
   use $caschls_projdir/dta/demographics/analysis/parent/parentdemo`year'analysis, clear
+  cap mkdir "$output_dir/graph/svycoverage/parentcoverage/parent`year'"
 
   local grades `" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "' //local macro for kids' grades in parent survey, kindergarten enrollment not included so omit
   foreach i of local grades {

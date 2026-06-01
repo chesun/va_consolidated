@@ -110,6 +110,8 @@ cap mkdir "$estimates_dir"
 foreach version in v1 v2 {
   // load the dataset with all school level VA estimates
   use $estimates_dir/va_cfr_all_`version'/va_est_dta/va_all.dta, clear
+  cap mkdir "$estimates_dir/va_cfr_all_`version'"
+  cap mkdir "$estimates_dir/va_cfr_all_`version'/reg_out_va"
 
   // standardize VA estimates into z score
   foreach va of varlist va_* {

@@ -106,6 +106,7 @@ local sp_ct_p_combos b_sp_b_ct las_sp_las_ct
 //  standardize VA estimates
 //----------------------------------------------------------------------------
 foreach version in v1 v2 {
+  cap mkdir "$figures_dir/share/va/`version'"
   foreach va_outcome in ela math enr_2year enr_4year {
     use $estimates_dir/va_cfr_all_`version'/va_est_dta/va_`va_outcome'_all.dta, clear
 

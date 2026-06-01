@@ -123,6 +123,9 @@ local sp_ct_p_combos b_sp_b_ct las_sp_b_ct las_sp_b_ct_p las_sp_las_ct_p las_sp_
 
 
 foreach version in v1 v2 {
+  cap mkdir "$estimates_dir"
+  cap mkdir "$estimates_dir/va_cfr_all_`version'"
+  cap mkdir "$estimates_dir/va_cfr_all_`version'/reg_out_va"
   //----------------------------------------------------------------------------
   //  regressions on only 1 subject VA estimate
   //----------------------------------------------------------------------------

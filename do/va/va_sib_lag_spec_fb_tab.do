@@ -101,6 +101,7 @@ include $consolidated_dir/do/va/helpers/drift_limit.doh
 
 foreach version in v1 v2 {
   di "VA version: `version'"
+  cap mkdir "$tables_dir/va_cfr_all_`version'/spec_test"
 
   local append_macro replace
 
@@ -142,6 +143,7 @@ foreach version in v1 v2 {
 
 foreach version in v1 v2 {
   di "VA version: `version'"
+  cap mkdir "$tables_dir/va_cfr_all_`version'/fb_test"
 
   local append_macro replace
 

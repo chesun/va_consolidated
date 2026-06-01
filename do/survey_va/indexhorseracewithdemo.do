@@ -93,6 +93,8 @@ foreach type of local datatype {
 
   merge 1:1 cdscode using $datadir_clean/schoolchar/testscorecontrols, keep(1 3) nogen
 
+  cap mkdir "$estimates_dir/survey_va/factor/indexhorsewithdemo/`type'"
+
   // local macro for index vars
   local indexsdvars z_climateindex z_qualityindex z_supportindex
 

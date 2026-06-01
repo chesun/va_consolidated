@@ -79,9 +79,11 @@ grstyle set color white, opacity(25): histogram_line //set color white and opaci
 
 foreach year of local years {
   use $caschls_projdir/dta/demographics/analysis/secondary/secdemo`year'analysis, clear
+  cap mkdir "$output_dir/graph/svycoverage/seccoverage/sec`year'"
 
   local secgrades `" "6" "7" "8" "9" "10" "11" "12" "' //generate a local macro for grades in the secondary datasets, excluding non traditional students for simplicity
   foreach i of local secgrades {
+    cap mkdir "$output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'"
     /* create and export frequency histograms for distribution of response rate in grade i */
     histogram svygr`i'resprate, freq
     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/gr`i'resprate.png, replace

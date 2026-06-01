@@ -136,6 +136,7 @@ plotting VA from same sample, therefore same observations */
 foreach version in v1 v2 {
 
   use $estimates_dir/va_cfr_all_`version'/va_est_dta/va_all.dta, clear
+  cap mkdir "$figures_dir/share/va/`version'"
 
   // scatter plots of single outcome VA switching sample or control
   foreach va_outcome in ela math enr_2year enr_4year {

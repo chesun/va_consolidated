@@ -99,6 +99,9 @@ cap mkdir "$tables_dir/share/survey/pub"
 cap mkdir "$figures_dir"
 cap mkdir "$figures_dir/share"
 cap mkdir "$figures_dir/share/va"
+cap mkdir "$estimates_dir"
+cap mkdir "$estimates_dir/va_cfr_all_v1"
+cap mkdir "$estimates_dir/va_cfr_all_v1/sum_stats"
 
 log using "$logdir/share/base_sum_stats_tab.smcl", replace text name(base_sum_stats_tab)
 

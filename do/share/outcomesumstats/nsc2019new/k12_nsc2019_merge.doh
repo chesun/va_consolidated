@@ -68,6 +68,9 @@ merge m:1 cdscode using /home/research/ca_ed_lab/msnaven/data/public_access/clea
 gen(merge_public_schools) keepusing(conventional_school) keep(1 3)
 compress
 label data "K-12 test score merged to NSC 2019 Provisional dataset outcomes"
+* --- output-directory prep (CANONICAL; fragment cannot assume caller made dirs) ---
+cap mkdir "$datadir_clean"
+cap mkdir "$datadir_clean/outcomesumstats"
 save $datadir_clean/outcomesumstats/k12_nsc_2019_provisional_merge, replace
 
 /* merge k-12 test score with NSC 2019 final outcome crosswalk */

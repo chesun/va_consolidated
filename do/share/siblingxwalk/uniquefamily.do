@@ -63,6 +63,9 @@ cap mkdir "$logdir/share"
 cap mkdir "$logdir/share/siblingxwalk"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/siblingxwalk"
+cap mkdir "$output_dir"
+cap mkdir "$output_dir/graph"
+cap mkdir "$output_dir/graph/siblingxwalk"
 
 
 log using "$logdir/share/siblingxwalk/uniquefamily.smcl", replace text name(uniquefamily)
