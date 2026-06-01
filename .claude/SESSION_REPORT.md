@@ -2280,3 +2280,18 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 **Status:**
 - Done: 6th fix this session, committed. main.do still uncommitted (user runtime changes).
 - Pending: Scribe M4 re-run (the only true verification).
+
+## 2026-06-01 — base_sum_stats_tab.do merge_k12 relative-path r(601) fix
+
+**Operations:**
+- After the base_nodrop guard let Phase 6 run, the run errored deeper: log/share/base_sum_stats_tab.smcl ~L4248 `file do_files/merge_k12_postsecondary.doh not found` r(601).
+- Diagnosed: 2nd (kitchen-sink-sample) block L420 used RELATIVE `do do_files/merge_k12_postsecondary.doh`; relocation dropped the predecessor `cd $vaprojdir`, so CWD=$consolidated_dir doesn't resolve it. 1st block L215 already uses correct absolute form — inconsistency confirmed the bug.
+- Fix: repoint L420 -> `do $vaprojdir/do_files/merge_k12_postsecondary.doh` (== canonical $matt_files_dir; Matt's file, ADR-0017). coder-critic PASS 92/100. Committed f58a406.
+
+**Decisions:**
+- My base_nodrop fail-soft guard from the prior fix WORKED (log L809 "cache absent -> forcing rebuild"; save succeeded) — this is a distinct, deeper bug, not a regression.
+- L403 legacy score_las read flagged by coder-critic as latent (same legacy-cache class) but out of scope; added to TODO backlog (needs ADR when va_samples_v1 hits Step-10 scope).
+
+**Status:**
+- Done: 7th fix this session, committed. main.do still uncommitted (user runtime changes).
+- Pending: next Scribe M4 re-run (the only true verification; this run got further than the last, into the kitchen-sink block).
