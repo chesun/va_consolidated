@@ -128,6 +128,19 @@ include $consolidated_dir/do/va/helpers/drift_limit.doh
   we can calculate how many students we’re losing*/
 
 local create_sample = 0
+* Fail-soft cache guard (2026-06-01): the create block below is a run-once-cache
+* that builds $datadir_clean/share/base_nodrop.dta; predecessor ran with
+* create_sample=0 and relied on a pre-existing cache at the LEGACY
+* $vaprojdir/data/va_samples_v1/ path, which the ADR-0021 sandbox does not inherit
+* -> the cached `use' below hit r(601) on a fresh sandbox.  If the cache is absent,
+* force a rebuild from canonical inputs (raw K12 + $datadir_clean/sbac/va_samples.dta
+* + consolidated helpers) so the script self-heals.  See
+* quality_reports/reviews/2026-06-01_base-nodrop-cached-toggle-r601-debug.md.
+cap confirm file "$datadir_clean/share/base_nodrop.dta"
+if _rc {
+  di as text "base_nodrop.dta cache absent -> forcing create_sample=1 (rebuild)"
+  local create_sample = 1
+}
 if `create_sample'==1 {
   //------------------------------------------------------------------------------
   // create VA sample without dropping observations
@@ -140,7 +153,7 @@ if `create_sample'==1 {
     	`va_control_vars' eth_white ///
     	/*if substr(cdscode, 1, 7)=="3768338"*/ ///
     	using `k12_test_scores'/k12_test_scores_clean.dta, clear
-    merge 1:1 merge_id_k12_test_scores using data/sbac/va_samples.dta ///
+    merge 1:1 merge_id_k12_test_scores using $datadir_clean/sbac/va_samples.dta ///
     	, nogen keepusing(touse_*)
 
     replace age = age / 365
