@@ -69,7 +69,7 @@ cap mkdir "$logdir"
 
 
 cap mkdir "$logdir/survey_va"
-log using "$logdir/indexhorsewithdemo.smcl", replace text name(indexhorseracewithdemo)
+log using "$logdir/survey_va/indexhorseracewithdemo.smcl", replace text name(indexhorseracewithdemo)
 
 graph drop _all
 set more off
@@ -209,5 +209,5 @@ di "Start date time: `date1' `time1'"
 di "End date time: `date2' `time2'"
 
 cap log close indexhorseracewithdemo
-cap translate "$logdir/indexhorsewithdemo.smcl" ///
-  "$logdir/indexhorsewithdemo.log", replace
+cap translate "$logdir/survey_va/indexhorseracewithdemo.smcl" ///
+  "$logdir/survey_va/indexhorseracewithdemo.log", replace
