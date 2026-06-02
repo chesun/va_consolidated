@@ -2365,3 +2365,36 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 - Done: all 4 items. #1+#2 committed; #3 (user) + #4 (main.do) uncommitted per user ownership of main.do.
 - Minor deferred: stale "Sister files" header lists still name nsc_codebook in ~6 files (historical batch records; left as-is, low value to chase).
 - Pending: next Scribe run (markers will show exactly which file runs/errors).
+
+## 2026-06-01 (cont.) — SSC install block + filelist/check_logs r198+r9 fixes
+
+**Operations:**
+- do/main.do: added guarded SSC/net install block after settings.do (installssc toggle; 12 ssc + geodist; DERIVED from active-tree which-guards + invoked cmds; adds filelist+cfout, drops 8 unused predecessor pkgs). Uncommitted (user-owned).
+- do/check/check_logs.do: fixed filelist r(198) (removed invalid `norecur(0)`; recursion is filelist's default) + rewrote the r(9) assertion (reldir-mirrored expected log path; scope to files that RAN via master-log [RUN] markers via `log query master`; macval-shielded file read; exempt main.do/settings.do). Empirically tested PASS + FAIL paths via stata17. HELD uncommitted per user.
+
+**Decisions:**
+- SSC list DERIVED (not copied): which-guards + invoked-cmd scan of active tree. ADDS filelist+cfout (predecessor lacked); DROPS 8 unused; opencagegeo kept-but-DORMANT.
+- check_logs scope = "only files that ran this run" (user choice over full-acceptance-only / warn-only). Uses the [RUN]/[OK] markers added to main.do as the run-detection signal.
+- Hit + fixed 2 Stata quote traps in the rewrite (r132 from `=trim(substr())` w/o macval; SMCL echo trailing-quote on path) — caught by running, not reasoning.
+
+**Commits this session:** 11f7ca0 (base_nodrop guard), f58a406 (merge_k12 path), e3af3d3 (tables_dir + ADR-0024), ee5e8fa (predicted_score reshape), 6043336 (nsc descope ADR-0025 + sibling consolidation ADR-0026), + 5 doc commits; 68d4512 user (indexhorserace logdir).
+
+**Status:**
+- HELD uncommitted (user request): do/check/check_logs.do, do/main.do.
+- Pending: next Scribe run (needs `ssc install filelist cfout` OR installssc=1; markers will pinpoint any failure).
+
+## 2026-06-01 — main.do committed + full M4 launched + worktree cleanup
+
+**Operations:**
+- Committed do/main.do (user-authorized; previously held as user's live file): SSC-install block + orchestration-gap fix + [RUN]/[OK] master-log markers (all phases) + nsc retirement/sibling repoints in Phase 6. +780/-107 lines.
+- All 7 phase toggles = 1 + m4_acceptance_run = 1 (user toggled everything on). Christina launched the full M4 acceptance run on Scribe — first true end-to-end test (prior runs were Phase 6/7 cached-only).
+- Last dev-run check_logs FAIL diagnosed as deployment-sync gap (Scribe ran older sibling/indexhorserace bodies under current main.do); resolved by syncing Scribe to current origin/main before the full run.
+- Worktree cleanup: removed stray root logs (tA/tB/tC/t_logquery.log = my check_logs stata17 test harness outputs; stray stata.log).
+- Housekeeping: session log, SESSION_REPORT (both mirrors), TODO updated.
+
+**Decisions:**
+- main.do committed now (user explicitly authorized + has it in final all-on M4 state). run_va_tables=1 left on though Phase 4 is a documented no-op (harmless; m4_acceptance_run forces all phases anyway).
+
+**Status:**
+- Done: all session fixes committed (figs r603, sib-lag r111, mkdir sweep, mattschlchar vendoring, base_nodrop, merge_k12 path, va_spec_fb_tab_all root + reshape, nsc descope, sibling consolidation, check_logs rewrite, main.do).
+- IN FLIGHT: full M4 acceptance run on Scribe. Next: read its master log ([RUN]/[OK] markers pinpoint progress/failure) when it completes.

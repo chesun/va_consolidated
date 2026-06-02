@@ -129,3 +129,15 @@ va_score_sib_lag.do, va_out_sib_lag.do. coder-critic dispatch still pending befo
 - nsc_codebook DESCOPED (ADR-0025) -> do/_archive/out_of_scope/; sibling 3-file consolidation (ADR-0026) -> do/sibling_xwalk/ w/ log-path mirror; both committed 6043336, coder-critic 96/100.
 - indexhorserace logdir = Christina's fix (verified, uncommitted).
 - main.do master-log [RUN]/[OK] markers on all 86 live do-calls (Python transform + Phase 7 hand-done); uncommitted (user-owned main.do). Stop-on-error preserved; survives clear all.
+
+## Addendum 2026-06-01 (cont.) — SSC install block + filelist/check_logs fixes
+- **SSC install block** added to do/main.do after settings.do (uncommitted, user-owned): `local installssc` toggle gating 12 ssc + geodist net-install. DERIVED from active tree (which-guards + invoked cmds), not copied blindly: ADDS filelist+cfout, DROPS 8 unused predecessor pkgs (tabout/outreg2/binscatter/grstyle/palettes/colrspace/labutil2/labundef). opencagegeo kept but flagged DORMANT.
+- **filelist r(198)** in check_logs.do: `norecur(0)` invalid — real option is `noRecursive` (flag); recursion is DEFAULT. Fixed by removing the option. Verified against filelist.ado + reproduced r198 locally.
+- **check_logs r(9) — two design bugs fixed (user chose "scope to files that ran")**: (BugA) expected-log path built from basename not reldir -> never found nested logs; (BugB) asserted ALL files have logs but dev runs only execute toggled-ON phases (111/112 false fails). Rewrote: reldir-mirrored expected path; scope to files that RAN via master-log [RUN] markers (got master path via `log query master` r(filename); macval-shielded file read to dodge r132); exempt main.do/settings.do. EMPIRICALLY TESTED both PASS + FAIL(exit 9) paths via stata17.
+- **HELD uncommitted per user**: do/check/check_logs.do (in-scope fix; coder-critic pending) + do/main.do (user-owned). Committed earlier this session: 11f7ca0, f58a406, e3af3d3, ee5e8fa, 6043336 (+ doc commits); user committed 68d4512 (indexhorserace logdir).
+
+## Addendum 2026-06-01 (cont.) — main.do committed, full M4 launched
+- **main.do COMMITTED** (user authorized): SSC-install block (installssc toggle; derived package set incl. filelist+cfout, drops unused predecessor pkgs), orchestration-gap fix (m4_acceptance_run=1 forces all upstream PHASE toggles), [RUN]/[OK] master-log markers on all live do-calls (Phases 1-7), nsc_codebook retirement + sibling-path repoints in Phase 6. +780/-107 lines.
+- **All phase toggles ON + m4_acceptance_run=1** — Christina launched the full M4 acceptance run on Scribe (first true end-to-end test; prior runs were Phase 6/7 cached-only).
+- **check_logs FAIL last dev run = deployment-sync gap** (not a bug): Scribe ran older sibling/indexhorserace bodies (old log paths) under current main.do. Resolved by Christina syncing Scribe to current origin/main before the full run. Write-up: quality_reports/reviews/2026-06-01_check-logs-fail-deployment-gap.md.
+- Worktree cleanup: removed stray root test logs (tA/tB/tC/t_logquery.log from this session's stata17 check_logs harness tests + stray stata.log).
