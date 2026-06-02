@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
-do/share/siblingxwalk/uniquefamily.do — Phase 1a §3.3 step 10 batch 10c relocation
+do/sibling_xwalk/uniquefamily.do (relocated 2026-06-01 from do/share/siblingxwalk/) — Phase 1a §3.3 step 10 batch 10c relocation
 ================================================================================
 
 PURPOSE
@@ -16,8 +16,8 @@ OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/siblingxwalk/ufamilyxwalk
     $datadir_clean/siblingxwalk/uniquelinkedfamilyclean
     $datadir_clean/siblingxwalk/uniquelinkedfamilyraw
-    $logdir/share/siblingxwalk/uniquefamily.smcl (via log using)
-    $logdir/share/siblingxwalk/uniquefamily.smcl + $logdir/share/siblingxwalk/uniquefamily.log (translate)
+    $logdir/sibling_xwalk/uniquefamily.smcl (via log using)
+    $logdir/sibling_xwalk/uniquefamily.smcl + $logdir/sibling_xwalk/uniquefamily.log (translate)
     $output_dir/graph/siblingxwalk/numsiblingdist.png
 
 RELOCATION (per plan v3 §3.3 step 10 batch 10c, applied 2026-05-08)
@@ -59,8 +59,7 @@ clear all
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
-cap mkdir "$logdir/share"
-cap mkdir "$logdir/share/siblingxwalk"
+cap mkdir "$logdir/sibling_xwalk"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/siblingxwalk"
 cap mkdir "$output_dir"
@@ -68,7 +67,7 @@ cap mkdir "$output_dir/graph"
 cap mkdir "$output_dir/graph/siblingxwalk"
 
 
-log using "$logdir/share/siblingxwalk/uniquefamily.smcl", replace text name(uniquefamily)
+log using "$logdir/sibling_xwalk/uniquefamily.smcl", replace text name(uniquefamily)
 
 use $datadir_clean/siblingxwalk/k12_xwalk_name_address_year, clear
 
@@ -130,4 +129,4 @@ save $datadir_clean/siblingxwalk/ufamilyxwalk, replace
 
 
 cap log close uniquefamily
-translate $logdir/share/siblingxwalk/uniquefamily.smcl $logdir/share/siblingxwalk/uniquefamily.log, replace 
+translate $logdir/sibling_xwalk/uniquefamily.smcl $logdir/sibling_xwalk/uniquefamily.log, replace 

@@ -1,4 +1,15 @@
 /*------------------------------------------------------------------------------
+ARCHIVED 2026-06-01 per ADR-0025 — DESCOPED, not runnable.
+    Relocated to do/_archive/out_of_scope/ (was do/share/outcomesumstats/nsc_codebook.do).
+    The M4 run errored r(601) at `use $nscdtadir/nsc_2010_2017_clean': that dataset was
+    removed from Scribe and re-cleaned into datasets with different names, and producing
+    this NSC-outcomes codebook is now out of project scope (per Christina 2026-06-01).
+    Diagnostic-only (txt codebook), not paper-shipping, no downstream consumer. Removed
+    from do/main.do Phase 6. Body preserved verbatim below per ADR-0021. Reviving needs a
+    successor ADR + re-pointing to the new NSC dataset names. See do/_archive/out_of_scope/README.md.
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
 do/share/outcomesumstats/nsc_codebook.do — Phase 1a §3.3 step 10 batch 10c relocation
 ================================================================================
 
@@ -60,9 +71,8 @@ cap mkdir "$output_dir"
 cap mkdir "$output_dir/txt"
 cap mkdir "$output_dir/txt/outcomesumstats"
 
-    log using "$output_dir/txt/outcomesumstats/nsc_2010_2017_codebook.txt", text replace
-    noisily codebook
-    log close
+    log using "$logdir/share/outcomesumstats/nsc_codebook.txt", text replace
+
 }
 
 use $nscdtadir/nsc_2010_2018_clean, clear
@@ -71,3 +81,5 @@ quietly {
     noisily codebook
     log close
 }
+
+log close 

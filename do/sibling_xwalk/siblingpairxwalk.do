@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
-do/share/siblingxwalk/siblingpairxwalk.do — Phase 1a §3.3 step 10 batch 10c relocation
+do/sibling_xwalk/siblingpairxwalk.do (relocated 2026-06-01 from do/share/siblingxwalk/) — Phase 1a §3.3 step 10 batch 10c relocation
 ================================================================================
 
 PURPOSE
@@ -16,8 +16,8 @@ INPUTS (verified via grep on file body)
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/siblingxwalk/siblingpairxwalk
     $datadir_clean/siblingxwalk/uniquesiblingpairxwalk
-    $logdir/share/siblingxwalk/siblingpairxwalk.smcl (via log using)
-    $logdir/share/siblingxwalk/siblingpairxwalk.smcl + $logdir/share/siblingxwalk/siblingpairxwalk.log (translate)
+    $logdir/sibling_xwalk/siblingpairxwalk.smcl (via log using)
+    $logdir/sibling_xwalk/siblingpairxwalk.smcl + $logdir/sibling_xwalk/siblingpairxwalk.log (translate)
 
 RELOCATION (per plan v3 §3.3 step 10 batch 10c, applied 2026-05-08)
     Source: caschls/do/share/siblingxwalk/siblingpairxwalk.do
@@ -56,13 +56,12 @@ clear all
 set more off
 * --- output-directory prep (CANONICAL) ---------------------------------------
 cap mkdir "$logdir"
-cap mkdir "$logdir/share"
-cap mkdir "$logdir/share/siblingxwalk"
+cap mkdir "$logdir/sibling_xwalk"
 cap mkdir "$datadir_clean"
 cap mkdir "$datadir_clean/siblingxwalk"
 
 
-log using "$logdir/share/siblingxwalk/siblingpairxwalk.smcl", replace text name(siblingpairxwalk)
+log using "$logdir/sibling_xwalk/siblingpairxwalk.smcl", replace text name(siblingpairxwalk)
 
 use $datadir_clean/siblingxwalk/uniquelinkedfamilyclean, clear
 
@@ -129,4 +128,4 @@ save $datadir_clean/siblingxwalk/uniquesiblingpairxwalk, replace
 
 
 cap log close siblingpairxwalk
-translate $logdir/share/siblingxwalk/siblingpairxwalk.smcl $logdir/share/siblingxwalk/siblingpairxwalk.log, replace
+translate $logdir/sibling_xwalk/siblingpairxwalk.smcl $logdir/sibling_xwalk/siblingpairxwalk.log, replace
