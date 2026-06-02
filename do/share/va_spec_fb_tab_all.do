@@ -153,6 +153,16 @@ foreach version in v1 v2 {
     // table-class summary .dta files; $tables_dir is the correct root (cf. tables.md).
     use $tables_dir/va_cfr_all_`version'/fb_test/fb_`va_outcome'_all.dta, clear
 
+    // 2026-06-01: keep only the canonical FB-test rows (predicted_score==0).  The
+    // producer va_{out,score}_fb_test_tab.do also writes exploratory predicted_score==1
+    // rows ("using predicted ELA score as controls", added to the producer 2024-08/09,
+    // ~14 months after this consumer was last touched 2023-06).  This consumer's column
+    // definition does not key on predicted_score, so without this filter each
+    // (column, fb_var) cell carries 2 rows -> reshape long i(column fb_var) -> r(9).
+    // ps==1 is not paper-shipping (see ADR-0012 producer-tier).  See
+    // quality_reports/reviews/2026-06-01_va-spec-fb-tab-all-reshape-r9-debug.md.
+    keep if predicted_score==0
+
 		gen column=1 if va_sample=="b" & va_control=="b" & peer_controls==0
     replace column=2 if va_sample=="las" & va_control=="b" & peer_controls==0
     replace column=3 if va_sample=="las" & va_control=="b" & peer_controls==1
@@ -215,6 +225,11 @@ foreach version in v1 v2 {
     // 2026-06-01: repointed $estimates_dir -> $tables_dir to match the producers
     // (va_{out,score}_spec_test_tab.do regsave to $tables_dir/.../spec_test/). See fb_test note above.
     use $tables_dir/va_cfr_all_`version'/spec_test/spec_`va_outcome'_all.dta, clear
+
+    // 2026-06-01: keep canonical spec-test rows only (predicted_score==0); same
+    // exploratory predicted_score==1 duplication as the fb_test block above, which
+    // would break reshape long i(column) -> r(9).  See fb_test note + the r9 review doc.
+    keep if predicted_score==0
 
     gen column=1 if va_sample=="b" & va_control=="b" & peer_controls==0
     replace column=2 if va_sample=="las" & va_control=="b" & peer_controls==0
