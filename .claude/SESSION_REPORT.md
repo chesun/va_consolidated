@@ -2346,3 +2346,22 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 - Done: 9th fix this session, committed. main.do still uncommitted (user runtime).
 - Open (coder-critic noted): INDEX.md not updated for the 2 new reviews (Edit unavailable to that agent) — minor, append later.
 - Pending: next Scribe run (further into Phase 6).
+
+## 2026-06-01 — 4 housekeeping items: nsc descope, sibling consolidation, indexhorserace logdir, master-log markers
+
+**Operations:**
+- #1 nsc_codebook.do DESCOPED (ADR-0025): input nsc_2010_2017_clean removed from Scribe (re-cleaned under new names), out of scope. git mv -> do/_archive/out_of_scope/ + README + ARCHIVED note; removed from main.do Phase 6.
+- #2 sibling consolidation (ADR-0026): moved 3 files do/share/siblingxwalk/{siblingmatch,uniquefamily,siblingpairxwalk}.do -> do/sibling_xwalk/ (joining siblingoutxwalk); repointed log paths to mirror ($logdir/sibling_xwalk/); removed empty share/siblingxwalk dir. Data-output paths unchanged.
+- #3 indexhorseracewithdemo.do logdir: Christina's fix verified (points $logdir/survey_va/) — left uncommitted (user edit).
+- #4 master-log per-file markers: added [RUN]/[OK] di-to-master brackets around all 86 live do-calls in main.do (80 via Python transform + 6 hand-done Phase 7). Stop-on-error preserved; last [RUN] w/o [OK] = the culprit. Survives sub-do clear all (inline code + named log, not a program). Left uncommitted (main.do user-owned).
+- Committed 6043336 (#1+#2 + ADR-0025/0026 + coder-critic review). coder-critic PASS 96/100 (data-output parity + no over-broad sed confirmed).
+
+**Decisions:**
+- New archive bucket do/_archive/out_of_scope/ (descoped ≠ exploratory).
+- ADR-0026 extends ADR-0005 (do/sibling_xwalk/ = canonical home for all sibling xwalk producers).
+- #4 mechanism: "inline markers, no ado" (user choice); verbose (~5 lines/call) but no adopath infra needed.
+
+**Status:**
+- Done: all 4 items. #1+#2 committed; #3 (user) + #4 (main.do) uncommitted per user ownership of main.do.
+- Minor deferred: stale "Sister files" header lists still name nsc_codebook in ~6 files (historical batch records; left as-is, low value to chase).
+- Pending: next Scribe run (markers will show exactly which file runs/errors).
