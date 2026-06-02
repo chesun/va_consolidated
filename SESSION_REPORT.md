@@ -2329,3 +2329,20 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 **Status:**
 - Done: 8th fix this session, committed + ADR-0024. main.do still uncommitted (user runtime).
 - Pending: next Scribe run (path-correcting, not output-altering; deeper into Phase 6 each time).
+
+## 2026-06-01 — va_spec_fb_tab_all r(9) reshape (missing predicted_score filter)
+
+**Operations:**
+- After the $tables_dir fix let execution reach the reshape, run errored r(9) at `reshape long i(column fb_var)`.
+- INITIAL hypothesis (stale cache) was WRONG — Christina corrected: full producer rerun means `replace` fires, no cross-run accumulation. Re-investigated within a single clean run.
+- Real root cause: producer writes predicted_score 0 (canonical FB/spec test) AND 1 (exploratory predicted-ELA-score variant, added to producer 2024-08/09 ~14mo after consumer last touched 2023-06); consumer's column key omits predicted_score -> 2 rows per (column,fb_var) -> r(9). Git timeline + tab-column math (col2=8 fb_var x 2 ps=16) confirm.
+- Fix: `keep if predicted_score==0` after the use in BOTH consumer blocks (FB + spec). coder-critic PASS 96/100 (confirmed ps==0 canonical from producer source; predicted_score is sole dup axis). Committed ee5e8fa.
+
+**Decisions:**
+- Real code bug (consumer/producer drift), not cache/path. Keep canonical ps==0 (paper-shipping); ps==1 is exploratory (LEGACY predicted_prior_score reads, "Step 11 deferred").
+- Corrected my own wrong stale-cache theory in the review doc — Christina caught it.
+
+**Status:**
+- Done: 9th fix this session, committed. main.do still uncommitted (user runtime).
+- Open (coder-critic noted): INDEX.md not updated for the 2 new reviews (Edit unavailable to that agent) — minor, append later.
+- Pending: next Scribe run (further into Phase 6).
