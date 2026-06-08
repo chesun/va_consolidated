@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Fraction of VA variance that is across-district}
+\begin{tabularx}{\linewidth}{lCCCC}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)} \tabularnewline
+{} & ELA & Math & 2 Year Enr & 4 Year Enr \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+Panel A: Restricted sample with base controls&&&& \tabularnewline
+\midrule At least 2 schools in district&0.311&0.396&0.647&0.550 \tabularnewline
+25 largest districts (7+ schools)&0.180&0.231&0.542&0.365 \tabularnewline
+\midrule Panel B: Restricted sample with full controls&&&& \tabularnewline
+\midrule At least 2 schools in district&0.308&0.323&0.488&0.374 \tabularnewline
+25 largest districts (7+ schools)&0.179&0.184&0.236&0.182 \tabularnewline
+\bottomrule 
+
+\end{tabularx}
+\end{table}
+\end{document}

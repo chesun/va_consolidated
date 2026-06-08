@@ -2,7 +2,7 @@
       name:  renamedata
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/prepare/renamedata.smcl
   log type:  text
- opened on:  26 May 2026, 22:26:11
+ opened on:   1 Jun 2026, 23:01:58
 
 . 
 . ************************** elementary CHKS surveys *****************************
@@ -517,5 +517,5 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
       name:  renamedata
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/prepare/renamedata.smcl
   log type:  text
- closed on:  26 May 2026, 22:28:52
+ closed on:   1 Jun 2026, 23:04:08
 ------------------------------------------------------------------------------------------------------------------------

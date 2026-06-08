@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > va/va_corr.smcl
   log type:  text
- opened on:  29 May 2026, 09:28:06
+ opened on:   2 Jun 2026, 18:04:51
 
 . 
 .  di as text _n "-------------------------------------------------------------
@@ -14,7 +14,7 @@
 > -
 
 .  di as text "va_corr.do — RUN START: `c(current_date)' `c(current_time)'"
-va_corr.do — RUN START: 29 May 2026 09:28:06
+va_corr.do — RUN START:  2 Jun 2026 18:04:51
 
 .  di as text "----------------------------------------------------------------
 ----------------"
@@ -777,7 +777,7 @@ delimiter now cr
 . local time1 = c(current_time)
 
 . di "`date1' `time1'"
-29 May 2026 09:28:06
+ 2 Jun 2026 18:04:51
 
 . 
 . 
@@ -1048,10 +1048,10 @@ va_enr_4ye.. |   0.6888   0.7578   0.7949   0.8743   0.8064   0.9288   0.8744
 
 . 
 .  di "Start date time for va_corr.do: `date1' `time1'"
-Start date time for va_corr.do: 29 May 2026 09:28:06
+Start date time for va_corr.do:  2 Jun 2026 18:04:51
 
 .  di "End date time: `date2' `time2'"
-End date time:  09:28:06
+End date time:  18:04:51
 
 . 
 . 

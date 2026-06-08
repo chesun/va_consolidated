@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > sibling_xwalk/siblingoutxwalk.smcl
   log type:  text
- opened on:  26 May 2026, 22:29:44
+ opened on:   1 Jun 2026, 23:04:58
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "siblingoutxwalk.do — RUN START: `c(current_date)' `c(current_time
 > )'"
-siblingoutxwalk.do — RUN START: 26 May 2026 22:29:44
+siblingoutxwalk.do — RUN START:  1 Jun 2026 23:04:58
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -3342,7 +3342,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:   2776.57 /        1 =    2776.5690
+   1:   1789.19 /        1 =    1789.1890
 
 . 
 . 
@@ -3357,7 +3357,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 
 . di as text "siblingoutxwalk.do — RUN END: `c(current_date)' `c(current_time)'
 > "
-siblingoutxwalk.do — RUN END: 26 May 2026 23:16:01
+siblingoutxwalk.do — RUN END:  1 Jun 2026 23:34:47
 
 . di as text "-----------------------------------------------------------------
 ---------------"

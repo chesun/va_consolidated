@@ -1,0 +1,161 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  parentcoverageanalysis
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/demographics/parentcoverageanalysis.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:29:48
+
+. 
+. grstyle init  //initializes the grstyle package
+
+. grstyle set plain   //set graph background to plain
+
+. grstyle set color Set1, opacity(50): histogram //use Set1 color palette (red and blue) for histogram bars fill color and set opacity to 50%
+
+. grstyle set color white, opacity(25): histogram_line //set color white and opacity 25% for histogram bar outline color
+
+. 
+. local years `" "1415" "1516" "1617" "1718" "1819" "' //local macro for elementary dataset years
+
+. 
+. foreach year of local years {
+  2.   use $caschls_projdir/dta/demographics/analysis/parent/parentdemo`year'analysis, clear
+  3.   cap mkdir "$output_dir/graph/svycoverage/parentcoverage/parent`year'"
+  4. 
+.   local grades `" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "' //local macro for kids' grades in parent survey, kindergarten enrollment not included so omit
+  5.   foreach i of local grades {
+  6.     /* create and export frequency histograms for distribution of response rate in grade i */
+.     histogram svygr`i'resprate, freq
+  7.     graph export $output_dir/graph/svycoverage/parentcoverage/parent`year'/gr`i'resprate.png, replace
+  8.   }
+  9. }
+(Parent 1415 demographics data with survey coverage analysis variables)
+(bin=21, start=0, width=.02875112)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr1resprate.png written in PNG format
+(bin=21, start=0, width=.03377237)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr2resprate.png written in PNG format
+(bin=21, start=0, width=.03361345)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr3resprate.png written in PNG format
+(bin=21, start=0, width=.03549784)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr4resprate.png written in PNG format
+(bin=22, start=0, width=.04101995)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr5resprate.png written in PNG format
+(bin=20, start=0, width=.05)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr6resprate.png written in PNG format
+(bin=1, start=0, width=1)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr7resprate.png written in PNG format
+(bin=15, start=0, width=.06666667)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr8resprate.png written in PNG format
+(bin=11, start=0, width=.13636364)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr9resprate.png written in PNG format
+(bin=12, start=0, width=.08333333)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr10resprate.png written in PNG format
+(bin=12, start=0, width=.05952381)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr11resprate.png written in PNG format
+(bin=12, start=0, width=.08333333)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1415/gr12resprate.png written in PNG format
+(Parent 1516 demographics data with survey coverage analysis variables)
+(bin=23, start=0, width=.03588682)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr1resprate.png written in PNG format
+(bin=23, start=0, width=.04578392)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr2resprate.png written in PNG format
+(bin=23, start=0, width=.06702898)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr3resprate.png written in PNG format
+(bin=23, start=0, width=.07591442)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr4resprate.png written in PNG format
+(bin=23, start=0, width=.07608696)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr5resprate.png written in PNG format
+(bin=20, start=0, width=.04285714)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr6resprate.png written in PNG format
+(bin=16, start=0, width=.29166666)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr7resprate.png written in PNG format
+(bin=16, start=0, width=.09375)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr8resprate.png written in PNG format
+(bin=13, start=0, width=.10256411)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr9resprate.png written in PNG format
+(bin=14, start=0, width=.07142857)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr10resprate.png written in PNG format
+(bin=14, start=0, width=.07142857)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr11resprate.png written in PNG format
+(bin=14, start=0, width=.04945055)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1516/gr12resprate.png written in PNG format
+(Parent 1617 demographics data with survey coverage analysis variables)
+(bin=26, start=0, width=.04655871)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr1resprate.png written in PNG format
+(bin=26, start=0, width=.03846154)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr2resprate.png written in PNG format
+(bin=26, start=0, width=.05599547)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr3resprate.png written in PNG format
+(bin=26, start=0, width=.06129808)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr4resprate.png written in PNG format
+(bin=26, start=0, width=.07625995)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr5resprate.png written in PNG format
+(bin=21, start=0, width=.04761905)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr6resprate.png written in PNG format
+(bin=17, start=0, width=.05882353)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr7resprate.png written in PNG format
+(bin=17, start=0, width=.06617647)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr8resprate.png written in PNG format
+(bin=15, start=0, width=.4)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr9resprate.png written in PNG format
+(bin=16, start=0, width=.375)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr10resprate.png written in PNG format
+(bin=16, start=0, width=.08266129)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr11resprate.png written in PNG format
+(bin=16, start=0, width=.0546875)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1617/gr12resprate.png written in PNG format
+(Parent 1718 demographics data with survey coverage analysis variables)
+(bin=29, start=0, width=.06896552)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr1resprate.png written in PNG format
+(bin=29, start=0, width=.03733472)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr2resprate.png written in PNG format
+(bin=29, start=0, width=.04934602)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr3resprate.png written in PNG format
+(bin=29, start=0, width=.04094828)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr4resprate.png written in PNG format
+(bin=29, start=0, width=.06896552)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr5resprate.png written in PNG format
+(bin=25, start=0, width=.04275862)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr6resprate.png written in PNG format
+(bin=20, start=0, width=.05)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr7resprate.png written in PNG format
+(bin=20, start=0, width=.05)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr8resprate.png written in PNG format
+(bin=17, start=0, width=.11764706)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr9resprate.png written in PNG format
+(bin=18, start=0, width=.38888889)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr10resprate.png written in PNG format
+(bin=18, start=0, width=.05555556)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr11resprate.png written in PNG format
+(bin=18, start=0, width=.03571429)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1718/gr12resprate.png written in PNG format
+(Parent 1819 demographics data with survey coverage analysis variables)
+(bin=29, start=0, width=.04586857)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr1resprate.png written in PNG format
+(bin=29, start=0, width=.03997559)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr2resprate.png written in PNG format
+(bin=29, start=0, width=.05642633)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr3resprate.png written in PNG format
+(bin=29, start=0, width=.06161673)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr4resprate.png written in PNG format
+(bin=29, start=0, width=.06195207)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr5resprate.png written in PNG format
+(bin=24, start=0, width=.125)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr6resprate.png written in PNG format
+(bin=20, start=0, width=.05833333)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr7resprate.png written in PNG format
+(bin=20, start=0, width=.05714286)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr8resprate.png written in PNG format
+(bin=16, start=0, width=.0625)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr9resprate.png written in PNG format
+(bin=17, start=0, width=.11764706)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr10resprate.png written in PNG format
+(bin=17, start=0, width=.11764706)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr11resprate.png written in PNG format
+(bin=17, start=0, width=.08823529)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/parentcoverage/parent1819/gr12resprate.png written in PNG format
+
+. 
+. grstyle clear // sets off grstyle
+
+. 
+. cap log close parentcoverageanalysis

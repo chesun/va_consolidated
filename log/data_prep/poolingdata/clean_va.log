@@ -1,0 +1,188 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  clean_va
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> data_prep/poolingdata/clean_va.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:21:31
+
+. 
+. 
+. 
+. 
+. local date1_va_scatter_plot = c(current_date)
+
+. local time1_va_scatter_plot = c(current_time)
+
+. 
+. 
+. //---------------------------------------------------------------------------
+> ---
+. // collapse VA estimates to school level mean over the years 2015-2018
+. //---------------------------------------------------------------------------
+> ---
+. 
+. foreach va_outcome in ela math enr enr_2year enr_4year {
+  2.   use $estimates_dir/va_cfr_all_v1/va_est_dta/va_`va_outcome'_all.dta, cle
+> ar  // CHAIN read from do/va/merge_va_est
+> .do (CANONICAL; relocated Step 3 batch 3c1)
+  3.   collapse (mean) va*, by(cdscode)
+  4. 
+.   tempfile va_`va_outcome'
+  5.   save `va_`va_outcome''
+  6. }
+(ela estimates from all sample and control combinations)
+file /home/tmp/St29294.000001 saved as .dta format
+(math estimates from all sample and control combinations)
+file /home/tmp/St29294.000002 saved as .dta format
+(enr estimates from all sample and control combinations)
+file /home/tmp/St29294.000003 saved as .dta format
+(enr_2year estimates from all sample and control combinations)
+file /home/tmp/St29294.000004 saved as .dta format
+(enr_4year estimates from all sample and control combinations)
+file /home/tmp/St29294.000005 saved as .dta format
+
+. 
+. //---------------------------------------------------------------------------
+> ---
+. // merge collapsed VA estimates
+. //---------------------------------------------------------------------------
+> ---
+. 
+. // use a macro to store the command to initialize the data for merge
+. local merge_command use
+
+. local merge_options clear
+
+. 
+. foreach va_outcome in ela math enr enr_2year enr_4year {
+  2.   `merge_command' `va_`va_outcome'', `merge_options'
+  3.   local merge_command "merge 1:1 cdscode using"
+  4.   local merge_options nogen
+  5. }
+(ela estimates from all sample and control combinations)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             4
+        from master                         3  
+        from using                          1  
+
+    Matched                             1,366  
+    -----------------------------------------
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                            14
+        from master                         4  
+        from using                         10  
+
+    Matched                             1,366  
+    -----------------------------------------
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             4
+        from master                         4  
+        from using                          0  
+
+    Matched                             1,376  
+    -----------------------------------------
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             4
+        from master                         4  
+        from using                          0  
+
+    Matched                             1,376  
+    -----------------------------------------
+
+. 
+. label data "Pooled  School Level VA mean estimates for all test scores and en
+> rollment over 2015-2018"
+note: label truncated to 80 characters
+
+. save $datadir_clean/calschls/va/va_pooled_all.dta, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /calschls/va/va_pooled_all.dta saved
+
+. 
+. 
+. 
+. //---------------------------------------------------------------------------
+> ---
+. // merge collapsed VA estimates onto survey data
+. //---------------------------------------------------------------------------
+> ---
+. foreach svyname in sec parent staff {
+  2.   use $datadir_clean/calschls/analysisready/`svyname'analysisready, clear
+  3.   merge 1:1 cdscode using $datadir_clean/calschls/va/va_pooled_all.dta, ke
+> ep(1 3) nogen
+  4. 
+.   save, replace
+  5. }
+(secondary pooled dataset ready for analysis with stats and response rate)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         2,454
+        from master                     2,454  
+        from using                          0  
+
+    Matched                               931  
+    -----------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/secanalysisready
+    > .dta saved
+(parent pooled (over years) dataset ready for analysis with stats and response 
+> ra)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         2,569
+        from master                     2,569  
+        from using                          0  
+
+    Matched                               427  
+    -----------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/parentanalysisre
+    > ady.dta saved
+(weighted average staff qoi statistics pooled over years)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         3,619
+        from master                     3,619  
+        from using                          0  
+
+    Matched                               593  
+    -----------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
+> calschls/analysisready/staffanalysisrea
+    > dy.dta saved
+
+. 
+. 
+. 
+. 
+. 
+. local date2_va_scatter_plot = c(current_date)
+
+. local time2_va_scatter_plot = c(current_time)
+
+. 
+. di "Do file clean_va.do start date time: `date1_va_scatter_plot' `time1_va_sc
+> atter_plot'"
+Do file clean_va.do start date time:  3 Jun 2026 02:21:31
+
+. di "End date time: `date2_va_scatter_plot' `time2_va_scatter_plot'"
+End date time:  3 Jun 2026 02:21:32
+
+. 
+. 
+. cap log close clean_va

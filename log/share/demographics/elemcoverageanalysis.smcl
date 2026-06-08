@@ -1,0 +1,176 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  elemcoverageanalysis
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/demographics/elemcoverageanalysis.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:29:37
+
+. 
+. local years `" "1415" "1516" "1617" "1718" "1819" "' //local macro for elementary dataset years
+
+. 
+. grstyle init  //initializes the grstyle package
+
+. grstyle set plain   //set graph background to plain
+
+. grstyle set color Set1, opacity(50): histogram //use Set1 color palette (red and blue) for histogram bars fill color and set opacity to 50%
+
+. grstyle set color white, opacity(25): histogram_line //set color white and opacity 25% for histogram bar outline color
+
+. 
+. foreach i of local years {
+  2.   use $caschls_projdir/dta/demographics/analysis/elementary/elemdemo`i'analysis, clear
+  3.   cap mkdir "$output_dir/graph/svycoverage/elemcoverage/elem`i'"
+  4. 
+.   local elemgrades 3 4 5 6 //create a local macro for the grades in the elementary survey data
+  5.   foreach j of local elemgrades {
+  6. 
+.     /* create and export frequency histograms for distribution of response rate in grade i */
+.     histogram svygr`j'resprate, freq
+  7.     graph export $output_dir/graph/svycoverage/elemcoverage/elem`i'/gr`j'resprate.png, replace
+  8. 
+.     /* create and export frequency histograms for distribution of male and female percentage difference between survey sample and enrollment data */
+.     histogram femalegr`j'dif, freq
+  9.     graph export $output_dir/graph/svycoverage/elemcoverage/elem`i'/gr`j'femaledif.png,replace
+ 10.     histogram malegr`j'dif, freq
+ 11.     graph export $output_dir/graph/svycoverage/elemcoverage/elem`i'/gr`j'maledif.png, replace
+ 12.   }
+ 13. 
+. 
+. }
+(Elementary 1415 demographics data with survey coverage analysis variables)
+(bin=30, start=0, width=.05)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr3resprate.png written in PNG format
+(bin=10, start=-.67567569, width=.13542472)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr3femaledif.png written in PNG format
+(bin=10, start=-.73809522, width=.14137709)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr3maledif.png written in PNG format
+(bin=30, start=0, width=.0375)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr4resprate.png written in PNG format
+(bin=15, start=-.75, width=.09252874)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr4femaledif.png written in PNG format
+(bin=15, start=-.66666669, width=.09444445)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr4maledif.png written in PNG format
+(bin=30, start=0, width=.04120371)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr5resprate.png written in PNG format
+(bin=30, start=-.6111111, width=.03287037)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr5femaledif.png written in PNG format
+(bin=30, start=-.61627907, width=.03959025)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr5maledif.png written in PNG format
+(bin=24, start=0, width=.04323899)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr6resprate.png written in PNG format
+(bin=12, start=-.64285713, width=.10326562)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr6femaledif.png written in PNG format
+(bin=12, start=-.59633029, width=.10326562)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1415/gr6maledif.png written in PNG format
+(Elementary 1516 demographics data with survey coverage analysis variables)
+(bin=31, start=0, width=.02952433)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr3resprate.png written in PNG format
+(bin=11, start=-.60000002, width=.11094276)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr3femaledif.png written in PNG format
+(bin=11, start=-.66071427, width=.11461039)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr3maledif.png written in PNG format
+(bin=32, start=0, width=.09375)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr4resprate.png written in PNG format
+(bin=16, start=-1, width=.10648148)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr4femaledif.png written in PNG format
+(bin=16, start=-.7037037, width=.08564815)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr4maledif.png written in PNG format
+(bin=32, start=0, width=.0625)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr5resprate.png written in PNG format
+(bin=31, start=-.56521738, width=.03582813)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr5femaledif.png written in PNG format
+(bin=31, start=-.625, width=.03839411)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr5maledif.png written in PNG format
+(bin=27, start=0, width=.08888889)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr6resprate.png written in PNG format
+(bin=13, start=-1, width=.1270903)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr6femaledif.png written in PNG format
+(bin=13, start=-.65217394, width=.10417705)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1516/gr6maledif.png written in PNG format
+(Elementary 1617 demographics data with survey coverage analysis variables)
+(bin=31, start=0, width=.03225806)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr3resprate.png written in PNG format
+(bin=13, start=-.59090906, width=.12237762)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr3femaledif.png written in PNG format
+(bin=13, start=-1, width=.12237762)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr3maledif.png written in PNG format
+(bin=31, start=0, width=.03655914)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr4resprate.png written in PNG format
+(bin=17, start=-.66666669, width=.07722473)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr4femaledif.png written in PNG format
+(bin=17, start=-.64615387, width=.07339882)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr4maledif.png written in PNG format
+(bin=31, start=0, width=.04774194)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr5resprate.png written in PNG format
+(bin=31, start=-.80000001, width=.04193548)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr5femaledif.png written in PNG format
+(bin=31, start=-.61904764, width=.04577573)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr5maledif.png written in PNG format
+(bin=26, start=0, width=.04251012)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr6resprate.png written in PNG format
+(bin=15, start=-.60000002, width=.08184397)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr6femaledif.png written in PNG format
+(bin=15, start=-.62765956, width=.08184397)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1617/gr6maledif.png written in PNG format
+(Elementary 1718 demographics data with survey coverage analysis variables)
+(bin=33, start=0, width=.05844156)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr3resprate.png written in PNG format
+(bin=22, start=-.66666669, width=.06158358)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr3femaledif.png written in PNG format
+(bin=22, start=-.68817204, width=.06158358)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr3maledif.png written in PNG format
+(bin=33, start=0, width=.03305785)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr4resprate.png written in PNG format
+(bin=22, start=-.64473683, width=.05865029)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr4femaledif.png written in PNG format
+(bin=22, start=-.66265059, width=.0594267)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr4maledif.png written in PNG format
+(bin=33, start=0, width=.04778555)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr5resprate.png written in PNG format
+(bin=33, start=-.6574074, width=.04012346)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr5femaledif.png written in PNG format
+(bin=33, start=-.76923078, width=.03846154)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr5maledif.png written in PNG format
+(bin=30, start=0, width=.03333333)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr6resprate.png written in PNG format
+(bin=21, start=-.6875, width=.08035714)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr6femaledif.png written in PNG format
+(bin=21, start=-1, width=.08035714)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1718/gr6maledif.png written in PNG format
+(Elementary 1819 demographics data with survey coverage analysis variables)
+(bin=32, start=0, width=.034375)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr3resprate.png written in PNG format
+(bin=5, start=-.10160428, width=.05561497)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr3femaledif.png written in PNG format
+(bin=5, start=-.20300755, width=.06092237)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr3maledif.png written in PNG format
+(bin=32, start=0, width=.03125)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr4resprate.png written in PNG format
+(bin=8, start=-.51898736, width=.09872758)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr4femaledif.png written in PNG format
+(bin=8, start=-.61818182, width=.09211877)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr4maledif.png written in PNG format
+(bin=32, start=0, width=.05792683)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr5resprate.png written in PNG format
+(bin=32, start=-.65306121, width=.03280695)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr5femaledif.png written in PNG format
+(bin=32, start=-.71153843, width=.02791739)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr5maledif.png written in PNG format
+(bin=29, start=0, width=.03498251)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr6resprate.png written in PNG format
+(bin=9, start=-.5, width=.07822001)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr6femaledif.png written in PNG format
+(bin=9, start=-.5, width=.07486339)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/elemcoverage/elem1819/gr6maledif.png written in PNG format
+
+. 
+. grstyle clear // sets off grstyle
+
+. 
+. 
+. log close elemcoverageanalysis
+      name:  elemcoverageanalysis
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/demographics/elemcoverageanalysis.smcl
+  log type:  text
+ closed on:   3 Jun 2026, 02:29:48
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

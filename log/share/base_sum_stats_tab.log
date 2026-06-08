@@ -1,0 +1,3135 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  base_sum_stats_tab
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> share/base_sum_stats_tab.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:25:46
+
+. 
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. set seed 1984
+
+. 
+. 
+. local date1 = c(current_date)
+
+. local time1 = c(current_time)
+
+. 
+. 
+. include $consolidated_dir/do/va/helpers/macros_va.doh
+
+. /*---------------------------------------------------------------------------
+> ---
+> do/va/helpers/macros_va.doh — VA project file paths, dates, controls, strings
+> =============================================================================
+> ===
+> 
+> PURPOSE
+>     Define the canonical VA-pipeline locals consumed across Phase 3+
+>     estimation, table-producer, figure-producer, and heterogeneity scripts:
+>     - Restricted-access K12 data paths.
+>     - Sibling crosswalk paths (cross-references caschls predecessor).
+>     - Cohort-year ranges (test_score / star / caaspp / outcome).
+>     - Outcome strings (ELA, Math, enrollment).
+>     - Control-variable groupings (school, demographic, score, peer, census,
+>       sibling, distance, scrhat — predicted-score variants).
+>     - Per-spec control combinations (b/l/a/s/la/ls/as/las and their `d'-augme
+> nted
+>       variants per ADR-0009 + 2023-04-30 distance addition).
+>     - String labels for sample × control display.
+>     - School-characteristics + demographic-characteristics + expenditure grou
+> ps.
+> 
+> INCLUDED FROM
+>     Phase 3+ VA estimation/table/figure scripts under `do/va/' and `do/share/
+> va/'.
+>     Typically the FIRST helper-include in any consuming script (sets up the
+>     parent-scope locals consumed by `drift_limit.doh' and
+>     `macros_va_all_samples_controls.doh').
+> 
+>     Uses Stata's `#delimit ;' syntax (semicolons end statements) per the
+>     predecessor convention.  The closing `#delimit cr' restores default
+>     line-end semantics for the calling script.
+> 
+> ROLE IN ADR-0021 SANDBOX
+>     Pure local definitions; no save / export / log; sandbox-trivially clean.
+>     Reads from LEGACY paths via global expansion at include-time:
+>       - $vaprojdir/data/restricted_access/clean/k12_test_scores
+>         (LEGACY restricted-access K12 raw data)
+>       - $vaprojdir/data/public_access/...
+>         (LEGACY public-access subdirs)
+>       - $caschls_projdir/dta/siblingxwalk/{siblingpairxwalk,ufamilyxwalk}
+>         (LEGACY-static predecessor sibling-pair / unique-family crosswalks)
+>     Reads from CANONICAL paths:
+>       - $datadir_clean/siblingxwalk/sibling_out_xwalk
+>         (sibling-outcomes crosswalk built by relocated
+>          do/sibling_xwalk/siblingoutxwalk.do per ADR-0005; producer at L338)
+> 
+> RELOCATION HISTORY (per ADR-0005 + ADR-0021, applied 2026-04-30)
+>     Source:      cde_va_project_fork/do_files/sbac/macros_va.doh
+>     Destination: do/va/helpers/macros_va.doh
+>     Path repointing per ADR-0021 sandbox amendment ("paths only; analysis
+>     logic preserved verbatim"):
+>       - L29-31: `$projdir/dta/siblingxwalk/<file>' -> `$caschls_projdir/dta/s
+> iblingxwalk/<file>'
+>         (3 references: siblingxwalk, ufamilyxwalk, sibling_out_xwalk)
+>         Reason: $projdir is NOT defined in do/settings.do; $caschls_projdir
+>         is the explicit-named global per the LEGACY PATHS comment block.
+>         Repointing here eliminates the include-time `$projdir' alias-need
+>         for any future calling script (per the [LEARN:stata] 2026-04-30
+>         pattern surfaced in the siblingoutxwalk.do round-1 review).
+>       - $vaprojdir references (L22-28) preserved unchanged — $vaprojdir
+>         IS defined in do/settings.do as the predecessor cde_va_project_fork
+>         dir; LEGACY-static restricted-access K12 paths are READS-only
+>         per ADR-0021.
+>     Predecessor caller-update protocol: predecessor callers untouched in
+>     this commit per plan v3 §3.3 step 5 parenthetical.
+>     Analysis logic preserved verbatim (the cross-product of controls, the
+>     string labels, the cohort-year ranges, the school-char groupings — all
+>     byte-equivalent to the predecessor).
+> 
+> ORIGINAL CHANGE LOG (preserved from predecessor)
+>     2022-04-28: Added macro for sibling controls.
+>     2022-09-20: Added delimiter `;' after comments.
+>     2022-10-31: Changed naming convention for samples (b/l/a/s/la/ls/as/las).
+>     2023-05-31: Added distance control macros.
+>     2024-08-22: Added predicted ELA score spec controls (`scrhat' variants).
+> 
+> REFERENCES
+>     Plan v3 §3.3 step 1 (helpers/macros)
+>     ADRs:    0009 (v1 prior-score canonical), 0017 (Matt's files untouched —
+>              $vaprojdir paths are LEGACY-static reads), 0021 (description
+>              convention; sandbox-write rule; path-globals-only amendment)
+>     Audit:   chunk-2 (file structure verification); chunk-3 (control
+>              specifications cross-checked against paper Tables 2-3)
+>     MEMORY:  [LEARN:stata] 2026-04-30 ($projdir explicit-rename pattern)
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. 
+. /* CHANGE LOG
+> 4/28/2022: Added macro for sibling controls
+> 09/20/2022: Added delimiter : after comments
+> 10/31/2022: Changed naming convention for samples
+> b - base
+> l - loscore
+> a - acs
+> s - sibling
+> la - loscore and acs
+> ls - loscore and sibling
+> as - acs and sibling
+> las - loscore, acs and sibling
+> 
+> 05/31/2023: added distance control macros
+> 
+> 08/22/2024: added predicted ELA score spec controls
+> */
+. 
+. #delimit ;
+delimiter now ;
+. *** file paths ;
+. local home $vaprojdir ;
+
+. local vaprojdofiles "$vaprojdir/do_files"
+> local ca_ed_lab "/home/research/ca_ed_lab" ;
+
+. local k12_test_scores "$vaprojdir/data/restricted_access/clean/k12_test_score
+> s" ;
+
+. local public_access "$vaprojdir/data/public_access" ;
+
+. local k12_public_schools "$vaprojdir/data/public_access/clean/k12_public_scho
+> ols" ;
+
+. local k12_test_scores_public "$vaprojdir/data/public_access/clean/k12_test_sc
+> ores" ;
+
+. local siblingxwalk "$caschls_projdir/dta/siblingxwalk/siblingpairxwalk";
+
+. local ufamilyxwalk "$caschls_projdir/dta/siblingxwalk/ufamilyxwalk";
+
+. local sibling_out_xwalk "$datadir_clean/siblingxwalk/sibling_out_xwalk";
+
+. **** Dates ;
+. local test_score_min_year
+>         2015
+>         ;
+
+. local test_score_max_year
+>         2018
+>         ;
+
+. local star_min_year
+>         2003
+>         ;
+
+. local star_max_year
+>         2013
+>         ;
+
+. local caaspp_min_year
+>         2015
+>         ;
+
+. local caaspp_max_year
+>         2019
+>         ;
+
+. local outcome_min_year
+>         2015
+>         ;
+
+. local outcome_max_year
+>         2018
+>         ;
+
+. **** Outcome Strings ;
+. local ela_str
+>         "ELA"
+>         ;
+
+. local math_str
+>         "Math"
+>         ;
+
+. local enr_str
+>         "Overall Enrollment"
+>         ;
+
+. local enr_2year_str
+>         "2-Year Enrollment"
+>         ;
+
+. local enr_4year_str
+>         "4-Year Enrollment"
+>         ;
+
+. **** Sibling Census Restricted Sample Controls Strings ;
+. local og_str
+>         "Original Specification"
+>         ;
+
+. local acs_str
+>         "Original + Census"
+>         ;
+
+. local sib_str
+>         "Original + Sibling"
+>         ;
+
+. local both_str
+>         "Original + Census + Sibling"
+>         ;
+
+. **** Value Added ;
+. local school_controls
+>         /*cohort_size*/
+>         ;
+
+. local demographic_controls
+>         age
+>         i.male
+>         i.eth_asian i.eth_hispanic i.eth_black i.eth_other
+>         i.econ_disadvantage
+>         i.limited_eng_prof
+>         i.disabled
+>         ;
+
+. local ela_score_controls
+>         i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score
+> )
+>         ;
+
+. // controls using predicted lag 1 ELA scores
+> local ela_scrhat_controls
+>         i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela
+> _z_score_hat)
+>         ;
+
+. local math_score_controls
+>         i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_sc
+> ore)
+>         ;
+
+. local peer_ela_score_controls
+>         i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_pr
+> ior_ela_z_score)
+>         ;
+
+. local peer_math_score_controls
+>         i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_
+> prior_math_z_score)
+>         ;
+
+. local peer_demographic_controls
+>         peer_age
+>         peer_male
+>         peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other
+>         peer_econ_disadvantage
+>         peer_limited_eng_prof
+>         peer_disabled
+>         ;
+
+. local va_control_vars "`school_controls' `demographic_controls'" ;
+
+. local va_control_vars : subinstr local va_control_vars "i." "", all ;
+
+. local va_control_vars : list uniq va_control_vars ;
+
+. local census_grade
+>         6
+>         ;
+
+. local census_controls
+>         /*eth_white_pct*/ eth_asian_pct eth_hispanic_pct eth_black_pct /*eth_
+> other_pct*/
+>         educ_hs_dropout_prop /*educ_deg_2year_prop*/ educ_deg_4year_plus_prop
+>         pov_fam_child_lt18_pct
+>         inc_median_hh
+>         ;
+
+. local peer_census_controls
+>         peer_eth_asian_pct  peer_eth_hispanic_pct  peer_eth_black_pct
+>         peer_educ_hs_dropout_prop  peer_educ_deg_4year_plus_prop
+>         peer_pov_fam_child_lt18_pct      peer_inc_median_hh
+>         ;
+
+. local sibling_controls
+>         i.has_older_sibling_enr_2year
+>         i.has_older_sibling_enr_4year
+>         ;
+
+. local peer_sibling_controls
+>         peer_has_older_sibling_enr_2year
+>         peer_has_older_sibling_enr_4year
+>         ;
+
+. // lag 1 older sibling controls ;
+> local sib_lag1_controls
+>         old1_sib_enr_2year
+>         old1_sib_enr_4year
+>         ;
+
+. // lag 2 older sibling controls ;
+> local sib_lag2_controls
+>         old2_sib_enr_2year
+>         old2_sib_enr_4year
+>         ;
+
+. // postsecondary distance controls
+> local d_controls
+>         mindist_any_nonprof_4yr
+>         mindist_ccc
+>         ;
+
+. **********************************************  ;
+. *** macros for STANDALONE control vars for running loops over all samples and
+>  specifications ;
+. //base specification controls ;
+> local b_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. //peer base controls ;
+> local peer_b_controls
+>         `peer_ela_score_controls'
+>         `peer_math_score_controls'
+>         `peer_demographic_controls'
+>         ;
+
+. // leave out score controls ;
+> local l_controls
+>         loscore
+>         ;
+
+. // peer leave out score controls ;
+> local peer_l_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         ;
+
+. local a_controls
+>         `census_controls'
+>         ;
+
+. local peer_a_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         ;
+
+. local s_controls
+>         `sibling_controls'
+>         ;
+
+. local peer_s_controls
+>         `peer_b_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. // control var groups for looping ;
+> local la_controls
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local peer_la_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         ;
+
+. local ls_controls
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local peer_ls_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_sibling_controls'
+>         ;
+
+. local as_controls
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_as_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. local las_controls
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_las_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. foreach control in b l a s la ls as las {;
+  2.         local `control'd_controls
+>                 ``control'_controls' `d_controls'
+>                 ;
+  3.         local peer_`control'd_controls
+>                 `peer_`control'_controls'
+>                 ;
+  4.         }
+>         ;
+
+. *** macros for control var COMBINATIONS for running loops over all samples an
+> d specifications ;
+. //base specification controls ;
+> local b_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. // predicted score spec controls
+> local b_scrhat_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_scrhat_controls'
+>         `math_score_controls'
+>         ;
+
+. local bd_spec_controls
+>         `b_spec_controls'
+>         `d_controls'
+>         ;
+
+. local bd_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // leave out prior score controls ;
+> local l_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local l_scrhat_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local ld_spec_controls
+>         `l_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ld_scrhat_spec_controls
+>         `l_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // ACS
+> local a_spec_controls
+>         `b_spec_controls'
+>         `census_controls'
+>         ;
+
+. local a_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `census_controls'
+>         ;
+
+. local ad_spec_controls
+>         `a_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ad_scrhat_spec_controls
+>         `a_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // sibling
+> local s_spec_controls
+>         `b_spec_controls'
+>         `s_controls'
+>         ;
+
+. local s_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `s_controls'
+>         ;
+
+. local sd_spec_controls
+>         `s_spec_controls'
+>         `d_controls'
+>         ;
+
+. local sd_scrhat_spec_controls
+>         `s_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // loscores and acs
+> local la_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local la_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local lad_spec_controls
+>         `la_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lad_scrhat_spec_controls
+>         `la_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ls_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local ls_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local lsd_spec_controls
+>         `ls_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lsd_scrhat_spec_controls
+>         `ls_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local as_spec_controls
+>         `b_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local as_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local asd_spec_controls
+>         `as_spec_controls'
+>         `d_controls'
+>         ;
+
+. local asd_scrhat_spec_controls
+>         `as_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local las_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local las_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local lasd_spec_controls
+>         `las_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lasd_scrhat_spec_controls
+>         `las_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // strings for all sample and control combinations ;
+> 
+> local b_str
+>         "base"
+>         ;
+
+. local bd_str
+>         `b_str'
+>         ;
+
+. local l_str
+>         "leave out score"
+>         ;
+
+. local ld_str
+>         `l_str'
+>         ;
+
+. local a_str
+>         "ACS"
+>         ;
+
+. local ad_str
+>         `a_str'
+>         ;
+
+. local s_str
+>         "sibling"
+>         ;
+
+. local sd_str
+>         `s_str'
+>         ;
+
+. local la_str
+>         "leave out score & ACS"
+>         ;
+
+. local lad_str
+>         `la_str'
+>         ;
+
+. local ls_str
+>         "leave out score & sibling"
+>         ;
+
+. local lsd_str
+>         `ls_str'
+>         ;
+
+. local as_str
+>         "ACS & sibling"
+>         ;
+
+. local asd_str
+>         `as_str'
+>         ;
+
+. local las_str
+>         "leave out score & ACS & sibling"
+>         ;
+
+. local lasd_str
+>         `las_str'
+>         ;
+
+. local d_str
+>         "postsecondary distance"
+>         ;
+
+. // strings for heterogeneity in persistence vars ;
+> local race_str
+>         "Race"
+>         ;
+
+. local male_str "Male";
+
+. local econ_disadvantage_str "Economically Disadvantaged";
+
+. local prop_ecn_disadv_str "Proportion Economically Disadvantaged" ;
+
+. local charter_str "Charter Status" ;
+
+. local inc_median_hh_xtile_str "Census Tract Median Household Income Decile";
+
+. local enr_black_hisp_prop_str "Proportion of Black and Hispanic Enrollment";
+
+. **** School Characteristics ;
+. local sch_chars
+>         fte_teach_pc fte_pupil_pc /*fte_admin_pc*/
+>         /*eng_learner_staff_pc*/
+>         new_teacher_prop
+>         /*educ_grad_sch_prop educ_associate_prop*/
+>         /*status_tenured_prop*/
+>         credential_full_prop
+>         /*authorization_stem_prop authorization_ela_prop*/
+>         c.male_prop##c.enr_male_prop
+>         c.eth_minority_prop##c.enr_minority_prop
+>         enr_total
+>         ;
+
+. local sch_char_vars "`sch_chars'" ;
+
+. local sch_char_vars : subinstr local sch_char_vars "i." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "c." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "##" " ", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "#" " ", all ;
+
+. local sch_char_vars : list uniq sch_char_vars ;
+
+. local dem_chars
+>         enr_male_prop
+>         enr_minority_prop
+>         frpm_prop el_prop
+>         enr_total
+>         ;
+
+. local dem_char_vars "`dem_chars'" ;
+
+. local dem_char_vars : list uniq dem_char_vars ;
+
+. local expenditures
+>         expenditures_instr_pc
+>         expenditures3000_pc
+>         expenditures4000_pc
+>         expenditures_other_pc
+>         expenditures7000_pc
+>         ;
+
+. local expenditure_vars "`expenditures'" ;
+
+. local expenditure_vars : list uniq expenditure_vars ;
+
+. local sch_char_control_vars : list sch_char_vars | dem_char_vars ;
+
+. local sch_char_control_vars : list sch_char_control_vars | expenditure_vars ;
+
+. #delimit cr
+delimiter now cr
+. 
+. include $consolidated_dir/do/va/helpers/drift_limit.doh
+
+. /*---------------------------------------------------------------------------
+> ---
+> do/va/helpers/drift_limit.doh — drift-limit constants for VA estimation
+> =============================================================================
+> ===
+> 
+> PURPOSE
+>     Define `score_drift_limit' and `out_drift_limit' locals consumed by the
+>     `vam' ado package for the score-VA and outcome-VA estimation loops.
+> 
+> INCLUDED FROM
+>     Phase 3 VA estimation scripts under `do/va/' (e.g., va_score_all.do,
+>     va_out_all.do, once relocated per plan v3 §3.3 step 3).  Must follow
+>     `include do/va/helpers/macros_va.doh' since drift-limit definitions
+>     depend on `test_score_min_year' / `_max_year' and `outcome_min_year' /
+>     `_max_year' defined in macros_va.doh L35-65.
+> 
+> ROLE IN ADR-0021 SANDBOX
+>     Pure local definitions; no reads, no writes; sandbox-trivially clean.
+>     No `$global' references, so no LEGACY-include macro-trace concerns.
+> 
+> RELOCATION HISTORY (per ADR-0005 + ADR-0021, applied 2026-04-30)
+>     Source:      cde_va_project_fork/do_files/sbac/drift_limit.doh
+>     Destination: do/va/helpers/drift_limit.doh
+>     Path repointing: none (no `$global' references).
+>     Analysis logic preserved verbatim.
+>     Predecessor caller-update protocol: predecessor callers untouched in
+>     this commit per plan v3 §3.3 step 5 parenthetical (wholesale predecessor
+>     retirement at Phase 1a §3.5 golden-master).
+> 
+> REFERENCES
+>     Plan v3 §3.3 step 1 (helpers/macros)
+>     ADR-0021 (description convention; sandbox role above)
+> -----------------------------------------------------------------------------
+> -*/
+. 
+. /* set drift limit for test score VA */
+. local score_drift_limit = max(`test_score_max_year' - `test_score_min_year' -
+>  1, 1)
+
+. /* set drift limit outcome VA */
+. local out_drift_limit = max(`outcome_max_year' - `outcome_min_year' - 1, 1)
+
+. 
+. 
+. 
+. 
+. 
+.   /* what sample to start from for sum stats?
+>   do all the merges without keeping/dropping specific observations so that
+>   we can calculate how many students we’re losing*/
+. 
+. local create_sample = 0
+
+. * Fail-soft cache guard (2026-06-01): the create block below is a run-once-ca
+> che
+. * that builds $datadir_clean/share/base_nodrop.dta; predecessor ran with
+. * create_sample=0 and relied on a pre-existing cache at the LEGACY
+. * $vaprojdir/data/va_samples_v1/ path, which the ADR-0021 sandbox does not in
+> herit
+. * -> the cached `use' below hit r(601) on a fresh sandbox.  If the cache is a
+> bsent,
+. * force a rebuild from canonical inputs (raw K12 + $datadir_clean/sbac/va_sam
+> ples.dta
+. * + consolidated helpers) so the script self-heals.  See
+. * quality_reports/reviews/2026-06-01_base-nodrop-cached-toggle-r601-debug.md.
+. cap confirm file "$datadir_clean/share/base_nodrop.dta"
+
+. if _rc {
+.   di as text "base_nodrop.dta cache absent -> forcing create_sample=1 (rebuil
+> d)"
+.   local create_sample = 1
+. }
+
+. if `create_sample'==1 {
+.   //-------------------------------------------------------------------------
+> -----
+.   // create VA sample without dropping observations
+.   //-------------------------------------------------------------------------
+> -----
+.     **************** Create VA Dataset
+.     use merge_id_k12_test_scores all_students_sample all_scores_sample first_
+> scores_sample ///
+>         dataset test cdscode school_id state_student_id year grade ///
+>         cohort_size ///
+>         sbac_ela_z_score sbac_math_z_score ///
+>         `va_control_vars' eth_white ///
+>         /*if substr(cdscode, 1, 7)=="3768338"*/ ///
+>         using `k12_test_scores'/k12_test_scores_clean.dta, clear
+.     merge 1:1 merge_id_k12_test_scores using $datadir_clean/sbac/va_samples.d
+> ta ///
+>         , nogen keepusing(touse_*)
+. 
+.     replace age = age / 365
+.     label var age "Age in Years"
+. 
+.     * Merge to lagged scores
+.     merge 1:1 merge_id_k12_test_scores using `k12_test_scores'/k12_lag_test_s
+> cores_clean.dta, nogen keep(1 3) ///
+>         keepusing( ///
+>                 L3_cst_ela_z_score ///
+>                 L3_sbac_ela_z_score ///
+>                 L4_cst_ela_z_score ///
+>                 L3_sbac_math_z_score ///
+>                 L4_sbac_math_z_score ///
+>                 L5_cst_math_z_score ///
+>                 L6_cst_math_z_score ///
+>         )
+. 
+.     * Merge to peer scores
+.     merge 1:1 merge_id_k12_test_scores using `k12_test_scores'/k12_peer_test_
+> scores_clean.dta, nogen keep(1 3) ///
+>         keepusing( ///
+>                 `peer_demographic_controls' ///
+>                 peer_L3_cst_ela_z_score ///
+>                 peer_L3_sbac_ela_z_score ///
+>                 peer_L4_cst_ela_z_score ///
+>                 peer_L3_sbac_math_z_score ///
+>                 peer_L4_sbac_math_z_score ///
+>                 peer_L5_cst_math_z_score ///
+>                 peer_L6_cst_math_z_score ///
+>         )
+. 
+.     replace peer_age = peer_age / 365
+.     label var peer_age "Age in Years Peer Avg."
+. 
+.     count
+.     sum
+. 
+.     * Merge to school grade spans
+.     merge m:1 cdscode year using `k12_test_scores_public'/k12_diff_school_pro
+> p_schyr.dta ///
+>         , gen(merge_grade_span) keepusing(gr11_*_diff_school_prop) keep(1 3)
+. 
+.     * Merge to median cohort sizes
+.     merge m:1 cdscode using `k12_test_scores_public'/k12_cohort_size_sch.dta 
+> ///
+>         , gen(merge_cohort_size) keepusing(med_cohort_size_first_scores) keep
+> (1 3)
+. 
+.     * Keep conventional schools
+.     merge m:1 cdscode using `k12_public_schools'/k12_public_schools_clean.dta
+>  ///
+>         , gen(merge_public_schools) keepusing(conventional_school) keep(1 3)
+.     /*keep if conventional_school==1*/
+. 
+.     count
+.     tab year
+.     tab grade year if dataset=="CAASPP"
+.     sum
+. 
+. 
+. 
+. 
+.     ******** Postsecondary Outcomes
+.     do $vaprojdir/do_files/merge_k12_postsecondary.doh enr_only
+. 
+. 
+. 
+. 
+.     count
+.     tab year
+.     tab grade year if dataset=="CAASPP"
+.     sum
+. 
+. 
+.     * Save temporary dataset
+.     count
+.     tab year
+.     tab grade year if dataset=="CAASPP"
+.     sum
+.     compress
+.     tempfile va_dataset
+.     save `va_dataset'
+. 
+. 
+. 
+.     ******************************** 11th Grade (8th Grade ELA Controls, 6th 
+> Grade Math Controls)
+.     use if grade==11 & dataset=="CAASPP" & inrange(year, `test_score_min_year
+> ', `test_score_max_year') using `va_datas
+> et', clear
+. 
+.     include $consolidated_dir/do/samples/create_diff_school_prop.doh
+.     /*keep if diff_school_prop>=0.95*/
+. 
+.     count
+.     tab year
+.     tab grade year
+.     sum
+. 
+.     include $consolidated_dir/do/samples/create_prior_scores_v1.doh
+. 
+.     **************** Sample
+.     gen byte count_var = 1
+.     gen mi_ssid_grade_year_school = (mi(state_student_id, grade, year, cdscod
+> e))
+.     gen byte mi_sbac_ela_z_score = (mi(sbac_ela_z_score))
+.     gen byte mi_sbac_math_z_score = (mi(sbac_math_z_score))
+.     gen byte mi_enr_ontime = (mi(enr_ontime))
+.     gen byte mi_enr_ontime_2year = (mi(enr_ontime_2year))
+.     gen byte mi_enr_ontime_4year = (mi(enr_ontime_4year))
+.     gen byte mi_demographic_controls = (mi(cohort_size, age, male, eth_hispan
+> ic, eth_asian, eth_black, eth_other, econ
+> _disadvantage, limited_eng_prof, disabled))
+.     gen byte mi_prior_ela_z_score = (mi(prior_ela_z_score))
+.     gen byte mi_prior_math_z_score = (mi(prior_math_z_score))
+.     gen byte mi_peer_demographic_controls = (mi(peer_age, peer_male, peer_eth
+> _hispanic, peer_eth_asian, peer_eth_black
+> , peer_eth_other, peer_econ_disadvantage, peer_limited_eng_prof, peer_disable
+> d))
+.     gen byte mi_peer_prior_ela_z_score = (mi(peer_prior_ela_z_score))
+.     gen byte mi_peer_prior_math_z_score = (mi(peer_prior_math_z_score))
+.     egen n_g11_ela = count(state_student_id) ///
+>         if touse_g11_ela==1 ///
+>         , by(cdscode year)
+.     egen n_g11_math = count(state_student_id) ///
+>         if touse_g11_math==1 ///
+>         , by(cdscode year)
+. 
+. 
+. 
+.   save $datadir_clean/share/base_nodrop.dta, replace  // CANONICAL local cach
+> e (was $vaprojdir/data/va_samples_v1/; re
+> pointed per ADR-0021 sandbox)
+. 
+. }
+
+. 
+. if `create_sample'==0 {
+.   use $datadir_clean/share/base_nodrop.dta, clear  // CANONICAL chain — paire
+> d with cached save above
+(CST/SBAC Student Test Score Samples)
+. }
+
+. 
+. 
+. //---------------------------------------------------------------------------
+> ---
+. // base sample summary statistics z scores: mean and sd
+. /* Panel A contains the sample used to estimate ELA test score value added wi
+> th
+>  the exception of \math z-score", which comes from the math test score value
+> added sample. Panel B contains the subset of panel A students who could be li
+> nked to the NSC data */
+. //---------------------------------------------------------------------------
+> ---
+. 
+. 
+. // ELA summary stats
+. // VA sample
+. estpost sum ///
+>   cohort_size ///
+>   `va_control_vars' eth_white ///
+>   sbac_ela_z_score ///
+>   prior_ela_z_score prior_math_z_score ///
+>   `peer_demographic_controls' ///
+>   peer_prior_ela_z_score peer_prior_math_z_score ///
+>   if touse_g11_ela==1
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+ cohort_size |   1232262    1232262    474.954   39708.77   199.2706         11
+>        1162   5.85e+08 
+         age |   1232262    1232262   16.72049   .1588018   .3984995   14.06301
+>     24.1452   2.06e+07 
+        male |   1232262    1232262   .4933293   .2499557   .4999557          0
+>           1     607911 
+   eth_asian |   1232262    1232262   .1403638   .1206619   .3473642          0
+>           1     172965 
+eth_hispanic |   1232262    1232262   .5271209   .2492647   .4992641          0
+>           1     649551 
+   eth_black |   1232262    1232262   .0507554   .0481794    .219498          0
+>           1      62544 
+   eth_other |   1232262    1232262   .0311216   .0301531   .1736465          0
+>           1      38350 
+econ_disad~e |   1232262    1232262   .5445571   .2480149   .4980109          0
+>           1     671037 
+limited_en~f |   1232262    1232262   .0530228   .0502114   .2240791          0
+>           1      65338 
+    disabled |   1232262    1232262   .0475467   .0452861   .2128052          0
+>           1      58590 
+   eth_white |   1232262    1232262   .2506383   .1878189   .4333807          0
+>           1     308852 
+sbac_ela_z~e |   1232262    1232262    .174604   .8275719   .9097098  -2.716617
+>    1.865017   215157.9 
+prior_ela_~e |   1232262    1232262   .1222091   .9180123   .9581296  -3.594435
+>    4.050988   150593.6 
+prior_math~e |   1232262    1232262   .1266474   .9526457   .9760357  -2.812926
+>     3.53544   156062.8 
+    peer_age |   1232262    1232262   16.75887   .0090041   .0948898   15.92921
+>    20.22049   2.07e+07 
+   peer_male |   1232262    1232262   .5047109   .0013867   .0372379          0
+>    .8863636   621936.1 
+peer_eth_a~n |   1232262    1232262    .139798   .0273764   .1654583  -9.31e-10
+>    .9322382   172267.7 
+peer_eth_h~c |   1232262    1232262   .5205674   .0737138   .2715028          0
+>           1   641475.5 
+peer_eth_b~k |   1232262    1232262   .0548169   .0050592   .0711281  -9.93e-10
+>           1   67548.81 
+peer_eth_o~r |   1232262    1232262   .0367294   .0012688   .0356209  -9.93e-10
+>    .9166666    45260.3 
+peer_econ_~e |   1232262    1232262    .547183   .0715501   .2674885  -1.13e-10
+>           1   674272.8 
+peer_limit~f |   1232262    1232262   .0920827   .0056212   .0749748  -6.88e-10
+>         .75     113470 
+peer_disab~d |   1232262    1232262   .0977352    .001155   .0339853  -9.31e-10
+>           1   120435.4 
+peer_prior.. |   1232262    1232262   .0965283    .158608   .3982562  -1.336331
+>    1.545075   118948.1 
+peer_prior.. |   1232262    1232262   .0994159   .1603351   .4004186  -1.355148
+>    1.833273   122506.4 
+
+.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela.ste
+> r, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_ela.s
+> ter saved
+
+. 
+. 
+. tab year ///
+>         if touse_g11_ela==1
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    294,215       23.88       23.88
+       2016 |    299,721       24.32       48.20
+       2017 |    309,731       25.14       73.33
+       2018 |    328,595       26.67      100.00
+------------+-----------------------------------
+      Total |  1,232,262      100.00
+
+. 
+. **** Dropped from VA Sample
+. estpost sum ///
+>         cohort_size ///
+>         `va_control_vars' eth_white ///
+>         sbac_ela_z_score ///
+>         prior_ela_z_score prior_math_z_score ///
+>         `peer_demographic_controls' ///
+>         peer_prior_ela_z_score peer_prior_math_z_score ///
+>         if touse_g11_ela==0 & grade==11 & all_students_sample==1
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+ cohort_size |    680959     680959   375.5848   265875.9   515.6315          1
+>        5429   2.56e+08 
+         age |    666008     666008   16.98328   1.868118   1.366791  -.0684932
+>    118.0795   1.13e+07 
+        male |    675530     675530   .5454251   .2479369   .4979327          0
+>           1     368451 
+   eth_asian |    663267     663267    .101585   .0912657   .3021021          0
+>           1      67378 
+eth_hispanic |    663267     663267   .5217718   .2495264   .4995261          0
+>           1     346074 
+   eth_black |    663267     663267   .0819157   .0752057   .2742365          0
+>           1      54332 
+   eth_other |    680959     680959   .0630552   .0590793   .2430624          0
+>           1      42938 
+econ_disad~e |    675530     675530   .5906192   .2417885     .49172          0
+>           1     398981 
+limited_en~f |    675530     675530   .1897666   .1537554   .3921166          0
+>           1     128193 
+    disabled |    675530     675530    .198607   .1591625   .3989518          0
+>           1     134165 
+   eth_white |    663267     663267   .2566644   .1907881   .4367929          0
+>           1     170237 
+sbac_ela_z~e |    495670     495670  -.4340726   1.164451   1.079097  -2.716617
+>    1.865017  -215156.7 
+prior_ela_~e |    346802     346802  -.3376325   1.027378   1.013596  -3.594435
+>    4.050988  -117091.6 
+prior_math~e |    327608     327608  -.3726656   .9085434   .9531754  -2.858728
+>    3.266871  -122088.2 
+    peer_age |    678858     678858   16.90458   1.012987   1.006473   13.38904
+>    39.96438   1.15e+07 
+   peer_male |    678893     678893   .5240776   .0098067    .099029          0
+>           1   355792.6 
+peer_eth_a~n |    678881     678881   .1032137   .0207709   .1441211  -9.93e-10
+>           1    70069.8 
+peer_eth_h~c |    678881     678881   .5334251   .0699008   .2643875  -9.31e-10
+>           1   362132.2 
+peer_eth_b~k |    678881     678881   .0744698   .0090325   .0950397  -9.93e-10
+>           1   50556.14 
+peer_eth_o~r |    678893     678893   .0452301   .0031822   .0564107  -9.93e-10
+>           1   30706.38 
+peer_econ_~e |    678893     678893   .5865103   .0682629   .2612717          0
+>           1   398177.7 
+peer_limit~f |    678893     678893   .1185622   .0128624   .1134126  -9.93e-10
+>           1   80491.06 
+peer_disab~d |    678893     678893    .104706   .0119023   .1090975  -9.93e-10
+>           1   71084.18 
+peer_prior.. |    675838     675838  -.1531678   .3115613   .5581767  -3.111154
+>    3.297858  -103516.6 
+peer_prior.. |    676050     676050  -.1428224    .282568   .5315712  -2.492173
+>    3.065814  -96555.05 
+
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_dropp
+> ed.ster, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_ela_d
+> ropped.ster saved
+
+. 
+. tab year ///
+>         if touse_g11_ela==0 & grade==11 & all_students_sample==1
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    185,209       27.20       27.20
+       2016 |    188,051       27.62       54.81
+       2017 |    169,451       24.88       79.70
+       2018 |    138,248       20.30      100.00
+------------+-----------------------------------
+      Total |    680,959      100.00
+
+. 
+. ***** Overall sample: combined VA and excluded
+. estpost sum ///
+>   cohort_size ///
+>   `va_control_vars' eth_white ///
+>   sbac_ela_z_score ///
+>   prior_ela_z_score prior_math_z_score ///
+>   `peer_demographic_controls' ///
+>   peer_prior_ela_z_score peer_prior_math_z_score ///
+>   if touse_g11_ela==1 | (touse_g11_ela==0 & grade==11 & all_students_sample==
+> 1)
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+ cohort_size |   1913221    1913221   439.5862   122470.3   349.9576          1
+>        5429   8.41e+08 
+         age |   1898270    1898270   16.81269   .7742438   .8799113  -.0684932
+>    118.0795   3.19e+07 
+        male |   1907792    1907792   .5117759   .2498615   .4998614          0
+>           1     976362 
+   eth_asian |   1895529    1895529   .1267947   .1107179   .3327429          0
+>           1     240343 
+eth_hispanic |   1895529    1895529   .5252492   .2493626   .4993622          0
+>           1     995625 
+   eth_black |   1895529    1895529   .0616588    .057857   .2405348          0
+>           1     116876 
+   eth_other |   1913221    1913221   .0424875   .0406823   .2016986          0
+>           1      81288 
+econ_disad~e |   1907792    1907792   .5608672   .2462953   .4962815          0
+>           1    1070018 
+limited_en~f |   1907792    1907792   .1014424   .0911519   .3019137          0
+>           1     193531 
+    disabled |   1907792    1907792   .1010356   .0908275    .301376          0
+>           1     192755 
+   eth_white |   1895529    1895529   .2527469    .188866   .4345871          0
+>           1     479089 
+sbac_ela_z~e |   1727932    1727932   6.70e-07   .9999983   .9999991  -2.716617
+>    1.865017    1.15809 
+prior_ela_~e |   1579064    1579064   .0212164   .9782722   .9890764  -3.594435
+>    4.050988   33501.98 
+prior_math~e |   1559870    1559870   .0217804   .9847471   .9923442  -2.858728
+>     3.53544   33974.58 
+    peer_age |   1911120    1911120   16.81063   .3704955   .6086834   13.38904
+>    39.96438   3.21e+07 
+   peer_male |   1911155    1911155   .5115905   .0044636   .0668102          0
+>           1   977728.7 
+peer_eth_a~n |   1911143    1911143   .1268024   .0253365   .1591746  -9.93e-10
+>           1   242337.5 
+peer_eth_h~c |   1911143    1911143   .5251348   .0723971   .2690672  -9.31e-10
+>           1    1003608 
+peer_eth_b~k |   1911143    1911143   .0617981   .0065591   .0809882  -9.93e-10
+>           1     118105 
+peer_eth_o~r |   1911155    1911155   .0397491   .0019651    .044329  -9.93e-10
+>           1   75966.68 
+peer_econ_~e |   1911155    1911155   .5611531   .0707366   .2659635  -1.13e-10
+>           1    1072451 
+peer_limit~f |   1911155    1911155   .1014889   .0083541   .0914007  -9.93e-10
+>           1     193961 
+peer_disab~d |   1911155    1911155   .1002114   .0049838   .0705963  -9.93e-10
+>           1   191519.6 
+peer_prior.. |   1908100    1908100   .0080874   .2270446    .476492  -3.111154
+>    3.297858    15431.5 
+peer_prior.. |   1908312    1908312   .0135991   .2170615   .4658986  -2.492173
+>    3.065814   25951.33 
+
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_all.s
+> ter, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_ela_a
+> ll.ster saved
+
+. 
+. // Math sum stats
+. **** VA Sample
+. estpost sum ///
+>         cohort_size ///
+>         `va_control_vars' eth_white ///
+>         sbac_math_z_score ///
+>         prior_ela_z_score prior_math_z_score ///
+>         `peer_demographic_controls' ///
+>         peer_prior_ela_z_score peer_prior_math_z_score ///
+>         if touse_g11_math==1
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+ cohort_size |   1226915    1226915   474.9364   39701.29   199.2518         11
+>        1162   5.83e+08 
+         age |   1226915    1226915   16.72022   .1586908   .3983601   14.06301
+>     24.1452   2.05e+07 
+        male |   1226915    1226915   .4934482   .2499573   .4999573          0
+>           1     605419 
+   eth_asian |   1226915    1226915   .1406177   .1208445   .3476269          0
+>           1     172526 
+eth_hispanic |   1226915    1226915   .5271327    .249264   .4992635          0
+>           1     646747 
+   eth_black |   1226915    1226915   .0507174   .0481452   .2194202          0
+>           1      62226 
+   eth_other |   1226915    1226915   .0310845   .0301182   .1735461          0
+>           1      38138 
+econ_disad~e |   1226915    1226915   .5445585   .2480147   .4980108          0
+>           1     668127 
+limited_en~f |   1226915    1226915   .0529148   .0501149   .2238636          0
+>           1      64922 
+    disabled |   1226915    1226915   .0473382   .0450974   .2123614          0
+>           1      58080 
+   eth_white |   1226915    1226915   .2504477   .1877238    .433271          0
+>           1     307278 
+sbac_math_~e |   1226915    1226915   .1610666   .8903217   .9435686   -2.30412
+>    2.418528     197615 
+prior_ela_~e |   1226915    1226915   .1229643   .9177376   .9579862  -3.594435
+>    4.050988   150866.8 
+prior_math~e |   1226915    1226915   .1278052   .9526103   .9760176  -2.812926
+>     3.53544   156806.1 
+    peer_age |   1226915    1226915   16.75878   .0088569   .0941111   15.76724
+>    20.22049   2.06e+07 
+   peer_male |   1226915    1226915   .5047386   .0013842   .0372048          0
+>    .9090909   619271.3 
+peer_eth_a~n |   1226915    1226915   .1397996   .0273878   .1654925  -9.31e-10
+>    .9322382   171522.3 
+peer_eth_h~c |   1226915    1226915   .5206321   .0737413   .2715534          0
+>           1   638771.4 
+peer_eth_b~k |   1226915    1226915   .0548225   .0050708   .0712096  -9.93e-10
+>           1   67262.53 
+peer_eth_o~r |   1226915    1226915   .0367175   .0012665   .0355881  -9.93e-10
+>    .9166666   45049.21 
+peer_econ_~e |   1226915    1226915   .5472055    .071556   .2674995  -1.13e-10
+>           1   671374.7 
+peer_limit~f |   1226915    1226915   .0920532   .0056187    .074958  -6.88e-10
+>         .75   112941.4 
+peer_disab~d |   1226915    1226915   .0977398   .0011567   .0340104  -9.31e-10
+>           1   119918.4 
+peer_prior.. |   1226915    1226915   .0966344   .1585982   .3982439  -1.410617
+>    1.545075   118562.2 
+peer_prior.. |   1226915    1226915   .0995068   .1603526   .4004405  -1.355148
+>    1.832652   122086.3 
+
+. estimates save  $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_math.ste
+> r, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_math.
+> ster saved
+
+. 
+. tab year ///
+>         if touse_g11_math==1
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    292,786       23.86       23.86
+       2016 |    298,423       24.32       48.19
+       2017 |    308,260       25.12       73.31
+       2018 |    327,446       26.69      100.00
+------------+-----------------------------------
+      Total |  1,226,915      100.00
+
+. 
+. 
+. **** Dropped from VA Sample
+. estpost sum ///
+>         cohort_size ///
+>         `va_control_vars' eth_white ///
+>         sbac_math_z_score ///
+>         prior_ela_z_score prior_math_z_score ///
+>         `peer_demographic_controls' ///
+>         peer_prior_ela_z_score peer_prior_math_z_score ///
+>         if touse_g11_math==0 & grade==11 & all_students_sample==1
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+ cohort_size |    686306     686306   376.3904   264209.7   514.0133          1
+>        5429   2.58e+08 
+         age |    671355     671355   16.98168   1.854999   1.361983  -.0684932
+>    118.0795   1.14e+07 
+        male |    680877     680877   .5448018   .2479932   .4979891          0
+>           1     370943 
+   eth_asian |    668614     668614   .1014292   .0911415   .3018965          0
+>           1      67817 
+eth_hispanic |    668614     668614   .5217928   .2495254   .4995252          0
+>           1     348878 
+   eth_black |    668614     668614   .0817362   .0750555   .2739627          0
+>           1      54650 
+   eth_other |    686306     686306   .0628728   .0589199   .2427343          0
+>           1      43150 
+econ_disad~e |    680877     680877   .5902549   .2418544    .491787          0
+>           1     401891 
+limited_en~f |    680877     680877   .1888873   .1532091   .3914193          0
+>           1     128609 
+    disabled |    680877     680877   .1977964   .1586732    .398338          0
+>           1     134675 
+   eth_white |    668614     668614   .2569659   .1909347   .4369608          0
+>           1     171811 
+sbac_math_~e |    494748     494748   -.399426   1.048109   1.023772   -2.30412
+>    2.418528  -197615.2 
+prior_ela_~e |    352149     352149  -.3332816   1.027444   1.013629  -3.594435
+>    4.050988  -117364.8 
+prior_math~e |    332955     332955  -.3689133   .9091065   .9534708  -2.858728
+>    3.266871  -122831.5 
+    peer_age |    684205     684205   16.90361    1.00552   1.002756   13.38904
+>    39.96438   1.16e+07 
+   peer_male |    684240     684240   .5238767   .0097502   .0987429          0
+>           1   358457.4 
+peer_eth_a~n |    684228     684228   .1034965   .0208124   .1442649  -9.93e-10
+>           1   70815.22 
+peer_eth_h~c |    684228     684228   .5332086   .0698855   .2643587  -9.31e-10
+>           1   364836.3 
+peer_eth_b~k |    684228     684228   .0743063   .0089841   .0947844  -9.93e-10
+>           1   50842.42 
+peer_eth_o~r |    684240     684240   .0451851   .0031716   .0563169  -9.93e-10
+>           1   30917.47 
+peer_econ_~e |    684240     684240   .5861626   .0682932   .2613296          0
+>           1   401075.9 
+peer_limit~f |    684240     684240   .1184082    .012813   .1131946  -9.93e-10
+>           1   81019.61 
+peer_disab~d |    684240     684240   .1046433   .0118157      .1087  -9.93e-10
+>           1   71601.15 
+peer_prior.. |    681185     681185   -.151399   .3107691   .5574667  -3.111154
+>    3.297858  -103130.7 
+peer_prior.. |    681397     681397  -.1410852   .2819554   .5309947  -2.492173
+>    3.065814  -96135.02 
+
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_math_drop
+> ped.ster, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_math_
+> dropped.ster saved
+
+. 
+. tab year ///
+>         if touse_g11_math==0 & grade==11 & all_students_sample==1
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    186,638       27.19       27.19
+       2016 |    189,349       27.59       54.78
+       2017 |    170,922       24.90       79.69
+       2018 |    139,397       20.31      100.00
+------------+-----------------------------------
+      Total |    686,306      100.00
+
+. 
+. 
+. ***** combined sample: VA and excluded
+. estpost sum ///
+>         cohort_size ///
+>         `va_control_vars' eth_white ///
+>         sbac_math_z_score ///
+>         prior_ela_z_score prior_math_z_score ///
+>         `peer_demographic_controls' ///
+>         peer_prior_ela_z_score peer_prior_math_z_score ///
+>         if touse_g11_math==1 | (touse_g11_math==0 & grade==11 & all_students_
+> sample==1)
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+ cohort_size |   1913221    1913221   439.5862   122470.3   349.9576          1
+>        5429   8.41e+08 
+         age |   1898270    1898270   16.81269   .7742438   .8799113  -.0684932
+>    118.0795   3.19e+07 
+        male |   1907792    1907792   .5117759   .2498615   .4998614          0
+>           1     976362 
+   eth_asian |   1895529    1895529   .1267947   .1107179   .3327429          0
+>           1     240343 
+eth_hispanic |   1895529    1895529   .5252492   .2493626   .4993622          0
+>           1     995625 
+   eth_black |   1895529    1895529   .0616588    .057857   .2405348          0
+>           1     116876 
+   eth_other |   1913221    1913221   .0424875   .0406823   .2016986          0
+>           1      81288 
+econ_disad~e |   1907792    1907792   .5608672   .2462953   .4962815          0
+>           1    1070018 
+limited_en~f |   1907792    1907792   .1014424   .0911519   .3019137          0
+>           1     193531 
+    disabled |   1907792    1907792   .1010356   .0908275    .301376          0
+>           1     192755 
+   eth_white |   1895529    1895529   .2527469    .188866   .4345871          0
+>           1     479089 
+sbac_math_~e |   1721663    1721663  -1.05e-07   .9999982   .9999991   -2.30412
+>    2.418528  -.1808615 
+prior_ela_~e |   1579064    1579064   .0212164   .9782722   .9890764  -3.594435
+>    4.050988   33501.98 
+prior_math~e |   1559870    1559870   .0217804   .9847471   .9923442  -2.858728
+>     3.53544   33974.58 
+    peer_age |   1911120    1911120   16.81063   .3704955   .6086834   13.38904
+>    39.96438   3.21e+07 
+   peer_male |   1911155    1911155   .5115905   .0044636   .0668102          0
+>           1   977728.7 
+peer_eth_a~n |   1911143    1911143   .1268024   .0253365   .1591746  -9.93e-10
+>           1   242337.5 
+peer_eth_h~c |   1911143    1911143   .5251348   .0723971   .2690672  -9.31e-10
+>           1    1003608 
+peer_eth_b~k |   1911143    1911143   .0617981   .0065591   .0809882  -9.93e-10
+>           1     118105 
+peer_eth_o~r |   1911155    1911155   .0397491   .0019651    .044329  -9.93e-10
+>           1   75966.68 
+peer_econ_~e |   1911155    1911155   .5611531   .0707366   .2659635  -1.13e-10
+>           1    1072451 
+peer_limit~f |   1911155    1911155   .1014889   .0083541   .0914007  -9.93e-10
+>           1     193961 
+peer_disab~d |   1911155    1911155   .1002114   .0049838   .0705963  -9.93e-10
+>           1   191519.6 
+peer_prior.. |   1908100    1908100   .0080874   .2270446    .476492  -3.111154
+>    3.297858    15431.5 
+peer_prior.. |   1908312    1908312   .0135991   .2170615   .4658986  -2.492173
+>    3.065814   25951.33 
+
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_math_all.
+> ster, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_math_
+> all.ster saved
+
+. 
+. 
+. 
+. 
+. 
+. //------------------
+. // Enrollment sum stats for observations in ELA sample that could be linked t
+> o NSC
+. estpost sum ///
+>         enr_ontime_2year enr_ontime_4year ///
+>         if touse_g11_ela==1
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+enr_on~2year |   1208514    1208514   .3779716   .2351093   .4848807          0
+>           1     456784 
+enr_on~4year |   1208514    1208514   .3315725   .2216324   .4707785          0
+>           1     400710 
+
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_colle
+> ge.ster, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_ela_c
+> ollege.ster saved
+
+. 
+. **** Dropped from VA Sample
+. estpost sum ///
+>         enr_ontime_2year enr_ontime_4year ///
+>         if touse_g11_ela==0 & grade==11 & all_students_sample==1
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+enr_on~2year |    614228     614228   .2865906   .2044568    .452169          0
+>           1     176032 
+enr_on~4year |    614228     614228   .1720583   .1424544   .3774314          0
+>           1     105683 
+
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_colle
+> ge_dropped.ster, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_ela_c
+> ollege_dropped.ster saved
+
+. 
+. // overall sample: combined VA and excluded
+. estpost sum ///
+>         enr_ontime_2year enr_ontime_4year ///
+>         if  touse_g11_ela==1 | (touse_g11_ela==0 & grade==11 & all_students_s
+> ample==1)
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+enr_on~2year |   1822742    1822742    .347178   .2266456   .4760731          0
+>           1     632816 
+enr_on~4year |   1822742    1822742   .2778194   .2006359    .447924          0
+>           1     506393 
+
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_colle
+> ge_all.ster, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_ela_c
+> ollege_all.ster saved
+
+. 
+. 
+. 
+. //---------------------------------------------------------------------------
+. // Summary statistics for ktichen sink sample with leave out score, sibling, 
+> and
+. // ACS controls
+. //---------------------------------------------------------------------------
+. ****** first merge on the controls
+. use $vaprojdir/data/va_samples_v1/score_las.dta, clear
+(Test Score VA Sample with Leave Out Scores, ACS, and Siblig Controls)
+
+. 
+. /* // do helper file to merge leave out scores
+> include $consolidated_dir/do/samples/merge_loscore.doh
+> 
+> // call do helper file to merge onto ACS controls. Be sure to specify correct
+>  arguments. 5 args in total
+> do $vaprojdir/do_files/sbac/merge_va_smp_acs.doh ///
+>   test_score ///
+>   $vaprojdir/data/va_samples_v1/score_b.dta ///
+>   score_b.dta ///
+>   create_sample ///
+>   none
+> 
+> //subroutine that merges on sibling college going controls
+> include $consolidated_dir/do/samples/merge_sib.doh */
+. 
+. // merge to Postsecondary Outcomes
+. // 2026-06-01: repointed relative `do_files/...' -> $vaprojdir/do_files/... (
+> matching
+. // the first-block call at L215).  Predecessor relied on `cd $vaprojdir' (rem
+> oved in
+. // relocation per header) for this relative path to resolve; without the cd, 
+> CWD is
+. // $consolidated_dir and the relative path hit r(601).  $vaprojdir/do_files/ 
+> == the
+. // canonical $matt_files_dir (Matt's untouched file per ADR-0017).
+. do $vaprojdir/do_files/merge_k12_postsecondary.doh enr_only
+
+. version 16.1
+
+. 
+. *****************************************************
+. * First created by Matthew Naven on June 11, 2018 *
+. *****************************************************
+. 
+. local crosswalks "/home/research/ca_ed_lab/projects/common_core_va/data/restr
+> icted_access/clean/crosswalks/"
+
+. 
+. ***************
+. * Description *
+. ***************
+. /*
+> This file merges the K-12 data to the postsecondary data.
+> */
+. 
+. 
+. **********
+. * Macros *
+. **********
+. args enr_only
+
+. 
+. local min_nsc_hs_grad_year "2010"
+
+. local max_nsc_hs_grad_year "2019"
+
+. 
+. local min_nsc_enr_year "2010"
+
+. local max_nsc_enr_year "2020"
+
+. 
+. local min_nsc_deg_year "2011"
+
+. local max_nsc_deg_year "2020"
+
+. 
+. local min_ccc_enr_year "1993"
+
+. local max_ccc_enr_year "2017"
+
+. 
+. local min_ccc_deg_year "1993"
+
+. local max_ccc_deg_year "2016"
+
+. 
+. local min_csu_app_year "2002"
+
+. local max_csu_app_year "2017"
+
+. 
+. local min_csu_enr_year "2002"
+
+. local max_csu_enr_year "2017"
+
+. 
+. local min_csu_deg_year "2002"
+
+. local max_csu_deg_year "2016"
+
+. 
+. 
+. *****************
+. * Begin Do File *
+. *****************
+. **** K-12 Variables
+. gen year_grad_hs = year + (12 - grade)
+
+. gen year_college = year + (13 - grade)
+
+. 
+. 
+. 
+. 
+. **** Merge to K-12/NSC crosswalk
+. gen k12_nsc_match = 0
+
+. gen k12_nsc_2010_2017_match = 0
+
+. /*gen k12_nsc_2010_2018_match = 0*/
+. gen k12_nsc_2018cde_match = 0
+
+. gen k12_nsc_2019cde_match = 0
+
+. compress
+  variable year_grad_hs was float now int
+  variable year_college was float now int
+  variable k12_nsc_match was float now byte
+  variable k12_nsc_2010_2017_match was float now byte
+  variable k12_nsc_2018cde_match was float now byte
+  variable k12_nsc_2019cde_match was float now byte
+  (7,029,248 bytes saved)
+
+. 
+. 
+. ** NSC
+. merge m:1 state_student_id      using `crosswalks'/nsc_outcomes_crosswalk_ssi
+> d.dta, gen(merge_k12_nsc_ssid) keep(1 3 4
+>  5) update
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         2,194
+        from master                     2,194  (merge_k12_nsc_ssid==1)
+        from using                          0  (merge_k12_nsc_ssid==2)
+
+    Matched                           437,134
+        not updated                   437,134  (merge_k12_nsc_ssid==3)
+        missing updated                     0  (merge_k12_nsc_ssid==4)
+        nonmissing conflict                 0  (merge_k12_nsc_ssid==5)
+    -----------------------------------------
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. replace k12_nsc_match = 1 if inlist(merge_k12_nsc_ssid, 3, 4, 5)
+(437,134 real changes made)
+
+. drop merge_k12_nsc_ssid
+
+. 
+. 
+. 
+. ** Edit NSC Variables
+. if "`enr_only'"=="enr_only" {
+.         local varlist "nsc_enr nsc_enr_lt2year nsc_enr_2year nsc_enr_4year ns
+> c_enr_ontime nsc_enr_ontime_lt2year nsc_e
+> nr_ontime_2year nsc_enr_ontime_4year"
+. }
+
+. else if "`enr_only'"!="enr_only" {
+.         local varlist "nsc_*"
+. }
+
+. * Replace NSC variables with missing if no chance of matching to the NSC data
+. foreach v of varlist `varlist' {
+  2.         replace `v' = . if k12_nsc_match==0
+  3. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. macro drop _varlist
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. if "`enr_only'"!="enr_only" {
+.         * Replace NSC persistence variables with missing if never enrolled
+.         foreach v of varlist nsc_persist_year2 nsc_persist_year3 nsc_persist_
+> year4 {
+  2.                 replace `v' = . if nsc_enr!=1
+  3.         }
+.         tab grade year
+. 
+.         forvalues t = 2 (1) 4 {
+  2.                 * Replace NSC persistence variables with 0 if they could h
+> ave matched to the NSC data but didn't
+.                 replace nsc_persist_year`t' = 0 if nsc_enr==1 & nsc_persist_y
+> ear`t'!=1 & k12_nsc_match==1 & year_grad_
+> hs + (`t' - 1)<=`max_nsc_enr_year' & !mi(year_grad_hs)
+  3.                 * Replace NSC persistence variables with missing if they c
+> ould not have matched to the NSC data
+.                 replace nsc_persist_year`t' = . if nsc_enr==1 & /*nsc_persist
+> _year`t'!=1 &*/ k12_nsc_match==1 & year_g
+> rad_hs + (`t' - 1)>`max_nsc_enr_year' & !mi(year_grad_hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist nsc_deg_lt2year {
+  2.                 * Replace NSC less-than-2-year degree variable with 0 if t
+> hey could have matched to the NSC data bu
+> t didn't
+.                 replace `v' = 0 if `v'!=1 & k12_nsc_match==1 & year_grad_hs +
+>  2<=`max_nsc_deg_year' & !mi(year_grad_hs
+> )
+  3.                 * Replace NSC less-than-2-year degree variable with missin
+> g if they could not have matched to the N
+> SC data
+.                 replace `v' = . if /*`v'!=1 &*/ k12_nsc_match==1 & year_grad_
+> hs + 2>`max_nsc_deg_year' & !mi(year_grad
+> _hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist nsc_deg_2year {
+  2.                 * Replace NSC 2-year degree variable with 0 if they could 
+> have matched to the NSC data but didn't
+.                 replace `v' = 0 if `v'!=1 & k12_nsc_match==1 & year_grad_hs +
+>  3<=`max_nsc_deg_year' & !mi(year_grad_hs
+> )
+  3.                 * Replace NSC 2-year degree variable with missing if they 
+> could not have matched to the NSC data
+.                 replace `v' = . if /*`v'!=1 &*/ k12_nsc_match==1 & year_grad_
+> hs + 3>`max_nsc_deg_year' & !mi(year_grad
+> _hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist nsc_deg_4year {
+  2.                 * Replace NSC 4-year degree variable with 0 if they could 
+> have matched to the NSC data but didn't
+.                 replace `v' = 0 if `v'!=1 & k12_nsc_match==1 & year_grad_hs +
+>  6<=`max_nsc_deg_year' & !mi(year_grad_hs
+> )
+  3.                 * Replace NSC 4-year degree variable with missing if they 
+> could not have matched to the NSC data
+.                 replace `v' = . if /*`v'!=1 &*/ k12_nsc_match==1 & year_grad_
+> hs + 6>`max_nsc_deg_year' & !mi(year_grad
+> _hs)
+  4.         }
+.         tab grade year
+. 
+.         * NSC degree receipt conditional on enrollment
+.         gen nsc_enr_deg_lt2year = nsc_deg_lt2year if nsc_enr_lt2year==1
+.         gen nsc_enr_deg_2year = nsc_deg_2year if nsc_enr_2year==1
+.         gen nsc_enr_deg_4year = nsc_deg_4year if nsc_enr_4year==1
+. }
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. 
+. 
+. 
+. **** Merge to K-12/CCC crosswalk
+. gen k12_ccc_match = 0
+
+. compress
+  variable k12_ccc_match was float now byte
+  (1,317,984 bytes saved)
+
+. 
+. merge m:1 state_student_id ///
+>         using `crosswalks'/k12_ccc_crosswalk.dta ///
+>         , gen(merge_k12_ccc) keep(1 3) keepusing(student_id)
+(label male already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       275,022
+        from master                   275,022  (merge_k12_ccc==1)
+        from using                          0  (merge_k12_ccc==2)
+
+    Matched                           164,306  (merge_k12_ccc==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. replace k12_ccc_match = 1 if merge_k12_ccc==3
+(164,306 real changes made)
+
+. drop merge_k12_ccc
+
+. 
+. 
+. **** Merge to CCC data
+. count if !mi(student_id)
+  164,306
+
+. 
+. merge m:1 student_id ///
+>         using `crosswalks'/ccc_outcomes_crosswalk.dta ///
+>         , gen(merge_k12_ccc) keep(1 3)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       312,255
+        from master                   312,255  (merge_k12_ccc==1)
+        from using                          0  (merge_k12_ccc==2)
+
+    Matched                           127,073  (merge_k12_ccc==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. 
+. ** Edit CCC Variables
+. foreach v of varlist ccc_enr {
+  2.         * Replace CCC enrollment with 0 if could have matched to the CCC d
+> ata but didn't
+.         replace `v' = 0 if `v'!=1 & inrange(year_grad_hs, `min_ccc_enr_year',
+>  `max_ccc_enr_year')
+  3.         * Replace CCC enrollment with missing if could not have matched to
+>  the CCC data
+.         replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs, `min_ccc_enr_y
+> ear', `max_ccc_enr_year')
+  4. }
+(167,382 real changes made)
+(64,869 real changes made, 64,869 to missing)
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. * CCC on-time enrollment
+. gen ccc_enr_ontime = 1 if ccc_enr==1 ///
+>         & (ccc_enr_start_year==year_grad_hs & inlist(ccc_enr_start_term, 5, 6
+> , 7, 8)) ///
+>         | (ccc_enr_start_year==year_grad_hs + 1 & inlist(ccc_enr_start_term, 
+> 1, 2, 3, 4))
+(406,675 missing values generated)
+
+. 
+. if "`enr_only'"!="enr_only" {
+.         * Replace CCC remediation and persistence variables with missing if n
+> ever enrolled
+.         foreach v of varlist ccc_remediation ccc_ela_remediation ccc_math_rem
+> ediation ///
+>                 ccc_persist_year2 ccc_persist_year3 ///
+>                 ccc_deg ccc_deg_c ccc_deg_a ccc_deg_b {
+  2.                 replace `v' = . if ccc_enr!=1
+  3.         }
+.         tab grade year
+. 
+.         forvalues t = 2 (1) 3 {
+  2.                 * Replace CCC persistence variables with 0 if they could h
+> ave matched to the CCC data but didn't
+.                 replace ccc_persist_year`t' = 0 if ccc_enr==1 & ccc_persist_y
+> ear`t'!=1 & k12_ccc_match==1 & year_grad_
+> hs + (`t' - 1)<=`max_ccc_enr_year' & !mi(year_grad_hs)
+  3.                 * Replace CCC persistence variables with missing if they c
+> ould not have matched to the CCC data
+.                 replace ccc_persist_year`t' = . if ccc_enr==1 & /*ccc_persist
+> _year`t'!=1 &*/ k12_ccc_match==1 & year_g
+> rad_hs + (`t' - 1)>`max_ccc_enr_year' & !mi(year_grad_hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist ccc_deg ccc_deg_c ccc_deg_a ccc_deg_b {
+  2.                 * Replace CCC degree variable with 0 if they could have ma
+> tched to the CCC data but didn't
+.                 replace `v' = 0 if `v'!=1 & inrange(year_grad_hs + 3, `min_cc
+> c_deg_year', `max_ccc_deg_year')
+  3.                 * Replace CCC degree variable with missing if they could n
+> ot have matched to the CCC data
+.                 replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs + 3, `m
+> in_ccc_deg_year', `max_ccc_deg_year')
+  4.         }
+.         tab grade year
+. }
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. 
+. 
+. 
+. **** Merge to K-12/CSU crosswalk
+. gen k12_csu_match = 0
+
+. compress
+  variable ccc_enr_year was int now byte
+  variable ccc_enr_ontime was float now byte
+  variable k12_csu_match was float now byte
+  (3,075,296 bytes saved)
+
+. 
+. merge m:1 state_student_id ///
+>         using `crosswalks'/k12_csu_crosswalk.dta ///
+>         , gen(merge_k12_csu) keep(1 3) keepusing(idunique)
+(label male already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       395,820
+        from master                   395,820  (merge_k12_csu==1)
+        from using                          0  (merge_k12_csu==2)
+
+    Matched                            43,508  (merge_k12_csu==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. replace k12_csu_match = 1 if merge_k12_csu==3
+(43,508 real changes made)
+
+. drop merge_k12_csu
+
+. 
+. 
+. **** Merge to CSU data
+. count if !mi(idunique)
+  43,508
+
+. 
+. merge m:1 idunique ///
+>         using `crosswalks'/csu_outcomes_crosswalk.dta ///
+>         , gen(merge_k12_csu) keep(1 3)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       395,820
+        from master                   395,820  (merge_k12_csu==1)
+        from using                          0  (merge_k12_csu==2)
+
+    Matched                            43,508  (merge_k12_csu==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. ** Edit CSU Variables
+. foreach v of varlist csu_enr {
+  2.         * Replace CSU enrollment with 0 if could have matched to the CSU d
+> ata but didn't
+.         replace `v' = 0 if `v'!=1 & inrange(year_grad_hs, `min_csu_enr_year',
+>  `max_csu_enr_year')
+  3.         * Replace CSU enrollment with missing if could not have matched to
+>  the CSU data
+.         replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs, `min_csu_enr_y
+> ear', `max_csu_enr_year')
+  4. }
+(186,447 real changes made)
+(369 real changes made, 369 to missing)
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. * CSU on-time enrollment
+. gen csu_enr_ontime = 1 if csu_enr==1 ///
+>         & (csu_enr_start_year==year_grad_hs & inlist(csu_enr_start_term, 3, 4
+> )) ///
+>         | (csu_enr_start_year==year_grad_hs + 1 & inlist(csu_enr_start_term, 
+> 1, 2))
+(424,537 missing values generated)
+
+. 
+. if "`enr_only'"!="enr_only" {
+.         foreach v of varlist csu_applied csu_applied_multiple csu_accepted {
+  2.                 * Replace CSU application with 0 if could have matched to 
+> the CSU data but didn't
+.                 replace `v' = 0 if `v'!=1 & inrange(year_grad_hs, `min_csu_ap
+> p_year', `max_csu_app_year')
+  3.                 * Replace CSU application with missing if could not have m
+> atched to the CSU data
+.                 replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs, `min_c
+> su_app_year', `max_csu_app_year')
+  4.         }
+.         tab grade year
+. 
+.         * Replace CSU acceptance with missing if never applied
+.         foreach v of varlist csu_accepted {
+  2.                 replace `v' = . if csu_applied!=1
+  3.         }
+.         tab grade year
+. 
+.         * Replace CSU remediation and persistence variables with missing if n
+> ever enrolled
+.         foreach v of varlist ///
+>                 csu_eng_remediation csu_math_remediation csu_first_maj_stem c
+> su_first_maj_other csu_first_maj_undecide
+> d ///
+>                 csu_persist_year2 csu_persist_year3 csu_persist_year4 ///
+>                 csu_deg csu_deg_stem csu_deg_other {
+  2.                 replace `v' = . if csu_enr!=1
+  3.         }
+.         tab grade year
+. 
+.         forvalues t = 2 (1) 4 {
+  2.                 * Replace CSU persistence variables with 0 if they could h
+> ave matched to the CSU data but didn't
+.                 replace csu_persist_year`t' = 0 if csu_enr==1 & csu_persist_y
+> ear`t'!=1 & k12_csu_match==1 & year_grad_
+> hs + (`t' - 1)<=`max_csu_enr_year' & !mi(year_grad_hs)
+  3.                 * Replace CSU persistence variables with missing if they c
+> ould not have matched to the CSU data
+.                 replace csu_persist_year`t' = . if csu_enr==1 & /*csu_persist
+> _year`t'!=1 &*/ k12_csu_match==1 & year_g
+> rad_hs + (`t' - 1)>`max_csu_enr_year' & !mi(year_grad_hs)
+  4.         }
+.         tab grade year
+. 
+.         foreach v of varlist csu_deg csu_deg_stem csu_deg_other {
+  2.                 * Replace CSU degree variable with 0 if they could have ma
+> tched to the CSU data but didn't
+.                 replace `v' = 0 if `v'!=1 & inrange(year_grad_hs + 6, `min_cs
+> u_deg_year', `max_csu_deg_year')
+  3.                 * Replace CSU degree variable with missing if they could n
+> ot have matched to the CSU data
+.                 replace `v' = . if /*`v'!=1 &*/ !inrange(year_grad_hs + 6, `m
+> in_csu_deg_year', `max_csu_deg_year')
+  4.         }
+.         tab grade year
+. 
+.         * CSU degree receipt conditional on STEM major
+.         gen csu_maj_stem_deg_stem = csu_deg_stem if csu_first_maj_stem==1
+.         gen csu_maj_stem_deg_other = csu_deg_other if csu_first_maj_stem==1
+. 
+.         * Replace CSU degree receipt conditional on STEM major with missing i
+> f never enrolled
+.         foreach v of varlist ///
+>                 csu_maj_stem_deg_stem csu_maj_stem_deg_other {
+  2.                 replace `v' = . if csu_enr!=1
+  3.         }
+.         tab grade year
+. }
+
+. 
+. 
+. 
+. 
+. **** Drop observations that had no chance of matching to CCC/CSU data
+. compress
+  variable major was long now int
+  variable csu_enr_ontime was float now byte
+  (2,196,640 bytes saved)
+
+. merge m:1 state_student_id ///
+>         using `crosswalks'/k12_unique_crosswalk.dta ///
+>         , gen(merge_k12_unique) keep(1 3)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                           439,328  (merge_k12_unique==3)
+    -----------------------------------------
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. if "`enr_only'"=="enr_only" {
+.         local varlist_ccc "ccc_enr_*"
+.         local varlist_csu "csu_enr_*"
+. }
+
+. else if "`enr_only'"!="enr_only" {
+.         local varlist_ccc "ccc_*"
+.         local varlist_csu "csu_*"
+. }
+
+. * Replace CCC variables with missing if could not have matched to the CCC dat
+> a due to non-unique name/birth date/sex
+. foreach v of varlist `varlist_ccc' {
+  2.         replace `v' = . if k12_ccc_match==0 & uniq_first_last_bday_sex==0
+  3.         replace `v' = . if k12_ccc_match==0 & uniq_first3_last3_bday_sex==
+> 0 & inrange(year_grad_hs, 1993, 2011)
+  4. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. macro drop _varlist_ccc
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. * Replace CSU variables with missing if could not have matched to the CSU dat
+> a due to non-unique name/birth date/sex
+. foreach v of varlist `varlist_csu' {
+  2.         replace `v' = . if k12_csu_match==0 & uniq_first_last_bday_sex_mid
+> dle==0
+  3. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. macro drop _varlist_csu
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. 
+. 
+. 
+. **** All college outcomes
+. * Enrollment
+. gen enr = 1 if nsc_enr==1 /*| ccc_enr==1 | csu_enr==1*/
+(109,236 missing values generated)
+
+. replace enr = 0 if nsc_enr==0 & ccc_enr!=1 & csu_enr!=1
+(99,512 real changes made)
+
+. label var enr "Enrolled at a Postsecondary Institution"
+
+. 
+. gen enr_ontime = 1 if nsc_enr_ontime==1 | ccc_enr_ontime==1 | csu_enr_ontime=
+> =1
+(121,237 missing values generated)
+
+. replace enr_ontime = 0 if nsc_enr_ontime==0 & ccc_enr_ontime!=1 & csu_enr_ont
+> ime!=1
+(119,156 real changes made)
+
+. label var enr_ontime "Enrolled at a Postsecondary Institution"
+
+. 
+. gen enr_2year = 1 if nsc_enr_2year==1 | nsc_enr_lt2year==1 | ccc_enr==1
+(217,670 missing values generated)
+
+. replace enr_2year = 0 if nsc_enr_2year==0 & nsc_enr_lt2year==0 & ccc_enr!=1
+(215,476 real changes made)
+
+. label var enr_2year "Enrolled at a 2-Year College"
+
+. 
+. gen enr_ontime_2year = 1 if nsc_enr_ontime_2year==1 | nsc_enr_ontime_lt2year=
+> =1 | ccc_enr_ontime==1
+(273,746 missing values generated)
+
+. replace enr_ontime_2year = 0 if nsc_enr_ontime_2year==0 & nsc_enr_ontime_lt2y
+> ear==0 & ccc_enr_ontime!=1
+(271,665 real changes made)
+
+. label var enr_ontime_2year "Enrolled at a 2-Year College"
+
+. 
+. gen enr_4year = 1 if nsc_enr_4year==1 | csu_enr==1
+(272,774 missing values generated)
+
+. replace enr_4year = 0 if nsc_enr_4year==0 & csu_enr!=1
+(270,580 real changes made)
+
+. label var enr_4year "Enrolled at a 4-Year University"
+
+. 
+. replace enr_2year = 0 if enr_4year==1
+(50,590 real changes made)
+
+. 
+. gen enr_ontime_4year = 1 if nsc_enr_ontime_4year==1 | csu_enr_ontime==1
+(278,557 missing values generated)
+
+. replace enr_ontime_4year = 0 if nsc_enr_ontime_4year==0 & csu_enr_ontime!=1
+(276,363 real changes made)
+
+. label var enr_ontime_4year "Enrolled at a 4-Year University"
+
+. 
+. replace enr_ontime_2year = 0 if enr_ontime_4year==1
+(8,262 real changes made)
+
+. 
+. gen enr_pub = 1 if nsc_enr_pub==1 | ccc_enr==1 | csu_enr==1
+(126,297 missing values generated)
+
+. replace enr_pub = 0 if nsc_enr_pub==0 & ccc_enr!=1 & csu_enr!=1
+(124,103 real changes made)
+
+. label var enr_pub "Enrolled at a Public Institution"
+
+. 
+. gen enr_ontime_pub = 1 if nsc_enr_ontime_pub==1 | ccc_enr_ontime==1 | csu_enr
+> _ontime==1
+(151,494 missing values generated)
+
+. replace enr_ontime_pub = 0 if nsc_enr_ontime_pub==0 & ccc_enr_ontime!=1 & csu
+> _enr_ontime!=1
+(149,413 real changes made)
+
+. label var enr_ontime_pub "Enrolled at a Public Institution"
+
+. 
+. gen enr_priv = 1 if nsc_enr_priv==1
+(403,641 missing values generated)
+
+. replace enr_priv = 0 if nsc_enr_priv==0
+(401,447 real changes made)
+
+. label var enr_priv "Enrolled at a Private Institution"
+
+. 
+. replace enr_pub = 0 if enr_priv==1
+(11,096 real changes made)
+
+. 
+. gen enr_ontime_priv = 1 if nsc_enr_ontime_priv==1
+(407,104 missing values generated)
+
+. replace enr_ontime_priv = 0 if nsc_enr_ontime_priv==0
+(404,910 real changes made)
+
+. label var enr_ontime_priv "Enrolled at a Private Institution"
+
+. 
+. replace enr_ontime_pub = 0 if enr_ontime_priv==1
+(1,967 real changes made)
+
+. 
+. gen enr_instate = 1 if nsc_enr_instate==1 | ccc_enr==1 | csu_enr==1
+(130,745 missing values generated)
+
+. replace enr_instate = 0 if nsc_enr_instate==0 & ccc_enr!=1 & csu_enr!=1
+(128,551 real changes made)
+
+. label var enr_instate "Enrolled at a CA Institution"
+
+. 
+. gen enr_ontime_instate = 1 if nsc_enr_ontime_instate==1 | ccc_enr_ontime==1 |
+>  csu_enr_ontime==1
+(155,705 missing values generated)
+
+. replace enr_ontime_instate = 0 if nsc_enr_ontime_instate==0 & ccc_enr_ontime!
+> =1 & csu_enr_ontime!=1
+(153,624 real changes made)
+
+. label var enr_ontime_instate "Enrolled at a CA Institution"
+
+. 
+. gen enr_outstate = 1 if nsc_enr_outstate==1
+(399,612 missing values generated)
+
+. replace enr_outstate = 0 if nsc_enr_outstate==0
+(397,418 real changes made)
+
+. label var enr_outstate "Enrolled at an Out-of-State Institution"
+
+. 
+. replace enr_instate = 0 if enr_outstate==1
+(10,680 real changes made)
+
+. 
+. gen enr_ontime_outstate = 1 if nsc_enr_ontime_outstate==1
+(402,941 missing values generated)
+
+. replace enr_ontime_outstate = 0 if nsc_enr_ontime_outstate==0
+(400,747 real changes made)
+
+. label var enr_ontime_outstate "Enrolled at an Out-of-State Institution"
+
+. 
+. replace enr_ontime_instate = 0 if enr_ontime_outstate==1
+(1,920 real changes made)
+
+. 
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. * Persistence
+. if "`enr_only'"!="enr_only" {
+.         gen persist_year2 = 1 if nsc_persist_year2==1 | ccc_persist_year2==1 
+> | csu_persist_year2==1
+.         replace persist_year2 = 0 if nsc_persist_year2==0 & ccc_persist_year2
+> !=1 & csu_persist_year2!=1
+.         label var persist_year2 "Persisted to Year 2"
+. 
+.         gen persist_year3 = 1 if nsc_persist_year3==1 | ccc_persist_year3==1 
+> | csu_persist_year3==1
+.         replace persist_year3 = 0 if nsc_persist_year3==0 & ccc_persist_year3
+> !=1 & csu_persist_year3!=1
+.         label var persist_year3 "Persisted to Year 3"
+. 
+.         gen persist_year4 = 1 if nsc_persist_year4==1 /*| ccc_persist_year4==
+> 1*/ | csu_persist_year4==1
+.         replace persist_year4 = 0 if nsc_persist_year4==0 /*& ccc_persist_yea
+> r4!=1*/ & csu_persist_year4!=1
+.         label var persist_year4 "Persisted to Year 4"
+. }
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. * Degree
+. if "`enr_only'"!="enr_only" {
+.         gen deg = 1 if nsc_deg==1 | ccc_deg==1 | csu_deg==1
+.         replace deg = 0 if nsc_deg==0 & ccc_deg!=1 & csu_deg!=1
+.         label var deg "Received a College Degree"
+. 
+.         gen deg_2year = 1 if nsc_deg_2year==1 | ccc_deg==1
+.         replace deg_2year = 0 if nsc_deg_2year==0 & ccc_deg!=1
+.         label var deg_2year "Received a 2-Year College Degree"
+. 
+.         gen deg_4year = 1 if nsc_deg_4year==1 | csu_deg==1
+.         replace deg_4year = 0 if nsc_deg_4year==0 & csu_deg!=1
+.         label var deg_4year "Received a 4-Year College Degree"
+. }
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. 
+. * Use only NSC sample + values of 1 from other samples
+. if "`enr_only'"=="enr_only" {
+.         local varlist "enr enr_2year enr_4year enr_pub enr_priv enr_instate e
+> nr_outstate enr_ontime enr_ontime_2year e
+> nr_ontime_4year enr_ontime_pub enr_ontime_priv enr_ontime_instate enr_ontime_
+> outstate"
+. }
+
+. else if "`enr_only'"!="enr_only" {
+.         local varlist "enr enr_2year enr_4year enr_pub enr_priv enr_instate e
+> nr_outstate enr_ontime enr_ontime_2year e
+> nr_ontime_4year enr_ontime_pub enr_ontime_priv enr_ontime_instate enr_ontime_
+> outstate deg deg_2year deg_4year"
+. }
+
+. foreach v of varlist `varlist' {
+  2.         replace `v' = . if /*`v'==0 &*/ k12_nsc_match==0
+  3. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(113 real changes made, 113 to missing)
+(113 real changes made, 113 to missing)
+(0 real changes made)
+(113 real changes made, 113 to missing)
+(0 real changes made)
+(113 real changes made, 113 to missing)
+(0 real changes made)
+
+. macro drop _varlist
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. 
+. * CCC
+. if "`enr_only'"!="enr_only" {
+.         gen ccc_transfer_4year = 1 if ccc_enr==1 & enr_4year==1
+.         replace ccc_transfer_4year = 0 if ccc_enr==1 & enr_4year==0
+.         replace ccc_transfer_4year = . ///
+>                 if (inlist(ccc_enr_start_year, `max_ccc_enr_year') & inlist(c
+> cc_enr_start_term, 7, 8)) ///
+>                 | (inlist(ccc_enr_start_year, `max_ccc_enr_year' + 1) & inlis
+> t(ccc_enr_start_term, 1, 2, 3, 4, 5, 6))
+.         label var ccc_transfer_4year "Transfered to 4-Year University"
+. 
+.         replace ccc_persist_year2 = 1 if ccc_persist_year2==0 & ccc_transfer_
+> 4year==1
+.         replace ccc_persist_year3 = 1 if ccc_persist_year3==0 & ccc_transfer_
+> 4year==1
+.         replace ccc_deg = 1 if ccc_deg==0 & ccc_transfer_4year==1
+.         replace ccc_deg_a = 1 if ccc_deg_a==0 & ccc_transfer_4year==1
+. }
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+. 
+. * CSU
+. if "`enr_only'"!="enr_only" {
+.         gen csu_transfer_uc = 1 if csu_enr==1 & nsc_enr_uc==1
+.         replace csu_transfer_uc = 0 if csu_enr==1 & nsc_enr_uc==0
+.         replace csu_transfer_uc = . ///
+>                 if (inlist(csu_enr_start_year, `max_csu_enr_year') & inlist(c
+> su_enr_start_term, 4)) ///
+>                 | (inlist(csu_enr_start_year, `max_csu_enr_year' + 1) & inlis
+> t(csu_enr_start_term, 1, 2, 3))
+.         label var csu_transfer_uc "Transfered to a University of California"
+. 
+.         gen csu_transfer_ucplus = 1 if csu_enr==1 & nsc_enr_ucplus==1
+.         replace csu_transfer_ucplus = 0 if csu_enr==1 & nsc_enr_ucplus==0
+.         replace csu_transfer_ucplus = . ///
+>                 if (inlist(csu_enr_start_year, `max_csu_enr_year') & inlist(c
+> su_enr_start_term, 4)) ///
+>                 | (inlist(csu_enr_start_year, `max_csu_enr_year' + 1) & inlis
+> t(csu_enr_start_term, 1, 2, 3))
+.         label var csu_transfer_ucplus "Transfered to a University of Californ
+> ia +"
+. 
+.         replace csu_persist_year2 = 1 if csu_persist_year2==0 & csu_transfer_
+> ucplus==1
+.         replace csu_persist_year3 = 1 if csu_persist_year3==0 & csu_transfer_
+> ucplus==1
+. }
+
+. tab grade year
+
+           |           Year of Spring Semester
+     Grade |      2015       2016       2017       2018 |     Total
+-----------+--------------------------------------------+----------
+        11 |   116,153    113,433    109,988     99,754 |   439,328 
+-----------+--------------------------------------------+----------
+     Total |   116,153    113,433    109,988     99,754 |   439,328 
+
+. 
+end of do-file
+
+. 
+. replace age=age/365
+variable age was int now float
+(438,727 real changes made)
+
+. 
+. /*
+> * Save temporary dataset
+> compress
+> tempfile va_dataset
+> save `va_dataset'
+> 
+> include $consolidated_dir/do/samples/create_va_g11_out_sample_v1.doh */
+. 
+. // ELA sum stats
+. estpost sum ///
+>   cohort_size ///
+>   `va_control_vars' eth_white ///
+>   sbac_ela_z_score ///
+>   prior_ela_z_score prior_math_z_score ///
+>   `peer_demographic_controls' ///
+>   peer_prior_ela_z_score peer_prior_math_z_score ///
+>   if touse_g11_ela==1
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+ cohort_size |    410947     410947   498.3579   35504.83   188.4273         11
+>        1162   2.05e+08 
+         age |    410947     410947     16.708   .1433298   .3785892   14.65205
+>    19.75616    6866104 
+        male |    410947     410947   .4897882   .2498963   .4998963          0
+>           1     201277 
+   eth_asian |    410947     410947   .1693771   .1406888   .3750851          0
+>           1      69605 
+eth_hispanic |    410947     410947   .4991787   .2499999   .4999999          0
+>           1     205136 
+   eth_black |    410947     410947   .0366106   .0352703   .1878039          0
+>           1      15045 
+   eth_other |    410947     410947   .0298384   .0289481   .1701415          0
+>           1      12262 
+econ_disad~e |    410947     410947   .5074255   .2499455   .4999455          0
+>           1     208525 
+limited_en~f |    410947     410947    .039937   .0383422   .1958115          0
+>           1      16412 
+    disabled |    410947     410947   .0290159   .0281741   .1678513          0
+>           1      11924 
+   eth_white |    410947     410947   .2649952   .1947732   .4413312          0
+>           1     108899 
+sbac_ela_z~e |    410947     410947   .2908591   .7763979   .8811344  -2.716617
+>    1.865017   119527.7 
+prior_ela_~e |    410947     410947   .2384568   .9069111   .9523188  -2.907737
+>    4.050988   97993.11 
+prior_math~e |    410947     410947   .2591021   .9708117   .9852978  -2.812926
+>    3.201194   106477.2 
+    peer_age |    410947     410947   6114.779   956.0126   30.91945   5817.484
+>     7380.36   2.51e+09 
+   peer_male |    410947     410947   .5059669     .00128   .0357767          0
+>    .8717949   207925.6 
+peer_eth_a~n |    410947     410947   .1650148   .0334628   .1829285  -6.88e-10
+>    .9322382   67812.33 
+peer_eth_h~c |    410947     410947   .4968799   .0753506   .2745007          0
+>           1   204191.3 
+peer_eth_b~k |    410947     410947   .0514976   .0041007   .0640365  -4.54e-10
+>    .9741936   21162.79 
+peer_eth_o~r |    410947     410947   .0367346   .0010614   .0325791  -6.88e-10
+>    .8181818   15095.97 
+peer_econ_~e |    410947     410947   .5195536   .0748645   .2736139  -1.13e-10
+>           1     213509 
+peer_limit~f |    410947     410947   .0882946   .0050779   .0712594  -1.66e-11
+>    .7419354   36284.41 
+peer_disab~d |    410947     410947   .0966695   .0010975   .0331291  -4.89e-10
+>           1   39726.04 
+peer_prior.. |    410947     410947   .1558495   .1665739   .4081347  -1.310531
+>    1.542891   64045.88 
+peer_prior.. |    410947     410947   .1601512   .1727208   .4155969  -1.304251
+>    1.833273   65813.66 
+
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_las.s
+> ter, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_ela_l
+> as.ster saved
+
+. 
+. // Math sum stats
+. estpost sum ///
+>         cohort_size ///
+>         `va_control_vars' eth_white ///
+>         sbac_math_z_score ///
+>         prior_ela_z_score prior_math_z_score ///
+>         `peer_demographic_controls' ///
+>         peer_prior_ela_z_score peer_prior_math_z_score ///
+>         if touse_g11_math==1
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+ cohort_size |    409332     409332    498.395   35473.53   188.3442         11
+>        1162   2.04e+08 
+         age |    409332     409332   16.70779   .1433662   .3786373   14.65205
+>    19.75616    6839034 
+        male |    409332     409332   .4898053   .2498967   .4998967          0
+>           1     200493 
+   eth_asian |    409332     409332   .1695934   .1408318   .3752757          0
+>           1      69420 
+eth_hispanic |    409332     409332   .4992573   .2500001   .5000001          0
+>           1     204362 
+   eth_black |    409332     409332   .0366109   .0352706   .1878047          0
+>           1      14986 
+   eth_other |    409332     409332   .0297729   .0288865   .1699604          0
+>           1      12187 
+econ_disad~e |    409332     409332   .5075269    .249944    .499944          0
+>           1     207747 
+limited_en~f |    409332     409332   .0398674   .0382781   .1956478          0
+>           1      16319 
+    disabled |    409332     409332   .0287908    .027962   .1672183          0
+>           1      11785 
+   eth_white |    409332     409332   .2647655   .1946652   .4412088          0
+>           1     108377 
+sbac_math_~e |    409332     409332   .3045201   .8846824   .9405755   -2.30412
+>    2.418528   124649.8 
+prior_ela_~e |    409332     409332   .2390412   .9067105   .9522135  -2.907737
+>    4.050988   97847.22 
+prior_math~e |    409332     409332   .2599604   .9707659   .9852745  -2.812926
+>    3.201194   106410.1 
+    peer_age |    409332     409332    6114.75   943.9215   30.72331   5755.074
+>     7380.36   2.50e+09 
+   peer_male |    409332     409332   .5059677   .0012764   .0357272          0
+>    .8717949   207108.8 
+peer_eth_a~n |    409332     409332   .1650271   .0334628   .1829285  -6.88e-10
+>    .9322382   67550.88 
+peer_eth_h~c |    409332     409332   .4969383   .0753702   .2745364          0
+>           1   203412.8 
+peer_eth_b~k |    409332     409332   .0515032    .004096   .0640004  -4.54e-10
+>    .9741936   21081.91 
+peer_eth_o~r |    409332     409332   .0367306   .0010613   .0325783  -6.88e-10
+>    .8181818      15035 
+peer_econ_~e |    409332     409332   .5196274   .0748828   .2736473  -1.13e-10
+>           1   212700.1 
+peer_limit~f |    409332     409332   .0882836   .0050747   .0712371  -1.66e-11
+>    .7419354    36137.3 
+peer_disab~d |    409332     409332   .0966923    .001099    .033151  -4.89e-10
+>           1   39579.26 
+peer_prior.. |    409332     409332   .1558932    .166582   .4081446  -1.410617
+>    1.542891   63812.09 
+peer_prior.. |    409332     409332   .1602085   .1726774   .4155448  -1.304251
+>    1.832652   65578.46 
+
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_math_las.
+> ster, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_math_
+> las.ster saved
+
+. 
+. // Enrollment sum stats for ELA sample that could be linked to postsec outcom
+> es
+. estpost sum  enr_ontime_2year enr_ontime_4year if touse_g11_ela==1 
+
+             |  e(count)   e(sum_w)    e(mean)     e(Var)      e(sd)     e(min)
+>      e(max)     e(sum) 
+-------------+-----------------------------------------------------------------
+> -----------------------
+enr_on~2year |    409286     409286   .3626755   .2311425   .4807729          0
+>           1     148438 
+enr_on~4year |    409286     409286   .3742298   .2341824    .483924          0
+>           1     153167 
+
+. 
+.         /* enr_ontime /// */
+.         /* enr_ontime_pub enr_ontime_priv /// */
+.         /* enr_ontime_instate enr_ontime_outstate /// */
+. estimates save $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_colle
+> ge_las.ster, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
+> _cfr_all_v1/sum_stats/sum_stats_g11_ela_c
+> ollege_las.ster saved
+
+. 
+. 
+. //-----------------------------------------------------------------------
+. // latex tables for summary statistics
+. //------------------------------------------------------------------------
+. //---------------------------------------------------------------------------
+> ---
+. // esttab macros
+. //---------------------------------------------------------------------------
+> ---
+. 
+. 
+. #delimit ;
+delimiter now ;
+. local esttab_reg
+>         b(%12.3gc) se(%12.3gc)
+>         star(* 0.1 ** 0.05 *** 0.01)
+>         ;
+
+. local esttab_sum_stats
+>         /*main(mean %5.3f) aux(sd %4.3f)*/
+>         brackets
+>         /*nomtitles nonumbers nonotes*/
+>         ;
+
+. local esttab_tab_stat
+>         cells(mean(fmt(%12.3gc)) count(fmt(%12.3gc) par(\{ \})))
+>         nomtitles nonumbers nonotes collabels(none)
+>         ;
+
+. local esttab_scalars
+>         scalars(
+>         "N Observations"
+>         /*"r2 $ R^2 $"*/
+>         )
+>         sfmt(
+>         %12.3gc
+>         /*%12.3g*/
+>         )
+>         noobs
+>         ;
+
+. local esttab_layout
+>         compress
+>         label interaction(\times)
+>         booktabs
+>         /*replace*/
+>         ;
+
+. local esttab_manual
+>         nolines
+>         nomtitles nonumbers nonotes
+>         fragment
+>         ;
+
+. local esttab_mgroups
+>         nomtitles
+>         mgroups(""
+>         , pattern()
+>         prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){
+> @span}))
+>         ;
+
+. local esttab_keep
+>         keep(
+> 
+>         )
+>         order(
+> 
+>         )
+>         ;
+
+. #delimit cr
+delimiter now cr
+. 
+. 
+. 
+. 
+. //--------------------------------------------------------
+. // ELA and Math
+. //--------------------------------------------------------
+. 
+. *** VA sample
+. estimates use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela.ster
+
+. eststo g11_ela
+
+. 
+. estimates use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_math.ster
+
+. eststo g11_math
+
+. 
+. *** dropped sample
+. estimates use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_droppe
+> d.ster
+
+. eststo g11_ela_dropped
+
+. 
+. estimates use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_math_dropp
+> ed.ster
+
+. eststo g11_math_dropped
+
+. 
+. ***** combined sample of VA and dropped
+. estimates use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_all.st
+> er
+
+. eststo g11_ela_all
+
+. 
+. estimates use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_math_all.s
+> ter
+
+. eststo g11_math_all
+
+. 
+. ***** kitchen sink sample with leave out score, ACS, and sibling
+. estimates use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_las.st
+> er
+
+. eststo g11_ela_las
+
+. 
+. estimates use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_math_las.s
+> ter
+
+. eststo g11_math_las
+
+. 
+. 
+. esttab g11_ela_all g11_ela g11_ela_las using $tables_dir/share/va/pub/sum_sta
+> ts_g11.tex ///
+>   , replace `esttab_sum_stats' main(mean %12.3gc) /*aux(sd %12.3gc)*/ wide no
+> obs `esttab_layout' `esttab_manual' ///
+>         keep( ///
+>                 cohort_size ///
+>         ) ///
+>         coeflabel( ///
+>                 cohort_size "11th Graders per School" ///
+>         ) ///
+> 
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidate
+> d/tables/share/va/pub/sum_stats_g11.tex)
+
+. 
+. esttab g11_ela_all g11_ela g11_ela_las using $tables_dir/share/va/pub/sum_sta
+> ts_g11.tex ///
+>         , append `esttab_sum_stats' main(mean %5.1f) /*aux(sd %4.3f)*/ wide n
+> oobs `esttab_layout' `esttab_manual' ///
+>         keep( ///
+>                 age ///
+>         ) ///
+>         coeflabel( ///
+>                 age "Age in Years" ///
+>         )
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidate
+> d/tables/share/va/pub/sum_stats_g11.tex)
+
+. 
+. esttab g11_ela_all g11_ela g11_ela_las using $tables_dir/share/va/pub/sum_sta
+> ts_g11.tex ///
+>         , append `esttab_sum_stats' main(mean %5.3f) wide noobs `esttab_layou
+> t' `esttab_manual' ///
+>         keep( ///
+>                 male ///
+>                 eth_hispanic ///
+>                 eth_white ///
+>                 eth_asian ///
+>                 eth_black ///
+>                 eth_other ///
+>                 econ_disadvantage ///
+>                 limited_eng_prof ///
+>                 disabled ///
+>                  ///
+>         ) ///
+>         order( ///
+>                 male ///
+>                 eth_hispanic ///
+>                 eth_white ///
+>                 eth_asian ///
+>                 eth_black ///
+>                 eth_other ///
+>                 econ_disadvantage ///
+>                 limited_eng_prof ///
+>                 disabled ///
+>                  ///
+>         ) ///
+>         coeflabel( ///
+>                 male "Male" ///
+>                 eth_hispanic "Hispanic or Latino" ///
+>                 eth_white "White" ///
+>                 eth_asian "Asian" ///
+>                 eth_black "Black or African American" ///
+>                 eth_other "Other Race" ///
+>                 econ_disadvantage "Economic Disadvantage" ///
+>                 limited_eng_prof "Limited English Proficiency Status" ///
+>                 disabled "Disabled" ///
+>         )
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidate
+> d/tables/share/va/pub/sum_stats_g11.tex)
+
+. 
+. 
+. esttab g11_ela_all g11_ela g11_ela_las using $tables_dir/share/va/pub/sum_sta
+> ts_g11.tex ///
+>         , append `esttab_sum_stats' main(mean %5.3f) /*aux(sd %4.3f)*/ wide n
+> oobs `esttab_layout' `esttab_manual' ///
+>         keep( ///
+>                 sbac_ela_z_score ///
+>         ) ///
+>         coeflabel( ///
+>                 sbac_ela_z_score "ELA Z-Score" ///
+>         )
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidate
+> d/tables/share/va/pub/sum_stats_g11.tex)
+
+. 
+. esttab g11_math_all g11_math g11_math_las using $tables_dir/share/va/pub/sum_
+> stats_g11.tex ///
+>         , append `esttab_sum_stats' main(mean %5.3f) /*aux(sd %4.3f)*/ wide n
+> oobs `esttab_layout' `esttab_manual' ///
+>         keep( ///
+>                 sbac_math_z_score ///
+>         ) ///
+>         coeflabel( ///
+>                 sbac_math_z_score "Math Z-Score" ///
+>         )
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidate
+> d/tables/share/va/pub/sum_stats_g11.tex)
+
+. 
+. esttab g11_ela_all g11_ela g11_ela_las using $tables_dir/share/va/pub/sum_sta
+> ts_g11.tex ///
+>         , append `esttab_sum_stats' main(mean %5.3f) /*aux(sd %4.3f)*/ wide `
+> esttab_scalars' `esttab_layout' `esttab_m
+> anual' prefoot(\midrule) ///
+>         keep( ///
+>                 prior_ela_z_score ///
+>                 prior_math_z_score ///
+>         ) ///
+>         coeflabel( ///
+>                 prior_ela_z_score "Prior ELA Z-Score" ///
+>                 prior_math_z_score "Prior Math Z-Score" ///
+>         )
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidate
+> d/tables/share/va/pub/sum_stats_g11.tex)
+
+. 
+. 
+. //--------------------------------------------------------
+. // postsecondary enrollment
+. //--------------------------------------------------------
+. // subset of ELA VA sample
+. est use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_college.ster
+
+. eststo g11_ela_college
+
+. // dropped sample
+. est use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_college_drop
+> ped.ster
+
+. eststo g11_ela_college_dropped
+
+. 
+. // overall sample: combined VA and Excluded
+. est use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_college_all.
+> ster
+
+. eststo g11_ela_college_all
+
+. 
+. // kitchen sink sample with leave out score, acs, and sibling
+. est use $estimates_dir/va_cfr_all_v1/sum_stats/sum_stats_g11_ela_college_las.
+> ster
+
+. eststo g11_ela_college_las
+
+. 
+. esttab g11_ela_college_all g11_ela_college g11_ela_college_las using $tables_
+> dir/share/va/pub/sum_stats_college.tex //
+> /
+>         , replace `esttab_sum_stats' main(mean %5.3f) wide `esttab_scalars' `
+> esttab_layout' `esttab_manual' prefoot(\m
+> idrule) ///
+>         coeflabel( ///
+>                 enr_ontime "Enrolled at a Postsecondary Institution" ///
+>                 enr_ontime_2year "Enrolled at a 2-Year College" ///
+>                 enr_ontime_4year "Enrolled at a 4-Year University" ///
+>         )
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidate
+> d/tables/share/va/pub/sum_stats_college.t
+> ex)
+
+.                 /* enr_ontime_pub "Enrolled at a Public Institution" ///
+>                 enr_ontime_priv "Enrolled at a Private Institution" ///
+>                 enr_ontime_instate "Enrolled at a CA Institution" ///
+>                 enr_ontime_outstate "Enrolled at an Out-of-State Institution"
+>  /// */
+. 
+. 
+. local date2 = c(current_date)
+
+. local time2 = c(current_time)
+
+. 
+. di "Start date time: `date1' `time1'"
+Start date time:  3 Jun 2026 02:25:46
+
+. di "End date time: `date2' `time2'"
+End date time:  3 Jun 2026 02:27:30
+
+. 
+. cap log close base_sum_stats_tab

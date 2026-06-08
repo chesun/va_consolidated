@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/clean_enr.smcl
   log type:  text
- opened on:  26 May 2026, 22:20:50
+ opened on:   1 Jun 2026, 22:56:53
 
 . 
 . graph drop _all
@@ -807,6 +807,8 @@ delimiter now ;
 . #delimit cr
 delimiter now cr
 . macro list
+run_prior_score:
+                1
 cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
 clndtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/calschls
 rawcsvdir:      /home/research/ca_ed_lab/data/restricted_access/raw/calschls/cs
@@ -3518,6 +3520,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:     17.47 /        1 =      17.4670
+   1:     17.35 /        1 =      17.3480
 
 . cap log close clean_enr

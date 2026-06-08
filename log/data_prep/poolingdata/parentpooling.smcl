@@ -2,7 +2,7 @@
       name:  parentpooling
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/poolingdata/parentpooling.smcl
   log type:  text
- opened on:  26 May 2026, 22:29:43
+ opened on:   1 Jun 2026, 23:04:57
 
 . 
 . /* first append all years to make a pnael dataset to calculate pooled stats */

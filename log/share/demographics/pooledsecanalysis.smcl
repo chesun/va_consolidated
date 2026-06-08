@@ -1,0 +1,109 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  pooledsecanalysis
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/demographics/pooledsecanalysis.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:31:01
+
+. 
+. use $caschls_projdir/dta/demographics/pooled/pooledsecdiagnostics, replace
+(Secondary demographics diagnostics pooled across grade 9 and 11 across all 5 yea)
+
+. 
+. grstyle init  //initializes the grstyle package
+
+. grstyle set plain   //set graph background to plain
+
+. grstyle set color Set1, opacity(50): histogram //use Set1 color palette (red and blue) for histogram bars fill color and set opacity to 50%
+
+. grstyle set color white, opacity(25): histogram_line //set color white and opacity 25% for histogram bar outline color
+
+. 
+. //create and export frequency histogram for pooled response rate (pooled across grades 9 and 11 and all 5 years)
+. histogram pooledrr, freq
+(bin=31, start=0, width=.16129032)
+
+. graph export $output_dir/graph/pooleddiagnostics/secondary/pooledrr.png, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/pooleddiagnostics/secondary/pooledrr.png written in PNG format
+
+. 
+. //create and export frequency histogram for pooled female response rate
+. histogram pooledfemalerr, freq
+(bin=31, start=0, width=.09677419)
+
+. graph export $output_dir/graph/pooleddiagnostics/secondary/pooledfemalerr.png, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/pooleddiagnostics/secondary/pooledfemalerr.png written in PNG format
+
+. 
+. //create and export frequency histograms for pooled response rates for 4 races/ethnicities
+. 
+. //generate checks to see if survey responses are more than enrollment
+. gen checkhispanic = 0
+
+. replace checkhispanic = 1 if svyhispanictotal > enrhispanictotal
+(109 real changes made)
+
+. gen checkasian = 0
+
+. replace checkasian = 1 if svyasiantotal > enrasiantotal
+(95 real changes made)
+
+. gen checkblack = 0
+
+. replace checkblack = 1 if svyblacktotal > enrblacktotal
+(304 real changes made)
+
+. gen checkwhite = 0
+
+. replace checkwhite = 1 if svywhitetotal > enrwhitetotal
+(320 real changes made)
+
+. 
+. drop if checkhispanic == 1
+(109 observations deleted)
+
+. drop if checkasian == 1
+(86 observations deleted)
+
+. drop if checkblack == 1
+(215 observations deleted)
+
+. drop if checkwhite == 1
+(141 observations deleted)
+
+. 
+. histogram pooledhispanicrr, freq
+(bin=29, start=0, width=.03448276)
+
+. graph export $output_dir/graph/pooleddiagnostics/secondary/pooledhispanicrr.png, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/pooleddiagnostics/secondary/pooledhispanicrr.png written in PNG format
+
+. 
+. histogram pooledasianrr, freq
+(bin=25, start=0, width=.04)
+
+. graph export $output_dir/graph/pooleddiagnostics/secondary/pooledasianrr.png, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/pooleddiagnostics/secondary/pooledasianrr.png written in PNG format
+
+. 
+. histogram pooledblackrr, freq
+(bin=26, start=0, width=.03846154)
+
+. graph export $output_dir/graph/pooleddiagnostics/secondary/pooledblackrr.png, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/pooleddiagnostics/secondary/pooledblackrr.png written in PNG format
+
+. 
+. histogram pooledwhiterr, freq
+(bin=29, start=0, width=.03448276)
+
+. graph export $output_dir/graph/pooleddiagnostics/secondary/pooledwhiterr.png, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/pooleddiagnostics/secondary/pooledwhiterr.png written in PNG format
+
+. 
+. 
+. 
+. 
+. grstyle clear // sets off grstyle
+
+. 
+. 
+. cap log close pooledsecanalysis

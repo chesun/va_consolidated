@@ -1,0 +1,2929 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ opened on:   1 Jun 2026, 21:30:55
+
+. 
+. di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+
+. di as text "main.do — RUN START: `c(current_date)' `c(current_time)'"
+main.do — RUN START:  1 Jun 2026 21:30:55
+
+. di as text "Host: `c(hostname)' | Stata: `c(stata_version)' | User: `c(username)'"
+Host: scribe | Stata: 18 | User: chesun1
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. 
+. /*==============================================================================
+> PHASE TOGGLES  (set to 1 to run the phase, 0 to skip)
+> ==============================================================================*/
+. 
+. * Default: every phase ON.  Production / acceptance runs (ADR-0018) require
+. * every toggle ON, including run_data_checks.  Dev iteration can toggle off
+. * upstream phases if their cached outputs are still valid.
+. local run_data_prep         1
+
+. local run_samples           1
+
+. local run_va_estimation     1
+
+. local run_va_tables         1   // Phase 4 is an intentional no-op — VA tables/figures run in Phase 6 (see Phase 4 NOT
+> E); kept as a numbered phase but never has a body
+
+. local run_survey_va         1
+
+. local run_paper_outputs     1
+
+. local run_data_checks       1
+
+. 
+. 
+. /*==============================================================================
+> ACCEPTANCE-RUN MASTER OVERRIDE  (per ADR-0018)
+> 
+>     Set m4_acceptance_run = 1 when doing the canonical end-to-end run that
+>     produces ALL consolidated outputs (M4 golden-master, v1.0-final freeze,
+>     any other ADR-0018-acceptance scenario).  The flag overrides three
+>     sub-toggles inside Phases 2-3 (do_touse_va, do_create_samples, do_va)
+>     from their cached-default 0 to 1, so the run rebuilds samples + VA
+>     estimates from scratch instead of relying on cached predecessor outputs.
+> 
+>     Why all three: the cached samples + VA estimates from predecessor
+>     production live at LEGACY paths the consolidated pipeline doesn't read
+>     from.  M4 must regenerate them at CANONICAL $datadir_clean and
+>     $estimates_dir paths so the consolidated pipeline finds them.
+> 
+>     Leave at 0 for dev iteration where you want the cached-outputs pattern
+>     (mirrors predecessor `do_all.do' defaults).
+> 
+>     See ADR-0018 acceptance criteria + plan v3 §3.5 golden-master verification.
+> ==============================================================================*/
+. 
+. local m4_acceptance_run  1   // CHANGE ME to 1 for full acceptance / M4 run
+
+. 
+. * ORCHESTRATION-GAP FIX (2026-06-01): when m4_acceptance_run=1 force the upstream
+. * PHASE toggles ON here, at the phase-toggle level.  Previously the override only
+. * flipped the nested sub-toggles (do_touse_va, do_create_samples, do_va) INSIDE the
+. * `if run_samples'/`if run_va_estimation' blocks — but those phase gates were 0, so
+. * the blocks never executed and the sub-toggle overrides were dead.  An ADR-0018
+. * acceptance run requires every upstream phase ON so canonical samples + VA
+. * estimates are rebuilt at $datadir_clean/$estimates_dir (not read from LEGACY
+. * predecessor caches).  Set m4=1 -> full end-to-end; m4=0 -> dev-iteration (the
+. * per-phase toggles above stand as set).  The nested sub-toggle overrides (still
+. * present in each phase block) remain correct once their phase actually runs.
+. if `m4_acceptance_run' {
+.     local run_data_prep      1
+.     local run_samples        1
+.     local run_va_estimation  1
+.     local run_survey_va      1
+.     local run_paper_outputs  1
+.     local run_data_checks    1
+.     * run_va_tables stays 0 — Phase 4 is an intentional no-op (see its NOTE).
+. }
+
+. 
+. di as text _n "M4 acceptance-run override: " ///
+>     cond(`m4_acceptance_run', "ENABLED — all upstream PHASE toggles forced ON (full end-to-end rebuild) + nested do_to
+> use_va/do_create_samples/do_va forced ON", "DISABLED — per-phase toggles stand as set above (dev iteration)")
+
+M4 acceptance-run override: ENABLED — all upstream PHASE toggles forced ON (full end-to-end rebuild) + nested do_touse_v
+> a/do_create_samples/do_va forced ON
+
+. 
+. 
+. /*==============================================================================
+> PHASE 1 — DATA PREP
+> ==============================================================================*/
+. 
+. if `run_data_prep' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 1: DATA PREP"
+PHASE 1: DATA PREP
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 21:30:55
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 21:30:55
+.     di as text "  [RUN] do/data_prep/acs/acs_2017_gen_dict.do"
+  [RUN] do/data_prep/acs/acs_2017_gen_dict.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 21:30:55
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 21:31:04
+.     di as text "  [OK]  do/data_prep/acs/acs_2017_gen_dict.do"
+  [OK]  do/data_prep/acs/acs_2017_gen_dict.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 21:31:04
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 21:31:04
+.     di as text "  [RUN] do/data_prep/acs/clean_acs_census_tract.do"
+  [RUN] do/data_prep/acs/clean_acs_census_tract.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 21:31:04
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:56:07
+.     di as text "  [OK]  do/data_prep/acs/clean_acs_census_tract.do"
+  [OK]  do/data_prep/acs/clean_acs_census_tract.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:56:07
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:56:07
+.     di as text "  [RUN] do/data_prep/schl_chars/cds_nces_xwalk.do"
+  [RUN] do/data_prep/schl_chars/cds_nces_xwalk.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:56:07
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:56:08
+.     di as text "  [OK]  do/data_prep/schl_chars/cds_nces_xwalk.do"
+  [OK]  do/data_prep/schl_chars/cds_nces_xwalk.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:56:08
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:56:08
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_locale.do"
+  [RUN] do/data_prep/schl_chars/clean_locale.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:56:08
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:56:51
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_locale.do"
+  [OK]  do/data_prep/schl_chars/clean_locale.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:56:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:56:51
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_elsch.do"
+  [RUN] do/data_prep/schl_chars/clean_elsch.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:56:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:56:53
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_elsch.do"
+  [OK]  do/data_prep/schl_chars/clean_elsch.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:56:53
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:56:53
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_enr.do"
+  [RUN] do/data_prep/schl_chars/clean_enr.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:56:53
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:57:10
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_enr.do"
+  [OK]  do/data_prep/schl_chars/clean_enr.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:57:10
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:57:10
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_frpm.do"
+  [RUN] do/data_prep/schl_chars/clean_frpm.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:57:10
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:57:18
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_frpm.do"
+  [OK]  do/data_prep/schl_chars/clean_frpm.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:57:18
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:57:18
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_staffcred.do"
+  [RUN] do/data_prep/schl_chars/clean_staffcred.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:57:18
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:57:43
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_staffcred.do"
+  [OK]  do/data_prep/schl_chars/clean_staffcred.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:57:43
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:57:43
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_staffdemo.do"
+  [RUN] do/data_prep/schl_chars/clean_staffdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:57:43
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:58:30
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_staffdemo.do"
+  [OK]  do/data_prep/schl_chars/clean_staffdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:58:30
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:58:30
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_staffschoolfte.do"
+  [RUN] do/data_prep/schl_chars/clean_staffschoolfte.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:58:30
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:59:18
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_staffschoolfte.do"
+  [OK]  do/data_prep/schl_chars/clean_staffschoolfte.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:59:18
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:59:18
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_charter.do"
+  [RUN] do/data_prep/schl_chars/clean_charter.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:59:18
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:59:19
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_charter.do"
+  [OK]  do/data_prep/schl_chars/clean_charter.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:59:19
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:59:19
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_ecn_disadv.do"
+  [RUN] do/data_prep/schl_chars/clean_ecn_disadv.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:59:19
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:59:35
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_ecn_disadv.do"
+  [OK]  do/data_prep/schl_chars/clean_ecn_disadv.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:59:35
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:59:35
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_sch_char.do"
+  [RUN] do/data_prep/schl_chars/clean_sch_char.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:59:35
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:59:54
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_sch_char.do"
+  [OK]  do/data_prep/schl_chars/clean_sch_char.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:59:54
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 22:59:54
+.     di as text "  [RUN] do/data_prep/k12_postsec_distance/k12_postsec_distances.do"
+  [RUN] do/data_prep/k12_postsec_distance/k12_postsec_distances.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 22:59:54
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:00:46
+.     di as text "  [OK]  do/data_prep/k12_postsec_distance/k12_postsec_distances.do"
+  [OK]  do/data_prep/k12_postsec_distance/k12_postsec_distances.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:00:46
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:00:46
+.     di as text "  [RUN] do/data_prep/k12_postsec_distance/check_merge.do"
+  [RUN] do/data_prep/k12_postsec_distance/check_merge.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:00:46
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:00:48
+.     di as text "  [OK]  do/data_prep/k12_postsec_distance/check_merge.do"
+  [OK]  do/data_prep/k12_postsec_distance/check_merge.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:00:48
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:00:48
+.     di as text "  [RUN] do/data_prep/prepare/enrollmentclean.do"
+  [RUN] do/data_prep/prepare/enrollmentclean.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:00:48
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:01:57
+.     di as text "  [OK]  do/data_prep/prepare/enrollmentclean.do"
+  [OK]  do/data_prep/prepare/enrollmentclean.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:01:57
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:01:57
+.     di as text "  [RUN] do/data_prep/prepare/poolgr11enr.do"
+  [RUN] do/data_prep/prepare/poolgr11enr.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:01:57
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:01:58
+.     di as text "  [OK]  do/data_prep/prepare/poolgr11enr.do"
+  [OK]  do/data_prep/prepare/poolgr11enr.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:01:58
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:01:58
+.     di as text "  [RUN] do/data_prep/prepare/renamedata.do"
+  [RUN] do/data_prep/prepare/renamedata.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:01:58
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:08
+.     di as text "  [OK]  do/data_prep/prepare/renamedata.do"
+  [OK]  do/data_prep/prepare/renamedata.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:08
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:08
+.     di as text "  [RUN] do/data_prep/prepare/splitstaff0414.do"
+  [RUN] do/data_prep/prepare/splitstaff0414.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:08
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:11
+.     di as text "  [OK]  do/data_prep/prepare/splitstaff0414.do"
+  [OK]  do/data_prep/prepare/splitstaff0414.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:11
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:11
+.     di as text "  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1415.do"
+  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1415.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:11
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:12
+.     di as text "  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1415.do"
+  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1415.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:12
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:12
+.     di as text "  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1516.do"
+  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1516.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:12
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:12
+.     di as text "  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1516.do"
+  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1516.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:12
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:12
+.     di as text "  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1617.do"
+  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1617.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:12
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:14
+.     di as text "  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1617.do"
+  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1617.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:14
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:14
+.     di as text "  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1819_1718.do"
+  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1819_1718.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:14
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:18
+.     di as text "  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1819_1718.do"
+  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1819_1718.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:18
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:18
+.     di as text "  [RUN] do/data_prep/qoiclean/secondary/secqoiclean1415.do"
+  [RUN] do/data_prep/qoiclean/secondary/secqoiclean1415.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:18
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:22
+.     di as text "  [OK]  do/data_prep/qoiclean/secondary/secqoiclean1415.do"
+  [OK]  do/data_prep/qoiclean/secondary/secqoiclean1415.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:22
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:22
+.     di as text "  [RUN] do/data_prep/qoiclean/secondary/secqoiclean1617.do"
+  [RUN] do/data_prep/qoiclean/secondary/secqoiclean1617.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:22
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:28
+.     di as text "  [OK]  do/data_prep/qoiclean/secondary/secqoiclean1617.do"
+  [OK]  do/data_prep/qoiclean/secondary/secqoiclean1617.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:28
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:28
+.     di as text "  [RUN] do/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.do"
+  [RUN] do/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:28
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:54
+.     di as text "  [OK]  do/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.do"
+  [OK]  do/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:54
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:54
+.     di as text "  [RUN] do/data_prep/qoiclean/staff/staffqoiclean1415.do"
+  [RUN] do/data_prep/qoiclean/staff/staffqoiclean1415.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:54
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:54
+.     di as text "  [OK]  do/data_prep/qoiclean/staff/staffqoiclean1415.do"
+  [OK]  do/data_prep/qoiclean/staff/staffqoiclean1415.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:54
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:54
+.     di as text "  [RUN] do/data_prep/qoiclean/staff/staffqoiclean1617_1516.do"
+  [RUN] do/data_prep/qoiclean/staff/staffqoiclean1617_1516.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:54
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:55
+.     di as text "  [OK]  do/data_prep/qoiclean/staff/staffqoiclean1617_1516.do"
+  [OK]  do/data_prep/qoiclean/staff/staffqoiclean1617_1516.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:55
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:55
+.     di as text "  [RUN] do/data_prep/qoiclean/staff/staffqoiclean1819_1718.do"
+  [RUN] do/data_prep/qoiclean/staff/staffqoiclean1819_1718.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:55
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [OK]  do/data_prep/qoiclean/staff/staffqoiclean1819_1718.do"
+  [OK]  do/data_prep/qoiclean/staff/staffqoiclean1819_1718.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [RUN] do/data_prep/responserate/trimsecdemo.do"
+  [RUN] do/data_prep/responserate/trimsecdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [OK]  do/data_prep/responserate/trimsecdemo.do"
+  [OK]  do/data_prep/responserate/trimsecdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [RUN] do/data_prep/responserate/secresponserate.do"
+  [RUN] do/data_prep/responserate/secresponserate.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [OK]  do/data_prep/responserate/secresponserate.do"
+  [OK]  do/data_prep/responserate/secresponserate.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [RUN] do/data_prep/responserate/trimparentdemo.do"
+  [RUN] do/data_prep/responserate/trimparentdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [OK]  do/data_prep/responserate/trimparentdemo.do"
+  [OK]  do/data_prep/responserate/trimparentdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [RUN] do/data_prep/responserate/parentresponserate.do"
+  [RUN] do/data_prep/responserate/parentresponserate.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [OK]  do/data_prep/responserate/parentresponserate.do"
+  [OK]  do/data_prep/responserate/parentresponserate.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:56
+.     di as text "  [RUN] do/data_prep/poolingdata/secpooling.do"
+  [RUN] do/data_prep/poolingdata/secpooling.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:56
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:57
+.     di as text "  [OK]  do/data_prep/poolingdata/secpooling.do"
+  [OK]  do/data_prep/poolingdata/secpooling.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:57
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:57
+.     di as text "  [RUN] do/data_prep/poolingdata/parentpooling.do"
+  [RUN] do/data_prep/poolingdata/parentpooling.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:57
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:58
+.     di as text "  [OK]  do/data_prep/poolingdata/parentpooling.do"
+  [OK]  do/data_prep/poolingdata/parentpooling.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:58
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:58
+.     di as text "  [RUN] do/data_prep/poolingdata/staffpooling.do"
+  [RUN] do/data_prep/poolingdata/staffpooling.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:58
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:58
+.     di as text "  [OK]  do/data_prep/poolingdata/staffpooling.do"
+  [OK]  do/data_prep/poolingdata/staffpooling.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:58
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:58
+.     di as text "  [RUN] do/data_prep/poolingdata/mergegr11enr.do"
+  [RUN] do/data_prep/poolingdata/mergegr11enr.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:58
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:58
+.     di as text "  [OK]  do/data_prep/poolingdata/mergegr11enr.do"
+  [OK]  do/data_prep/poolingdata/mergegr11enr.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:58
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:58
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 2 — SAMPLE CONSTRUCTION
+> ==============================================================================*/
+. 
+. if `run_samples' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 2: SAMPLE CONSTRUCTION"
+PHASE 2: SAMPLE CONSTRUCTION
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:58
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:04:58
+.     di as text "  [RUN] do/sibling_xwalk/siblingoutxwalk.do"
+  [RUN] do/sibling_xwalk/siblingoutxwalk.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:04:58
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:34:47
+.     di as text "  [OK]  do/sibling_xwalk/siblingoutxwalk.do"
+  [OK]  do/sibling_xwalk/siblingoutxwalk.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:34:47
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   1 Jun 2026, 23:34:47
+.         di as text "  [RUN] do/samples/touse_va.do"
+  [RUN] do/samples/touse_va.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   1 Jun 2026, 23:34:47
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 00:29:23
+.         di as text "  [OK]  do/samples/touse_va.do"
+  [OK]  do/samples/touse_va.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 00:29:23
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 00:29:23
+.         di as text "  [RUN] do/samples/create_score_samples.do"
+  [RUN] do/samples/create_score_samples.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 00:29:23
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 01:11:25
+.         di as text "  [OK]  do/samples/create_score_samples.do"
+  [OK]  do/samples/create_score_samples.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 01:11:25
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 01:11:25
+.         di as text "  [RUN] do/samples/create_out_samples.do"
+  [RUN] do/samples/create_out_samples.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 01:11:25
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 03:06:55
+.         di as text "  [OK]  do/samples/create_out_samples.do"
+  [OK]  do/samples/create_out_samples.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 03:06:55
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 03:06:55
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 3 — VA ESTIMATION
+> ==============================================================================*/
+. 
+. if `run_va_estimation' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 3: VA ESTIMATION"
+PHASE 3: VA ESTIMATION
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 03:06:55
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 03:06:55
+.         di as text "  [RUN] do/va/va_score_all.do"
+  [RUN] do/va/va_score_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 03:06:55
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 03:58:40
+.         di as text "  [OK]  do/va/va_score_all.do"
+  [OK]  do/va/va_score_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 03:58:40
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 03:58:40
+.         di as text "  [RUN] do/va/va_score_fb_all.do"
+  [RUN] do/va/va_score_fb_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 03:58:40
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 05:49:05
+.         di as text "  [OK]  do/va/va_score_fb_all.do"
+  [OK]  do/va/va_score_fb_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 05:49:05
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 05:49:05
+.         di as text "  [RUN] do/va/va_out_all.do"
+  [RUN] do/va/va_out_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 05:49:05
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 09:17:21
+.         di as text "  [OK]  do/va/va_out_all.do"
+  [OK]  do/va/va_out_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 09:17:21
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 09:17:21
+.         di as text "  [RUN] do/va/va_out_fb_all.do"
+  [RUN] do/va/va_out_fb_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 09:17:21
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 16:25:51
+.         di as text "  [OK]  do/va/va_out_fb_all.do"
+  [OK]  do/va/va_out_fb_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 16:25:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 16:25:51
+.         di as text "  [RUN] do/va/va_score_spec_test_tab.do"
+  [RUN] do/va/va_score_spec_test_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 16:25:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 17:01:47
+.         di as text "  [OK]  do/va/va_score_spec_test_tab.do"
+  [OK]  do/va/va_score_spec_test_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 17:01:47
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 17:01:47
+.         di as text "  [RUN] do/va/va_out_spec_test_tab.do"
+  [RUN] do/va/va_out_spec_test_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 17:01:47
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:16
+.         di as text "  [OK]  do/va/va_out_spec_test_tab.do"
+  [OK]  do/va/va_out_spec_test_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:16
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:16
+.         di as text "  [RUN] do/va/va_score_fb_test_tab.do"
+  [RUN] do/va/va_score_fb_test_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:16
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:28
+.         di as text "  [OK]  do/va/va_score_fb_test_tab.do"
+  [OK]  do/va/va_score_fb_test_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:28
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:28
+.         di as text "  [RUN] do/va/va_out_fb_test_tab.do"
+  [RUN] do/va/va_out_fb_test_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:28
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:47
+.         di as text "  [OK]  do/va/va_out_fb_test_tab.do"
+  [OK]  do/va/va_out_fb_test_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:47
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:47
+.         di as text "  [RUN] do/va/va_spec_fb_tab.do"
+  [RUN] do/va/va_spec_fb_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:47
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:48
+.         di as text "  [OK]  do/va/va_spec_fb_tab.do"
+  [OK]  do/va/va_spec_fb_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:48
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:48
+.         di as text "  [RUN] do/va/merge_va_est.do"
+  [RUN] do/va/merge_va_est.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:48
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:51
+.         di as text "  [OK]  do/va/merge_va_est.do"
+  [OK]  do/va/merge_va_est.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:51
+.         di as text "  [RUN] do/va/va_corr.do"
+  [RUN] do/va/va_corr.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:51
+.         di as text "  [OK]  do/va/va_corr.do"
+  [OK]  do/va/va_corr.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:04:51
+.         di as text "  [RUN] do/va/prior_decile_original_sample.do"
+  [RUN] do/va/prior_decile_original_sample.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:04:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:05:11
+.         di as text "  [OK]  do/va/prior_decile_original_sample.do"
+  [OK]  do/va/prior_decile_original_sample.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:05:11
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   2 Jun 2026, 18:05:11
+.         di as text "  [RUN] do/va/reg_out_va_all.do"
+  [RUN] do/va/reg_out_va_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   2 Jun 2026, 18:05:11
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 01:18:24
+.         di as text "  [OK]  do/va/reg_out_va_all.do"
+  [OK]  do/va/reg_out_va_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 01:18:24
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 01:18:24
+.         di as text "  [RUN] do/va/reg_out_va_all_tab.do"
+  [RUN] do/va/reg_out_va_all_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 01:18:24
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 01:18:32
+.         di as text "  [OK]  do/va/reg_out_va_all_tab.do"
+  [OK]  do/va/reg_out_va_all_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 01:18:32
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 01:18:32
+.         di as text "  [RUN] do/va/reg_out_va_all_fig.do"
+  [RUN] do/va/reg_out_va_all_fig.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 01:18:32
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 01:38:38
+.         di as text "  [OK]  do/va/reg_out_va_all_fig.do"
+  [OK]  do/va/reg_out_va_all_fig.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 01:38:38
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 01:38:38
+.         di as text "  [RUN] do/va/reg_out_va_dk_all.do"
+  [RUN] do/va/reg_out_va_dk_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 01:38:38
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:18:18
+.         di as text "  [OK]  do/va/reg_out_va_dk_all.do"
+  [OK]  do/va/reg_out_va_dk_all.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:18:18
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:18:18
+.         di as text "  [RUN] do/va/reg_out_va_dk_all_tab.do"
+  [RUN] do/va/reg_out_va_dk_all_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:18:18
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:18:24
+.         di as text "  [OK]  do/va/reg_out_va_dk_all_tab.do"
+  [OK]  do/va/reg_out_va_dk_all_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:18:24
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:18:24
+.         di as text "  [RUN] do/va/reg_out_va_dk_all_fig.do"
+  [RUN] do/va/reg_out_va_dk_all_fig.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:18:24
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:19:55
+.         di as text "  [OK]  do/va/reg_out_va_dk_all_fig.do"
+  [OK]  do/va/reg_out_va_dk_all_fig.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:19:55
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:19:55
+.         di as text "  [RUN] do/va/va_score_sib_lag.do"
+  [RUN] do/va/va_score_sib_lag.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:19:55
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:20:21
+.         di as text "  [OK]  do/va/va_score_sib_lag.do"
+  [OK]  do/va/va_score_sib_lag.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:20:21
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:20:21
+.         di as text "  [RUN] do/va/va_out_sib_lag.do"
+  [RUN] do/va/va_out_sib_lag.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:20:21
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:01
+.         di as text "  [OK]  do/va/va_out_sib_lag.do"
+  [OK]  do/va/va_out_sib_lag.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:01
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:01
+.         di as text "  [RUN] do/va/va_sib_lag_spec_fb_tab.do"
+  [RUN] do/va/va_sib_lag_spec_fb_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:01
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:01
+.         di as text "  [OK]  do/va/va_sib_lag_spec_fb_tab.do"
+  [OK]  do/va/va_sib_lag_spec_fb_tab.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:01
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:01
+.         di as text "  [RUN] do/va/heterogeneity/va_het.do"
+  [RUN] do/va/heterogeneity/va_het.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:01
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:06
+.         di as text "  [OK]  do/va/heterogeneity/va_het.do"
+  [OK]  do/va/heterogeneity/va_het.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:06
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:06
+.         di as text "  [RUN] do/va/heterogeneity/va_corr_schl_char.do"
+  [RUN] do/va/heterogeneity/va_corr_schl_char.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:06
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:08
+.         di as text "  [OK]  do/va/heterogeneity/va_corr_schl_char.do"
+  [OK]  do/va/heterogeneity/va_corr_schl_char.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:08
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:08
+.         di as text "  [RUN] do/va/heterogeneity/va_corr_schl_char_fig.do"
+  [RUN] do/va/heterogeneity/va_corr_schl_char_fig.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:08
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:25
+.         di as text "  [OK]  do/va/heterogeneity/va_corr_schl_char_fig.do"
+  [OK]  do/va/heterogeneity/va_corr_schl_char_fig.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:25
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:25
+.         di as text "  [RUN] do/va/heterogeneity/persist_het_student_char_fig.do"
+  [RUN] do/va/heterogeneity/persist_het_student_char_fig.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:25
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:31
+.         di as text "  [OK]  do/va/heterogeneity/persist_het_student_char_fig.do"
+  [OK]  do/va/heterogeneity/persist_het_student_char_fig.do
+.         log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:31
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:31
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 4 — VA TABLES + FIGURES
+> ==============================================================================*/
+. 
+. if `run_va_tables' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 4: VA TABLES + FIGURES"
+PHASE 4: VA TABLES + FIGURES
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:31
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:31
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 5 — SURVEY VA (CalSCHLS indices)
+> ==============================================================================*/
+. 
+. if `run_survey_va' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 5: SURVEY VA"
+PHASE 5: SURVEY VA
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:31
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:31
+.     di as text "  [RUN] do/data_prep/poolingdata/clean_va.do"
+  [RUN] do/data_prep/poolingdata/clean_va.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:31
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:32
+.     di as text "  [OK]  do/data_prep/poolingdata/clean_va.do"
+  [OK]  do/data_prep/poolingdata/clean_va.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:32
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:32
+.     di as text "  [RUN] do/survey_va/allsvymerge.do"
+  [RUN] do/survey_va/allsvymerge.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:32
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:32
+.     di as text "  [OK]  do/survey_va/allsvymerge.do"
+  [OK]  do/survey_va/allsvymerge.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:32
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:32
+.     di as text "  [RUN] do/survey_va/imputation.do"
+  [RUN] do/survey_va/imputation.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:32
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:33
+.     di as text "  [OK]  do/survey_va/imputation.do"
+  [OK]  do/survey_va/imputation.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:33
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:33
+.     di as text "  [RUN] do/survey_va/imputedcategoryindex.do"
+  [RUN] do/survey_va/imputedcategoryindex.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:33
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:34
+.     di as text "  [OK]  do/survey_va/imputedcategoryindex.do"
+  [OK]  do/survey_va/imputedcategoryindex.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:34
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:34
+.     di as text "  [RUN] do/survey_va/compcasecategoryindex.do"
+  [RUN] do/survey_va/compcasecategoryindex.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:34
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:35
+.     di as text "  [OK]  do/survey_va/compcasecategoryindex.do"
+  [OK]  do/survey_va/compcasecategoryindex.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:35
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:35
+.     di as text "  [RUN] do/survey_va/indexalpha.do"
+  [RUN] do/survey_va/indexalpha.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:35
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:36
+.     di as text "  [OK]  do/survey_va/indexalpha.do"
+  [OK]  do/survey_va/indexalpha.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:36
+.     di as text "  [RUN] do/survey_va/mattschlchar.do"
+  [RUN] do/survey_va/mattschlchar.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:51
+.     di as text "  [OK]  do/survey_va/mattschlchar.do"
+  [OK]  do/survey_va/mattschlchar.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:21:51
+.     di as text "  [RUN] do/survey_va/testscore.do"
+  [RUN] do/survey_va/testscore.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:21:51
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:30
+.     di as text "  [OK]  do/survey_va/testscore.do"
+  [OK]  do/survey_va/testscore.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:30
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:30
+.     di as text "  [RUN] do/survey_va/indexregwithdemo.do"
+  [RUN] do/survey_va/indexregwithdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:30
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:35
+.     di as text "  [OK]  do/survey_va/indexregwithdemo.do"
+  [OK]  do/survey_va/indexregwithdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:35
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:35
+.     di as text "  [RUN] do/survey_va/indexhorseracewithdemo.do"
+  [RUN] do/survey_va/indexhorseracewithdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:35
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:37
+.     di as text "  [OK]  do/survey_va/indexhorseracewithdemo.do"
+  [OK]  do/survey_va/indexhorseracewithdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:37
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:37
+.     di as text "  [RUN] do/survey_va/indexhorserace.do"
+  [RUN] do/survey_va/indexhorserace.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:37
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:39
+.     di as text "  [OK]  do/survey_va/indexhorserace.do"
+  [OK]  do/survey_va/indexhorserace.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:39
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:39
+.     di as text "  [RUN] do/survey_va/factor.do"
+  [RUN] do/survey_va/factor.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:39
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:40
+.     di as text "  [OK]  do/survey_va/factor.do"
+  [OK]  do/survey_va/factor.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:40
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:40
+.     di as text "  [RUN] do/survey_va/pcascore.do"
+  [RUN] do/survey_va/pcascore.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:40
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:41
+.     di as text "  [OK]  do/survey_va/pcascore.do"
+  [OK]  do/survey_va/pcascore.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:41
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:41
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 6 — PAPER OUTPUTS
+> ==============================================================================*/
+. 
+. if `run_paper_outputs' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 6: PAPER OUTPUTS"
+PHASE 6: PAPER OUTPUTS
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:41
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:23:41
+.     di as text "  [RUN] do/share/sample_counts_tab.do"
+  [RUN] do/share/sample_counts_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:23:41
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:25:46
+.     di as text "  [OK]  do/share/sample_counts_tab.do"
+  [OK]  do/share/sample_counts_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:25:46
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:25:46
+.     di as text "  [RUN] do/share/base_sum_stats_tab.do"
+  [RUN] do/share/base_sum_stats_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:25:46
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:27:30
+.     di as text "  [OK]  do/share/base_sum_stats_tab.do"
+  [OK]  do/share/base_sum_stats_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:27:30
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:27:30
+.     di as text "  [RUN] do/share/kdensity.do"
+  [RUN] do/share/kdensity.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:27:30
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:27:31
+.     di as text "  [OK]  do/share/kdensity.do"
+  [OK]  do/share/kdensity.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:27:31
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:27:31
+.     di as text "  [RUN] do/share/va_scatter.do"
+  [RUN] do/share/va_scatter.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:27:31
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:31
+.     di as text "  [OK]  do/share/va_scatter.do"
+  [OK]  do/share/va_scatter.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:31
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:31
+.     di as text "  [RUN] do/share/va_var_explain.do"
+  [RUN] do/share/va_var_explain.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:31
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:36
+.     di as text "  [OK]  do/share/va_var_explain.do"
+  [OK]  do/share/va_var_explain.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:36
+.     di as text "  [RUN] do/share/va_var_explain_tab.do"
+  [RUN] do/share/va_var_explain_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:36
+.     di as text "  [OK]  do/share/va_var_explain_tab.do"
+  [OK]  do/share/va_var_explain_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:36
+.     di as text "  [RUN] do/share/va_spec_fb_tab_all.do"
+  [RUN] do/share/va_spec_fb_tab_all.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:36
+.     di as text "  [OK]  do/share/va_spec_fb_tab_all.do"
+  [OK]  do/share/va_spec_fb_tab_all.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:36
+.     di as text "  [RUN] do/share/reg_out_va_tab.do"
+  [RUN] do/share/reg_out_va_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:36
+.     di as text "  [OK]  do/share/reg_out_va_tab.do"
+  [OK]  do/share/reg_out_va_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:36
+.     di as text "  [RUN] do/share/svyindex_tab.do"
+  [RUN] do/share/svyindex_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:37
+.     di as text "  [OK]  do/share/svyindex_tab.do"
+  [OK]  do/share/svyindex_tab.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:37
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:37
+.     di as text "  [RUN] do/share/check/corr_dk_score_va.do"
+  [RUN] do/share/check/corr_dk_score_va.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:37
+------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:37
+.     di as text "  [OK]  do/share/check/corr_dk_score_va.do"
+  [OK]  do/share/check/corr_dk_score_va.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:37
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:37
+.     di as text "  [RUN] do/share/demographics/elemcoverageanalysis.do"
+  [RUN] do/share/demographics/elemcoverageanalysis.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:37
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:48
+.     di as text "  [OK]  do/share/demographics/elemcoverageanalysis.do"
+  [OK]  do/share/demographics/elemcoverageanalysis.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:48
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:48
+.     di as text "  [RUN] do/share/demographics/parentcoverageanalysis.do"
+  [RUN] do/share/demographics/parentcoverageanalysis.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:48
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:59
+.     di as text "  [OK]  do/share/demographics/parentcoverageanalysis.do"
+  [OK]  do/share/demographics/parentcoverageanalysis.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:59
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:29:59
+.     di as text "  [RUN] do/share/demographics/seccoverageanalysis.do"
+  [RUN] do/share/demographics/seccoverageanalysis.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:29:59
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:31:01
+.     di as text "  [OK]  do/share/demographics/seccoverageanalysis.do"
+  [OK]  do/share/demographics/seccoverageanalysis.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:31:01
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:31:01
+.     di as text "  [RUN] do/share/demographics/pooledsecanalysis.do"
+  [RUN] do/share/demographics/pooledsecanalysis.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:31:01
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:31:02
+.     di as text "  [OK]  do/share/demographics/pooledsecanalysis.do"
+  [OK]  do/share/demographics/pooledsecanalysis.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:31:02
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:31:02
+.     di as text "  [RUN] do/sibling_xwalk/siblingmatch.do"
+  [RUN] do/sibling_xwalk/siblingmatch.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:31:02
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:42:58
+.     di as text "  [OK]  do/sibling_xwalk/siblingmatch.do"
+  [OK]  do/sibling_xwalk/siblingmatch.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:42:58
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:42:58
+.     di as text "  [RUN] do/sibling_xwalk/uniquefamily.do"
+  [RUN] do/sibling_xwalk/uniquefamily.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:42:58
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:59:48
+.     di as text "  [OK]  do/sibling_xwalk/uniquefamily.do"
+  [OK]  do/sibling_xwalk/uniquefamily.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:59:48
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 02:59:48
+.     di as text "  [RUN] do/sibling_xwalk/siblingpairxwalk.do"
+  [RUN] do/sibling_xwalk/siblingpairxwalk.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 02:59:48
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:00:35
+.     di as text "  [OK]  do/sibling_xwalk/siblingpairxwalk.do"
+  [OK]  do/sibling_xwalk/siblingpairxwalk.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:00:35
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:00:35
+.     di as text "  [RUN] do/share/svyvaregs/allvaregs.do"
+  [RUN] do/share/svyvaregs/allvaregs.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:00:35
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:01:21
+.     di as text "  [OK]  do/share/svyvaregs/allvaregs.do"
+  [OK]  do/share/svyvaregs/allvaregs.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:01:21
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:01:21
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 7 — AUTOMATED DATA CHECKS  (per plan v3 §5.3)
+> ==============================================================================*/
+. 
+. if `run_data_checks' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 7: AUTOMATED DATA CHECKS"
+PHASE 7: AUTOMATED DATA CHECKS
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:01:21
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:01:21
+.     di as text "  [RUN] do/check/check_logs.do"
+  [RUN] do/check/check_logs.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:01:21
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:01:21
+.     di as text "  [OK]  do/check/check_logs.do"
+  [OK]  do/check/check_logs.do
+.     di as text "  [RUN] do/check/check_samples.do"
+  [RUN] do/check/check_samples.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:01:21
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:01:23
+.     di as text "  [OK]  do/check/check_samples.do"
+  [OK]  do/check/check_samples.do
+.     di as text "  [RUN] do/check/check_merges.do"
+  [RUN] do/check/check_merges.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:01:23
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:01:24
+.     di as text "  [OK]  do/check/check_merges.do"
+  [OK]  do/check/check_merges.do
+.     di as text "  [RUN] do/check/check_va_estimates.do"
+  [RUN] do/check/check_va_estimates.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:01:24
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:01:24
+.     di as text "  [OK]  do/check/check_va_estimates.do"
+  [OK]  do/check/check_va_estimates.do
+.     di as text "  [RUN] do/check/check_survey_indices.do"
+  [RUN] do/check/check_survey_indices.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:01:24
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:01:24
+.     di as text "  [OK]  do/check/check_survey_indices.do"
+  [OK]  do/check/check_survey_indices.do
+.     di as text "  [RUN] do/check/check_paper_outputs.do"
+  [RUN] do/check/check_paper_outputs.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+ paused on:   3 Jun 2026, 03:01:24
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_-1-Jun-2026_21-30-55.smcl
+  log type:  text
+resumed on:   3 Jun 2026, 03:01:24
+.     di as text "  [OK]  do/check/check_paper_outputs.do"
+  [OK]  do/check/check_paper_outputs.do
+.     log on master    // resume master for the orchestration layer
+(log already on)
+. }
+
+. 
+. 
+. /*==============================================================================
+> WRAP-UP
+> ==============================================================================*/
+. 
+. di as text _n(3) "{hline 80}"
+
+
+
+--------------------------------------------------------------------------------
+
+. di as text "main.do — RUN END: `c(current_date)' `c(current_time)'"
+main.do — RUN END:  3 Jun 2026 03:01:24
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. cap log close master

@@ -1,0 +1,138 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  check_survey_indices
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/check/check_survey_indices.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 03:01:24
+
+. 
+. di as text _n "{hline 80}"
+
+--------------------------------------------------------------------------------
+
+. di as text "check_survey_indices.do — RUN START: `c(current_date)' `c(current_time)'"
+check_survey_indices.do — RUN START:  3 Jun 2026 03:01:24
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. 
+. /*==============================================================================
+> ITEM LISTS (from design memo §5; resolved 2026-04-28)
+> ==============================================================================*/
+. 
+. local climateitems  parentqoi16mean_pooled parentqoi17mean_pooled            ///
+>                     parentqoi27mean_pooled                                   ///
+>                     secqoi22mean_pooled secqoi23mean_pooled                  ///
+>                     secqoi24mean_pooled secqoi26mean_pooled                  ///
+>                     secqoi27mean_pooled secqoi29mean_pooled
+
+. 
+. local qualityitems  parentqoi30mean_pooled parentqoi31mean_pooled            ///
+>                     parentqoi32mean_pooled parentqoi33mean_pooled            ///
+>                     parentqoi34mean_pooled                                   ///
+>                     secqoi28mean_pooled secqoi35mean_pooled                  ///
+>                     secqoi36mean_pooled secqoi37mean_pooled                  ///
+>                     secqoi38mean_pooled secqoi39mean_pooled                  ///
+>                     secqoi40mean_pooled                                      ///
+>                     staffqoi20mean_pooled staffqoi24mean_pooled              ///
+>                     staffqoi87mean_pooled
+
+. 
+. local supportitems  parentqoi15mean_pooled parentqoi64mean_pooled            ///
+>                     staffqoi10mean_pooled staffqoi128mean_pooled
+
+. 
+. * Item-count invariants per ADR-0010 — these are in-memory checks, do not
+. * need a dataset loaded.
+. local n_climate : word count `climateitems'
+
+. local n_quality : word count `qualityitems'
+
+. local n_support : word count `supportitems'
+
+. 
+. assert `n_climate' == 9
+
+. assert `n_quality' == 15
+
+. assert `n_support' == 4
+
+. di as text "  PASS: item counts match ADR-0010 — climate=9, quality=15, support=4"
+  PASS: item counts match ADR-0010 — climate=9, quality=15, support=4
+
+. 
+. 
+. /*==============================================================================
+> SUB-CHECK 1 — source files (imputed + compcase)
+> ==============================================================================*/
+. 
+. foreach src_tag in calschls_1 calschls_2 {
+  2.     if "`src_tag'" == "calschls_1" {
+  3.         local src_dta "$caschls_projdir/dta/allsvyfactor/imputedallsvyqoimeans.dta"
+  4.         local src_label "imputed"
+  5.     }
+  6.     else {
+  7.         local src_dta "$caschls_projdir/dta/allsvyfactor/allsvyqoimeans.dta"
+  8.         local src_label "compcase"
+  9.     }
+ 10. 
+.     capture confirm file "`src_dta'"
+ 11.     if _rc {
+ 12.         di as text "  [LEGACY-MISSING] `src_dta' — predecessor caschls source not present."
+ 13.         di as text "                   Skipping `src_label' source-item checks."
+ 14.         continue
+ 15.     }
+ 16. 
+.     use "`src_dta'", clear
+ 17. 
+.     * School-level row count -- design memo §5 (codebook line 105 / 24269)
+.     capture assert _N == 5625
+ 18.     if _rc {
+ 19.         di as error "  FAIL: `src_label' source _N = " r(N) " (expected 5625)"
+ 20.         cap log close check_survey_indices
+ 21.         cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
+ 22.         exit _rc
+ 23.     }
+ 24.     di as text "  PASS: `src_label' source _N == 5625"
+ 25. 
+.     * Source-item Likert range: [-2, 2] with ±0.01 floating-point tolerance.
+.     foreach v of varlist parentqoi*mean_pooled secqoi*mean_pooled            ///
+>                          staffqoi*mean_pooled                                {
+ 26.         qui sum `v'
+ 27.         if r(N) == 0 continue
+ 28.         capture assert inrange(r(min), -2.01, 0)
+ 29.         if _rc {
+ 30.             di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (expected ∈ [-2.01, 0])"
+ 31.             cap log close check_survey_indices
+ 32.             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", repla
+> ce
+ 33.             exit _rc
+ 34.         }
+ 35.         capture assert inrange(r(max), 0, 2.01)
+ 36.         if _rc {
+ 37.             di as error "  FAIL: `src_label' `v' max = " %7.4f r(max) " (expected ∈ [0, 2.01])"
+ 38.             cap log close check_survey_indices
+ 39.             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", repla
+> ce
+ 40.             exit _rc
+ 41.         }
+ 42.     }
+ 43.     di as text "  PASS: `src_label' source items within Likert [-2.01, 2.01]"
+ 44. 
+.     * Every index component present in the source file.
+.     foreach v in `climateitems' `qualityitems' `supportitems' {
+ 45.         capture confirm variable `v'
+ 46.         if _rc {
+ 47.             di as error "  FAIL: `src_label' source missing required item `v'"
+ 48.             cap log close check_survey_indices
+ 49.             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", repla
+> ce
+ 50.             exit _rc
+ 51.         }
+ 52.     }
+ 53.     di as text "  PASS: `src_label' source has all 28 (=9+15+4) required index components"
+ 54. }
+(parent pooled (over years) dataset ready for analysis with stats and response ra)
+  PASS: imputed source _N == 5625
+  FAIL: imputed secqoi27mean_pooled max =  2.6133 (expected ∈ [0, 2.01])

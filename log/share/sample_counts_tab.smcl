@@ -1,0 +1,2356 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  sample_counts_tab
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/sample_counts_tab.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:23:41
+
+. 
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. set seed 1984
+
+. 
+. 
+. local date1 = c(current_date)
+
+. local time1 = c(current_time)
+
+. 
+. 
+. include $consolidated_dir/do/va/helpers/macros_va.doh
+
+. /*------------------------------------------------------------------------------
+> do/va/helpers/macros_va.doh — VA project file paths, dates, controls, strings
+> ================================================================================
+> 
+> PURPOSE
+>     Define the canonical VA-pipeline locals consumed across Phase 3+
+>     estimation, table-producer, figure-producer, and heterogeneity scripts:
+>     - Restricted-access K12 data paths.
+>     - Sibling crosswalk paths (cross-references caschls predecessor).
+>     - Cohort-year ranges (test_score / star / caaspp / outcome).
+>     - Outcome strings (ELA, Math, enrollment).
+>     - Control-variable groupings (school, demographic, score, peer, census,
+>       sibling, distance, scrhat — predicted-score variants).
+>     - Per-spec control combinations (b/l/a/s/la/ls/as/las and their `d'-augmented
+>       variants per ADR-0009 + 2023-04-30 distance addition).
+>     - String labels for sample × control display.
+>     - School-characteristics + demographic-characteristics + expenditure groups.
+> 
+> INCLUDED FROM
+>     Phase 3+ VA estimation/table/figure scripts under `do/va/' and `do/share/va/'.
+>     Typically the FIRST helper-include in any consuming script (sets up the
+>     parent-scope locals consumed by `drift_limit.doh' and
+>     `macros_va_all_samples_controls.doh').
+> 
+>     Uses Stata's `#delimit ;' syntax (semicolons end statements) per the
+>     predecessor convention.  The closing `#delimit cr' restores default
+>     line-end semantics for the calling script.
+> 
+> ROLE IN ADR-0021 SANDBOX
+>     Pure local definitions; no save / export / log; sandbox-trivially clean.
+>     Reads from LEGACY paths via global expansion at include-time:
+>       - $vaprojdir/data/restricted_access/clean/k12_test_scores
+>         (LEGACY restricted-access K12 raw data)
+>       - $vaprojdir/data/public_access/...
+>         (LEGACY public-access subdirs)
+>       - $caschls_projdir/dta/siblingxwalk/{siblingpairxwalk,ufamilyxwalk}
+>         (LEGACY-static predecessor sibling-pair / unique-family crosswalks)
+>     Reads from CANONICAL paths:
+>       - $datadir_clean/siblingxwalk/sibling_out_xwalk
+>         (sibling-outcomes crosswalk built by relocated
+>          do/sibling_xwalk/siblingoutxwalk.do per ADR-0005; producer at L338)
+> 
+> RELOCATION HISTORY (per ADR-0005 + ADR-0021, applied 2026-04-30)
+>     Source:      cde_va_project_fork/do_files/sbac/macros_va.doh
+>     Destination: do/va/helpers/macros_va.doh
+>     Path repointing per ADR-0021 sandbox amendment ("paths only; analysis
+>     logic preserved verbatim"):
+>       - L29-31: `$projdir/dta/siblingxwalk/<file>' -> `$caschls_projdir/dta/siblingxwalk/<file>'
+>         (3 references: siblingxwalk, ufamilyxwalk, sibling_out_xwalk)
+>         Reason: $projdir is NOT defined in do/settings.do; $caschls_projdir
+>         is the explicit-named global per the LEGACY PATHS comment block.
+>         Repointing here eliminates the include-time `$projdir' alias-need
+>         for any future calling script (per the [LEARN:stata] 2026-04-30
+>         pattern surfaced in the siblingoutxwalk.do round-1 review).
+>       - $vaprojdir references (L22-28) preserved unchanged — $vaprojdir
+>         IS defined in do/settings.do as the predecessor cde_va_project_fork
+>         dir; LEGACY-static restricted-access K12 paths are READS-only
+>         per ADR-0021.
+>     Predecessor caller-update protocol: predecessor callers untouched in
+>     this commit per plan v3 §3.3 step 5 parenthetical.
+>     Analysis logic preserved verbatim (the cross-product of controls, the
+>     string labels, the cohort-year ranges, the school-char groupings — all
+>     byte-equivalent to the predecessor).
+> 
+> ORIGINAL CHANGE LOG (preserved from predecessor)
+>     2022-04-28: Added macro for sibling controls.
+>     2022-09-20: Added delimiter `;' after comments.
+>     2022-10-31: Changed naming convention for samples (b/l/a/s/la/ls/as/las).
+>     2023-05-31: Added distance control macros.
+>     2024-08-22: Added predicted ELA score spec controls (`scrhat' variants).
+> 
+> REFERENCES
+>     Plan v3 §3.3 step 1 (helpers/macros)
+>     ADRs:    0009 (v1 prior-score canonical), 0017 (Matt's files untouched —
+>              $vaprojdir paths are LEGACY-static reads), 0021 (description
+>              convention; sandbox-write rule; path-globals-only amendment)
+>     Audit:   chunk-2 (file structure verification); chunk-3 (control
+>              specifications cross-checked against paper Tables 2-3)
+>     MEMORY:  [LEARN:stata] 2026-04-30 ($projdir explicit-rename pattern)
+> ------------------------------------------------------------------------------*/
+. 
+. 
+. /* CHANGE LOG
+> 4/28/2022: Added macro for sibling controls
+> 09/20/2022: Added delimiter : after comments
+> 10/31/2022: Changed naming convention for samples
+> b - base
+> l - loscore
+> a - acs
+> s - sibling
+> la - loscore and acs
+> ls - loscore and sibling
+> as - acs and sibling
+> las - loscore, acs and sibling
+> 
+> 05/31/2023: added distance control macros
+> 
+> 08/22/2024: added predicted ELA score spec controls
+> */
+. 
+. #delimit ;
+delimiter now ;
+. *** file paths ;
+. local home $vaprojdir ;
+
+. local vaprojdofiles "$vaprojdir/do_files"
+> local ca_ed_lab "/home/research/ca_ed_lab" ;
+
+. local k12_test_scores "$vaprojdir/data/restricted_access/clean/k12_test_scores" ;
+
+. local public_access "$vaprojdir/data/public_access" ;
+
+. local k12_public_schools "$vaprojdir/data/public_access/clean/k12_public_schools" ;
+
+. local k12_test_scores_public "$vaprojdir/data/public_access/clean/k12_test_scores" ;
+
+. local siblingxwalk "$caschls_projdir/dta/siblingxwalk/siblingpairxwalk";
+
+. local ufamilyxwalk "$caschls_projdir/dta/siblingxwalk/ufamilyxwalk";
+
+. local sibling_out_xwalk "$datadir_clean/siblingxwalk/sibling_out_xwalk";
+
+. **** Dates ;
+. local test_score_min_year
+>         2015
+>         ;
+
+. local test_score_max_year
+>         2018
+>         ;
+
+. local star_min_year
+>         2003
+>         ;
+
+. local star_max_year
+>         2013
+>         ;
+
+. local caaspp_min_year
+>         2015
+>         ;
+
+. local caaspp_max_year
+>         2019
+>         ;
+
+. local outcome_min_year
+>         2015
+>         ;
+
+. local outcome_max_year
+>         2018
+>         ;
+
+. **** Outcome Strings ;
+. local ela_str
+>         "ELA"
+>         ;
+
+. local math_str
+>         "Math"
+>         ;
+
+. local enr_str
+>         "Overall Enrollment"
+>         ;
+
+. local enr_2year_str
+>         "2-Year Enrollment"
+>         ;
+
+. local enr_4year_str
+>         "4-Year Enrollment"
+>         ;
+
+. **** Sibling Census Restricted Sample Controls Strings ;
+. local og_str
+>         "Original Specification"
+>         ;
+
+. local acs_str
+>         "Original + Census"
+>         ;
+
+. local sib_str
+>         "Original + Sibling"
+>         ;
+
+. local both_str
+>         "Original + Census + Sibling"
+>         ;
+
+. **** Value Added ;
+. local school_controls
+>         /*cohort_size*/
+>         ;
+
+. local demographic_controls
+>         age
+>         i.male
+>         i.eth_asian i.eth_hispanic i.eth_black i.eth_other
+>         i.econ_disadvantage
+>         i.limited_eng_prof
+>         i.disabled
+>         ;
+
+. local ela_score_controls
+>         i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
+>         ;
+
+. // controls using predicted lag 1 ELA scores
+> local ela_scrhat_controls
+>         i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
+>         ;
+
+. local math_score_controls
+>         i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score)
+>         ;
+
+. local peer_ela_score_controls
+>         i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
+>         ;
+
+. local peer_math_score_controls
+>         i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score)
+>         ;
+
+. local peer_demographic_controls
+>         peer_age
+>         peer_male
+>         peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other
+>         peer_econ_disadvantage
+>         peer_limited_eng_prof
+>         peer_disabled
+>         ;
+
+. local va_control_vars "`school_controls' `demographic_controls'" ;
+
+. local va_control_vars : subinstr local va_control_vars "i." "", all ;
+
+. local va_control_vars : list uniq va_control_vars ;
+
+. local census_grade
+>         6
+>         ;
+
+. local census_controls
+>         /*eth_white_pct*/ eth_asian_pct eth_hispanic_pct eth_black_pct /*eth_other_pct*/
+>         educ_hs_dropout_prop /*educ_deg_2year_prop*/ educ_deg_4year_plus_prop
+>         pov_fam_child_lt18_pct
+>         inc_median_hh
+>         ;
+
+. local peer_census_controls
+>         peer_eth_asian_pct  peer_eth_hispanic_pct  peer_eth_black_pct
+>         peer_educ_hs_dropout_prop  peer_educ_deg_4year_plus_prop
+>         peer_pov_fam_child_lt18_pct      peer_inc_median_hh
+>         ;
+
+. local sibling_controls
+>         i.has_older_sibling_enr_2year
+>         i.has_older_sibling_enr_4year
+>         ;
+
+. local peer_sibling_controls
+>         peer_has_older_sibling_enr_2year
+>         peer_has_older_sibling_enr_4year
+>         ;
+
+. // lag 1 older sibling controls ;
+> local sib_lag1_controls
+>         old1_sib_enr_2year
+>         old1_sib_enr_4year
+>         ;
+
+. // lag 2 older sibling controls ;
+> local sib_lag2_controls
+>         old2_sib_enr_2year
+>         old2_sib_enr_4year
+>         ;
+
+. // postsecondary distance controls
+> local d_controls
+>         mindist_any_nonprof_4yr
+>         mindist_ccc
+>         ;
+
+. **********************************************  ;
+. *** macros for STANDALONE control vars for running loops over all samples and specifications ;
+. //base specification controls ;
+> local b_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. //peer base controls ;
+> local peer_b_controls
+>         `peer_ela_score_controls'
+>         `peer_math_score_controls'
+>         `peer_demographic_controls'
+>         ;
+
+. // leave out score controls ;
+> local l_controls
+>         loscore
+>         ;
+
+. // peer leave out score controls ;
+> local peer_l_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         ;
+
+. local a_controls
+>         `census_controls'
+>         ;
+
+. local peer_a_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         ;
+
+. local s_controls
+>         `sibling_controls'
+>         ;
+
+. local peer_s_controls
+>         `peer_b_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. // control var groups for looping ;
+> local la_controls
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local peer_la_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         ;
+
+. local ls_controls
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local peer_ls_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_sibling_controls'
+>         ;
+
+. local as_controls
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_as_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. local las_controls
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_las_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. foreach control in b l a s la ls as las {;
+  2.         local `control'd_controls
+>                 ``control'_controls' `d_controls'
+>                 ;
+  3.         local peer_`control'd_controls
+>                 `peer_`control'_controls'
+>                 ;
+  4.         }
+>         ;
+
+. *** macros for control var COMBINATIONS for running loops over all samples and specifications ;
+. //base specification controls ;
+> local b_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. // predicted score spec controls
+> local b_scrhat_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_scrhat_controls'
+>         `math_score_controls'
+>         ;
+
+. local bd_spec_controls
+>         `b_spec_controls'
+>         `d_controls'
+>         ;
+
+. local bd_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // leave out prior score controls ;
+> local l_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local l_scrhat_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local ld_spec_controls
+>         `l_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ld_scrhat_spec_controls
+>         `l_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // ACS
+> local a_spec_controls
+>         `b_spec_controls'
+>         `census_controls'
+>         ;
+
+. local a_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `census_controls'
+>         ;
+
+. local ad_spec_controls
+>         `a_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ad_scrhat_spec_controls
+>         `a_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // sibling
+> local s_spec_controls
+>         `b_spec_controls'
+>         `s_controls'
+>         ;
+
+. local s_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `s_controls'
+>         ;
+
+. local sd_spec_controls
+>         `s_spec_controls'
+>         `d_controls'
+>         ;
+
+. local sd_scrhat_spec_controls
+>         `s_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // loscores and acs
+> local la_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local la_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local lad_spec_controls
+>         `la_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lad_scrhat_spec_controls
+>         `la_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ls_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local ls_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local lsd_spec_controls
+>         `ls_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lsd_scrhat_spec_controls
+>         `ls_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local as_spec_controls
+>         `b_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local as_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local asd_spec_controls
+>         `as_spec_controls'
+>         `d_controls'
+>         ;
+
+. local asd_scrhat_spec_controls
+>         `as_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local las_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local las_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local lasd_spec_controls
+>         `las_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lasd_scrhat_spec_controls
+>         `las_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // strings for all sample and control combinations ;
+> 
+> local b_str
+>         "base"
+>         ;
+
+. local bd_str
+>         `b_str'
+>         ;
+
+. local l_str
+>         "leave out score"
+>         ;
+
+. local ld_str
+>         `l_str'
+>         ;
+
+. local a_str
+>         "ACS"
+>         ;
+
+. local ad_str
+>         `a_str'
+>         ;
+
+. local s_str
+>         "sibling"
+>         ;
+
+. local sd_str
+>         `s_str'
+>         ;
+
+. local la_str
+>         "leave out score & ACS"
+>         ;
+
+. local lad_str
+>         `la_str'
+>         ;
+
+. local ls_str
+>         "leave out score & sibling"
+>         ;
+
+. local lsd_str
+>         `ls_str'
+>         ;
+
+. local as_str
+>         "ACS & sibling"
+>         ;
+
+. local asd_str
+>         `as_str'
+>         ;
+
+. local las_str
+>         "leave out score & ACS & sibling"
+>         ;
+
+. local lasd_str
+>         `las_str'
+>         ;
+
+. local d_str
+>         "postsecondary distance"
+>         ;
+
+. // strings for heterogeneity in persistence vars ;
+> local race_str
+>         "Race"
+>         ;
+
+. local male_str "Male";
+
+. local econ_disadvantage_str "Economically Disadvantaged";
+
+. local prop_ecn_disadv_str "Proportion Economically Disadvantaged" ;
+
+. local charter_str "Charter Status" ;
+
+. local inc_median_hh_xtile_str "Census Tract Median Household Income Decile";
+
+. local enr_black_hisp_prop_str "Proportion of Black and Hispanic Enrollment";
+
+. **** School Characteristics ;
+. local sch_chars
+>         fte_teach_pc fte_pupil_pc /*fte_admin_pc*/
+>         /*eng_learner_staff_pc*/
+>         new_teacher_prop
+>         /*educ_grad_sch_prop educ_associate_prop*/
+>         /*status_tenured_prop*/
+>         credential_full_prop
+>         /*authorization_stem_prop authorization_ela_prop*/
+>         c.male_prop##c.enr_male_prop
+>         c.eth_minority_prop##c.enr_minority_prop
+>         enr_total
+>         ;
+
+. local sch_char_vars "`sch_chars'" ;
+
+. local sch_char_vars : subinstr local sch_char_vars "i." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "c." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "##" " ", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "#" " ", all ;
+
+. local sch_char_vars : list uniq sch_char_vars ;
+
+. local dem_chars
+>         enr_male_prop
+>         enr_minority_prop
+>         frpm_prop el_prop
+>         enr_total
+>         ;
+
+. local dem_char_vars "`dem_chars'" ;
+
+. local dem_char_vars : list uniq dem_char_vars ;
+
+. local expenditures
+>         expenditures_instr_pc
+>         expenditures3000_pc
+>         expenditures4000_pc
+>         expenditures_other_pc
+>         expenditures7000_pc
+>         ;
+
+. local expenditure_vars "`expenditures'" ;
+
+. local expenditure_vars : list uniq expenditure_vars ;
+
+. local sch_char_control_vars : list sch_char_vars | dem_char_vars ;
+
+. local sch_char_control_vars : list sch_char_control_vars | expenditure_vars ;
+
+. #delimit cr
+delimiter now cr
+. 
+. include $consolidated_dir/do/va/helpers/drift_limit.doh
+
+. /*------------------------------------------------------------------------------
+> do/va/helpers/drift_limit.doh — drift-limit constants for VA estimation
+> ================================================================================
+> 
+> PURPOSE
+>     Define `score_drift_limit' and `out_drift_limit' locals consumed by the
+>     `vam' ado package for the score-VA and outcome-VA estimation loops.
+> 
+> INCLUDED FROM
+>     Phase 3 VA estimation scripts under `do/va/' (e.g., va_score_all.do,
+>     va_out_all.do, once relocated per plan v3 §3.3 step 3).  Must follow
+>     `include do/va/helpers/macros_va.doh' since drift-limit definitions
+>     depend on `test_score_min_year' / `_max_year' and `outcome_min_year' /
+>     `_max_year' defined in macros_va.doh L35-65.
+> 
+> ROLE IN ADR-0021 SANDBOX
+>     Pure local definitions; no reads, no writes; sandbox-trivially clean.
+>     No `$global' references, so no LEGACY-include macro-trace concerns.
+> 
+> RELOCATION HISTORY (per ADR-0005 + ADR-0021, applied 2026-04-30)
+>     Source:      cde_va_project_fork/do_files/sbac/drift_limit.doh
+>     Destination: do/va/helpers/drift_limit.doh
+>     Path repointing: none (no `$global' references).
+>     Analysis logic preserved verbatim.
+>     Predecessor caller-update protocol: predecessor callers untouched in
+>     this commit per plan v3 §3.3 step 5 parenthetical (wholesale predecessor
+>     retirement at Phase 1a §3.5 golden-master).
+> 
+> REFERENCES
+>     Plan v3 §3.3 step 1 (helpers/macros)
+>     ADR-0021 (description convention; sandbox role above)
+> ------------------------------------------------------------------------------*/
+. 
+. /* set drift limit for test score VA */
+. local score_drift_limit = max(`test_score_max_year' - `test_score_min_year' - 1, 1)
+
+. /* set drift limit outcome VA */
+. local out_drift_limit = max(`outcome_max_year' - `outcome_min_year' - 1, 1)
+
+. 
+. 
+. // start with the base sample without dropping observations
+. use $vaprojdir/data/va_samples_v1/base_nodrop.dta, clear
+(CST/SBAC Student Test Score Samples)
+
+. 
+. // merge leave out scores
+. merge 1:1 merge_id_k12_test_scores using ///
+>   `k12_test_scores'/k12_lag_test_scores_clean.dta, nogen keep(1 3) ///
+>   keepusing(L4_cst_ela_z_score L5_cst_ela_z_score) update
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+
+    Matched                         2,112,923
+        not updated                 2,112,923  
+        missing updated                     0  
+        nonmissing conflict                 0  
+    -----------------------------------------
+
+. // create a leave out score variable
+. gen loscore =.
+(2,112,923 missing values generated)
+
+. replace loscore = L4_cst_ela_z_score if year == 2015 | year == 2016
+(782,544 real changes made)
+
+. replace loscore = L5_cst_ela_z_score if year == 2017 | year == 2018
+(752,219 real changes made)
+
+. // dummy for missing prior leave out scores
+. gen byte mi_loscore = (mi(loscore))
+
+. 
+. // merge sibling controls
+. merge m:1 state_student_id using `sibling_out_xwalk', nogen keep(1 3)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                     1,060,159
+        from master                 1,060,159  
+        from using                          0  
+
+    Matched                         1,052,764  
+    -----------------------------------------
+
+. 
+. // dummy for missing sibling controls
+. gen byte mi_sib = (mi(has_older_sibling_enr_2year) | mi(has_older_sibling_enr_4year))
+
+. replace mi_sib=1 if sibling_out_sample==0
+(32,860 real changes made)
+
+. 
+. tempfile va_sample
+
+. save `va_sample'
+file /home/tmp/St29294.000001 saved as .dta format
+
+. 
+. // merge ACS sample to use the census control sample indicator
+. // first, load ACS sample and keep only one observation per student
+. use $vaprojdir/data/va_samples_v1/score_a.dta, clear
+(Test Score VA Sample with ACS Controls)
+
+. duplicates drop state_student_id, force
+
+Duplicates in terms of state_student_id
+
+(84,625 observations deleted)
+
+. tempfile va_acs
+
+. save `va_acs'
+file /home/tmp/St29294.000002 saved as .dta format
+
+. 
+. use `va_sample', clear
+(CST/SBAC Student Test Score Samples)
+
+. merge m:1 state_student_id using `va_acs', nogen keepusing(census_controls_sample)
+(label _merge already defined)
+(label male already defined)
+(label econ_disadvantage already defined)
+(label disabled already defined)
+(label limited_eng_prof already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                     1,288,578
+        from master                 1,288,578  
+        from using                          0  
+
+    Matched                           824,345  
+    -----------------------------------------
+
+. // dummy for missing ACS controls
+. gen byte mi_acs = 0
+
+. replace mi_acs = 1 if census_controls_sample!=1
+(1,288,578 real changes made)
+
+. 
+. 
+. 
+. //------------------------------------------------------------------------------
+. // estimate the sample counts and save estimate files
+. //------------------------------------------------------------------------------
+. 
+. foreach subject in ela math {
+  2. 
+.   //--------------------------------------------------------
+.   // sample counts
+.   //--------------------------------------------------------
+. 
+.   // line 1: all students
+.   estpost tabstat count_var ///
+>     if grade==11 ///
+>     & all_students_sample==1 ///
+>     , stat(n) columns(statistics)
+  3.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_all_g11_`subject'.ster, replace
+  4. 
+.   tab year ///
+>         if grade==11 ///
+>         & all_students_sample==1
+  5. 
+.   // line 2: traditional 9-12 schools filtered by diff_school_prop
+.   estpost tabstat ///
+>         count_var ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & all_students_sample==1 ///
+>         , stat(n) columns(statistics)
+  6.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_if_school_level_g11_`subject'.ster, replace
+  7. 
+. 
+.   tab year ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & all_students_sample==1
+  8. 
+. 
+.   // line 3: first scores sample
+.   estpost tabstat ///
+>         count_var ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         , stat(n) columns(statistics)
+  9.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_first_scores_g11_`subject'.ster, replace
+ 10. 
+.   tab year ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1
+ 11. 
+.   // line 4: conventional school
+.   estpost tabstat ///
+>         count_var ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         , stat(n) columns(statistics)
+ 12.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_conventional_school_g11_`subject'.ster, replace
+ 13. 
+.   tab year ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1
+ 14. 
+.   // line 5: 11th grader per school > 10
+.   estpost tabstat ///
+>         count_var ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         , stat(n) columns(statistics)
+ 15.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_cohort_size_g11_`subject'.ster, replace
+ 16. 
+.   tab year ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size))
+ 17. 
+.   // line 6: nonmissing subject test score
+.   estpost tabstat ///
+>         count_var ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         , stat(n) columns(statistics)
+ 18.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_cst_z_score_g11_`subject'.ster, replace
+ 19. 
+.   tab year ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0
+ 20. 
+.   // line 7: nonmissing demographic controls
+.   estpost tabstat ///
+>         count_var ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         , stat(n) columns(statistics)
+ 21.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_demographic_controls_g11_`subject'.ster, replace
+ 22. 
+.   tab year ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0
+ 23. 
+. 
+.   // line 8: nonmissing prior test scores
+.   estpost tabstat ///
+>         count_var ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         & mi_prior_ela_z_score==0 ///
+>         & mi_prior_math_z_score==0 ///
+>         , stat(n) columns(statistics)
+ 24.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_prior_cst_z_score_g11_`subject'.ster, replace
+ 25. 
+.   tab year ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         & mi_prior_ela_z_score==0 ///
+>         & mi_prior_math_z_score==0
+ 26. 
+.   // line 9: school VA sample size >= 7
+.   /* note: after restricting samples further there will be schools size < 7 */
+.   estpost tabstat ///
+>         count_var ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         & mi_prior_ela_z_score==0 ///
+>         & mi_prior_math_z_score==0 ///
+>         & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>         & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>         , stat(n) columns(statistics)
+ 27.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_valid_cohort_size_g11_`subject'.ster, replace
+ 28. 
+.   tab year ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         & mi_prior_ela_z_score==0 ///
+>         & mi_prior_math_z_score==0 ///
+>         & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>         & (n_g11_`subject'>=7 & !mi(n_g11_`subject'))
+ 29. 
+.   // line 10: leave out score sample
+.   estpost tabstat ///
+>     count_var ///
+>     if grade==11 ///
+>     & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>     & first_scores_sample==1 ///
+>     & mi_ssid_grade_year_school==0 ///
+>     & conventional_school==1 ///
+>     & (cohort_size>10 & !mi(cohort_size)) ///
+>     & mi_sbac_`subject'_z_score==0 ///
+>     & mi_demographic_controls==0 ///
+>     & mi_prior_ela_z_score==0 ///
+>     & mi_prior_math_z_score==0 ///
+>     & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>     & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>     & mi_loscore==0 ///
+>     , stat(n) columns(statistics)
+ 30.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_loscore_g11_`subject'.ster, replace
+ 31. 
+.   tab year ///
+>     if grade==11 ///
+>     & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>     & first_scores_sample==1 ///
+>     & mi_ssid_grade_year_school==0 ///
+>     & conventional_school==1 ///
+>     & (cohort_size>10 & !mi(cohort_size)) ///
+>     & mi_sbac_`subject'_z_score==0 ///
+>     & mi_demographic_controls==0 ///
+>     & mi_prior_ela_z_score==0 ///
+>     & mi_prior_math_z_score==0 ///
+>     & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>     & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>     & mi_loscore==0
+ 32. 
+.   // line 11: leave out score and sibling sample
+.   estpost tabstat ///
+>     count_var ///
+>     if grade==11 ///
+>     & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>     & first_scores_sample==1 ///
+>     & mi_ssid_grade_year_school==0 ///
+>     & conventional_school==1 ///
+>     & (cohort_size>10 & !mi(cohort_size)) ///
+>     & mi_sbac_`subject'_z_score==0 ///
+>     & mi_demographic_controls==0 ///
+>     & mi_prior_ela_z_score==0 ///
+>     & mi_prior_math_z_score==0 ///
+>     & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>     & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>     & mi_loscore==0 ///
+>     & mi_sib==0 ///
+>     , stat(n) columns(statistics)
+ 33.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_loscore_sib_g11_`subject'.ster, replace
+ 34. 
+. 
+.   tab year ///
+>     if grade==11 ///
+>     & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>     & first_scores_sample==1 ///
+>     & mi_ssid_grade_year_school==0 ///
+>     & conventional_school==1 ///
+>     & (cohort_size>10 & !mi(cohort_size)) ///
+>     & mi_sbac_`subject'_z_score==0 ///
+>     & mi_demographic_controls==0 ///
+>     & mi_prior_ela_z_score==0 ///
+>     & mi_prior_math_z_score==0 ///
+>     & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>     & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>     & mi_loscore==0 ///
+>     & mi_sib==0
+ 35. 
+.     // line 12: leave out score and sibling and ACS sample
+.     estpost tabstat ///
+>       count_var ///
+>       if grade==11 ///
+>       & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>       & first_scores_sample==1 ///
+>       & mi_ssid_grade_year_school==0 ///
+>       & conventional_school==1 ///
+>       & (cohort_size>10 & !mi(cohort_size)) ///
+>       & mi_sbac_`subject'_z_score==0 ///
+>       & mi_demographic_controls==0 ///
+>       & mi_prior_ela_z_score==0 ///
+>       & mi_prior_math_z_score==0 ///
+>       & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>       & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>       & mi_loscore==0 ///
+>       & mi_sib==0 ///
+>       & mi_acs==0 ///
+>       , stat(n) columns(statistics)
+ 36.     estimates save $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_loscore_sib_acs_g11_`subject'.ster, replace
+ 37. 
+. 
+.     tab year ///
+>       if grade==11 ///
+>       & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>       & first_scores_sample==1 ///
+>       & mi_ssid_grade_year_school==0 ///
+>       & conventional_school==1 ///
+>       & (cohort_size>10 & !mi(cohort_size)) ///
+>       & mi_sbac_`subject'_z_score==0 ///
+>       & mi_demographic_controls==0 ///
+>       & mi_prior_ela_z_score==0 ///
+>       & mi_prior_math_z_score==0 ///
+>       & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>       & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>       & mi_loscore==0 ///
+>       & mi_sib==0 ///
+>       & mi_acs==0
+ 38. 
+.   //--------------------------------------------------------
+.   // z scores
+.   //--------------------------------------------------------
+.   // line 1: all students
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & all_students_sample==1 ///
+>         , stat(mean sd) columns(statistics)
+ 39.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_all_g11_`subject'.ster, replace
+ 40. 
+. 
+.   // line 2: traditional 9-12 schools filtered by diff_school_prop
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & all_students_sample==1 ///
+>         , stat(mean sd) columns(statistics)
+ 41.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_if_school_level_g11_`subject'.ster, replace
+ 42. 
+.   // line 3: first scores sample
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         , stat(mean sd) columns(statistics)
+ 43.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_first_scores_g11_`subject'.ster, replace
+ 44. 
+.   // line 4: conventional schools
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         , stat(mean sd) columns(statistics)
+ 45.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_conventional_school_g11_`subject'.ster, replace
+ 46. 
+. 
+.   // line 5: 11th grader per school >10
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         , stat(mean sd) columns(statistics)
+ 47.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_cohort_size_g11_`subject'.ster, replace
+ 48. 
+. 
+.   // line 6: nonmissing subject test score
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         , stat(mean sd) columns(statistics)
+ 49.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_cst_z_score_g11_`subject'.ster, replace
+ 50. 
+.   // line 7: nonmissing demographic controls
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         , stat(mean sd) columns(statistics)
+ 51.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_demographic_controls_g11_`subject'.ster, replac
+> e
+ 52. 
+.   // line 8: nonmissing prior test scores
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         & mi_prior_ela_z_score==0 ///
+>         & mi_prior_math_z_score==0 ///
+>         , stat(mean sd) columns(statistics)
+ 53.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_prior_cst_z_score_g11_`subject'.ster, replace
+ 54. 
+. 
+.   // line 9: school va sample size >= 7
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         & mi_prior_ela_z_score==0 ///
+>         & mi_prior_math_z_score==0 ///
+>         & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>         & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>         , stat(mean sd) columns(statistics)
+ 55.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_valid_cohort_size_g11_`subject'.ster, replace
+ 56. 
+. 
+.   // line 10: leave out scores sample
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         & mi_prior_ela_z_score==0 ///
+>         & mi_prior_math_z_score==0 ///
+>         & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>         & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>     & mi_loscore==0 ///
+>         , stat(mean sd) columns(statistics)
+ 57.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_loscore_g11_`subject'.ster, replace
+ 58. 
+. 
+.   // line 11: leave out scores + sibling sample
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         & mi_prior_ela_z_score==0 ///
+>         & mi_prior_math_z_score==0 ///
+>         & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>         & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>     & mi_loscore==0 ///
+>     & mi_sib==0 ///
+>         , stat(mean sd) columns(statistics)
+ 59.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_loscore_sib_g11_`subject'.ster, replace
+ 60. 
+.   // line 12: leave out scores + sibling + ACS sample
+.   estpost tabstat ///
+>         sbac_`subject'_z_score ///
+>         if grade==11 ///
+>         & (diff_school_prop>=0.95 & !mi(diff_school_prop)) ///
+>         & first_scores_sample==1 ///
+>         & mi_ssid_grade_year_school==0 ///
+>         & conventional_school==1 ///
+>         & (cohort_size>10 & !mi(cohort_size)) ///
+>         & mi_sbac_`subject'_z_score==0 ///
+>         & mi_demographic_controls==0 ///
+>         & mi_prior_ela_z_score==0 ///
+>         & mi_prior_math_z_score==0 ///
+>         & mi_peer_demographic_controls==0 & mi_peer_prior_ela_z_score==0 & mi_peer_prior_math_z_score==0 ///
+>         & (n_g11_`subject'>=7 & !mi(n_g11_`subject')) ///
+>     & mi_loscore==0 ///
+>     & mi_sib==0 ///
+>     & mi_acs==0 ///
+>         , stat(mean sd) columns(statistics)
+ 61.   estimates save $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_loscore_sib_acs_g11_`subject'.ster, replace
+ 62. 
+. }
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1913221 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_all_g11_
+> ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    479,424       25.06       25.06
+       2016 |    487,772       25.49       50.55
+       2017 |    479,182       25.05       75.60
+       2018 |    466,843       24.40      100.00
+------------+-----------------------------------
+      Total |  1,913,221      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1790429 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_if_schoo
+> l_level_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    447,952       25.02       25.02
+       2016 |    452,178       25.26       50.27
+       2017 |    454,623       25.39       75.67
+       2018 |    435,676       24.33      100.00
+------------+-----------------------------------
+      Total |  1,790,429      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1752542 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_first_sc
+> ores_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    443,709       25.32       25.32
+       2016 |    438,054       25.00       50.31
+       2017 |    444,267       25.35       75.66
+       2018 |    426,512       24.34      100.00
+------------+-----------------------------------
+      Total |  1,752,542      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1586766 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_conventi
+> onal_school_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    399,809       25.20       25.20
+       2016 |    395,447       24.92       50.12
+       2017 |    402,691       25.38       75.50
+       2018 |    388,819       24.50      100.00
+------------+-----------------------------------
+      Total |  1,586,766      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1585957 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_cohort_s
+> ize_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    399,631       25.20       25.20
+       2016 |    395,307       24.93       50.12
+       2017 |    402,458       25.38       75.50
+       2018 |    388,561       24.50      100.00
+------------+-----------------------------------
+      Total |  1,585,957      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1494208 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_cst_z_sc
+> ore_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    364,518       24.40       24.40
+       2016 |    372,981       24.96       49.36
+       2017 |    385,079       25.77       75.13
+       2018 |    371,630       24.87      100.00
+------------+-----------------------------------
+      Total |  1,494,208      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1486580 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_demograp
+> hic_controls_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    363,282       24.44       24.44
+       2016 |    371,542       24.99       49.43
+       2017 |    382,766       25.75       75.18
+       2018 |    368,990       24.82      100.00
+------------+-----------------------------------
+      Total |  1,486,580      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1232514 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_prior_cs
+> t_z_score_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    294,284       23.88       23.88
+       2016 |    299,768       24.32       48.20
+       2017 |    309,806       25.14       73.33
+       2018 |    328,656       26.67      100.00
+------------+-----------------------------------
+      Total |  1,232,514      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1232262 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_valid_co
+> hort_size_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    294,215       23.88       23.88
+       2016 |    299,721       24.32       48.20
+       2017 |    309,731       25.14       73.33
+       2018 |    328,595       26.67      100.00
+------------+-----------------------------------
+      Total |  1,232,262      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1190916 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_loscore_
+> g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    290,920       24.43       24.43
+       2016 |    296,773       24.92       49.35
+       2017 |    308,864       25.93       75.28
+       2018 |    294,359       24.72      100.00
+------------+-----------------------------------
+      Total |  1,190,916      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |    662094 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_loscore_
+> sib_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    173,075       26.14       26.14
+       2016 |    170,062       25.69       51.83
+       2017 |    166,988       25.22       77.05
+       2018 |    151,969       22.95      100.00
+------------+-----------------------------------
+      Total |    662,094      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |    410947 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_loscore_
+> sib_acs_g11_ela.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    105,579       25.69       25.69
+       2016 |    106,186       25.84       51.53
+       2017 |    104,961       25.54       77.07
+       2018 |     94,221       22.93      100.00
+------------+-----------------------------------
+      Total |    410,947      100.00
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  6.70e-07   .9999991 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_all_g11
+> _ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  .0030527   .9996462 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_if_scho
+> ol_level_g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |   .006776   .9985316 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_first_s
+> cores_g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  .0811785   .9675758 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_convent
+> ional_school_g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  .0813154   .9675474 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_cohort_
+> size_g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  .0813154   .9675474 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_cst_z_s
+> core_g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  .0816707   .9673186 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_demogra
+> phic_controls_g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  .1744619   .9097829 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_prior_c
+> st_z_score_g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |   .174604   .9097098 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_valid_c
+> ohort_size_g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  .2013318   .8935797 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_loscore
+> _g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  .2594429   .8857483 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_loscore
+> _sib_g11_ela.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_ela_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_ela_z~e |  .2908591   .8811344 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_loscore
+> _sib_acs_g11_ela.ster saved
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1913221 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_all_g11_
+> math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    479,424       25.06       25.06
+       2016 |    487,772       25.49       50.55
+       2017 |    479,182       25.05       75.60
+       2018 |    466,843       24.40      100.00
+------------+-----------------------------------
+      Total |  1,913,221      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1790429 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_if_schoo
+> l_level_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    447,952       25.02       25.02
+       2016 |    452,178       25.26       50.27
+       2017 |    454,623       25.39       75.67
+       2018 |    435,676       24.33      100.00
+------------+-----------------------------------
+      Total |  1,790,429      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1752542 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_first_sc
+> ores_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    443,709       25.32       25.32
+       2016 |    438,054       25.00       50.31
+       2017 |    444,267       25.35       75.66
+       2018 |    426,512       24.34      100.00
+------------+-----------------------------------
+      Total |  1,752,542      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1586766 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_conventi
+> onal_school_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    399,809       25.20       25.20
+       2016 |    395,447       24.92       50.12
+       2017 |    402,691       25.38       75.50
+       2018 |    388,819       24.50      100.00
+------------+-----------------------------------
+      Total |  1,586,766      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1585957 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_cohort_s
+> ize_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    399,631       25.20       25.20
+       2016 |    395,307       24.93       50.12
+       2017 |    402,458       25.38       75.50
+       2018 |    388,561       24.50      100.00
+------------+-----------------------------------
+      Total |  1,585,957      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1490647 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_cst_z_sc
+> ore_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    363,314       24.37       24.37
+       2016 |    372,019       24.96       49.33
+       2017 |    384,227       25.78       75.11
+       2018 |    371,087       24.89      100.00
+------------+-----------------------------------
+      Total |  1,490,647      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1482922 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_demograp
+> hic_controls_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    362,069       24.42       24.42
+       2016 |    370,549       24.99       49.40
+       2017 |    381,863       25.75       75.15
+       2018 |    368,441       24.85      100.00
+------------+-----------------------------------
+      Total |  1,482,922      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1227174 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_prior_cs
+> t_z_score_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    292,848       23.86       23.86
+       2016 |    298,479       24.32       48.19
+       2017 |    308,343       25.13       73.31
+       2018 |    327,504       26.69      100.00
+------------+-----------------------------------
+      Total |  1,227,174      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1226915 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_valid_co
+> hort_size_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    292,786       23.86       23.86
+       2016 |    298,423       24.32       48.19
+       2017 |    308,260       25.12       73.31
+       2018 |    327,446       26.69      100.00
+------------+-----------------------------------
+      Total |  1,226,915      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |   1185842 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_loscore_
+> g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    289,525       24.42       24.42
+       2016 |    295,506       24.92       49.33
+       2017 |    307,406       25.92       75.26
+       2018 |    293,405       24.74      100.00
+------------+-----------------------------------
+      Total |  1,185,842      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |    659398 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_loscore_
+> sib_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    172,218       26.12       26.12
+       2016 |    169,349       25.68       51.80
+       2017 |    166,295       25.22       77.02
+       2018 |    151,536       22.98      100.00
+------------+-----------------------------------
+      Total |    659,398      100.00
+
+Summary statistics: count
+     for variables: count_var
+
+             |  e(count) 
+-------------+-----------
+   count_var |    409332 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/counts_k12_loscore_
+> sib_acs_g11_math.ster saved
+
+    Year of |
+     Spring |
+   Semester |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2015 |    105,075       25.67       25.67
+       2016 |    105,820       25.85       51.52
+       2017 |    104,552       25.54       77.06
+       2018 |     93,885       22.94      100.00
+------------+-----------------------------------
+      Total |    409,332      100.00
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e | -1.05e-07   .9999991 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_all_g11
+> _math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .0086344   1.001133 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_if_scho
+> ol_level_g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .0122266   1.000468 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_first_s
+> cores_g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .0860391   .9801364 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_convent
+> ional_school_g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .0862238   .9801332 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_cohort_
+> size_g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .0862238   .9801332 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_cst_z_s
+> core_g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .0866124   .9799748 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_demogra
+> phic_controls_g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .1609167   .9436144 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_prior_c
+> st_z_score_g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .1610666   .9435686 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_valid_c
+> ohort_size_g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .1848401   .9327494 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_loscore
+> _g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .2655256   .9357862 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_loscore
+> _sib_g11_math.ster saved
+
+Summary statistics: mean sd
+     for variables: sbac_math_z_score
+
+             |   e(mean)      e(sd) 
+-------------+----------------------
+sbac_math_~e |  .3045201   .9405755 
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/sum_stats/z_score_k12_loscore
+> _sib_acs_g11_math.ster saved
+
+. 
+. 
+. 
+. 
+. 
+. //------------------------------------------------------------------------------
+. // create the sample counts table
+. //------------------------------------------------------------------------------
+. 
+. local save_option "replace"
+
+. 
+. foreach sample in all if_school_level first_scores ///
+>         conventional_school cohort_size ///
+>         cst_z_score demographic_controls prior_cst_z_score ///
+>         valid_cohort_size ///
+>   loscore loscore_sib loscore_sib_acs {
+  2.     di "Sample = `sample'"
+  3.     foreach subject in ela math {
+  4.       di "Subject = `subject'"
+  5. 
+.       estimates use $estimates_dir/va_cfr_all_v1/sum_stats/counts_k12_`sample'_g11_`subject'.ster
+  6.       eststo g11_`subject'_count
+  7.       matrix mat_count_`subject' = e(count)
+  8.       estadd matrix mat_stat = mat_count_`subject'
+  9. 
+.       estimates use $estimates_dir/va_cfr_all_v1/sum_stats/z_score_k12_`sample'_g11_`subject'.ster
+ 10.       eststo g11_`subject'_z_score
+ 11.                 matrix mat_z_score_`subject' = e(mean)
+ 12.       estadd matrix mat_stat = mat_z_score_`subject'
+ 13. 
+.     }
+ 14. 
+. 
+.     local label_all "All Students"
+ 15.     local label_if_school_level "+ 9-12 School"
+ 16.     local label_all_scores "+ Nonmissing Test Score"
+ 17.     local label_first_scores "+ First Test Score for Grade"
+ 18.     local label_ssid_grade_year_school "+ Nonmissing Student ID, Grade, Year, and School"
+ 19.     local label_conventional_school "+ Conventional School"
+ 20.     local label_cohort_size "+ 11th Graders per School $ > $ 10"
+ 21.     local label_cst_z_score "+ Nonmissing Subject Test Score"
+ 22.     local label_demographic_controls "+ Nonmissing Demographic Controls"
+ 23.     local label_prior_cst_z_score "+ Nonmissing Prior Test Scores"
+ 24.     local label_peer "+ Nonmissing Peer Controls"
+ 25.     local label_valid_cohort_size "+ School VA Sample Size $ \geq $ 7"
+ 26.     local label_loscore "+ Leave Out Scores"
+ 27.     local label_loscore_sib "+ Leave Out Scores and Sibling"
+ 28.     local label_loscore_sib_acs "+ Leave Out Scores, Sibling, and ACS"
+ 29. 
+. 
+.     esttab g11_ela_count g11_ela_z_score g11_math_count g11_math_z_score ///
+>       using $tables_dir/share/va/pub/counts_k12.tex ///
+>                 , `save_option' cells(mat_stat(fmt(%12.3gc))) ///
+>                 compress label interaction(\times) booktabs ///
+>                 nonotes ///
+>                 noobs ///
+>                 nomtitles nonumbers nonotes fragment collabels(none) ///
+>                 rename(count_var x sbac_ela_z_score x sbac_math_z_score x) ///
+>                 coeflabel(x "`label_`sample''")
+ 30.         eststo clear
+ 31. 
+.     local save_option "append"
+ 32. 
+.   }
+Sample = all
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = if_school_level
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = first_scores
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = conventional_school
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = cohort_size
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = cst_z_score
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = demographic_controls
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = prior_cst_z_score
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = valid_cohort_size
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = loscore
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = loscore_sib
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+Sample = loscore_sib_acs
+Subject = ela
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+Subject = math
+
+added matrix:
+           e(mat_stat) :  1 x 1
+
+added matrix:
+           e(mat_stat) :  1 x 1
+(output written to /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/counts_k12.tex)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. local date2 = c(current_date)
+
+. local time2 = c(current_time)
+
+. 
+. di "Start date time: `date1' `time1'"
+Start date time:  3 Jun 2026 02:23:41
+
+. di "End date time: `date2' `time2'"
+End date time:  3 Jun 2026 02:25:46
+
+. 
+. cap log close sample_counts_tab

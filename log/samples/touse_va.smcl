@@ -2,7 +2,7 @@
       name:  touse_va
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/samples/touse_va.smcl
   log type:  text
- opened on:  26 May 2026, 23:16:01
+ opened on:   1 Jun 2026, 23:34:47
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "touse_va.do — RUN START: `c(current_date)' `c(current_time)'"
-touse_va.do — RUN START: 26 May 2026 23:16:01
+touse_va.do — RUN START:  1 Jun 2026 23:34:47
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -760,6 +760,8 @@ delimiter now cr
 . macro list
 projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 ReS_jv2:        0 1
+run_prior_score:
+                1
 cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
 clndtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/calschls
 rawcsvdir:      /home/research/ca_ed_lab/data/restricted_access/raw/calschls/csv
@@ -3255,7 +3257,6 @@ end of do-file
   (0 bytes saved)
 
 . save "$datadir_clean/sbac/va_samples.dta", replace
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sbac/va_samples.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/sbac/va_samples.dta saved
 
 . 
@@ -3263,7 +3264,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:   6536.14 /        1 =    6536.1390
+   1:   3275.57 /        1 =    3275.5720
 
 . 
 . cap log close touse_va

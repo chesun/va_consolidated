@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > va/merge_va_est.smcl
   log type:  text
- opened on:  29 May 2026, 09:28:02
+ opened on:   2 Jun 2026, 18:04:48
 
 . 
 .  di as text _n "-------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 .  di as text "merge_va_est.do — RUN START: `c(current_date)' `c(current_time)'
 > "
-merge_va_est.do — RUN START: 29 May 2026 09:28:02
+merge_va_est.do — RUN START:  2 Jun 2026 18:04:48
 
 .  di as text "----------------------------------------------------------------
 ----------------"
@@ -5899,10 +5899,10 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
 . 
 . di "Do file merge_va_est.do start date time: `date1_va_scatter_plot' `time1_v
 > a_scatter_plot'"
-Do file merge_va_est.do start date time: 29 May 2026 09:28:02
+Do file merge_va_est.do start date time:  2 Jun 2026 18:04:48
 
 . di "End date time: `date2_va_scatter_plot' `time2_va_scatter_plot'"
-End date time: 29 May 2026 09:28:06
+End date time:  2 Jun 2026 18:04:51
 
 . 
 . 

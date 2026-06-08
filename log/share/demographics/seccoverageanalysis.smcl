@@ -1,0 +1,765 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  seccoverageanalysis
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/demographics/seccoverageanalysis.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:29:59
+
+. 
+. local years `" "1415" "1516" "1617" "1718" "1819" "' //local macro for elementary dataset years
+
+. 
+. grstyle init  //initializes the grstyle package
+
+. grstyle set plain   //set graph background to plain
+
+. grstyle set color Set1, opacity(50): histogram //use Set1 color palette (red and blue) for histogram bars fill color and set opacity to 50%
+
+. grstyle set color white, opacity(25): histogram_line //set color white and opacity 25% for histogram bar outline color
+
+. 
+. foreach year of local years {
+  2.   use $caschls_projdir/dta/demographics/analysis/secondary/secdemo`year'analysis, clear
+  3.   cap mkdir "$output_dir/graph/svycoverage/seccoverage/sec`year'"
+  4. 
+.   local secgrades `" "6" "7" "8" "9" "10" "11" "12" "' //generate a local macro for grades in the secondary datasets, excluding non traditional students for simplicity
+  5.   foreach i of local secgrades {
+  6.     cap mkdir "$output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'"
+  7.     /* create and export frequency histograms for distribution of response rate in grade i */
+.     histogram svygr`i'resprate, freq
+  8.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/gr`i'resprate.png, replace
+  9. 
+.     /* create and export frequency histograms for distribution of male and female percentage difference between survey sample and enrollment data */
+.     histogram femalegr`i'dif, freq
+ 10.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/femalegr`i'dif.png, replace
+ 11.     histogram malegr`i'dif, freq
+ 12.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/malegr`i'dif.png, replace
+ 13. 
+.     /* create and export frequency histograms for distributions of percentage differences for each ethnicity between survey sample and enrollment data */
+.     histogram hispanicgr`i'dif, freq
+ 14.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/hispanicgr`i'dif.png, replace
+ 15.     histogram nativegr`i'dif, freq
+ 16.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/nativegr`i'dif.png, replace
+ 17.     histogram asiangr`i'dif, freq
+ 18.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/asiangr`i'dif.png, replace
+ 19.     histogram blackgr`i'dif, freq
+ 20.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/blackgr`i'dif.png, replace
+ 21.     histogram pacificgr`i'dif, freq
+ 22.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/pacificgr`i'dif.png, replace
+ 23.     histogram whitegr`i'dif, freq
+ 24.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/whitegr`i'dif.png, replace
+ 25.     histogram mixedgr`i'dif, freq
+ 26.     graph export $output_dir/graph/svycoverage/seccoverage/sec`year'/gr`i'/mixedgr`i'dif.png, replace
+ 27.   }
+ 28. 
+. }
+(Secondary 1415 demographics data with survey coverage analysis variables)
+(bin=23, start=0, width=.07073665)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/gr6resprate.png written in PNG format
+(bin=13, start=-.60309279, width=.12331483)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/femalegr6dif.png written in PNG format
+(bin=13, start=-1, width=.12259615)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/malegr6dif.png written in PNG format
+(bin=13, start=-1, width=.14807692)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/hispanicgr6dif.png written in PNG format
+(bin=13, start=-.25185186, width=.0962963)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/nativegr6dif.png written in PNG format
+(bin=13, start=-.40579709, width=.10813824)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/asiangr6dif.png written in PNG format
+(bin=13, start=-.58095241, width=.12161172)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/blackgr6dif.png written in PNG format
+(bin=13, start=-.03809524, width=.07985348)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/pacificgr6dif.png written in PNG format
+(bin=13, start=-.875, width=.14423077)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/whitegr6dif.png written in PNG format
+(bin=13, start=0, width=.07692308)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr6/mixedgr6dif.png written in PNG format
+(bin=26, start=0, width=.13076923)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/gr7resprate.png written in PNG format
+(bin=26, start=-.58823532, width=.03993213)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/femalegr7dif.png written in PNG format
+(bin=26, start=-.66666663, width=.04826546)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/malegr7dif.png written in PNG format
+(bin=26, start=-.87905604, width=.05304062)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/hispanicgr7dif.png written in PNG format
+(bin=26, start=-.40151513, width=.0356352)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/nativegr7dif.png written in PNG format
+(bin=26, start=-1, width=.05746199)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/asiangr7dif.png written in PNG format
+(bin=26, start=-.47109634, width=.0258114)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/blackgr7dif.png written in PNG format
+(bin=26, start=-.1, width=.01199869)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/pacificgr7dif.png written in PNG format
+(bin=26, start=-.83333331, width=.07051282)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/whitegr7dif.png written in PNG format
+(bin=26, start=0, width=.03846154)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr7/mixedgr7dif.png written in PNG format
+(bin=26, start=0, width=.0678603)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/gr8resprate.png written in PNG format
+(bin=16, start=-1, width=.10661764)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/femalegr8dif.png written in PNG format
+(bin=16, start=-.70588237, width=.10661765)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/malegr8dif.png written in PNG format
+(bin=16, start=-.9967742, width=.12479839)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/hispanicgr8dif.png written in PNG format
+(bin=16, start=-.26363635, width=.07897727)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/nativegr8dif.png written in PNG format
+(bin=16, start=-.59400547, width=.09962534)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/asiangr8dif.png written in PNG format
+(bin=16, start=-.45762712, width=.09110169)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/blackgr8dif.png written in PNG format
+(bin=16, start=-.05652174, width=.06603261)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/pacificgr8dif.png written in PNG format
+(bin=16, start=-1, width=.125)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/whitegr8dif.png written in PNG format
+(bin=16, start=0, width=.0625)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr8/mixedgr8dif.png written in PNG format
+(bin=21, start=0, width=.14285714)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/gr9resprate.png written in PNG format
+(bin=19, start=-1, width=.0877193)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/femalegr9dif.png written in PNG format
+(bin=19, start=-.66666669, width=.0877193)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/malegr9dif.png written in PNG format
+(bin=19, start=-1, width=.0877193)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/hispanicgr9dif.png written in PNG format
+(bin=19, start=-.23453963, width=.06497577)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/nativegr9dif.png written in PNG format
+(bin=19, start=-.14285715, width=.04260652)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/asiangr9dif.png written in PNG format
+(bin=19, start=-.34881359, width=.07099019)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/blackgr9dif.png written in PNG format
+(bin=19, start=-.02222222, width=.00868839)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/pacificgr9dif.png written in PNG format
+(bin=19, start=-.64999998, width=.06929824)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/whitegr9dif.png written in PNG format
+(bin=19, start=0, width=.05263158)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr9/mixedgr9dif.png written in PNG format
+(bin=22, start=0, width=.09090909)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/gr10resprate.png written in PNG format
+(bin=18, start=-.63636363, width=.0766972)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/femalegr10dif.png written in PNG format
+(bin=18, start=-.74418604, width=.0766972)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/malegr10dif.png written in PNG format
+(bin=18, start=-.9375, width=.10336538)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/hispanicgr10dif.png written in PNG format
+(bin=18, start=-.36170211, width=.07565012)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/nativegr10dif.png written in PNG format
+(bin=18, start=-.38297874, width=.07615465)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/asiangr10dif.png written in PNG format
+(bin=18, start=-.42531645, width=.07556448)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/blackgr10dif.png written in PNG format
+(bin=18, start=-.08333334, width=.06018519)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/pacificgr10dif.png written in PNG format
+(bin=18, start=-.77777779, width=.09862479)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/whitegr10dif.png written in PNG format
+(bin=18, start=0, width=.05555556)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr10/mixedgr10dif.png written in PNG format
+(bin=22, start=0, width=.05289256)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/gr11resprate.png written in PNG format
+(bin=19, start=-.73333335, width=.06675541)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/femalegr11dif.png written in PNG format
+(bin=19, start=-.53501946, width=.06675541)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/malegr11dif.png written in PNG format
+(bin=19, start=-.37272727, width=.06600264)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/hispanicgr11dif.png written in PNG format
+(bin=19, start=-.20888355, width=.02766054)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/nativegr11dif.png written in PNG format
+(bin=19, start=-.21379772, width=.0375683)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/asiangr11dif.png written in PNG format
+(bin=19, start=-.44836956, width=.02886156)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/blackgr11dif.png written in PNG format
+(bin=19, start=-.125, width=.05827068)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/pacificgr11dif.png written in PNG format
+(bin=19, start=-.77237356, width=.09328282)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/whitegr11dif.png written in PNG format
+(bin=19, start=0, width=.05263158)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr11/mixedgr11dif.png written in PNG format
+(bin=22, start=0, width=.13636364)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/gr12resprate.png written in PNG format
+(bin=17, start=-.625, width=.07311632)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/femalegr12dif.png written in PNG format
+(bin=17, start=-.6179775, width=.07311632)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/malegr12dif.png written in PNG format
+(bin=17, start=-.79365081, width=.10048735)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/hispanicgr12dif.png written in PNG format
+(bin=17, start=-.17948718, width=.0693816)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/nativegr12dif.png written in PNG format
+(bin=17, start=-.67682928, width=.08674012)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/asiangr12dif.png written in PNG format
+(bin=17, start=-.70454544, width=.09403901)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/blackgr12dif.png written in PNG format
+(bin=17, start=-.05533597, width=.03252676)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/pacificgr12dif.png written in PNG format
+(bin=17, start=-1, width=.11731612)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/whitegr12dif.png written in PNG format
+(bin=17, start=0, width=.05882353)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1415/gr12/mixedgr12dif.png written in PNG format
+(Secondary 1516 demographics data with survey coverage analysis variables)
+(bin=28, start=0, width=.21428571)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/gr6resprate.png written in PNG format
+(bin=15, start=-1, width=.10852713)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/femalegr6dif.png written in PNG format
+(bin=15, start=-.73333335, width=.11555556)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/malegr6dif.png written in PNG format
+(bin=15, start=-.98452014, width=.13230134)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/hispanicgr6dif.png written in PNG format
+(bin=15, start=-1, width=.13333333)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/nativegr6dif.png written in PNG format
+(bin=15, start=-.87878788, width=.12525253)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/asiangr6dif.png written in PNG format
+(bin=15, start=-.39712918, width=.09254134)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/blackgr6dif.png written in PNG format
+(bin=15, start=-.07228915, width=.07148594)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/pacificgr6dif.png written in PNG format
+(bin=15, start=-.78017241, width=.11867816)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/whitegr6dif.png written in PNG format
+(bin=15, start=0, width=.06666667)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr6/mixedgr6dif.png written in PNG format
+(bin=29, start=0, width=.10991379)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/gr7resprate.png written in PNG format
+(bin=29, start=-1, width=.05747127)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/femalegr7dif.png written in PNG format
+(bin=29, start=-.66666663, width=.04233249)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/malegr7dif.png written in PNG format
+(bin=29, start=-1, width=.06130268)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/hispanicgr7dif.png written in PNG format
+(bin=29, start=-.2, width=.04137931)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/nativegr7dif.png written in PNG format
+(bin=29, start=-.13749409, width=.03922393)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/asiangr7dif.png written in PNG format
+(bin=29, start=-.27272728, width=.01767119)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/blackgr7dif.png written in PNG format
+(bin=29, start=-.2, width=.04110564)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/pacificgr7dif.png written in PNG format
+(bin=29, start=-1, width=.06367472)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/whitegr7dif.png written in PNG format
+(bin=29, start=0, width=.03448276)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr7/mixedgr7dif.png written in PNG format
+(bin=30, start=0, width=.06666667)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/gr8resprate.png written in PNG format
+(bin=20, start=-.67500001, width=.065)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/femalegr8dif.png written in PNG format
+(bin=20, start=-.625, width=.065)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/malegr8dif.png written in PNG format
+(bin=20, start=-.9779951, width=.09461799)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/hispanicgr8dif.png written in PNG format
+(bin=20, start=-.60000002, width=.08)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/nativegr8dif.png written in PNG format
+(bin=20, start=-.77955914, width=.08897796)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/asiangr8dif.png written in PNG format
+(bin=20, start=-.38, width=.069)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/blackgr8dif.png written in PNG format
+(bin=20, start=-.11282051, width=.05564103)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/pacificgr8dif.png written in PNG format
+(bin=20, start=-1, width=.09981818)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/whitegr8dif.png written in PNG format
+(bin=20, start=0, width=.05)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr8/mixedgr8dif.png written in PNG format
+(bin=26, start=0, width=.15384615)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/gr9resprate.png written in PNG format
+(bin=23, start=-.8888889, width=.0821256)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/femalegr9dif.png written in PNG format
+(bin=23, start=-1, width=.0821256)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/malegr9dif.png written in PNG format
+(bin=23, start=-.8270548, width=.07822099)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/hispanicgr9dif.png written in PNG format
+(bin=23, start=-.32371792, width=.03581382)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/nativegr9dif.png written in PNG format
+(bin=23, start=-.2, width=.0231579)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/asiangr9dif.png written in PNG format
+(bin=23, start=-.18076921, width=.02090301)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/blackgr9dif.png written in PNG format
+(bin=23, start=-.02053915, width=.04414792)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/pacificgr9dif.png written in PNG format
+(bin=23, start=-.82352942, width=.06290194)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/whitegr9dif.png written in PNG format
+(bin=23, start=0, width=.04347826)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr9/mixedgr9dif.png written in PNG format
+(bin=27, start=0, width=.05555556)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/gr10resprate.png written in PNG format
+(bin=21, start=-.7758621, width=.06789819)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/femalegr10dif.png written in PNG format
+(bin=21, start=-.64999998, width=.06789819)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/malegr10dif.png written in PNG format
+(bin=21, start=-.93356645, width=.08468398)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/hispanicgr10dif.png written in PNG format
+(bin=21, start=-.24999997, width=.05941728)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/nativegr10dif.png written in PNG format
+(bin=21, start=-.65730339, width=.07891921)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/asiangr10dif.png written in PNG format
+(bin=21, start=-.27951807, width=.0604174)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/blackgr10dif.png written in PNG format
+(bin=21, start=-.16666667, width=.05528803)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/pacificgr10dif.png written in PNG format
+(bin=21, start=-.80496454, width=.08562675)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/whitegr10dif.png written in PNG format
+(bin=21, start=0, width=.04761905)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr10/mixedgr10dif.png written in PNG format
+(bin=28, start=0, width=.04795918)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/gr11resprate.png written in PNG format
+(bin=23, start=-.75, width=.05711462)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/femalegr11dif.png written in PNG format
+(bin=23, start=-.56363636, width=.05711462)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/malegr11dif.png written in PNG format
+(bin=23, start=-.83625734, width=.07227584)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/hispanicgr11dif.png written in PNG format
+(bin=23, start=-.27350429, width=.02783352)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/nativegr11dif.png written in PNG format
+(bin=23, start=-.23529412, width=.05243715)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/asiangr11dif.png written in PNG format
+(bin=23, start=-.19642857, width=.01578675)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/blackgr11dif.png written in PNG format
+(bin=23, start=-.03614458, width=.00778268)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/pacificgr11dif.png written in PNG format
+(bin=23, start=-.56521738, width=.05356017)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/whitegr11dif.png written in PNG format
+(bin=23, start=0, width=.04347826)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr11/mixedgr11dif.png written in PNG format
+(bin=28, start=0, width=.07142857)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/gr12resprate.png written in PNG format
+(bin=21, start=-.73809522, width=.0701614)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/femalegr12dif.png written in PNG format
+(bin=21, start=-.7352941, width=.06464363)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/malegr12dif.png written in PNG format
+(bin=21, start=-.86666667, width=.08888889)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/hispanicgr12dif.png written in PNG format
+(bin=21, start=-.42857146, width=.06776981)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/nativegr12dif.png written in PNG format
+(bin=21, start=-.66071427, width=.07765484)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/asiangr12dif.png written in PNG format
+(bin=21, start=-.28346458, width=.06111736)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/blackgr12dif.png written in PNG format
+(bin=21, start=-.06666667, width=.05079365)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/pacificgr12dif.png written in PNG format
+(bin=21, start=-.90909094, width=.09090909)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/whitegr12dif.png written in PNG format
+(bin=21, start=0, width=.04761905)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1516/gr12/mixedgr12dif.png written in PNG format
+(Secondary 1617 demographics data with survey coverage analysis variables)
+(bin=26, start=0, width=.07692308)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/gr6resprate.png written in PNG format
+(bin=16, start=-1, width=.10416666)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/femalegr6dif.png written in PNG format
+(bin=16, start=-.66666669, width=.10416667)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/malegr6dif.png written in PNG format
+(bin=16, start=-1, width=.11858974)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/hispanicgr6dif.png written in PNG format
+(bin=16, start=-.39999998, width=.0875)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/nativegr6dif.png written in PNG format
+(bin=16, start=-.35064936, width=.08441558)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/asiangr6dif.png written in PNG format
+(bin=16, start=-.5, width=.09351852)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/blackgr6dif.png written in PNG format
+(bin=16, start=-.25, width=.078125)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/pacificgr6dif.png written in PNG format
+(bin=16, start=-.7368421, width=.10855263)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/whitegr6dif.png written in PNG format
+(bin=16, start=0, width=.0625)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr6/mixedgr6dif.png written in PNG format
+(bin=29, start=0, width=.12068966)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/gr7resprate.png written in PNG format
+(bin=29, start=-.75, width=.04655172)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/femalegr7dif.png written in PNG format
+(bin=29, start=-.60000002, width=.03793104)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/malegr7dif.png written in PNG format
+(bin=29, start=-.57692307, width=.04807692)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/hispanicgr7dif.png written in PNG format
+(bin=29, start=-.49999997, width=.04482759)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/nativegr7dif.png written in PNG format
+(bin=29, start=-.19047619, width=.02681992)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/asiangr7dif.png written in PNG format
+(bin=29, start=-.77884614, width=.04984527)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/blackgr7dif.png written in PNG format
+(bin=29, start=-.16666667, width=.01264368)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/pacificgr7dif.png written in PNG format
+(bin=29, start=-1, width=.06153328)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/whitegr7dif.png written in PNG format
+(bin=29, start=0, width=.03448276)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr7/mixedgr7dif.png written in PNG format
+(bin=29, start=0, width=.06896552)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/gr8resprate.png written in PNG format
+(bin=21, start=-.66666669, width=.06008231)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/femalegr8dif.png written in PNG format
+(bin=21, start=-.59506172, width=.0600823)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/malegr8dif.png written in PNG format
+(bin=21, start=-.99421966, width=.09496284)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/hispanicgr8dif.png written in PNG format
+(bin=21, start=-.4210526, width=.06766917)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/nativegr8dif.png written in PNG format
+(bin=21, start=-.78823531, width=.08500241)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/asiangr8dif.png written in PNG format
+(bin=21, start=-.44329897, width=.06872852)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/blackgr8dif.png written in PNG format
+(bin=21, start=-.03723404, width=.04926019)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/pacificgr8dif.png written in PNG format
+(bin=21, start=-1, width=.09433962)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/whitegr8dif.png written in PNG format
+(bin=21, start=0, width=.04761905)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr8/mixedgr8dif.png written in PNG format
+(bin=24, start=0, width=.1875)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/gr9resprate.png written in PNG format
+(bin=22, start=-.89999998, width=.0620797)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/femalegr9dif.png written in PNG format
+(bin=22, start=-.53626943, width=.06528497)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/malegr9dif.png written in PNG format
+(bin=22, start=-.72727275, width=.05578512)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/hispanicgr9dif.png written in PNG format
+(bin=22, start=-.25, width=.03245641)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/nativegr9dif.png written in PNG format
+(bin=22, start=-.25, width=.02651515)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/asiangr9dif.png written in PNG format
+(bin=22, start=-.40000001, width=.02727273)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/blackgr9dif.png written in PNG format
+(bin=22, start=-.09090909, width=.01071118)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/pacificgr9dif.png written in PNG format
+(bin=22, start=-.66666669, width=.06297349)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/whitegr9dif.png written in PNG format
+(bin=22, start=0, width=.04545455)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr9/mixedgr9dif.png written in PNG format
+(bin=25, start=0, width=.06470588)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/gr10resprate.png written in PNG format
+(bin=20, start=-.73770493, width=.07033352)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/femalegr10dif.png written in PNG format
+(bin=20, start=-.66896552, width=.07033352)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/malegr10dif.png written in PNG format
+(bin=20, start=-.89763778, width=.09245589)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/hispanicgr10dif.png written in PNG format
+(bin=20, start=-.15454546, width=.05772727)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/nativegr10dif.png written in PNG format
+(bin=20, start=-.26222223, width=.06270461)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/asiangr10dif.png written in PNG format
+(bin=20, start=-.26050422, width=.06302521)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/blackgr10dif.png written in PNG format
+(bin=20, start=-.04029304, width=.04965245)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/pacificgr10dif.png written in PNG format
+(bin=20, start=-.83070868, width=.09153543)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/whitegr10dif.png written in PNG format
+(bin=20, start=0, width=.05)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr10/mixedgr10dif.png written in PNG format
+(bin=26, start=0, width=.10256411)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/gr11resprate.png written in PNG format
+(bin=22, start=-.60000002, width=.06136364)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/femalegr11dif.png written in PNG format
+(bin=22, start=-.75, width=.05325312)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/malegr11dif.png written in PNG format
+(bin=22, start=-.56, width=.05594406)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/hispanicgr11dif.png written in PNG format
+(bin=22, start=-.0979021, width=.02717737)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/nativegr11dif.png written in PNG format
+(bin=22, start=-.132263, width=.02698761)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/asiangr11dif.png written in PNG format
+(bin=22, start=-.17777778, width=.01457432)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/blackgr11dif.png written in PNG format
+(bin=22, start=-.03448276, width=.00724922)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/pacificgr11dif.png written in PNG format
+(bin=22, start=-.63384616, width=.07231768)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/whitegr11dif.png written in PNG format
+(bin=22, start=0, width=.04545455)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr11/mixedgr11dif.png written in PNG format
+(bin=26, start=0, width=.1)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/gr12resprate.png written in PNG format
+(bin=20, start=-.69863015, width=.08493151)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/femalegr12dif.png written in PNG format
+(bin=20, start=-1, width=.0849315)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/malegr12dif.png written in PNG format
+(bin=20, start=-.97333336, width=.09470983)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/hispanicgr12dif.png written in PNG format
+(bin=20, start=-.14285715, width=.05714286)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/nativegr12dif.png written in PNG format
+(bin=20, start=-.32150775, width=.06577051)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/asiangr12dif.png written in PNG format
+(bin=20, start=-.22222222, width=.06111111)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/blackgr12dif.png written in PNG format
+(bin=20, start=-.09302326, width=.05465116)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/pacificgr12dif.png written in PNG format
+(bin=20, start=-.8417266, width=.09208633)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/whitegr12dif.png written in PNG format
+(bin=20, start=0, width=.05)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1617/gr12/mixedgr12dif.png written in PNG format
+(Secondary 1718 demographics data with survey coverage analysis variables)
+(bin=29, start=0, width=.0862069)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/gr6resprate.png written in PNG format
+(bin=8, start=-.4765625, width=.0886616)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/femalegr6dif.png written in PNG format
+(bin=8, start=-.69172931, width=.11690202)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/malegr6dif.png written in PNG format
+(bin=8, start=-.39999998, width=.07556818)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/hispanicgr6dif.png written in PNG format
+(bin=8, start=-.25, width=.06524448)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/nativegr6dif.png written in PNG format
+(bin=8, start=-.08333334, width=.04095768)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/asiangr6dif.png written in PNG format
+(bin=8, start=-.32585472, width=.06573184)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/blackgr6dif.png written in PNG format
+(bin=8, start=-.04242425, width=.01972611)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/pacificgr6dif.png written in PNG format
+(bin=8, start=-.3888889, width=.09854984)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/whitegr6dif.png written in PNG format
+(bin=8, start=.04, width=.11431818)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr6/mixedgr6dif.png written in PNG format
+(bin=30, start=0, width=.34444443)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/gr7resprate.png written in PNG format
+(bin=30, start=-.75, width=.03496503)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/femalegr7dif.png written in PNG format
+(bin=30, start=-.61538464, width=.02861396)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/malegr7dif.png written in PNG format
+(bin=30, start=-.34999999, width=.01960317)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/hispanicgr7dif.png written in PNG format
+(bin=30, start=-.41714287, width=.03697232)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/nativegr7dif.png written in PNG format
+(bin=30, start=-.17748919, width=.02634641)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/asiangr7dif.png written in PNG format
+(bin=30, start=-.27864826, width=.01336991)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/blackgr7dif.png written in PNG format
+(bin=30, start=-.07407407, width=.00589771)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/pacificgr7dif.png written in PNG format
+(bin=30, start=-.60215056, width=.04191308)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/whitegr7dif.png written in PNG format
+(bin=30, start=.07142857, width=.02792208)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr7/mixedgr7dif.png written in PNG format
+(bin=30, start=0, width=.0952381)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/gr8resprate.png written in PNG format
+(bin=12, start=-.34021914, width=.04328681)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/femalegr8dif.png written in PNG format
+(bin=12, start=-.21464646, width=.0462388)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/malegr8dif.png written in PNG format
+(bin=12, start=-.33419961, width=.05880235)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/hispanicgr8dif.png written in PNG format
+(bin=12, start=-.28713971, width=.04797643)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/nativegr8dif.png written in PNG format
+(bin=12, start=-.1943242, width=.03624945)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/asiangr8dif.png written in PNG format
+(bin=12, start=-.2857143, width=.03663004)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/blackgr8dif.png written in PNG format
+(bin=12, start=-.03476635, width=.0102525)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/pacificgr8dif.png written in PNG format
+(bin=12, start=-.37980768, width=.09617322)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/whitegr8dif.png written in PNG format
+(bin=12, start=0, width=.07905983)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr8/mixedgr8dif.png written in PNG format
+(bin=27, start=0, width=.09259259)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/gr9resprate.png written in PNG format
+(bin=23, start=-.70098037, width=.04118228)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/femalegr9dif.png written in PNG format
+(bin=23, start=-.81999999, width=.04434783)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/malegr9dif.png written in PNG format
+(bin=23, start=-.19230768, width=.03822204)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/hispanicgr9dif.png written in PNG format
+(bin=23, start=-.47474748, width=.0413692)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/nativegr9dif.png written in PNG format
+(bin=23, start=-.1, width=.01843174)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/asiangr9dif.png written in PNG format
+(bin=23, start=-.25442833, width=.01589302)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/blackgr9dif.png written in PNG format
+(bin=23, start=-.0224647, width=.00643116)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/pacificgr9dif.png written in PNG format
+(bin=23, start=-.3272059, width=.0346867)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/whitegr9dif.png written in PNG format
+(bin=23, start=.04545455, width=.03280632)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr9/mixedgr9dif.png written in PNG format
+(bin=28, start=0, width=.04761905)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/gr10resprate.png written in PNG format
+(bin=14, start=-.53448278, width=.05942199)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/femalegr10dif.png written in PNG format
+(bin=14, start=-.54670328, width=.07722757)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/malegr10dif.png written in PNG format
+(bin=14, start=-.80278951, width=.09825778)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/hispanicgr10dif.png written in PNG format
+(bin=14, start=-.125, width=.0334707)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/nativegr10dif.png written in PNG format
+(bin=14, start=-.434618, width=.06862023)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/asiangr10dif.png written in PNG format
+(bin=14, start=-.14728682, width=.03391429)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/blackgr10dif.png written in PNG format
+(bin=14, start=-.0625, width=.02190615)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/pacificgr10dif.png written in PNG format
+(bin=14, start=-.43396226, width=.07921159)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/whitegr10dif.png written in PNG format
+(bin=14, start=0, width=.05803571)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr10/mixedgr10dif.png written in PNG format
+(bin=29, start=0, width=1.2758621)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/gr11resprate.png written in PNG format
+(bin=24, start=-.83333331, width=.05161411)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/femalegr11dif.png written in PNG format
+(bin=24, start=-.73239434, width=.05042384)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/malegr11dif.png written in PNG format
+(bin=24, start=-.24107143, width=.03594554)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/hispanicgr11dif.png written in PNG format
+(bin=24, start=-.14502165, width=.02317652)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/nativegr11dif.png written in PNG format
+(bin=24, start=-.15151516, width=.0211731)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/asiangr11dif.png written in PNG format
+(bin=24, start=-.18928571, width=.01483135)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/blackgr11dif.png written in PNG format
+(bin=24, start=-.03222453, width=.00724547)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/pacificgr11dif.png written in PNG format
+(bin=24, start=-.44999999, width=.04587453)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/whitegr11dif.png written in PNG format
+(bin=24, start=0, width=.03125)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr11/mixedgr11dif.png written in PNG format
+(bin=28, start=0, width=.75)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/gr12resprate.png written in PNG format
+(bin=15, start=-.53676468, width=.05800653)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/femalegr12dif.png written in PNG format
+(bin=15, start=-.53072625, width=.06245955)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/malegr12dif.png written in PNG format
+(bin=15, start=-.30000001, width=.06920635)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/hispanicgr12dif.png written in PNG format
+(bin=15, start=-.19047619, width=.03738345)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/nativegr12dif.png written in PNG format
+(bin=15, start=-.29491526, width=.04512999)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/asiangr12dif.png written in PNG format
+(bin=15, start=-.21169531, width=.02680635)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/blackgr12dif.png written in PNG format
+(bin=15, start=-.03508772, width=.0166249)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/pacificgr12dif.png written in PNG format
+(bin=15, start=-.36718529, width=.06473876)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/whitegr12dif.png written in PNG format
+(bin=15, start=0, width=.04736842)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1718/gr12/mixedgr12dif.png written in PNG format
+(Secondary 1819 demographics data with survey coverage analysis variables)
+(bin=27, start=0, width=.04392765)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/gr6resprate.png written in PNG format
+(bin=7, start=-.40000001, width=.1125342)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/femalegr6dif.png written in PNG format
+(bin=7, start=-.42222223, width=.09603175)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/malegr6dif.png written in PNG format
+(bin=7, start=-.43333334, width=.08320802)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/hispanicgr6dif.png written in PNG format
+(bin=7, start=-.04166667, width=.0279304)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/nativegr6dif.png written in PNG format
+(bin=7, start=-.05797102, width=.02426056)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/asiangr6dif.png written in PNG format
+(bin=7, start=-.15325671, width=.05621664)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/blackgr6dif.png written in PNG format
+(bin=7, start=-.04504504, width=.02004045)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/pacificgr6dif.png written in PNG format
+(bin=7, start=-.24812028, width=.14384175)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/whitegr6dif.png written in PNG format
+(bin=7, start=.04761905, width=.11951307)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr6/mixedgr6dif.png written in PNG format
+(bin=29, start=0, width=.16091953)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/gr7resprate.png written in PNG format
+(bin=29, start=-.64888889, width=.03756431)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/femalegr7dif.png written in PNG format
+(bin=29, start=-.66666669, width=.02868566)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/malegr7dif.png written in PNG format
+(bin=29, start=-.48251748, width=.02467997)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/hispanicgr7dif.png written in PNG format
+(bin=29, start=-.29166666, width=.03452911)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/nativegr7dif.png written in PNG format
+(bin=29, start=-.08695652, width=.01949832)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/asiangr7dif.png written in PNG format
+(bin=29, start=-.29056045, width=.01494543)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/blackgr7dif.png written in PNG format
+(bin=29, start=-.04367201, width=.00721645)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/pacificgr7dif.png written in PNG format
+(bin=29, start=-.5, width=.0462069)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/whitegr7dif.png written in PNG format
+(bin=29, start=.05263158, width=.03059891)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr7/mixedgr7dif.png written in PNG format
+(bin=29, start=0, width=.0530504)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/gr8resprate.png written in PNG format
+(bin=11, start=-.53750002, width=.0703008)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/femalegr8dif.png written in PNG format
+(bin=11, start=-.54577464, width=.06807762)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/malegr8dif.png written in PNG format
+(bin=11, start=-.19753933, width=.06717273)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/hispanicgr8dif.png written in PNG format
+(bin=11, start=-.23999999, width=.06727273)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/nativegr8dif.png written in PNG format
+(bin=11, start=-.07613668, width=.02640204)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/asiangr8dif.png written in PNG format
+(bin=11, start=-.18181819, width=.03225976)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/blackgr8dif.png written in PNG format
+(bin=11, start=-.01886792, width=.01500198)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/pacificgr8dif.png written in PNG format
+(bin=11, start=-.40364572, width=.08554955)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/whitegr8dif.png written in PNG format
+(bin=11, start=.10526316, width=.08133971)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr8/mixedgr8dif.png written in PNG format
+(bin=25, start=0, width=.13)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/gr9resprate.png written in PNG format
+(bin=22, start=-.7096774, width=.04273476)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/femalegr9dif.png written in PNG format
+(bin=22, start=-.73417723, width=.0385665)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/malegr9dif.png written in PNG format
+(bin=22, start=-.17142859, width=.02141578)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/hispanicgr9dif.png written in PNG format
+(bin=22, start=-.22279549, width=.03350071)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/nativegr9dif.png written in PNG format
+(bin=22, start=-.0857143, width=.02539488)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/asiangr9dif.png written in PNG format
+(bin=22, start=-.20780399, width=.01378396)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/blackgr9dif.png written in PNG format
+(bin=22, start=-.05882353, width=.00790742)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/pacificgr9dif.png written in PNG format
+(bin=22, start=-.36904761, width=.04759153)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/whitegr9dif.png written in PNG format
+(bin=22, start=.10096154, width=.03413138)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr9/mixedgr9dif.png written in PNG format
+(bin=26, start=0, width=.075)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/gr10resprate.png written in PNG format
+(bin=13, start=-.61290324, width=.07897778)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/femalegr10dif.png written in PNG format
+(bin=13, start=-.55530971, width=.07733152)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/malegr10dif.png written in PNG format
+(bin=13, start=-.26388773, width=.05809377)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/hispanicgr10dif.png written in PNG format
+(bin=13, start=-.28888887, width=.05127764)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/nativegr10dif.png written in PNG format
+(bin=13, start=-.29254657, width=.04121985)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/asiangr10dif.png written in PNG format
+(bin=13, start=-.23039214, width=.04024071)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/blackgr10dif.png written in PNG format
+(bin=13, start=-.01851852, width=.01517285)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/pacificgr10dif.png written in PNG format
+(bin=13, start=-.37894738, width=.06667325)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/whitegr10dif.png written in PNG format
+(bin=13, start=0, width=.06993007)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr10/mixedgr10dif.png written in PNG format
+(bin=27, start=0, width=.05761317)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/gr11resprate.png written in PNG format
+(bin=23, start=-.77777779, width=.04549114)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/femalegr11dif.png written in PNG format
+(bin=23, start=-.66279072, width=.04545938)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/malegr11dif.png written in PNG format
+(bin=23, start=-.23878604, width=.03480931)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/hispanicgr11dif.png written in PNG format
+(bin=23, start=-.12889984, width=.02852068)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/nativegr11dif.png written in PNG format
+(bin=23, start=-.12063275, width=.02028761)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/asiangr11dif.png written in PNG format
+(bin=23, start=-.640553, width=.0367992)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/blackgr11dif.png written in PNG format
+(bin=23, start=-.03030303, width=.00628192)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/pacificgr11dif.png written in PNG format
+(bin=23, start=-.38095239, width=.04534875)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/whitegr11dif.png written in PNG format
+(bin=23, start=.07142857, width=.0327346)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr11/mixedgr11dif.png written in PNG format
+(bin=27, start=0, width=.04542278)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/gr12resprate.png written in PNG format
+(bin=13, start=-.52950561, width=.06091556)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/femalegr12dif.png written in PNG format
+(bin=13, start=-.54587156, width=.06686431)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/malegr12dif.png written in PNG format
+(bin=13, start=-.27172858, width=.04555092)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/hispanicgr12dif.png written in PNG format
+(bin=13, start=-.2037037, width=.04207203)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/nativegr12dif.png written in PNG format
+(bin=13, start=-.16600791, width=.03959037)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/asiangr12dif.png written in PNG format
+(bin=13, start=-.16482125, width=.03098297)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/blackgr12dif.png written in PNG format
+(bin=13, start=-.01896552, width=.01324576)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/pacificgr12dif.png written in PNG format
+(bin=13, start=-.26106083, width=.06321467)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/whitegr12dif.png written in PNG format
+(bin=13, start=0, width=.05039788)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/svycoverage/seccoverage/sec1819/gr12/mixedgr12dif.png written in PNG format
+
+. 
+. grstyle clear // sets off grstyle
+
+. 
+. cap log close seccoverageanalysis

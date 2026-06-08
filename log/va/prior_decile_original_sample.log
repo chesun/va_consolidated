@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > va/prior_decile_original_sample.smcl
   log type:  text
- opened on:  29 May 2026, 09:28:06
+ opened on:   2 Jun 2026, 18:04:51
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "prior_decile_original_sample.do — RUN START: `c(current_date)' `c
 > (current_time)'"
-prior_decile_original_sample.do — RUN START: 29 May 2026 09:28:06
+prior_decile_original_sample.do — RUN START:  2 Jun 2026 18:04:51
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -825,6 +825,7 @@ eststo:         b_sp_b_ct b_sp_b_ct_p las_sp_b_ct las_sp_b_ct_p las_sp_ls_ct la
 > s_sp_ls_ct_p las_sp_las_ct
                 las_sp_las_ct_p
 eststo_counter: 8
+ReS_jv2:        0 1
 run_prior_score:
                 1
 cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
@@ -1653,7 +1654,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:     23.20 /        1 =      23.2050
+   1:     19.71 /        1 =      19.7070
 
 . 
 . set trace off

@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > va/va_out_fb_test_tab.smcl
   log type:  text
- opened on:  29 May 2026, 09:27:40
+ opened on:   2 Jun 2026, 18:04:28
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "va_out_fb_test_tab.do — RUN START: `c(current_date)' `c(current_t
 > ime)'"
-va_out_fb_test_tab.do — RUN START: 29 May 2026 09:27:40
+va_out_fb_test_tab.do — RUN START:  2 Jun 2026 18:04:28
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -19901,7 +19901,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/va_cf
 . timer off 1
 
 . timer list
-   1:     20.11 /        1 =      20.1130
+   1:     18.59 /        1 =      18.5890
 
 . timer clear 1
 

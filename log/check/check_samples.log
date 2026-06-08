@@ -1,0 +1,235 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  check_samples
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> check/check_samples.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 03:01:21
+
+. 
+. di as text _n "--------------------------------------------------------------
+------------------"
+
+-------------------------------------------------------------------------------
+> -
+
+. di as text "check_samples.do — RUN START: `c(current_date)' `c(current_time)'
+> "
+check_samples.do — RUN START:  3 Jun 2026 03:01:21
+
+. di as text "-----------------------------------------------------------------
+---------------"
+-------------------------------------------------------------------------------
+> -
+
+. 
+. 
+. /*===========================================================================
+> ===
+> INPUT
+> =============================================================================
+> =*/
+. 
+. * TODO Phase 1a §3.3: confirm post-relocation path (sample-construction scrip
+> ts
+. *    under do/samples/ produce `score_b.dta`; canonical destination expected
+. *    under $datadir_clean/va_samples_v1/).
+. local in_dta "$datadir_clean/va_samples_v1/score_b.dta"
+
+. 
+. capture confirm file "`in_dta'"
+
+. if _rc {
+.     di as text "  [SKELETON] `in_dta' not found — produced by Phase 1a §3.3"
+.     di as text "             relocated sample-construction scripts under do/s
+> amples/."
+.     di as text "             Skipping check_samples.do."
+.     cap log close check_samples
+.     cap translate "$logdir/check/check_samples.smcl" "$logdir/check/check_sam
+> ples.log", replace
+.     exit 0
+. }
+
+. 
+. use "`in_dta'", clear
+(Base Test Score VA Sample)
+
+. 
+. 
+. /*===========================================================================
+> ===
+> HARD ASSERTS (from design memo §2)
+> =============================================================================
+> =*/
+. 
+. * sample size + structure -- codebook line 73020
+. assert _N == 1784445
+
+. di as text "  PASS: _N == 1784445 (total g11 student-years)"
+  PASS: _N == 1784445 (total g11 student-years)
+
+. 
+. assert grade == 11
+
+. di as text "  PASS: grade == 11 (g11-only)"
+  PASS: grade == 11 (g11-only)
+
+. 
+. assert inrange(year, 2015, 2018)
+
+. di as text "  PASS: year ∈ [2015, 2018] (4-cohort window)"
+  PASS: year ∈ [2015, 2018] (4-cohort window)
+
+. 
+. * per-cohort counts -- codebook line 73020
+. qui count if year == 2015
+
+. assert r(N) == 402416
+
+. di as text "  PASS: 2015 cohort N == 402416"
+  PASS: 2015 cohort N == 402416
+
+. qui count if year == 2016
+
+. assert r(N) == 406084
+
+. di as text "  PASS: 2016 cohort N == 406084"
+  PASS: 2016 cohort N == 406084
+
+. qui count if year == 2017
+
+. assert r(N) == 450201
+
+. di as text "  PASS: 2017 cohort N == 450201"
+  PASS: 2017 cohort N == 450201
+
+. qui count if year == 2018
+
+. assert r(N) == 525744
+
+. di as text "  PASS: 2018 cohort N == 525744"
+  PASS: 2018 cohort N == 525744
+
+. 
+. * uniqueness -- 1389 schools per audit + codebook line 73040
+. qui levelsof cdscode, local(cds_list)
+
+. local n_schools : word count `cds_list'
+
+. assert `n_schools' == 1389
+
+. di as text "  PASS: distinct cdscode count == 1389"
+  PASS: distinct cdscode count == 1389
+
+. 
+. * race dummies orthogonal + cover (rowtotal of indicators ∈ {0, 1})
+. tempvar eth_sum
+
+. egen `eth_sum' = rowtotal(eth_asian eth_hispanic eth_black eth_white eth_othe
+> r)
+
+. capture assert inlist(`eth_sum', 0, 1)
+
+. if _rc {
+.     di as error "  FAIL: race dummies (eth_asian/hispanic/black/white/other) 
+> not orthogonal."
+.     qui tab `eth_sum', missing
+.     cap log close check_samples
+.     cap translate "$logdir/check/check_samples.smcl" "$logdir/check/check_sam
+> ples.log", replace
+.     exit _rc
+. }
+
+. di as text "  PASS: race dummies orthogonal (rowtotal ∈ {0, 1})"
+  PASS: race dummies orthogonal (rowtotal ∈ {0, 1})
+
+. drop `eth_sum'
+
+. 
+. * binary-coded demographics in {0, 1, .}
+. foreach v in econ_disadvantage male limited_eng_prof disabled                
+>  ///
+>              eth_asian eth_hispanic eth_black eth_white eth_other            
+>  {
+  2.     capture assert inlist(`v', 0, 1, .)
+  3.     if _rc {
+  4.         di as error "  FAIL: binary-coded var `v' has values outside {0, 1
+> , .}"
+  5.         qui tab `v', missing
+  6.         cap log close check_samples
+  7.         cap translate "$logdir/check/check_samples.smcl" "$logdir/check/ch
+> eck_samples.log", replace
+  8.         exit _rc
+  9.     }
+ 10. }
+
+. di as text "  PASS: binary demographics in {0, 1, .}"
+  PASS: binary demographics in {0, 1, .}
+
+. 
+. 
+. /*===========================================================================
+> ===
+> SOFT SIGNALS (display as error; non-halting)
+> =============================================================================
+> =*/
+. 
+. * Plausible age-on-Jan-1 in days for g11 students = ~16 yrs = ~5,840 days.
+. * Codebook range was [-14, 43099] with 5,483 missings — the upper tail looks
+. * like a date-encoding artifact.  Soft-flag rather than halt.
+. qui count if !missing(age) & !inrange(age, 5478, 6940)
+
+. local n_age_oddity = r(N)
+
+. if `n_age_oddity' > 0 {
+.     di as error "  SOFT: `n_age_oddity' rows have age outside [5478, 6940] da
+> ys (~15-19 yrs)"
+  SOFT: 7486 rows have age outside [5478, 6940] days (~15-19 yrs)
+.     di as error "        upstream age-encoding may be corrupted; investigate 
+> but not halting."
+        upstream age-encoding may be corrupted; investigate but not halting.
+. }
+
+. else {
+.     di as text "  PASS: age within [5478, 6940] days for all non-missing rows
+> "
+. }
+
+. 
+. * cohort_size range -- codebook line 73086
+. qui sum cohort_size
+
+. if r(min) < 11 | r(max) > 1325 {
+.     di as error "  SOFT: cohort_size range [`r(min)', `r(max)'] outside expec
+> ted [11, 1325]"
+. }
+
+. else {
+.     di as text "  PASS: cohort_size within [11, 1325]"
+  PASS: cohort_size within [11, 1325]
+. }
+
+. 
+. 
+. /*===========================================================================
+> ===
+> WRAP-UP
+> =============================================================================
+> =*/
+. 
+. di as text _n "--------------------------------------------------------------
+------------------"
+
+-------------------------------------------------------------------------------
+> -
+
+. di as text "check_samples.do — RUN END: `c(current_date)' `c(current_time)'"
+check_samples.do — RUN END:  3 Jun 2026 03:01:23
+
+. di as text "-----------------------------------------------------------------
+---------------"
+-------------------------------------------------------------------------------
+> -
+
+. 
+. cap log close check_samples

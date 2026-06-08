@@ -1,0 +1,3084 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  va_scatter
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/va_scatter.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:27:31
+
+. 
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. set seed 1984
+
+. 
+. 
+. local date1 = c(current_date)
+
+. local time1 = c(current_time)
+
+. 
+. 
+. include $consolidated_dir/do/va/helpers/macros_va.doh
+
+. /*------------------------------------------------------------------------------
+> do/va/helpers/macros_va.doh — VA project file paths, dates, controls, strings
+> ================================================================================
+> 
+> PURPOSE
+>     Define the canonical VA-pipeline locals consumed across Phase 3+
+>     estimation, table-producer, figure-producer, and heterogeneity scripts:
+>     - Restricted-access K12 data paths.
+>     - Sibling crosswalk paths (cross-references caschls predecessor).
+>     - Cohort-year ranges (test_score / star / caaspp / outcome).
+>     - Outcome strings (ELA, Math, enrollment).
+>     - Control-variable groupings (school, demographic, score, peer, census,
+>       sibling, distance, scrhat — predicted-score variants).
+>     - Per-spec control combinations (b/l/a/s/la/ls/as/las and their `d'-augmented
+>       variants per ADR-0009 + 2023-04-30 distance addition).
+>     - String labels for sample × control display.
+>     - School-characteristics + demographic-characteristics + expenditure groups.
+> 
+> INCLUDED FROM
+>     Phase 3+ VA estimation/table/figure scripts under `do/va/' and `do/share/va/'.
+>     Typically the FIRST helper-include in any consuming script (sets up the
+>     parent-scope locals consumed by `drift_limit.doh' and
+>     `macros_va_all_samples_controls.doh').
+> 
+>     Uses Stata's `#delimit ;' syntax (semicolons end statements) per the
+>     predecessor convention.  The closing `#delimit cr' restores default
+>     line-end semantics for the calling script.
+> 
+> ROLE IN ADR-0021 SANDBOX
+>     Pure local definitions; no save / export / log; sandbox-trivially clean.
+>     Reads from LEGACY paths via global expansion at include-time:
+>       - $vaprojdir/data/restricted_access/clean/k12_test_scores
+>         (LEGACY restricted-access K12 raw data)
+>       - $vaprojdir/data/public_access/...
+>         (LEGACY public-access subdirs)
+>       - $caschls_projdir/dta/siblingxwalk/{siblingpairxwalk,ufamilyxwalk}
+>         (LEGACY-static predecessor sibling-pair / unique-family crosswalks)
+>     Reads from CANONICAL paths:
+>       - $datadir_clean/siblingxwalk/sibling_out_xwalk
+>         (sibling-outcomes crosswalk built by relocated
+>          do/sibling_xwalk/siblingoutxwalk.do per ADR-0005; producer at L338)
+> 
+> RELOCATION HISTORY (per ADR-0005 + ADR-0021, applied 2026-04-30)
+>     Source:      cde_va_project_fork/do_files/sbac/macros_va.doh
+>     Destination: do/va/helpers/macros_va.doh
+>     Path repointing per ADR-0021 sandbox amendment ("paths only; analysis
+>     logic preserved verbatim"):
+>       - L29-31: `$projdir/dta/siblingxwalk/<file>' -> `$caschls_projdir/dta/siblingxwalk/<file>'
+>         (3 references: siblingxwalk, ufamilyxwalk, sibling_out_xwalk)
+>         Reason: $projdir is NOT defined in do/settings.do; $caschls_projdir
+>         is the explicit-named global per the LEGACY PATHS comment block.
+>         Repointing here eliminates the include-time `$projdir' alias-need
+>         for any future calling script (per the [LEARN:stata] 2026-04-30
+>         pattern surfaced in the siblingoutxwalk.do round-1 review).
+>       - $vaprojdir references (L22-28) preserved unchanged — $vaprojdir
+>         IS defined in do/settings.do as the predecessor cde_va_project_fork
+>         dir; LEGACY-static restricted-access K12 paths are READS-only
+>         per ADR-0021.
+>     Predecessor caller-update protocol: predecessor callers untouched in
+>     this commit per plan v3 §3.3 step 5 parenthetical.
+>     Analysis logic preserved verbatim (the cross-product of controls, the
+>     string labels, the cohort-year ranges, the school-char groupings — all
+>     byte-equivalent to the predecessor).
+> 
+> ORIGINAL CHANGE LOG (preserved from predecessor)
+>     2022-04-28: Added macro for sibling controls.
+>     2022-09-20: Added delimiter `;' after comments.
+>     2022-10-31: Changed naming convention for samples (b/l/a/s/la/ls/as/las).
+>     2023-05-31: Added distance control macros.
+>     2024-08-22: Added predicted ELA score spec controls (`scrhat' variants).
+> 
+> REFERENCES
+>     Plan v3 §3.3 step 1 (helpers/macros)
+>     ADRs:    0009 (v1 prior-score canonical), 0017 (Matt's files untouched —
+>              $vaprojdir paths are LEGACY-static reads), 0021 (description
+>              convention; sandbox-write rule; path-globals-only amendment)
+>     Audit:   chunk-2 (file structure verification); chunk-3 (control
+>              specifications cross-checked against paper Tables 2-3)
+>     MEMORY:  [LEARN:stata] 2026-04-30 ($projdir explicit-rename pattern)
+> ------------------------------------------------------------------------------*/
+. 
+. 
+. /* CHANGE LOG
+> 4/28/2022: Added macro for sibling controls
+> 09/20/2022: Added delimiter : after comments
+> 10/31/2022: Changed naming convention for samples
+> b - base
+> l - loscore
+> a - acs
+> s - sibling
+> la - loscore and acs
+> ls - loscore and sibling
+> as - acs and sibling
+> las - loscore, acs and sibling
+> 
+> 05/31/2023: added distance control macros
+> 
+> 08/22/2024: added predicted ELA score spec controls
+> */
+. 
+. #delimit ;
+delimiter now ;
+. *** file paths ;
+. local home $vaprojdir ;
+
+. local vaprojdofiles "$vaprojdir/do_files"
+> local ca_ed_lab "/home/research/ca_ed_lab" ;
+
+. local k12_test_scores "$vaprojdir/data/restricted_access/clean/k12_test_scores" ;
+
+. local public_access "$vaprojdir/data/public_access" ;
+
+. local k12_public_schools "$vaprojdir/data/public_access/clean/k12_public_schools" ;
+
+. local k12_test_scores_public "$vaprojdir/data/public_access/clean/k12_test_scores" ;
+
+. local siblingxwalk "$caschls_projdir/dta/siblingxwalk/siblingpairxwalk";
+
+. local ufamilyxwalk "$caschls_projdir/dta/siblingxwalk/ufamilyxwalk";
+
+. local sibling_out_xwalk "$datadir_clean/siblingxwalk/sibling_out_xwalk";
+
+. **** Dates ;
+. local test_score_min_year
+>         2015
+>         ;
+
+. local test_score_max_year
+>         2018
+>         ;
+
+. local star_min_year
+>         2003
+>         ;
+
+. local star_max_year
+>         2013
+>         ;
+
+. local caaspp_min_year
+>         2015
+>         ;
+
+. local caaspp_max_year
+>         2019
+>         ;
+
+. local outcome_min_year
+>         2015
+>         ;
+
+. local outcome_max_year
+>         2018
+>         ;
+
+. **** Outcome Strings ;
+. local ela_str
+>         "ELA"
+>         ;
+
+. local math_str
+>         "Math"
+>         ;
+
+. local enr_str
+>         "Overall Enrollment"
+>         ;
+
+. local enr_2year_str
+>         "2-Year Enrollment"
+>         ;
+
+. local enr_4year_str
+>         "4-Year Enrollment"
+>         ;
+
+. **** Sibling Census Restricted Sample Controls Strings ;
+. local og_str
+>         "Original Specification"
+>         ;
+
+. local acs_str
+>         "Original + Census"
+>         ;
+
+. local sib_str
+>         "Original + Sibling"
+>         ;
+
+. local both_str
+>         "Original + Census + Sibling"
+>         ;
+
+. **** Value Added ;
+. local school_controls
+>         /*cohort_size*/
+>         ;
+
+. local demographic_controls
+>         age
+>         i.male
+>         i.eth_asian i.eth_hispanic i.eth_black i.eth_other
+>         i.econ_disadvantage
+>         i.limited_eng_prof
+>         i.disabled
+>         ;
+
+. local ela_score_controls
+>         i.year#(c.prior_ela_z_score##c.prior_ela_z_score##c.prior_ela_z_score)
+>         ;
+
+. // controls using predicted lag 1 ELA scores
+> local ela_scrhat_controls
+>         i.year#(c.prior_ela_z_score_hat##c.prior_ela_z_score_hat##c.prior_ela_z_score_hat)
+>         ;
+
+. local math_score_controls
+>         i.year#(c.prior_math_z_score##c.prior_math_z_score##c.prior_math_z_score)
+>         ;
+
+. local peer_ela_score_controls
+>         i.year#(c.peer_prior_ela_z_score##c.peer_prior_ela_z_score##c.peer_prior_ela_z_score)
+>         ;
+
+. local peer_math_score_controls
+>         i.year#(c.peer_prior_math_z_score##c.peer_prior_math_z_score##c.peer_prior_math_z_score)
+>         ;
+
+. local peer_demographic_controls
+>         peer_age
+>         peer_male
+>         peer_eth_asian peer_eth_hispanic peer_eth_black peer_eth_other
+>         peer_econ_disadvantage
+>         peer_limited_eng_prof
+>         peer_disabled
+>         ;
+
+. local va_control_vars "`school_controls' `demographic_controls'" ;
+
+. local va_control_vars : subinstr local va_control_vars "i." "", all ;
+
+. local va_control_vars : list uniq va_control_vars ;
+
+. local census_grade
+>         6
+>         ;
+
+. local census_controls
+>         /*eth_white_pct*/ eth_asian_pct eth_hispanic_pct eth_black_pct /*eth_other_pct*/
+>         educ_hs_dropout_prop /*educ_deg_2year_prop*/ educ_deg_4year_plus_prop
+>         pov_fam_child_lt18_pct
+>         inc_median_hh
+>         ;
+
+. local peer_census_controls
+>         peer_eth_asian_pct  peer_eth_hispanic_pct  peer_eth_black_pct
+>         peer_educ_hs_dropout_prop  peer_educ_deg_4year_plus_prop
+>         peer_pov_fam_child_lt18_pct      peer_inc_median_hh
+>         ;
+
+. local sibling_controls
+>         i.has_older_sibling_enr_2year
+>         i.has_older_sibling_enr_4year
+>         ;
+
+. local peer_sibling_controls
+>         peer_has_older_sibling_enr_2year
+>         peer_has_older_sibling_enr_4year
+>         ;
+
+. // lag 1 older sibling controls ;
+> local sib_lag1_controls
+>         old1_sib_enr_2year
+>         old1_sib_enr_4year
+>         ;
+
+. // lag 2 older sibling controls ;
+> local sib_lag2_controls
+>         old2_sib_enr_2year
+>         old2_sib_enr_4year
+>         ;
+
+. // postsecondary distance controls
+> local d_controls
+>         mindist_any_nonprof_4yr
+>         mindist_ccc
+>         ;
+
+. **********************************************  ;
+. *** macros for STANDALONE control vars for running loops over all samples and specifications ;
+. //base specification controls ;
+> local b_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. //peer base controls ;
+> local peer_b_controls
+>         `peer_ela_score_controls'
+>         `peer_math_score_controls'
+>         `peer_demographic_controls'
+>         ;
+
+. // leave out score controls ;
+> local l_controls
+>         loscore
+>         ;
+
+. // peer leave out score controls ;
+> local peer_l_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         ;
+
+. local a_controls
+>         `census_controls'
+>         ;
+
+. local peer_a_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         ;
+
+. local s_controls
+>         `sibling_controls'
+>         ;
+
+. local peer_s_controls
+>         `peer_b_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. // control var groups for looping ;
+> local la_controls
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local peer_la_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         ;
+
+. local ls_controls
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local peer_ls_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_sibling_controls'
+>         ;
+
+. local as_controls
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_as_controls
+>         `peer_b_controls'
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. local las_controls
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local peer_las_controls
+>         `peer_b_controls'
+>         peer_loscore
+>         `peer_census_controls'
+>         `peer_sibling_controls'
+>         ;
+
+. foreach control in b l a s la ls as las {;
+  2.         local `control'd_controls
+>                 ``control'_controls' `d_controls'
+>                 ;
+  3.         local peer_`control'd_controls
+>                 `peer_`control'_controls'
+>                 ;
+  4.         }
+>         ;
+
+. *** macros for control var COMBINATIONS for running loops over all samples and specifications ;
+. //base specification controls ;
+> local b_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_score_controls'
+>         `math_score_controls'
+>         ;
+
+. // predicted score spec controls
+> local b_scrhat_spec_controls
+>         `school_controls'
+>         `demographic_controls'
+>         `ela_scrhat_controls'
+>         `math_score_controls'
+>         ;
+
+. local bd_spec_controls
+>         `b_spec_controls'
+>         `d_controls'
+>         ;
+
+. local bd_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // leave out prior score controls ;
+> local l_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local l_scrhat_spec_controls
+>         `b_spec_controls'
+>         loscore
+>         ;
+
+. local ld_spec_controls
+>         `l_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ld_scrhat_spec_controls
+>         `l_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // ACS
+> local a_spec_controls
+>         `b_spec_controls'
+>         `census_controls'
+>         ;
+
+. local a_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `census_controls'
+>         ;
+
+. local ad_spec_controls
+>         `a_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ad_scrhat_spec_controls
+>         `a_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // sibling
+> local s_spec_controls
+>         `b_spec_controls'
+>         `s_controls'
+>         ;
+
+. local s_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `s_controls'
+>         ;
+
+. local sd_spec_controls
+>         `s_spec_controls'
+>         `d_controls'
+>         ;
+
+. local sd_scrhat_spec_controls
+>         `s_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // loscores and acs
+> local la_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local la_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         ;
+
+. local lad_spec_controls
+>         `la_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lad_scrhat_spec_controls
+>         `la_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local ls_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local ls_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `s_controls'
+>         ;
+
+. local lsd_spec_controls
+>         `ls_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lsd_scrhat_spec_controls
+>         `ls_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local as_spec_controls
+>         `b_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local as_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local asd_spec_controls
+>         `as_spec_controls'
+>         `d_controls'
+>         ;
+
+. local asd_scrhat_spec_controls
+>         `as_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. local las_spec_controls
+>         `b_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local las_scrhat_spec_controls
+>         `b_scrhat_spec_controls'
+>         `l_controls'
+>         `a_controls'
+>         `s_controls'
+>         ;
+
+. local lasd_spec_controls
+>         `las_spec_controls'
+>         `d_controls'
+>         ;
+
+. local lasd_scrhat_spec_controls
+>         `las_scrhat_spec_controls'
+>         `d_controls'
+>         ;
+
+. // strings for all sample and control combinations ;
+> 
+> local b_str
+>         "base"
+>         ;
+
+. local bd_str
+>         `b_str'
+>         ;
+
+. local l_str
+>         "leave out score"
+>         ;
+
+. local ld_str
+>         `l_str'
+>         ;
+
+. local a_str
+>         "ACS"
+>         ;
+
+. local ad_str
+>         `a_str'
+>         ;
+
+. local s_str
+>         "sibling"
+>         ;
+
+. local sd_str
+>         `s_str'
+>         ;
+
+. local la_str
+>         "leave out score & ACS"
+>         ;
+
+. local lad_str
+>         `la_str'
+>         ;
+
+. local ls_str
+>         "leave out score & sibling"
+>         ;
+
+. local lsd_str
+>         `ls_str'
+>         ;
+
+. local as_str
+>         "ACS & sibling"
+>         ;
+
+. local asd_str
+>         `as_str'
+>         ;
+
+. local las_str
+>         "leave out score & ACS & sibling"
+>         ;
+
+. local lasd_str
+>         `las_str'
+>         ;
+
+. local d_str
+>         "postsecondary distance"
+>         ;
+
+. // strings for heterogeneity in persistence vars ;
+> local race_str
+>         "Race"
+>         ;
+
+. local male_str "Male";
+
+. local econ_disadvantage_str "Economically Disadvantaged";
+
+. local prop_ecn_disadv_str "Proportion Economically Disadvantaged" ;
+
+. local charter_str "Charter Status" ;
+
+. local inc_median_hh_xtile_str "Census Tract Median Household Income Decile";
+
+. local enr_black_hisp_prop_str "Proportion of Black and Hispanic Enrollment";
+
+. **** School Characteristics ;
+. local sch_chars
+>         fte_teach_pc fte_pupil_pc /*fte_admin_pc*/
+>         /*eng_learner_staff_pc*/
+>         new_teacher_prop
+>         /*educ_grad_sch_prop educ_associate_prop*/
+>         /*status_tenured_prop*/
+>         credential_full_prop
+>         /*authorization_stem_prop authorization_ela_prop*/
+>         c.male_prop##c.enr_male_prop
+>         c.eth_minority_prop##c.enr_minority_prop
+>         enr_total
+>         ;
+
+. local sch_char_vars "`sch_chars'" ;
+
+. local sch_char_vars : subinstr local sch_char_vars "i." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "c." "", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "##" " ", all ;
+
+. local sch_char_vars : subinstr local sch_char_vars "#" " ", all ;
+
+. local sch_char_vars : list uniq sch_char_vars ;
+
+. local dem_chars
+>         enr_male_prop
+>         enr_minority_prop
+>         frpm_prop el_prop
+>         enr_total
+>         ;
+
+. local dem_char_vars "`dem_chars'" ;
+
+. local dem_char_vars : list uniq dem_char_vars ;
+
+. local expenditures
+>         expenditures_instr_pc
+>         expenditures3000_pc
+>         expenditures4000_pc
+>         expenditures_other_pc
+>         expenditures7000_pc
+>         ;
+
+. local expenditure_vars "`expenditures'" ;
+
+. local expenditure_vars : list uniq expenditure_vars ;
+
+. local sch_char_control_vars : list sch_char_vars | dem_char_vars ;
+
+. local sch_char_control_vars : list sch_char_control_vars | expenditure_vars ;
+
+. #delimit cr
+delimiter now cr
+. 
+. include $consolidated_dir/do/va/helpers/drift_limit.doh
+
+. /*------------------------------------------------------------------------------
+> do/va/helpers/drift_limit.doh — drift-limit constants for VA estimation
+> ================================================================================
+> 
+> PURPOSE
+>     Define `score_drift_limit' and `out_drift_limit' locals consumed by the
+>     `vam' ado package for the score-VA and outcome-VA estimation loops.
+> 
+> INCLUDED FROM
+>     Phase 3 VA estimation scripts under `do/va/' (e.g., va_score_all.do,
+>     va_out_all.do, once relocated per plan v3 §3.3 step 3).  Must follow
+>     `include do/va/helpers/macros_va.doh' since drift-limit definitions
+>     depend on `test_score_min_year' / `_max_year' and `outcome_min_year' /
+>     `_max_year' defined in macros_va.doh L35-65.
+> 
+> ROLE IN ADR-0021 SANDBOX
+>     Pure local definitions; no reads, no writes; sandbox-trivially clean.
+>     No `$global' references, so no LEGACY-include macro-trace concerns.
+> 
+> RELOCATION HISTORY (per ADR-0005 + ADR-0021, applied 2026-04-30)
+>     Source:      cde_va_project_fork/do_files/sbac/drift_limit.doh
+>     Destination: do/va/helpers/drift_limit.doh
+>     Path repointing: none (no `$global' references).
+>     Analysis logic preserved verbatim.
+>     Predecessor caller-update protocol: predecessor callers untouched in
+>     this commit per plan v3 §3.3 step 5 parenthetical (wholesale predecessor
+>     retirement at Phase 1a §3.5 golden-master).
+> 
+> REFERENCES
+>     Plan v3 §3.3 step 1 (helpers/macros)
+>     ADR-0021 (description convention; sandbox role above)
+> ------------------------------------------------------------------------------*/
+. 
+. /* set drift limit for test score VA */
+. local score_drift_limit = max(`test_score_max_year' - `test_score_min_year' - 1, 1)
+
+. /* set drift limit outcome VA */
+. local out_drift_limit = max(`outcome_max_year' - `outcome_min_year' - 1, 1)
+
+. 
+. 
+. 
+. 
+. /* need to save number of observation vars in VA estimation do files */
+. 
+. 
+. /* do not need to weight by # observations contributing to VA estimates because
+> plotting VA from same sample, therefore same observations */
+. 
+. /* set trace on */
+. 
+. foreach version in v1 v2 {
+  2. 
+.   use $estimates_dir/va_cfr_all_`version'/va_est_dta/va_all.dta, clear
+  3.   cap mkdir "$figures_dir/share/va/`version'"
+  4. 
+.   // scatter plots of single outcome VA switching sample or control
+.   foreach va_outcome in ela math enr_2year enr_4year {
+  5.     //------------------------------------------------------------------------------
+.     // Figure 1: same sample, change controls
+.     // y axis: kutchen sink sample base control no peer
+.     // x axis: kitchen sink sample kitchen sink control woth peer
+.     //------------------------------------------------------------------------------
+. 
+.     //------------------------------------------------------------------------
+.     // create macros for correlation coefficients
+.     //------------------------------------------------------------------------
+.     corr va_`va_outcome'_las_sp_b_ct va_`va_outcome'_las_sp_las_ct_p
+  6.     local corr_`va_outcome'_1: di %5.3f r(rho)
+  7. 
+.     //------------------------------------------------------------------------
+.     // create macros for regression coefficients
+.     //------------------------------------------------------------------------
+.     reg va_`va_outcome'_las_sp_b_ct va_`va_outcome'_las_sp_las_ct_p
+  8.     local b_`va_outcome'_1: di %5.3f _b[va_`va_outcome'_las_sp_las_ct_p]
+  9. 
+. 
+.     //------------------------------------------------------------------------
+.     // scatter plot
+.     //------------------------------------------------------------------------
+.     // weighted
+.     twoway (scatter va_`va_outcome'_las_sp_b_ct va_`va_outcome'_las_sp_las_ct_p [aw=n_g11_`va_outcome'_las_sp], msymbo
+> l(o) mcolor(%20)) ///
+>       (lfit va_`va_outcome'_las_sp_b_ct va_`va_outcome'_las_sp_las_ct_p) ///
+>       , ytitle("Base Specification", margin(medium) size(small)) ///
+>       xtitle("Full Specification with Peer Controls", size(small)) ///
+>       title("``va_outcome'_str' VA Correlation") ///
+>       legend(label(1 "``va_outcome'_str' VA") label(2 "Fitted line")) ///
+>       note("Sample: Fully Restricted (Base + Leave Out Score + ACS + Sibling)" ///
+>       "Correlation Coefficient = `corr_`va_outcome'_1'" ///
+>       "Fitted line slope = `b_`va_outcome'_1'")
+ 10. 
+.     // export single panel figure
+.     graph export $figures_dir/share/va/`version'/va_`va_outcome'_scatter_las_sp_b_vs_las_ct_p_`version'_wt.pdf, replac
+> e
+ 11. 
+.     // unweighted
+.     twoway (scatter va_`va_outcome'_las_sp_b_ct va_`va_outcome'_las_sp_las_ct_p) ///
+>       (lfit va_`va_outcome'_las_sp_b_ct va_`va_outcome'_las_sp_las_ct_p) ///
+>       , ytitle("Base Specification", margin(medium) size(small)) ///
+>       xtitle("Full Specification with Peer Controls", size(small)) ///
+>       title("``va_outcome'_str' VA Correlation") ///
+>       legend(label(1 "``va_outcome'_str' VA") label(2 "Fitted line")) ///
+>       note("Sample: Fully Restricted (Base + Leave Out Score + ACS + Sibling)" ///
+>       "Correlation Coefficient = `corr_`va_outcome'_1'" ///
+>       "Fitted line slope = `b_`va_outcome'_1'")
+ 12. 
+.     // export single panel figure
+.     graph export $figures_dir/share/va/`version'/va_`va_outcome'_scatter_las_sp_b_vs_las_ct_p_`version'_nw.pdf, replac
+> e
+ 13. 
+. 
+.     // redraw the graph with different titles to be used for combining into panels
+.     twoway (scatter va_`va_outcome'_las_sp_b_ct va_`va_outcome'_las_sp_las_ct_p ///
+>       ,  msize(small) ) ///
+>       (lfit va_`va_outcome'_las_sp_b_ct va_`va_outcome'_las_sp_las_ct_p) ///
+>       , title("``va_outcome'_str' VA Correlation", size(small)) ///
+>       legend(off) ytitle("") xtitle("") ///
+>       note( "Correlation Coefficient = `corr_`va_outcome'_1'" ///
+>       "Fitted line slope = `b_`va_outcome'_1'") ///
+>       saving($output_dir/gph_files/va_cfr_all_`version'/va_`va_outcome'_scatter_las_sp_b_vs_las_ct_p_`version'_nw, rep
+> lace)
+ 14. 
+.     //------------------------------------------------------------------------------
+.     // Figure 2: same control, change sample
+.     // y axis: base sample base control no peer
+.     // x axis: kitchen sink sample base ontrol no peer
+.     //------------------------------------------------------------------------------
+. 
+.     //------------------------------------------------------------------------
+.     // create macros for correlation coefficients
+.     //------------------------------------------------------------------------
+.     corr va_`va_outcome'_b_sp_b_ct va_`va_outcome'_las_sp_b_ct
+ 15.     local corr_`va_outcome'_2: di %5.3f r(rho)
+ 16. 
+.     //------------------------------------------------------------------------
+.     // create macros for regression coefficients
+.     //------------------------------------------------------------------------
+.     reg va_`va_outcome'_b_sp_b_ct va_`va_outcome'_las_sp_b_ct
+ 17.     local b_`va_outcome'_2: di %5.3f _b[va_`va_outcome'_las_sp_b_ct]
+ 18. 
+. 
+.     //------------------------------------------------------------------------
+.     // scatter plot
+.     //------------------------------------------------------------------------
+.     // weighted
+.     twoway (scatter va_`va_outcome'_b_sp_b_ct va_`va_outcome'_las_sp_b_ct [aw=n_g11_`va_outcome'_b_sp + n_g11_`va_outc
+> ome'_las_sp], msymbol(o) mcolor(%20)) ///
+>       (lfit va_`va_outcome'_b_sp_b_ct va_`va_outcome'_las_sp_b_ct) ///
+>       , ytitle("Base Sample", margin(medium) size(small)) ///
+>       xtitle("Fully Restricted Sample", size(small)) ///
+>       title("``va_outcome'_str' VA Correlation") ///
+>       legend(label(1 "``va_outcome'_str' VA") label(2 "Fitted line")) ///
+>       note("Controls: Base controls without peer controls" ///
+>       "Correlation Coefficient = `corr_`va_outcome'_2'" ///
+>       "Fitted line slope = `b_`va_outcome'_2'")
+ 19. 
+. 
+.     graph export $figures_dir/share/va/`version'/va_`va_outcome'_scatter_b_vs_las_sp_b_ct_`version'_wt.pdf, replace
+ 20. 
+.     // unweighted
+.     twoway (scatter va_`va_outcome'_b_sp_b_ct va_`va_outcome'_las_sp_b_ct) ///
+>       (lfit va_`va_outcome'_b_sp_b_ct va_`va_outcome'_las_sp_b_ct) ///
+>       , ytitle("Base Sample", margin(medium) size(small)) ///
+>       xtitle("Fully Restricted Sample", size(small)) ///
+>       title("``va_outcome'_str' VA Correlation") ///
+>       legend(label(1 "``va_outcome'_str' VA") label(2 "Fitted line")) ///
+>       note("Controls: Base controls without peer controls" ///
+>       "Correlation Coefficient = `corr_`va_outcome'_2'" ///
+>       "Fitted line slope = `b_`va_outcome'_2'")
+ 21. 
+. 
+.     graph export $figures_dir/share/va/`version'/va_`va_outcome'_scatter_b_vs_las_sp_b_ct_`version'_nw.pdf, replace
+ 22. 
+. 
+.     // redraw the graph with different titles to be used for combining into panels
+.     twoway (scatter va_`va_outcome'_b_sp_b_ct va_`va_outcome'_las_sp_b_ct ///
+>             , msize(small) ) ///
+>       (lfit va_`va_outcome'_b_sp_b_ct va_`va_outcome'_las_sp_b_ct) ///
+>       , title("``va_outcome'_str' VA Correlation", size(small)) ///
+>       legend(off) ytitle("") xtitle("") ///
+>       note("Correlation Coefficient = `corr_`va_outcome'_2'" ///
+>       "Fitted line slope = `b_`va_outcome'_2'") ///
+>       saving($output_dir/gph_files/va_cfr_all_`version'/va_`va_outcome'_scatter_b_vs_las_sp_b_ct_`version'_nw, replace
+> )
+ 23. 
+. 
+.     //------------------------------------------------------------------------------
+.     // Figure 2 alt: same control, change sample
+.     // y axis: base sample base control with peer
+.     // x axis: kitchen sink sample cbase ontrol with peer
+.     //------------------------------------------------------------------------------
+. 
+.     //------------------------------------------------------------------------
+.     // create macros for correlation coefficients
+.     //------------------------------------------------------------------------
+.     corr va_`va_outcome'_b_sp_b_ct_p va_`va_outcome'_las_sp_b_ct_p
+ 24.     local corr_`va_outcome'_2alt: di %5.3f r(rho)
+ 25. 
+.     //------------------------------------------------------------------------
+.     // create macros for regression coefficients
+.     //------------------------------------------------------------------------
+.     reg va_`va_outcome'_b_sp_b_ct_p va_`va_outcome'_las_sp_b_ct_p
+ 26.     local b_`va_outcome'_2alt: di %5.3f _b[va_`va_outcome'_las_sp_b_ct_p]
+ 27. 
+. 
+.     //------------------------------------------------------------------------
+.     // scatter plot
+.     //------------------------------------------------------------------------
+.     // weighted
+.     twoway (scatter va_`va_outcome'_b_sp_b_ct_p va_`va_outcome'_las_sp_b_ct_p [aw=n_g11_`va_outcome'_b_sp + n_g11_`va_
+> outcome'_las_sp], msymbol(o) mcolor(%20)) ///
+>       (lfit va_`va_outcome'_b_sp_b_ct_p va_`va_outcome'_las_sp_b_ct_p) ///
+>       , ytitle("Base Sample", margin(medium) size(small)) ///
+>       xtitle("Fully Restricted Sample", size(small)) ///
+>       title("``va_outcome'_str' VA Correlation") ///
+>       legend(label(1 "``va_outcome'_str' VA") label(2 "Fitted line")) ///
+>       note("Controls: Base controls with peer controls" ///
+>       "Correlation Coefficient = `corr_`va_outcome'_2alt'" ///
+>       "Fitted line slope = `b_`va_outcome'_2alt'")
+ 28. 
+.     graph export $figures_dir/share/va/`version'/va_`va_outcome'_scatter_b_vs_las_sp_b_ct_p_`version'_wt.pdf, replace
+ 29. 
+.     // unweighted
+.     twoway (scatter va_`va_outcome'_b_sp_b_ct_p va_`va_outcome'_las_sp_b_ct_p ) ///
+>       (lfit va_`va_outcome'_b_sp_b_ct_p va_`va_outcome'_las_sp_b_ct_p) ///
+>       , ytitle("Base Sample", margin(medium) size(small)) ///
+>       xtitle("Fully Restricted Sample", size(small)) ///
+>       title("``va_outcome'_str' VA Correlation") ///
+>       legend(label(1 "``va_outcome'_str' VA") label(2 "Fitted line")) ///
+>       note("Controls: Base controls with peer controls" ///
+>       "Correlation Coefficient = `corr_`va_outcome'_2alt'" ///
+>       "Fitted line slope = `b_`va_outcome'_2alt'")
+ 30. 
+.     graph export $figures_dir/share/va/`version'/va_`va_outcome'_scatter_b_vs_las_sp_b_ct_p_`version'_nw.pdf, replace
+ 31. 
+.     // redraw the graph with different titles to be used for combining into panels
+.     twoway (scatter va_`va_outcome'_b_sp_b_ct_p va_`va_outcome'_las_sp_b_ct_p ///
+>             ,  msize(small) ) ///
+>       (lfit va_`va_outcome'_b_sp_b_ct_p va_`va_outcome'_las_sp_b_ct_p) ///
+>       , title("``va_outcome'_str' VA Correlation", size(small)) ///
+>       legend(off) ytitle("") xtitle("") ///
+>       note(  "Correlation Coefficient = `corr_`va_outcome'_2alt'" ///
+>       "Fitted line slope = `b_`va_outcome'_2alt'") ///
+>       saving($output_dir/gph_files/va_cfr_all_`version'/va_`va_outcome'_scatter_b_vs_las_sp_b_ct_p_`version'_nw, repla
+> ce)
+ 32. 
+.   }
+ 33. 
+.   //------------------------------------------------------------------------------
+.   // combining figure 1 and figure 2 panels
+.   //------------------------------------------------------------------------------
+. 
+.   // figure 1
+.   graph combine ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_ela_scatter_las_sp_b_vs_las_ct_p_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_math_scatter_las_sp_b_vs_las_ct_p_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_enr_2year_scatter_las_sp_b_vs_las_ct_p_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_enr_4year_scatter_las_sp_b_vs_las_ct_p_`version'_nw.gph ///
+>     ,      title("VA Correlation in Fully Restricted Sample") ///
+>     note("Y-axis: base specification with peer controls" ///
+>     "X-axis: full specification with peer controls")
+ 34. 
+.   graph export $figures_dir/share/va/`version'/va_combined_scatter_las_sp_b_vs_las_ct_p_`version'_nw.pdf, replace
+ 35. 
+. 
+.   // figure 2
+.   graph combine ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_ela_scatter_b_vs_las_sp_b_ct_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_math_scatter_b_vs_las_sp_b_ct_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_enr_2year_scatter_b_vs_las_sp_b_ct_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_enr_4year_scatter_b_vs_las_sp_b_ct_`version'_nw.gph ///
+>     ,      title("VA Correlation in Base Specification, No Peer Controls") ///
+>     note("Y-axis: base sample" ///
+>     "X-axis: fully restricted sample")
+ 36. 
+.   graph export $figures_dir/share/va/`version'/va_combined_scatter_b_vs_las_sp_b_ct_`version'_nw.pdf, replace
+ 37. 
+. 
+.   // figure 2 alt
+.   graph combine ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_ela_scatter_b_vs_las_sp_b_ct_p_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_math_scatter_b_vs_las_sp_b_ct_p_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_enr_2year_scatter_b_vs_las_sp_b_ct_p_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_enr_4year_scatter_b_vs_las_sp_b_ct_p_`version'_nw.gph ///
+>     ,      title("VA Correlation in Base Specification with Peer Controls") ///
+>     note("Y-axis: base sample" ///
+>     "X-axis: fully restricted sample")
+ 38. 
+.   graph export $figures_dir/share/va/`version'/va_combined_scatter_b_vs_las_sp_b_ct_p_`version'_nw.pdf, replace
+ 39. 
+. 
+.   // scatter plots of different outcome VAs against each other
+. 
+.   //------------------------------------------------------------------------------
+.   // Figure 3: 2 year vs 4 year VA,
+.   // y axis: 2 year VA
+.   // x axis: 4 Year VA
+.   //------------------------------------------------------------------------------
+. 
+.   // Panel 1: base sample base control no peer
+.   corr va_enr_2year_b_sp_b_ct va_enr_4year_b_sp_b_ct
+ 40.   local corr_enr_2year_4year_1: di %5.3f r(rho)
+ 41. 
+.   reg va_enr_2year_b_sp_b_ct va_enr_4year_b_sp_b_ct
+ 42.   local b_enr_2year_4year_1: di %5.3f _b[va_enr_4year_b_sp_b_ct]
+ 43. 
+.   // weighted
+.   twoway (scatter va_enr_2year_b_sp_b_ct va_enr_4year_b_sp_b_ct [aw=n_g11_enr_2year_b_sp], msymbol(o) mcolor(%20)) ///
+>     (lfit va_enr_2year_b_sp_b_ct va_enr_4year_b_sp_b_ct) ///
+>     , ytitle("2-Year Enrollment", margin(medium) size(small)) ///
+>     xtitle("4-Year Enrollment", size(small)) ///
+>     title("Base Sample VA Correlation") ///
+>     legend(label(1 "VA") label(2 "Fitted line")) ///
+>     note("Controls: Base controls without peer controls" ///
+>     "Correlation Coefficient = `corr_enr_2year_4year_1'" ///
+>     "Fitted line slope = `corr_enr_2year_4year_1'")
+ 44. 
+.   graph export $figures_dir/share/va/`version'/va_enr_2year_4year_scatter_b_sp_b_ct_`version'_wt.pdf, replace
+ 45. 
+.   // unweighted
+.   twoway (scatter va_enr_2year_b_sp_b_ct va_enr_4year_b_sp_b_ct) ///
+>     (lfit va_enr_2year_b_sp_b_ct va_enr_4year_b_sp_b_ct) ///
+>     , ytitle("2-Year Enrollment", margin(medium) size(small)) ///
+>     xtitle("4-Year Enrollment", size(small)) ///
+>     title("Base Sample VA Correlation") ///
+>     legend(label(1 "VA") label(2 "Fitted line")) ///
+>     note("Controls: Base controls without peer controls" ///
+>     "Correlation Coefficient = `corr_enr_2year_4year_1'" ///
+>     "Fitted line slope = `corr_enr_2year_4year_1'")
+ 46. 
+.   graph export $figures_dir/share/va/`version'/va_enr_2year_4year_scatter_b_sp_b_ct_`version'_nw.pdf, replace
+ 47. 
+.   // redraw the graph with different titles to be used for combining into panels
+.   twoway (scatter va_enr_2year_b_sp_b_ct va_enr_4year_b_sp_b_ct ///
+>     ,  msize(small) ) ///
+>     (lfit va_enr_2year_b_sp_b_ct va_enr_4year_b_sp_b_ct) ///
+>     , title("Base Sample", size(small)) ///
+>     legend(off) ytitle("") xtitle("") ///
+>     note( "Controls: Base controls without peer controls" ///
+>      "Correlation Coefficient = `corr_enr_2year_4year_1'" ///
+>     "Fitted line slope = `corr_enr_2year_4year_1'", size(tiny)) ///
+>     saving($output_dir/gph_files/va_cfr_all_`version'/va_enr_2year_4year_scatter_b_sp_b_ct_`version'_nw, replace)
+ 48. 
+. 
+. 
+.   // panel 2: las sample, las controls with peer
+.   corr va_enr_2year_las_sp_las_ct_p va_enr_4year_las_sp_las_ct_p
+ 49.   local corr_enr_2year_4year_2: di %5.3f r(rho)
+ 50. 
+.   reg va_enr_2year_las_sp_las_ct_p va_enr_4year_las_sp_las_ct_p
+ 51.   local b_enr_2year_4year_2: di %5.3f _b[va_enr_4year_las_sp_las_ct_p]
+ 52. 
+.   // weighted
+.   twoway (scatter va_enr_2year_las_sp_las_ct_p va_enr_4year_las_sp_las_ct_p [aw=n_g11_enr_2year_las_sp], msymbol(o) mc
+> olor(%20)) ///
+>     (lfit va_enr_2year_las_sp_las_ct_p va_enr_4year_las_sp_las_ct_p) ///
+>     , ytitle("2-Year Enrollment", margin(medium) size(small)) ///
+>     xtitle("4-Year Enrollment", size(small)) ///
+>     title("Fully Restricted Sample VA Correlation") ///
+>     legend(label(1 "VA") label(2 "Fitted line")) ///
+>     note("Controls: Full specification with peer controls" ///
+>     "Correlation Coefficient = `corr_enr_2year_4year_2'" ///
+>     "Fitted line slope = `b_enr_2year_4year_2'")
+ 53. 
+.   graph export $figures_dir/share/va/`version'/va_enr_2year_4year_scatter_las_sp_las_ct_p_`version'_wt.pdf, replace
+ 54. 
+.   // unweighted
+.   twoway (scatter va_enr_2year_las_sp_las_ct_p va_enr_4year_las_sp_las_ct_p) ///
+>     (lfit va_enr_2year_las_sp_las_ct_p va_enr_4year_las_sp_las_ct_p) ///
+>     , ytitle("2-Year Enrollment", margin(medium) size(small)) ///
+>     xtitle("4-Year Enrollment", size(small)) ///
+>     title("Fully Restricted Sample VA Correlation") ///
+>     legend(label(1 "VA") label(2 "Fitted line")) ///
+>     note("Controls: Full specification with peer controls" ///
+>     "Correlation Coefficient = `corr_enr_2year_4year_2'" ///
+>     "Fitted line slope = `b_enr_2year_4year_2'")
+ 55. 
+.   graph export $figures_dir/share/va/`version'/va_enr_2year_4year_scatter_las_sp_las_ct_p_`version'_nw.pdf, replace
+ 56. 
+.   // redraw the graph with different titles to be used for combining into panels
+.   twoway (scatter va_enr_2year_las_sp_las_ct_p va_enr_4year_las_sp_las_ct_p ///
+>     ,  msize(small) ) ///
+>     (lfit va_enr_2year_las_sp_las_ct_p va_enr_4year_las_sp_las_ct_p) ///
+>     , title("Fully Restricted Sample", size(small)) ///
+>     legend(off) ytitle("") xtitle("") ///
+>     note( "Controls: Full specification with peer controls" ///
+>     "Correlation Coefficient = `corr_enr_2year_4year_2'" ///
+>     "Fitted line slope = `b_enr_2year_4year_2'", size(tiny)) ///
+>     saving($output_dir/gph_files/va_cfr_all_`version'/va_enr_2year_4year_scatter_las_sp_las_ct_p_`version'_nw, replace
+> )
+ 57. 
+. 
+.   // combining figure 3 panels
+.   graph combine ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_enr_2year_4year_scatter_b_sp_b_ct_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_enr_2year_4year_scatter_las_sp_las_ct_p_`version'_nw.gph ///
+>     , title("2-Year vs. 4-Year Enrollment VA Correlation") ///
+>     note("Y-axis: 2-year enrollment" ///
+>     "X-axis: 4-year enrollment")
+ 58. 
+.   graph export $figures_dir/share/va/`version'/va_enr_2year_4year_scatter_combined_`version'_nw.pdf, replace
+ 59. 
+. 
+. 
+.   //------------------------------------------------------------------------------
+.   // Figure 3 alt: ELA vs Math VA,
+.   // y axis: ELA VA
+.   // x axis: Math VA
+.   //------------------------------------------------------------------------------
+. 
+.   // Panel 1: base sample base control no peer
+.   corr va_ela_b_sp_b_ct va_math_b_sp_b_ct
+ 60.   local corr_ela_math_1: di %5.3f r(rho)
+ 61. 
+.   reg va_ela_b_sp_b_ct va_math_b_sp_b_ct
+ 62.   local b_ela_math_1: di %5.3f _b[va_math_b_sp_b_ct]
+ 63. 
+.   // weighted
+.   twoway (scatter va_ela_b_sp_b_ct va_math_b_sp_b_ct [aw=n_g11_ela_b_sp], msymbol(o) mcolor(%20)) ///
+>     (lfit va_ela_b_sp_b_ct va_math_b_sp_b_ct) ///
+>     , xtitle("Math", margin(medium) size(small)) ///
+>     ytitle("ELA", size(small)) ///
+>     title("Base Sample VA Correlation") ///
+>     legend(label(1 "VA") label(2 "Fitted line")) ///
+>     note("Controls: Base controls without peer controls" ///
+>     "Correlation Coefficient = `corr_ela_math_1'" ///
+>     "Fitted line slope = `corr_ela_math_1'")
+ 64. 
+.   graph export $figures_dir/share/va/`version'/va_ela_math_scatter_b_sp_b_ct_`version'_wt.pdf, replace
+ 65. 
+.   // unweighted
+.   twoway (scatter va_ela_b_sp_b_ct va_math_b_sp_b_ct) ///
+>     (lfit va_ela_b_sp_b_ct va_math_b_sp_b_ct) ///
+>     , xtitle("Math", margin(medium) size(small)) ///
+>     ytitle("ELA", size(small)) ///
+>     title("Base Sample VA Correlation") ///
+>     legend(label(1 "VA") label(2 "Fitted line")) ///
+>     note("Controls: Base controls without peer controls" ///
+>     "Correlation Coefficient = `corr_ela_math_1'" ///
+>     "Fitted line slope = `corr_ela_math_1'")
+ 66. 
+.   graph export $figures_dir/share/va/`version'/va_ela_math_scatter_b_sp_b_ct_`version'_nw.pdf, replace
+ 67. 
+.   // redraw the graph with different titles to be used for combining into panels
+.   twoway (scatter va_ela_b_sp_b_ct va_math_b_sp_b_ct ///
+>     ,  msize(small) ) ///
+>     (lfit va_ela_b_sp_b_ct va_math_b_sp_b_ct) ///
+>     , title("Base Sample", size(small)) ///
+>     legend(off) ytitle("") xtitle("") ///
+>     note( "Controls: Base controls without peer controls" ///
+>      "Correlation Coefficient = `corr_ela_math_1'" ///
+>     "Fitted line slope = `corr_ela_math_1'", size(tiny)) ///
+>     saving($output_dir/gph_files/va_cfr_all_`version'/va_ela_math_scatter_b_sp_b_ct_`version'_nw, replace)
+ 68. 
+. 
+. 
+.   // panel 2: las sample, las controls with peer
+.   corr va_ela_las_sp_las_ct_p va_math_las_sp_las_ct_p
+ 69.   local corr_ela_math_2: di %5.3f r(rho)
+ 70. 
+.   reg va_ela_las_sp_las_ct_p va_math_las_sp_las_ct_p
+ 71.   local b_ela_math_2: di %5.3f _b[va_math_las_sp_las_ct_p]
+ 72. 
+.   // weighted
+.   twoway (scatter va_ela_las_sp_las_ct_p va_math_las_sp_las_ct_p [aw=n_g11_ela_las_sp], msymbol(o) mcolor(%20)) ///
+>     (lfit va_ela_las_sp_las_ct_p va_math_las_sp_las_ct_p) ///
+>     , xtitle("Math", margin(medium) size(small)) ///
+>     ytitle("ELA", size(small)) ///
+>     title("Fully Restricted Sample VA Correlation") ///
+>     legend(label(1 "VA") label(2 "Fitted line")) ///
+>     note("Controls: Full specification with peer controls" ///
+>     "Correlation Coefficient = `corr_ela_math_2'" ///
+>     "Fitted line slope = `b_ela_math_2'")
+ 73. 
+.   graph export $figures_dir/share/va/`version'/va_ela_math_scatter_las_sp_las_ct_p_`version'_wt.pdf, replace
+ 74. 
+.   // unweighted
+.   twoway (scatter va_ela_las_sp_las_ct_p va_math_las_sp_las_ct_p) ///
+>     (lfit va_ela_las_sp_las_ct_p va_math_las_sp_las_ct_p) ///
+>     , xtitle("Math", margin(medium) size(small)) ///
+>     ytitle("ELA", size(small)) ///
+>     title("Fully Restricted Sample VA Correlation") ///
+>     legend(label(1 "VA") label(2 "Fitted line")) ///
+>     note("Controls: Full specification with peer controls" ///
+>     "Correlation Coefficient = `corr_ela_math_2'" ///
+>     "Fitted line slope = `b_ela_math_2'")
+ 75. 
+.   graph export $figures_dir/share/va/`version'/va_ela_math_scatter_las_sp_las_ct_p_`version'_nw.pdf, replace
+ 76. 
+.   // redraw the graph with different titles to be used for combining into panels
+.   twoway (scatter va_ela_las_sp_las_ct_p va_math_las_sp_las_ct_p ///
+>     ,  msize(small) ) ///
+>     (lfit va_ela_las_sp_las_ct_p va_math_las_sp_las_ct_p) ///
+>     , title("Fully Restricted Sample", size(small)) ///
+>     legend(off) ytitle("") xtitle("") ///
+>     note( "Controls: Full specification with peer controls" ///
+>     "Correlation Coefficient = `corr_ela_math_2'" ///
+>     "Fitted line slope = `b_ela_math_2'", size(tiny)) ///
+>     saving($output_dir/gph_files/va_cfr_all_`version'/va_ela_math_scatter_las_sp_las_ct_p_`version'_nw, replace)
+ 77. 
+. 
+.   // combining figure 3 panels
+.   graph combine ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_ela_math_scatter_b_sp_b_ct_`version'_nw.gph ///
+>     $output_dir/gph_files/va_cfr_all_`version'/va_ela_math_scatter_las_sp_las_ct_p_`version'_nw.gph ///
+>     , title("ELA vs. Math VA Correlation") ///
+>     note("Y-axis: ELA" ///
+>     "X-axis: Math")
+ 78. 
+.   graph export $figures_dir/share/va/`version'/va_ela_math_scatter_combined_`version'_nw.pdf, replace
+ 79. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+.   //------------------------------------------------------------------------------
+.   // Figure 4a: 2 year and 4 year VA against ELA VA
+.   // Figure 4b: 2 year and 4 year VA against math VA
+.   // y axis: enrollment
+.   // x axis: ELA
+.   //------------------------------------------------------------------------------
+. 
+.   foreach outcome in enr_2year enr_4year {
+ 80. 
+.     foreach subject in ela math {
+ 81.       // base sample base controls no peer
+.       corr va_`outcome'_b_sp_b_ct va_`subject'_b_sp_b_ct
+ 82.       local corr_`outcome'_`subject'_b_sp: di %5.3f r(rho)
+ 83. 
+.       reg va_`outcome'_b_sp_b_ct va_`subject'_b_sp_b_ct
+ 84.       local b_`outcome'_`subject'_b_sp: di %5.3f _b[va_`subject'_b_sp_b_ct]
+ 85. 
+.       // weighted
+.       twoway (scatter va_`outcome'_b_sp_b_ct va_`subject'_b_sp_b_ct [aw=n_g11_`outcome'_b_sp], msymbol(o) mcolor(%20))
+>  ///
+>         (lfit va_`outcome'_b_sp_b_ct va_`subject'_b_sp_b_ct) ///
+>         , title("``outcome'_str' vs. ``subject'_str' VA Correlation") ///
+>         ytitle("``outcome'_str'") ///
+>         xtitle("``subject'_str'") ///
+>         legend(label(1 "VA") label(2 "Fitted line")) ///
+>         note("Sample: Base Sample. Controls: Base Controls without Peer Controls" ///
+>         "Correlation Coefficient = `corr_`outcome'_`subject'_b_sp'" ///
+>         "Fitted line slope = `b_`outcome'_`subject'_b_sp'")
+ 86. 
+.       graph export $figures_dir/share/va/`version'/va_`outcome'_`subject'_scatter_b_sp_b_ct_`version'_wt.pdf, replace
+ 87. 
+.       // unweighted
+.       twoway (scatter va_`outcome'_b_sp_b_ct va_`subject'_b_sp_b_ct ) ///
+>         (lfit va_`outcome'_b_sp_b_ct va_`subject'_b_sp_b_ct) ///
+>         , title("``outcome'_str' vs. ``subject'_str' VA Correlation") ///
+>         ytitle("``outcome'_str'") ///
+>         xtitle("``subject'_str'") ///
+>         legend(label(1 "VA") label(2 "Fitted line")) ///
+>         note("Sample: Base Sample. Controls: Base Controls without Peer Controls" ///
+>         "Correlation Coefficient = `corr_`outcome'_`subject'_b_sp'" ///
+>         "Fitted line slope = `b_`outcome'_`subject'_b_sp'")
+ 88. 
+.       graph export $figures_dir/share/va/`version'/va_`outcome'_`subject'_scatter_b_sp_b_ct_`version'_nw.pdf, replace
+ 89. 
+.       // redraw the graph with different titles to be used for combining into panels
+.       twoway (scatter va_`outcome'_b_sp_b_ct va_`subject'_b_sp_b_ct ///
+>         , msize(small) ) ///
+>         (lfit va_`outcome'_b_sp_b_ct va_`subject'_b_sp_b_ct) ///
+>         , title("``outcome'_str'", size(small)) ///
+>         legend(off) ytitle("") xtitle("") ///
+>         note("Sample: Base Sample." ///
+>         "Controls: Base Controls without Peer Controls" ///
+>         "Correlation Coefficient = `corr_`outcome'_`subject'_b_sp'" ///
+>         "Fitted line slope = `b_`outcome'_`subject'_b_sp'", size(tiny)) ///
+>         saving($output_dir/gph_files/va_cfr_all_`version'/va_`outcome'_`subject'_scatter_b_sp_b_ct_`version'_nw, repla
+> ce)
+ 90. 
+. 
+. 
+. 
+.       // las sample las controls with peer
+.       corr va_`outcome'_las_sp_las_ct_p va_`subject'_las_sp_las_ct_p
+ 91.       local corr_`outcome'_`subject'_las_sp: di %5.3f r(rho)
+ 92. 
+.       reg va_`outcome'_las_sp_las_ct_p va_`subject'_las_sp_las_ct_p
+ 93.       local b_`outcome'_`subject'_las_sp: di %5.3f _b[va_`subject'_las_sp_las_ct_p]
+ 94. 
+.       // weighted
+.       twoway (scatter va_`outcome'_las_sp_las_ct_p va_`subject'_las_sp_las_ct_p [aw=n_g11_`outcome'_las_sp], msymbol(o
+> ) mcolor(%20)) ///
+>         (lfit va_`outcome'_las_sp_las_ct_p va_`subject'_las_sp_las_ct_p) ///
+>         , title("``outcome'_str' vs. ``subject'_str' VA Correlation") ///
+>         ytitle("``outcome'_str'") ///
+>         xtitle("``subject'_str'") ///
+>         legend(label(1 "VA") label(2 "Fitted line")) ///
+>         note("Sample: Full Restricted Sample." ///
+>         "Controls: Full Specification with Peer Controls" ///
+>         "Correlation Coefficient = `corr_`outcome'_`subject'_las_sp'" ///
+>         "Fitted line slope = `b_`outcome'_`subject'_las_sp'")
+ 95. 
+.       graph export $figures_dir/share/va/`version'/va_`outcome'_`subject'_scatter_las_sp_las_ct_p_`version'_wt.pdf, re
+> place
+ 96. 
+.       // unweighted
+.       twoway (scatter va_`outcome'_las_sp_las_ct_p va_`subject'_las_sp_las_ct_p)  ///
+>         (lfit va_`outcome'_las_sp_las_ct_p va_`subject'_las_sp_las_ct_p) ///
+>         , title("``outcome'_str' vs. ``subject'_str' VA Correlation") ///
+>         ytitle("``outcome'_str'") ///
+>         xtitle("``subject'_str'") ///
+>         legend(label(1 "VA") label(2 "Fitted line")) ///
+>         note("Sample: Full Restricted Sample." ///
+>         "Controls: Full Specification with Peer Controls" ///
+>         "Correlation Coefficient = `corr_`outcome'_`subject'_las_sp'" ///
+>         "Fitted line slope = `b_`outcome'_`subject'_las_sp'")
+ 97. 
+.       graph export $figures_dir/share/va/`version'/va_`outcome'_`subject'_scatter_las_sp_las_ct_p_`version'_nw.pdf, re
+> place
+ 98. 
+.       // redraw the graph with different titles to be used for combining into panels
+.       twoway (scatter va_`outcome'_las_sp_las_ct_p va_`subject'_las_sp_las_ct_p ///
+>       , msize(small)) ///
+>         (lfit va_`outcome'_las_sp_las_ct_p va_`subject'_las_sp_las_ct_p) ///
+>         , title("``outcome'_str'", size(small)) ///
+>         legend(off) ytitle("") xtitle("") ///
+>         note("Sample: Full Restricted Sample." ///
+>         "Controls: Full Specification with Peer Controls" ///
+>         "Correlation Coefficient = `corr_`outcome'_`subject'_las_sp'" ///
+>         "Fitted line slope = `b_`outcome'_`subject'_las_sp'", size(tiny)) ///
+>         saving($output_dir/gph_files/va_cfr_all_`version'/va_`outcome'_`subject'_scatter_las_sp_las_ct_p_`version'_nw,
+>  replace)
+ 99. 
+. 
+.     }
+100. 
+.   }
+101. 
+.   // combine figure 4a and 4b panels
+.   foreach subject in ela math {
+102. 
+.       graph combine ///
+>         $output_dir/gph_files/va_cfr_all_`version'/va_enr_2year_`subject'_scatter_b_sp_b_ct_`version'_nw.gph ///
+>         $output_dir/gph_files/va_cfr_all_`version'/va_enr_2year_`subject'_scatter_las_sp_las_ct_p_`version'_nw.gph ///
+>         $output_dir/gph_files/va_cfr_all_`version'/va_enr_4year_`subject'_scatter_b_sp_b_ct_`version'_nw.gph ///
+>         $output_dir/gph_files/va_cfr_all_`version'/va_enr_4year_`subject'_scatter_las_sp_las_ct_p_`version'_nw.gph ///
+>         ,          title("Enrollment vs. ``subject'_str' VA Correlation")
+103. 
+.       graph export $figures_dir/share/va/`version'/va_enr_2year_4year_`subject'_scatter_combined_`version'_nw.pdf, rep
+> lace
+104.   }
+105. 
+. 
+.   //------------------------------------------------------------------------------
+.   // Figure 5a: 2 year and 4 year enrollmenet on ELA VA, heterogeneity by prior ELA
+.   // Figure 5b: 2 year and 4 year enrollmenet on math VA, heterogeneity by prior math
+.   // y axis: enrollment
+.   // x axis: ELA
+.   //------------------------------------------------------------------------------
+.   * GATE: prior-score-decile heterogeneity. Single source of truth = $run_prior_score in
+.   * do/settings.do. Producer (reg_out_va_all.do / reg_out_va_dk_all.do) and ALL consumers
+.   * (<x>_tab.do, <x>_fig.do, va_scatter.do) MUST gate on the same global; a disabled producer
+.   * otherwise leaves consumers reading missing .ster / .gph -> r(601). [2026-05-28]
+.   if "$run_prior_score" != "0" {
+106.   foreach subject in ela math {
+107.     // without distance controls
+.       // export individual figures
+.       graph use $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_2year_va_`subject'_x_prior_
+> `subject'_b_sp_b_ct_m.gph
+108.       graph export $figures_dir/share/va/`version'/het_reg_enr_2year_va_`subject'_x_prior_`subject'_b_sp_b_ct_m.pdf
+> , replace
+109. 
+.       graph use $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_4year_va_`subject'_x_prior_
+> `subject'_b_sp_b_ct_m.gph
+110.       graph export $figures_dir/share/va/`version'/het_reg_enr_4year_va_`subject'_x_prior_`subject'_b_sp_b_ct_m.pdf
+> , replace
+111. 
+.       graph use $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_2year_va_`subject'_x_prior_
+> `subject'_las_sp_las_ct_p_m.gph
+112.       graph export $figures_dir/share/va/`version'/het_reg_enr_2year_va_`subject'_x_prior_`subject'_las_sp_las_ct_p
+> _m.pdf, replace
+113. 
+.       graph use $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_4year_va_`subject'_x_prior_
+> `subject'_las_sp_las_ct_p_m.gph
+114.       graph export $figures_dir/share/va/`version'/het_reg_enr_4year_va_`subject'_x_prior_`subject'_las_sp_las_ct_p
+> _m.pdf, replace
+115. 
+.       // combine figures into one panel
+.       graph combine ///
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_2year_va_`subject'_x_prior_`subject
+> '_b_sp_b_ct_m.gph ///
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_4year_va_`subject'_x_prior_`subject
+> '_b_sp_b_ct_m.gph ///
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_2year_va_`subject'_x_prior_`subject
+> '_las_sp_las_ct_p_m.gph ///
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_4year_va_`subject'_x_prior_`subject
+> '_las_sp_las_ct_p_m.gph ///
+>         , xcommon ycommon 
+116.         /* title("Enrollment on ``subject'_str' VA interacted with w/ prior ``subject'_str' score decile", size(sma
+> ll)) */
+. 
+.       graph export $figures_dir/share/va/`version'/het_reg_va_`subject'_x_prior_`subject'_combined_`version'.pdf, repl
+> ace
+117. 
+. 
+. 
+. 
+. 
+.       // with distance controls
+. 
+.       graph use $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_2year_va_`subject'_x_prior_
+> `subject'_b_sp_bd_ct_m.gph
+118.       graph export $figures_dir/share/va/`version'/het_reg_enr_2year_va_`subject'_x_prior_`subject'_b_sp_bd_ct_m.pd
+> f, replace
+119. 
+.       graph use $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_4year_va_`subject'_x_prior_
+> `subject'_b_sp_bd_ct_m.gph
+120.       graph export $figures_dir/share/va/`version'/het_reg_enr_4year_va_`subject'_x_prior_`subject'_b_sp_bd_ct_m.pd
+> f, replace
+121. 
+.       graph use $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_2year_va_`subject'_x_prior_
+> `subject'_las_sp_lasd_ct_p_m.gph
+122.       graph export $figures_dir/share/va/`version'/het_reg_enr_2year_va_`subject'_x_prior_`subject'_las_sp_lasd_ct_
+> p_m.pdf, replace
+123. 
+.       graph use $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_4year_va_`subject'_x_prior_
+> `subject'_las_sp_lasd_ct_p_m.gph
+124.       graph export $figures_dir/share/va/`version'/het_reg_enr_4year_va_`subject'_x_prior_`subject'_las_sp_lasd_ct_
+> p_m.pdf, replace
+125. 
+.       // combine figures into one panel
+.       graph combine ///
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_2year_va_`subject'_x_prior_`subject
+> '_b_sp_bd_ct_m.gph ///
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_4year_va_`subject'_x_prior_`subject
+> '_b_sp_bd_ct_m.gph ///
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_2year_va_`subject'_x_prior_`subject
+> '_las_sp_lasd_ct_p_m.gph ///
+>         $output_dir/gph_files/va_cfr_all_`version'/het_reg_prior_score/het_reg_enr_4year_va_`subject'_x_prior_`subject
+> '_las_sp_lasd_ct_p_m.gph ///
+>         , xcommon ycommon 
+126.         /* title("Enrollment on ``subject'_str' VA interacted with w/ prior ``subject'_str' score decile", size(sma
+> ll)) */
+. 
+. 
+.       graph export $figures_dir/share/va/`version'/het_reg_distance_va_`subject'_x_prior_`subject'_combined_`version'.
+> pdf, replace
+127. 
+. 
+.   }
+128.   } // end gate: $run_prior_score (prior-score-decile scatter/panel figures)
+129. 
+. }
+(ela estimates from all sample and control combinations)
+(obs=4,649)
+
+             | va_ela.. va_ela..
+-------------+------------------
+va_ela_las.. |   1.0000
+va_ela_las.. |   0.9308   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,649
+-------------+----------------------------------   F(1, 4647)      =  30145.99
+       Model |  60.5729447         1  60.5729447   Prob > F        =    0.0000
+    Residual |  9.33730971     4,647   .00200932   R-squared       =    0.8664
+-------------+----------------------------------   Adj R-squared   =    0.8664
+       Total |  69.9102544     4,648  .015040933   Root MSE        =    .04483
+
+----------------------------------------------------------------------------------------
+    va_ela_las_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------+----------------------------------------------------------------
+va_ela_las_sp_las_ct_p |   1.085608   .0062526   173.63   0.000      1.07335    1.097866
+                 _cons |  -.0065312   .0006577    -9.93   0.000    -.0078206   -.0052418
+----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_scatter_las_sp_b_vs_las_c
+    > t_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_scatter_las_sp_b_vs_las_c
+    > t_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_ela_scatter_las_sp_
+> b_vs_las_ct_p_v1_nw.gph saved
+(obs=4,690)
+
+             | va_ela.. va_ela..
+-------------+------------------
+~a_b_sp_b_ct |   1.0000
+va_ela_las.. |   0.9201   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,690
+-------------+----------------------------------   F(1, 4688)      =  25875.46
+       Model |  83.5155014         1  83.5155014   Prob > F        =    0.0000
+    Residual |  15.1309641     4,688  .003227595   R-squared       =    0.8466
+-------------+----------------------------------   Adj R-squared   =    0.8466
+       Total |  98.6464655     4,689  .021037847   Root MSE        =    .05681
+
+------------------------------------------------------------------------------------
+  va_ela_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+va_ela_las_sp_b_ct |   1.092556    .006792   160.86   0.000      1.07924    1.105871
+             _cons |   .0058969   .0008299     7.11   0.000     .0042699    .0075238
+------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_scatter_b_vs_las_sp_b_ct_
+    > v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_scatter_b_vs_las_sp_b_ct_
+    > v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_ela_scatter_b_vs_la
+> s_sp_b_ct_v1_nw.gph saved
+(obs=4,690)
+
+             | va_ela.. va_ela..
+-------------+------------------
+va_ela_b_s.. |   1.0000
+va_ela_las.. |   0.9117   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,690
+-------------+----------------------------------   F(1, 4688)      =  23073.31
+       Model |  64.6656451         1  64.6656451   Prob > F        =    0.0000
+    Residual |  13.1386658     4,688  .002802616   R-squared       =    0.8311
+-------------+----------------------------------   Adj R-squared   =    0.8311
+       Total |  77.8043108     4,689  .016592943   Root MSE        =    .05294
+
+--------------------------------------------------------------------------------------
+  va_ela_b_sp_b_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+va_ela_las_sp_b_ct_p |   1.075439     .00708   151.90   0.000     1.061559    1.089319
+               _cons |   .0077452   .0007733    10.02   0.000     .0062291    .0092613
+--------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_scatter_b_vs_las_sp_b_ct_
+    > p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_scatter_b_vs_las_sp_b_ct_
+    > p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_ela_scatter_b_vs_la
+> s_sp_b_ct_p_v1_nw.gph saved
+(obs=4,640)
+
+             | va_mat.. va_mat..
+-------------+------------------
+va_math_la.. |   1.0000
+va_math_la.. |   0.8764   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,640
+-------------+----------------------------------   F(1, 4638)      =  15354.97
+       Model |  58.2535658         1  58.2535658   Prob > F        =    0.0000
+    Residual |  17.5956049     4,638  .003793791   R-squared       =    0.7680
+-------------+----------------------------------   Adj R-squared   =    0.7680
+       Total |  75.8491707     4,639  .016350328   Root MSE        =    .06159
+
+-----------------------------------------------------------------------------------------
+    va_math_las_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------------+----------------------------------------------------------------
+va_math_las_sp_las_ct_p |   1.110478   .0089616   123.92   0.000     1.092909    1.128047
+                  _cons |  -.0108543   .0009043   -12.00   0.000    -.0126272   -.0090813
+-----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_math_scatter_las_sp_b_vs_las_
+    > ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_math_scatter_las_sp_b_vs_las_
+    > ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_math_scatter_las_sp
+> _b_vs_las_ct_p_v1_nw.gph saved
+(obs=4,681)
+
+             | va_mat.. va_mat..
+-------------+------------------
+~h_b_sp_b_ct |   1.0000
+va_math_la.. |   0.9004   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,681
+-------------+----------------------------------   F(1, 4679)      =  20044.84
+       Model |  84.6528981         1  84.6528981   Prob > F        =    0.0000
+    Residual |  19.7602464     4,679  .004223177   R-squared       =    0.8107
+-------------+----------------------------------   Adj R-squared   =    0.8107
+       Total |  104.413145     4,680  .022310501   Root MSE        =    .06499
+
+-------------------------------------------------------------------------------------
+  va_math_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------------+----------------------------------------------------------------
+va_math_las_sp_b_ct |   1.056106   .0074594   141.58   0.000     1.041482     1.07073
+              _cons |   .0055737   .0009545     5.84   0.000     .0037024     .007445
+-------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_math_scatter_b_vs_las_sp_b_ct
+    > _v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_math_scatter_b_vs_las_sp_b_ct
+    > _v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_math_scatter_b_vs_l
+> as_sp_b_ct_v1_nw.gph saved
+(obs=4,681)
+
+             | va_mat.. va_mat..
+-------------+------------------
+va_math_b_.. |   1.0000
+va_math_la.. |   0.8939   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,681
+-------------+----------------------------------   F(1, 4679)      =  18603.01
+       Model |  58.4148333         1  58.4148333   Prob > F        =    0.0000
+    Residual |  14.6924068     4,679  .003140074   R-squared       =    0.7990
+-------------+----------------------------------   Adj R-squared   =    0.7990
+       Total |  73.1072401     4,680  .015621205   Root MSE        =    .05604
+
+---------------------------------------------------------------------------------------
+  va_math_b_sp_b_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+va_math_las_sp_b_ct_p |   1.027462   .0075331   136.39   0.000     1.012694    1.042231
+                _cons |   .0053249   .0008191     6.50   0.000     .0037191    .0069308
+---------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_math_scatter_b_vs_las_sp_b_ct
+    > _p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_math_scatter_b_vs_las_sp_b_ct
+    > _p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_math_scatter_b_vs_l
+> as_sp_b_ct_p_v1_nw.gph saved
+(obs=4,673)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_2ye.. |   0.7567   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,673
+-------------+----------------------------------   F(1, 4671)      =   6256.81
+       Model |  21.0942113         1  21.0942113   Prob > F        =    0.0000
+    Residual |  15.7478186     4,671  .003371402   R-squared       =    0.5726
+-------------+----------------------------------   Adj R-squared   =    0.5725
+       Total |  36.8420299     4,672  .007885708   Root MSE        =    .05806
+
+----------------------------------------------------------------------------------------------
+    va_enr_2year_las_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+va_enr_2year_las_sp_las_ct_p |   1.428854   .0180639    79.10   0.000      1.39344    1.464267
+                       _cons |  -.0093633   .0008495   -11.02   0.000    -.0110286    -.007698
+----------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_scatter_las_sp_b_vs
+    > _las_ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_scatter_las_sp_b_vs
+    > _las_ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_2year_scatter_l
+> as_sp_b_vs_las_ct_p_v1_nw.gph saved
+(obs=4,715)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_2ye.. |   0.8956   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,715
+-------------+----------------------------------   F(1, 4713)      =  19099.23
+       Model |  36.2111958         1  36.2111958   Prob > F        =    0.0000
+    Residual |  8.93561407     4,713   .00189595   R-squared       =    0.8021
+-------------+----------------------------------   Adj R-squared   =    0.8020
+       Total |  45.1468099     4,714  .009577176   Root MSE        =    .04354
+
+------------------------------------------------------------------------------------------
+  va_enr_2year_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------------------+----------------------------------------------------------------
+va_enr_2year_las_sp_b_ct |   .9910708   .0071713   138.20   0.000     .9770118     1.00513
+                   _cons |  -.0073165   .0006383   -11.46   0.000    -.0085678   -.0060651
+------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_scatter_b_vs_las_sp
+    > _b_ct_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_scatter_b_vs_las_sp
+    > _b_ct_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_2year_scatter_b
+> _vs_las_sp_b_ct_v1_nw.gph saved
+(obs=4,715)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_2ye.. |   0.8606   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,715
+-------------+----------------------------------   F(1, 4713)      =  13455.13
+       Model |  20.4195754         1  20.4195754   Prob > F        =    0.0000
+    Residual |  7.15247215     4,713  .001517605   R-squared       =    0.7406
+-------------+----------------------------------   Adj R-squared   =    0.7405
+       Total |  27.5720476     4,714  .005848971   Root MSE        =    .03896
+
+--------------------------------------------------------------------------------------------
+  va_enr_2year_b_sp_b_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+va_enr_2year_las_sp_b_ct_p |   .9903202   .0085375   116.00   0.000     .9735827    1.007058
+                     _cons |  -.0063671   .0005673   -11.22   0.000    -.0074794   -.0052549
+--------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_scatter_b_vs_las_sp
+    > _b_ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_scatter_b_vs_las_sp
+    > _b_ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_2year_scatter_b
+> _vs_las_sp_b_ct_p_v1_nw.gph saved
+(obs=4,673)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_enr_4ye.. |   0.7977   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,673
+-------------+----------------------------------   F(1, 4671)      =   8173.00
+       Model |  24.6906588         1  24.6906588   Prob > F        =    0.0000
+    Residual |   14.111102     4,671  .003021002   R-squared       =    0.6363
+-------------+----------------------------------   Adj R-squared   =    0.6363
+       Total |  38.8017608     4,672  .008305171   Root MSE        =    .05496
+
+----------------------------------------------------------------------------------------------
+    va_enr_4year_las_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+va_enr_4year_las_sp_las_ct_p |   1.517646   .0167873    90.40   0.000     1.484735    1.550557
+                       _cons |  -.0040836   .0008044    -5.08   0.000    -.0056606   -.0025065
+----------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_scatter_las_sp_b_vs
+    > _las_ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_scatter_las_sp_b_vs
+    > _las_ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_4year_scatter_l
+> as_sp_b_vs_las_ct_p_v1_nw.gph saved
+(obs=4,715)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_enr_4ye.. |   0.9083   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,715
+-------------+----------------------------------   F(1, 4713)      =  22233.20
+       Model |  38.3180599         1  38.3180599   Prob > F        =    0.0000
+    Residual |  8.12267154     4,713  .001723461   R-squared       =    0.8251
+-------------+----------------------------------   Adj R-squared   =    0.8251
+       Total |  46.4407314     4,714  .009851661   Root MSE        =    .04151
+
+------------------------------------------------------------------------------------------
+  va_enr_4year_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------------------+----------------------------------------------------------------
+va_enr_4year_las_sp_b_ct |   .9935997   .0066636   149.11   0.000     .9805359    1.006664
+                   _cons |   .0059792   .0006047     9.89   0.000     .0047937    .0071648
+------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_scatter_b_vs_las_sp
+    > _b_ct_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_scatter_b_vs_las_sp
+    > _b_ct_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_4year_scatter_b
+> _vs_las_sp_b_ct_v1_nw.gph saved
+(obs=4,715)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_enr_4ye.. |   0.8940   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,715
+-------------+----------------------------------   F(1, 4713)      =  18766.69
+       Model |  25.3885291         1  25.3885291   Prob > F        =    0.0000
+    Residual |  6.37598392     4,713   .00135285   R-squared       =    0.7993
+-------------+----------------------------------   Adj R-squared   =    0.7992
+       Total |   31.764513     4,714  .006738335   Root MSE        =    .03678
+
+--------------------------------------------------------------------------------------------
+  va_enr_4year_b_sp_b_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+va_enr_4year_las_sp_b_ct_p |   .9794579   .0071498   136.99   0.000      .965441    .9934748
+                     _cons |   .0064213   .0005357    11.99   0.000     .0053712    .0074715
+--------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_scatter_b_vs_las_sp
+    > _b_ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_scatter_b_vs_las_sp
+    > _b_ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_4year_scatter_b
+> _vs_las_sp_b_ct_p_v1_nw.gph saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_combined_scatter_las_sp_b_vs_
+    > las_ct_p_v1_nw.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_combined_scatter_b_vs_las_sp_
+    > b_ct_v1_nw.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_combined_scatter_b_vs_las_sp_
+    > b_ct_p_v1_nw.pdf saved as PDF format
+(obs=4,895)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_4ye.. |  -0.5489   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,895
+-------------+----------------------------------   F(1, 4893)      =   2109.37
+       Model |  14.0166255         1  14.0166255   Prob > F        =    0.0000
+    Residual |  32.5136783     4,893  .006644937   R-squared       =    0.3012
+-------------+----------------------------------   Adj R-squared   =    0.3011
+       Total |  46.5303039     4,894  .009507622   Root MSE        =    .08152
+
+----------------------------------------------------------------------------------------
+va_enr_2year_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------+----------------------------------------------------------------
+va_enr_4year_b_sp_b_ct |  -.5432295   .0118279   -45.93   0.000    -.5664175   -.5200416
+                 _cons |  -.0162759   .0011656   -13.96   0.000    -.0185611   -.0139908
+----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_4year_scatter_b_sp_
+    > b_ct_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_4year_scatter_b_sp_
+    > b_ct_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_2year_4year_sca
+> tter_b_sp_b_ct_v1_nw.gph saved
+(obs=4,673)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_4ye.. |  -0.5147   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,673
+-------------+----------------------------------   F(1, 4671)      =   1683.03
+       Model |  2.73672332         1  2.73672332   Prob > F        =    0.0000
+    Residual |    7.595359     4,671  .001626067   R-squared       =    0.2649
+-------------+----------------------------------   Adj R-squared   =    0.2647
+       Total |  10.3320823     4,672   .00221149   Root MSE        =    .04032
+
+----------------------------------------------------------------------------------------------
+va_enr_2year_las_sp_las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+va_enr_4year_las_sp_las_ct_p |  -.5052655   .0123161   -41.02   0.000    -.5294108   -.4811201
+                       _cons |   .0001726   .0005902     0.29   0.770    -.0009844    .0013296
+----------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_4year_scatter_las_s
+    > p_las_ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_4year_scatter_las_s
+    > p_las_ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_2year_4year_sca
+> tter_las_sp_las_ct_p_v1_nw.gph saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_4year_scatter_combi
+    > ned_v1_nw.pdf saved as PDF format
+(obs=4,866)
+
+             | va_ela.. va_mat..
+-------------+------------------
+~a_b_sp_b_ct |   1.0000
+~h_b_sp_b_ct |   0.7216   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,866
+-------------+----------------------------------   F(1, 4864)      =   5284.97
+       Model |  53.6392204         1  53.6392204   Prob > F        =    0.0000
+    Residual |  49.3666522     4,864  .010149394   R-squared       =    0.5207
+-------------+----------------------------------   Adj R-squared   =    0.5206
+       Total |  103.005873     4,865  .021172841   Root MSE        =    .10074
+
+-----------------------------------------------------------------------------------
+ va_ela_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------+----------------------------------------------------------------
+va_math_b_sp_b_ct |     .69648   .0095805    72.70   0.000     .6776979    .7152621
+            _cons |   .0066921   .0014469     4.63   0.000     .0038556    .0095286
+-----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_math_scatter_b_sp_b_ct_v1
+    > _wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_math_scatter_b_sp_b_ct_v1
+    > _nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_ela_math_scatter_b_
+> sp_b_ct_v1_nw.gph saved
+(obs=4,636)
+
+             | va_ela.. va_mat..
+-------------+------------------
+va_ela_las.. |   1.0000
+va_math_la.. |   0.6638   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,636
+-------------+----------------------------------   F(1, 4634)      =   3649.80
+       Model |   22.595844         1   22.595844   Prob > F        =    0.0000
+    Residual |  28.6890456     4,634   .00619099   R-squared       =    0.4406
+-------------+----------------------------------   Adj R-squared   =    0.4405
+       Total |  51.2848896     4,635  .011064701   Root MSE        =    .07868
+
+-----------------------------------------------------------------------------------------
+ va_ela_las_sp_las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------------+----------------------------------------------------------------
+va_math_las_sp_las_ct_p |   .6917009   .0114494    60.41   0.000     .6692546    .7141473
+                  _cons |   .0042517   .0011558     3.68   0.000     .0019859    .0065175
+-----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_math_scatter_las_sp_las_c
+    > t_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_math_scatter_las_sp_las_c
+    > t_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_ela_math_scatter_la
+> s_sp_las_ct_p_v1_nw.gph saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_ela_math_scatter_combined_v1_
+    > nw.pdf saved as PDF format
+(obs=4,854)
+
+             | va_enr.. va_ela..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+~a_b_sp_b_ct |   0.0048   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,854
+-------------+----------------------------------   F(1, 4852)      =      0.11
+       Model |  .001043046         1  .001043046   Prob > F        =    0.7407
+    Residual |  46.2178876     4,852  .009525533   R-squared       =    0.0000
+-------------+----------------------------------   Adj R-squared   =   -0.0002
+       Total |  46.2189306     4,853  .009523785   Root MSE        =     .0976
+
+----------------------------------------------------------------------------------
+va_enr_2year_b.. | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+va_ela_b_sp_b_ct |   .0031865   .0096294     0.33   0.741    -.0156916    .0220645
+           _cons |  -.0176074   .0014009   -12.57   0.000    -.0203537    -.014861
+----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_ela_scatter_b_sp_b_
+    > ct_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_ela_scatter_b_sp_b_
+    > ct_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_2year_ela_scatt
+> er_b_sp_b_ct_v1_nw.gph saved
+(obs=4,637)
+
+             | va_enr.. va_ela..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_ela_las.. |  -0.0055   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,637
+-------------+----------------------------------   F(1, 4635)      =      0.14
+       Model |  .000309065         1  .000309065   Prob > F        =    0.7092
+    Residual |  10.3014023     4,635  .002222525   R-squared       =    0.0000
+-------------+----------------------------------   Adj R-squared   =   -0.0002
+       Total |  10.3017114     4,636  .002222112   Root MSE        =    .04714
+
+----------------------------------------------------------------------------------------
+va_enr_2year_~las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------+----------------------------------------------------------------
+va_ela_las_sp_las_ct_p |  -.0024545   .0065821    -0.37   0.709    -.0153586    .0104496
+                 _cons |  -.0005111   .0006926    -0.74   0.461    -.0018689    .0008468
+----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_ela_scatter_las_sp_
+    > las_ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_ela_scatter_las_sp_
+    > las_ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_2year_ela_scatt
+> er_las_sp_las_ct_p_v1_nw.gph saved
+(obs=4,849)
+
+             | va_enr.. va_mat..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+~h_b_sp_b_ct |  -0.0135   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,849
+-------------+----------------------------------   F(1, 4847)      =      0.88
+       Model |  .008372332         1  .008372332   Prob > F        =    0.3486
+    Residual |   46.184173     4,847  .009528404   R-squared       =    0.0002
+-------------+----------------------------------   Adj R-squared   =   -0.0000
+       Total |  46.1925453     4,848  .009528165   Root MSE        =    .09761
+
+-----------------------------------------------------------------------------------
+va_enr_2year_b_.. | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------+----------------------------------------------------------------
+va_math_b_sp_b_ct |  -.0087217   .0093044    -0.94   0.349    -.0269625    .0095191
+            _cons |   -.017578   .0014041   -12.52   0.000    -.0203306   -.0148253
+-----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_math_scatter_b_sp_b
+    > _ct_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_math_scatter_b_sp_b
+    > _ct_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_2year_math_scat
+> ter_b_sp_b_ct_v1_nw.gph saved
+(obs=4,627)
+
+             | va_enr.. va_mat..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_math_la.. |  -0.0473   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,627
+-------------+----------------------------------   F(1, 4625)      =     10.38
+       Model |  .023060966         1  .023060966   Prob > F        =    0.0013
+    Residual |  10.2741111     4,625  .002221429   R-squared       =    0.0022
+-------------+----------------------------------   Adj R-squared   =    0.0020
+       Total |  10.2971721     4,626  .002225934   Root MSE        =    .04713
+
+-----------------------------------------------------------------------------------------
+va_enr_2year_l~las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------------+----------------------------------------------------------------
+va_math_las_sp_las_ct_p |  -.0221061    .006861    -3.22   0.001    -.0355569   -.0086552
+                  _cons |  -.0005376    .000693    -0.78   0.438    -.0018962     .000821
+-----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_math_scatter_las_sp
+    > _las_ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_math_scatter_las_sp
+    > _las_ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_2year_math_scat
+> ter_las_sp_las_ct_p_v1_nw.gph saved
+(obs=4,854)
+
+             | va_enr.. va_ela..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+~a_b_sp_b_ct |   0.3766   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,854
+-------------+----------------------------------   F(1, 4852)      =    801.70
+       Model |  6.67631648         1  6.67631648   Prob > F        =    0.0000
+    Residual |  40.4060252     4,852  .008327705   R-squared       =    0.1418
+-------------+----------------------------------   Adj R-squared   =    0.1416
+       Total |  47.0823416     4,853  .009701698   Root MSE        =    .09126
+
+----------------------------------------------------------------------------------
+va_enr_4year_b.. | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+va_ela_b_sp_b_ct |    .254932   .0090036    28.31   0.000     .2372808    .2725832
+           _cons |   .0032044   .0013098     2.45   0.014     .0006365    .0057723
+----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_ela_scatter_b_sp_b_
+    > ct_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_ela_scatter_b_sp_b_
+    > ct_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_4year_ela_scatt
+> er_b_sp_b_ct_v1_nw.gph saved
+(obs=4,637)
+
+             | va_enr.. va_ela..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_ela_las.. |   0.2787   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,637
+-------------+----------------------------------   F(1, 4635)      =    390.26
+       Model |   .83042597         1   .83042597   Prob > F        =    0.0000
+    Residual |  9.86275669     4,635  .002127887   R-squared       =    0.0777
+-------------+----------------------------------   Adj R-squared   =    0.0775
+       Total |  10.6931827     4,636  .002306554   Root MSE        =    .04613
+
+----------------------------------------------------------------------------------------
+va_enr_4year_~las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------+----------------------------------------------------------------
+va_ela_las_sp_las_ct_p |   .1272309   .0064405    19.75   0.000     .1146045    .1398573
+                 _cons |   .0011658   .0006777     1.72   0.085    -.0001628    .0024945
+----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_ela_scatter_las_sp_
+    > las_ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_ela_scatter_las_sp_
+    > las_ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_4year_ela_scatt
+> er_las_sp_las_ct_p_v1_nw.gph saved
+(obs=4,849)
+
+             | va_enr.. va_mat..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+~h_b_sp_b_ct |   0.4643   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,849
+-------------+----------------------------------   F(1, 4847)      =   1332.31
+       Model |  10.1181889         1  10.1181889   Prob > F        =    0.0000
+    Residual |     36.8103     4,847   .00759445   R-squared       =    0.2156
+-------------+----------------------------------   Adj R-squared   =    0.2154
+       Total |  46.9284889     4,848  .009679969   Root MSE        =    .08715
+
+-----------------------------------------------------------------------------------
+va_enr_4year_b_.. | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------+----------------------------------------------------------------
+va_math_b_sp_b_ct |   .3031999   .0083066    36.50   0.000     .2869151    .3194847
+            _cons |   .0060427   .0012535     4.82   0.000     .0035853    .0085002
+-----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_math_scatter_b_sp_b
+    > _ct_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_math_scatter_b_sp_b
+    > _ct_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_4year_math_scat
+> ter_b_sp_b_ct_v1_nw.gph saved
+(obs=4,627)
+
+             | va_enr.. va_mat..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_math_la.. |   0.3438   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,627
+-------------+----------------------------------   F(1, 4625)      =    620.11
+       Model |  1.26314717         1  1.26314717   Prob > F        =    0.0000
+    Residual |  9.42096735     4,625  .002036966   R-squared       =    0.1182
+-------------+----------------------------------   Adj R-squared   =    0.1180
+       Total |  10.6841145     4,626  .002309579   Root MSE        =    .04513
+
+-----------------------------------------------------------------------------------------
+va_enr_4year_l~las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------------+----------------------------------------------------------------
+va_math_las_sp_las_ct_p |   .1636062     .00657    24.90   0.000     .1507259    .1764865
+                  _cons |   .0018408   .0006636     2.77   0.006     .0005399    .0031418
+-----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_math_scatter_las_sp
+    > _las_ct_p_v1_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_4year_math_scatter_las_sp
+    > _las_ct_p_v1_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v1/va_enr_4year_math_scat
+> ter_las_sp_las_ct_p_v1_nw.gph saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_4year_ela_scatter_c
+    > ombined_v1_nw.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_enr_2year_4year_math_scatter_
+    > combined_v1_nw.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_2year_va_ela_x_prior
+    > _ela_b_sp_b_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_4year_va_ela_x_prior
+    > _ela_b_sp_b_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_2year_va_ela_x_prior
+    > _ela_las_sp_las_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_4year_va_ela_x_prior
+    > _ela_las_sp_las_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_va_ela_x_prior_ela_combi
+    > ned_v1.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_2year_va_ela_x_prior
+    > _ela_b_sp_bd_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_4year_va_ela_x_prior
+    > _ela_b_sp_bd_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_2year_va_ela_x_prior
+    > _ela_las_sp_lasd_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_4year_va_ela_x_prior
+    > _ela_las_sp_lasd_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_distance_va_ela_x_prior_
+    > ela_combined_v1.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_2year_va_math_x_prio
+    > r_math_b_sp_b_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_4year_va_math_x_prio
+    > r_math_b_sp_b_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_2year_va_math_x_prio
+    > r_math_las_sp_las_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_4year_va_math_x_prio
+    > r_math_las_sp_las_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_va_math_x_prior_math_com
+    > bined_v1.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_2year_va_math_x_prio
+    > r_math_b_sp_bd_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_4year_va_math_x_prio
+    > r_math_b_sp_bd_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_2year_va_math_x_prio
+    > r_math_las_sp_lasd_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_enr_4year_va_math_x_prio
+    > r_math_las_sp_lasd_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/het_reg_distance_va_math_x_prior
+    > _math_combined_v1.pdf saved as PDF format
+(ela estimates from all sample and control combinations)
+(obs=4,649)
+
+             | va_ela.. va_ela..
+-------------+------------------
+va_ela_las.. |   1.0000
+va_ela_las.. |   0.9266   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,649
+-------------+----------------------------------   F(1, 4647)      =  28217.50
+       Model |  66.4209478         1  66.4209478   Prob > F        =    0.0000
+    Residual |  10.9385359     4,647  .002353892   R-squared       =    0.8586
+-------------+----------------------------------   Adj R-squared   =    0.8586
+       Total |  77.3594836     4,648  .016643607   Root MSE        =    .04852
+
+----------------------------------------------------------------------------------------
+    va_ela_las_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------+----------------------------------------------------------------
+va_ela_las_sp_las_ct_p |   1.085247   .0064605   167.98   0.000     1.072582    1.097913
+                 _cons |  -.0079214   .0007117   -11.13   0.000    -.0093167    -.006526
+----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_scatter_las_sp_b_vs_las_c
+    > t_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_scatter_las_sp_b_vs_las_c
+    > t_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_ela_scatter_las_sp_
+> b_vs_las_ct_p_v2_nw.gph saved
+(obs=4,690)
+
+             | va_ela.. va_ela..
+-------------+------------------
+~a_b_sp_b_ct |   1.0000
+va_ela_las.. |   0.9177   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,690
+-------------+----------------------------------   F(1, 4688)      =  25001.33
+       Model |  94.3093872         1  94.3093872   Prob > F        =    0.0000
+    Residual |  17.6839529     4,688  .003772174   R-squared       =    0.8421
+-------------+----------------------------------   Adj R-squared   =    0.8421
+       Total |   111.99334     4,689   .02388427   Root MSE        =    .06142
+
+------------------------------------------------------------------------------------
+  va_ela_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+va_ela_las_sp_b_ct |   1.103702   .0069802   158.12   0.000     1.090018    1.117387
+             _cons |   .0067742   .0008976     7.55   0.000     .0050145     .008534
+------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_scatter_b_vs_las_sp_b_ct_
+    > v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_scatter_b_vs_las_sp_b_ct_
+    > v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_ela_scatter_b_vs_la
+> s_sp_b_ct_v2_nw.gph saved
+(obs=4,690)
+
+             | va_ela.. va_ela..
+-------------+------------------
+va_ela_b_s.. |   1.0000
+va_ela_las.. |   0.9063   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,690
+-------------+----------------------------------   F(1, 4688)      =  21552.45
+       Model |  71.8197496         1  71.8197496   Prob > F        =    0.0000
+    Residual |  15.6219333     4,688  .003332324   R-squared       =    0.8213
+-------------+----------------------------------   Adj R-squared   =    0.8213
+       Total |  87.4416829     4,689  .018648258   Root MSE        =    .05773
+
+--------------------------------------------------------------------------------------
+  va_ela_b_sp_b_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------+----------------------------------------------------------------
+va_ela_las_sp_b_ct_p |   1.091808    .007437   146.81   0.000     1.077228    1.106388
+               _cons |   .0088251    .000843    10.47   0.000     .0071724    .0104779
+--------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_scatter_b_vs_las_sp_b_ct_
+    > p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_scatter_b_vs_las_sp_b_ct_
+    > p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_ela_scatter_b_vs_la
+> s_sp_b_ct_p_v2_nw.gph saved
+(obs=4,640)
+
+             | va_mat.. va_mat..
+-------------+------------------
+va_math_la.. |   1.0000
+va_math_la.. |   0.8712   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,640
+-------------+----------------------------------   F(1, 4638)      =  14608.42
+       Model |  63.3505109         1  63.3505109   Prob > F        =    0.0000
+    Residual |   20.113032     4,638  .004336574   R-squared       =    0.7590
+-------------+----------------------------------   Adj R-squared   =    0.7590
+       Total |   83.463543     4,639   .01799171   Root MSE        =    .06585
+
+-----------------------------------------------------------------------------------------
+    va_math_las_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------------+----------------------------------------------------------------
+va_math_las_sp_las_ct_p |   1.104374   .0091372   120.87   0.000     1.086461    1.122288
+                  _cons |  -.0130673   .0009669   -13.51   0.000    -.0149629   -.0111717
+-----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_math_scatter_las_sp_b_vs_las_
+    > ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_math_scatter_las_sp_b_vs_las_
+    > ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_math_scatter_las_sp
+> _b_vs_las_ct_p_v2_nw.gph saved
+(obs=4,681)
+
+             | va_mat.. va_mat..
+-------------+------------------
+~h_b_sp_b_ct |   1.0000
+va_math_la.. |   0.8967   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,681
+-------------+----------------------------------   F(1, 4679)      =  19205.93
+       Model |  94.1949853         1  94.1949853   Prob > F        =    0.0000
+    Residual |  22.9480302     4,679  .004904473   R-squared       =    0.8041
+-------------+----------------------------------   Adj R-squared   =    0.8041
+       Total |  117.143015     4,680  .025030559   Root MSE        =    .07003
+
+-------------------------------------------------------------------------------------
+  va_math_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------------+----------------------------------------------------------------
+va_math_las_sp_b_ct |   1.061993   .0076631   138.59   0.000      1.04697    1.077017
+              _cons |   .0065094   .0010301     6.32   0.000     .0044899    .0085288
+-------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_math_scatter_b_vs_las_sp_b_ct
+    > _v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_math_scatter_b_vs_las_sp_b_ct
+    > _v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_math_scatter_b_vs_l
+> as_sp_b_ct_v2_nw.gph saved
+(obs=4,681)
+
+             | va_mat.. va_mat..
+-------------+------------------
+va_math_b_.. |   1.0000
+va_math_la.. |   0.8850   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,681
+-------------+----------------------------------   F(1, 4679)      =  16899.20
+       Model |  63.5904389         1  63.5904389   Prob > F        =    0.0000
+    Residual |  17.6067307     4,679  .003762926   R-squared       =    0.7832
+-------------+----------------------------------   Adj R-squared   =    0.7831
+       Total |  81.1971696     4,680  .017349823   Root MSE        =    .06134
+
+---------------------------------------------------------------------------------------
+  va_math_b_sp_b_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+va_math_las_sp_b_ct_p |    1.03551   .0079656   130.00   0.000     1.019894    1.051126
+                _cons |   .0063465   .0008968     7.08   0.000     .0045883    .0081046
+---------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_math_scatter_b_vs_las_sp_b_ct
+    > _p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_math_scatter_b_vs_las_sp_b_ct
+    > _p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_math_scatter_b_vs_l
+> as_sp_b_ct_p_v2_nw.gph saved
+(obs=4,673)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_2ye.. |   0.7613   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,673
+-------------+----------------------------------   F(1, 4671)      =   6439.43
+       Model |  21.5360734         1  21.5360734   Prob > F        =    0.0000
+    Residual |  15.6217227     4,671  .003344406   R-squared       =    0.5796
+-------------+----------------------------------   Adj R-squared   =    0.5795
+       Total |  37.1577962     4,672  .007953295   Root MSE        =    .05783
+
+----------------------------------------------------------------------------------------------
+    va_enr_2year_las_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+va_enr_2year_las_sp_las_ct_p |   1.437402   .0179124    80.25   0.000     1.402285    1.472519
+                       _cons |  -.0092193   .0008461   -10.90   0.000     -.010878   -.0075606
+----------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_scatter_las_sp_b_vs
+    > _las_ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_scatter_las_sp_b_vs
+    > _las_ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_2year_scatter_l
+> as_sp_b_vs_las_ct_p_v2_nw.gph saved
+(obs=4,715)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_2ye.. |   0.8951   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,715
+-------------+----------------------------------   F(1, 4713)      =  18988.90
+       Model |  36.4080272         1  36.4080272   Prob > F        =    0.0000
+    Residual |  9.03638684     4,713  .001917332   R-squared       =    0.8012
+-------------+----------------------------------   Adj R-squared   =    0.8011
+       Total |   45.444414     4,714  .009640308   Root MSE        =    .04379
+
+------------------------------------------------------------------------------------------
+  va_enr_2year_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------------------+----------------------------------------------------------------
+va_enr_2year_las_sp_b_ct |   .9895417    .007181   137.80   0.000     .9754636     1.00362
+                   _cons |  -.0074758   .0006418   -11.65   0.000     -.008734   -.0062176
+------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_scatter_b_vs_las_sp
+    > _b_ct_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_scatter_b_vs_las_sp
+    > _b_ct_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_2year_scatter_b
+> _vs_las_sp_b_ct_v2_nw.gph saved
+(obs=4,715)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_2ye.. |   0.8567   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,715
+-------------+----------------------------------   F(1, 4713)      =  12996.27
+       Model |  20.1957564         1  20.1957564   Prob > F        =    0.0000
+    Residual |   7.3238388     4,713  .001553965   R-squared       =    0.7339
+-------------+----------------------------------   Adj R-squared   =    0.7338
+       Total |  27.5195952     4,714  .005837844   Root MSE        =    .03942
+
+--------------------------------------------------------------------------------------------
+  va_enr_2year_b_sp_b_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+va_enr_2year_las_sp_b_ct_p |   .9946458   .0087249   114.00   0.000      .977541    1.011751
+                     _cons |  -.0065704   .0005741   -11.44   0.000    -.0076959   -.0054449
+--------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_scatter_b_vs_las_sp
+    > _b_ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_scatter_b_vs_las_sp
+    > _b_ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_2year_scatter_b
+> _vs_las_sp_b_ct_p_v2_nw.gph saved
+(obs=4,673)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_enr_4ye.. |   0.7949   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,673
+-------------+----------------------------------   F(1, 4671)      =   8019.99
+       Model |  25.0371503         1  25.0371503   Prob > F        =    0.0000
+    Residual |  14.5821235     4,671  .003121842   R-squared       =    0.6319
+-------------+----------------------------------   Adj R-squared   =    0.6319
+       Total |  39.6192739     4,672  .008480153   Root MSE        =    .05587
+
+----------------------------------------------------------------------------------------------
+    va_enr_4year_las_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+va_enr_4year_las_sp_las_ct_p |   1.516558   .0169345    89.55   0.000     1.483358    1.549757
+                       _cons |  -.0047928   .0008177    -5.86   0.000     -.006396   -.0031897
+----------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_scatter_las_sp_b_vs
+    > _las_ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_scatter_las_sp_b_vs
+    > _las_ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_4year_scatter_l
+> as_sp_b_vs_las_ct_p_v2_nw.gph saved
+(obs=4,715)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_enr_4ye.. |   0.9085   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,715
+-------------+----------------------------------   F(1, 4713)      =  22271.86
+       Model |  39.2148096         1  39.2148096   Prob > F        =    0.0000
+    Residual |   8.2983354     4,713  .001760733   R-squared       =    0.8253
+-------------+----------------------------------   Adj R-squared   =    0.8253
+       Total |   47.513145     4,714  .010079157   Root MSE        =    .04196
+
+------------------------------------------------------------------------------------------
+  va_enr_4year_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------------------+----------------------------------------------------------------
+va_enr_4year_las_sp_b_ct |    .994737   .0066655   149.24   0.000     .9816695    1.007804
+                   _cons |   .0062644   .0006113    10.25   0.000     .0050659    .0074629
+------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_scatter_b_vs_las_sp
+    > _b_ct_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_scatter_b_vs_las_sp
+    > _b_ct_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_4year_scatter_b
+> _vs_las_sp_b_ct_v2_nw.gph saved
+(obs=4,715)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_enr_4ye.. |   0.8884   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,715
+-------------+----------------------------------   F(1, 4713)      =  17651.18
+       Model |  24.0268238         1  24.0268238   Prob > F        =    0.0000
+    Residual |    6.415345     4,713  .001361202   R-squared       =    0.7893
+-------------+----------------------------------   Adj R-squared   =    0.7892
+       Total |  30.4421688     4,714  .006457821   Root MSE        =    .03689
+
+--------------------------------------------------------------------------------------------
+  va_enr_4year_b_sp_b_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+---------------------------+----------------------------------------------------------------
+va_enr_4year_las_sp_b_ct_p |   .9864715    .007425   132.86   0.000      .971915    1.001028
+                     _cons |   .0067167   .0005373    12.50   0.000     .0056633      .00777
+--------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_scatter_b_vs_las_sp
+    > _b_ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_scatter_b_vs_las_sp
+    > _b_ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_4year_scatter_b
+> _vs_las_sp_b_ct_p_v2_nw.gph saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_combined_scatter_las_sp_b_vs_
+    > las_ct_p_v2_nw.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_combined_scatter_b_vs_las_sp_
+    > b_ct_v2_nw.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_combined_scatter_b_vs_las_sp_
+    > b_ct_p_v2_nw.pdf saved as PDF format
+(obs=4,895)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_4ye.. |  -0.5383   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,895
+-------------+----------------------------------   F(1, 4893)      =   1996.34
+       Model |  13.5686772         1  13.5686772   Prob > F        =    0.0000
+    Residual |   33.256641     4,893  .006796779   R-squared       =    0.2898
+-------------+----------------------------------   Adj R-squared   =    0.2896
+       Total |  46.8253182     4,894  .009567903   Root MSE        =    .08244
+
+----------------------------------------------------------------------------------------
+va_enr_2year_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------+----------------------------------------------------------------
+va_enr_4year_b_sp_b_ct |   -.528313   .0118243   -44.68   0.000    -.5514938   -.5051321
+                 _cons |  -.0165979   .0011787   -14.08   0.000    -.0189087    -.014287
+----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_4year_scatter_b_sp_
+    > b_ct_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_4year_scatter_b_sp_
+    > b_ct_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_2year_4year_sca
+> tter_b_sp_b_ct_v2_nw.gph saved
+(obs=4,673)
+
+             | va_enr.. va_enr..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_enr_4ye.. |  -0.5187   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,673
+-------------+----------------------------------   F(1, 4671)      =   1719.25
+       Model |  2.80434424         1  2.80434424   Prob > F        =    0.0000
+    Residual |  7.61906754     4,671  .001631143   R-squared       =    0.2690
+-------------+----------------------------------   Adj R-squared   =    0.2689
+       Total |  10.4234118     4,672  .002231038   Root MSE        =    .04039
+
+----------------------------------------------------------------------------------------------
+va_enr_2year_las_sp_las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------------+----------------------------------------------------------------
+va_enr_4year_las_sp_las_ct_p |  -.5075539   .0122409   -41.46   0.000    -.5315518    -.483556
+                       _cons |   .0001422   .0005911     0.24   0.810    -.0010166     .001301
+----------------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_4year_scatter_las_s
+    > p_las_ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_4year_scatter_las_s
+    > p_las_ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_2year_4year_sca
+> tter_las_sp_las_ct_p_v2_nw.gph saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_4year_scatter_combi
+    > ned_v2_nw.pdf saved as PDF format
+(obs=4,866)
+
+             | va_ela.. va_mat..
+-------------+------------------
+~a_b_sp_b_ct |   1.0000
+~h_b_sp_b_ct |   0.7440   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,866
+-------------+----------------------------------   F(1, 4864)      =   6031.59
+       Model |    64.48743         1    64.48743   Prob > F        =    0.0000
+    Residual |  52.0039993     4,864  .010691612   R-squared       =    0.5536
+-------------+----------------------------------   Adj R-squared   =    0.5535
+       Total |  116.491429     4,865  .023944795   Root MSE        =     .1034
+
+-----------------------------------------------------------------------------------
+ va_ela_b_sp_b_ct | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------+----------------------------------------------------------------
+va_math_b_sp_b_ct |   .7225192   .0093032    77.66   0.000     .7042807    .7407577
+            _cons |   .0066638   .0014857     4.49   0.000     .0037511    .0095766
+-----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_math_scatter_b_sp_b_ct_v2
+    > _wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_math_scatter_b_sp_b_ct_v2
+    > _nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_ela_math_scatter_b_
+> sp_b_ct_v2_nw.gph saved
+(obs=4,636)
+
+             | va_ela.. va_mat..
+-------------+------------------
+va_ela_las.. |   1.0000
+va_math_la.. |   0.6888   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,636
+-------------+----------------------------------   F(1, 4634)      =   4183.67
+       Model |  26.6987075         1  26.6987075   Prob > F        =    0.0000
+    Residual |   29.572569     4,634  .006381651   R-squared       =    0.4745
+-------------+----------------------------------   Adj R-squared   =    0.4744
+       Total |  56.2712765     4,635  .012140513   Root MSE        =    .07989
+
+-----------------------------------------------------------------------------------------
+ va_ela_las_sp_las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------------+----------------------------------------------------------------
+va_math_las_sp_las_ct_p |    .717025   .0110855    64.68   0.000     .6952922    .7387579
+                  _cons |   .0037763   .0011734     3.22   0.001     .0014758    .0060768
+-----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_math_scatter_las_sp_las_c
+    > t_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_math_scatter_las_sp_las_c
+    > t_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_ela_math_scatter_la
+> s_sp_las_ct_p_v2_nw.gph saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_ela_math_scatter_combined_v2_
+    > nw.pdf saved as PDF format
+(obs=4,854)
+
+             | va_enr.. va_ela..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+~a_b_sp_b_ct |   0.0208   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,854
+-------------+----------------------------------   F(1, 4852)      =      2.09
+       Model |  .020029138         1  .020029138   Prob > F        =    0.1482
+    Residual |  46.4792189     4,852  .009579394   R-squared       =    0.0004
+-------------+----------------------------------   Adj R-squared   =    0.0002
+       Total |   46.499248     4,853  .009581547   Root MSE        =    .09787
+
+----------------------------------------------------------------------------------
+va_enr_2year_b.. | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+va_ela_b_sp_b_ct |   .0131333   .0090826     1.45   0.148    -.0046728    .0309394
+           _cons |  -.0176568   .0014048   -12.57   0.000    -.0204109   -.0149028
+----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_ela_scatter_b_sp_b_
+    > ct_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_ela_scatter_b_sp_b_
+    > ct_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_2year_ela_scatt
+> er_b_sp_b_ct_v2_nw.gph saved
+(obs=4,637)
+
+             | va_enr.. va_ela..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_ela_las.. |  -0.0062   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,637
+-------------+----------------------------------   F(1, 4635)      =      0.18
+       Model |  .000399642         1  .000399642   Prob > F        =    0.6729
+    Residual |  10.3924038     4,635  .002242158   R-squared       =    0.0000
+-------------+----------------------------------   Adj R-squared   =   -0.0002
+       Total |  10.3928034     4,636  .002241761   Root MSE        =    .04735
+
+----------------------------------------------------------------------------------------
+va_enr_2year_~las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------+----------------------------------------------------------------
+va_ela_las_sp_las_ct_p |  -.0026647   .0063117    -0.42   0.673    -.0150387    .0097093
+                 _cons |  -.0005657   .0006956    -0.81   0.416    -.0019293    .0007979
+----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_ela_scatter_las_sp_
+    > las_ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_ela_scatter_las_sp_
+    > las_ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_2year_ela_scatt
+> er_las_sp_las_ct_p_v2_nw.gph saved
+(obs=4,849)
+
+             | va_enr.. va_mat..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+~h_b_sp_b_ct |   0.0001   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,849
+-------------+----------------------------------   F(1, 4847)      =      0.00
+       Model |  9.3873e-07         1  9.3873e-07   Prob > F        =    0.9921
+    Residual |   46.471512     4,847  .009587686   R-squared       =    0.0000
+-------------+----------------------------------   Adj R-squared   =   -0.0002
+       Total |   46.471513     4,848  .009585708   Root MSE        =    .09792
+
+-----------------------------------------------------------------------------------
+va_enr_2year_b_.. | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------+----------------------------------------------------------------
+va_math_b_sp_b_ct |   .0000874   .0088328     0.01   0.992    -.0172288    .0174036
+            _cons |  -.0175599   .0014091   -12.46   0.000    -.0203223   -.0147974
+-----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_math_scatter_b_sp_b
+    > _ct_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_math_scatter_b_sp_b
+    > _ct_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_2year_math_scat
+> ter_b_sp_b_ct_v2_nw.gph saved
+(obs=4,627)
+
+             | va_enr.. va_mat..
+-------------+------------------
+va_enr_2ye.. |   1.0000
+va_math_la.. |  -0.0533   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,627
+-------------+----------------------------------   F(1, 4625)      =     13.19
+       Model |  .029548559         1  .029548559   Prob > F        =    0.0003
+    Residual |  10.3593451     4,625  .002239858   R-squared       =    0.0028
+-------------+----------------------------------   Adj R-squared   =    0.0026
+       Total |  10.3888937     4,626  .002245762   Root MSE        =    .04733
+
+-----------------------------------------------------------------------------------------
+va_enr_2year_l~las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------------+----------------------------------------------------------------
+va_math_las_sp_las_ct_p |  -.0238644   .0065704    -3.63   0.000    -.0367455   -.0109833
+                  _cons |  -.0005877   .0006959    -0.84   0.398    -.0019519    .0007765
+-----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_math_scatter_las_sp
+    > _las_ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_math_scatter_las_sp
+    > _las_ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_2year_math_scat
+> ter_las_sp_las_ct_p_v2_nw.gph saved
+(obs=4,854)
+
+             | va_enr.. va_ela..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+~a_b_sp_b_ct |   0.3994   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,854
+-------------+----------------------------------   F(1, 4852)      =    920.63
+       Model |  7.68391356         1  7.68391356   Prob > F        =    0.0000
+    Residual |  40.4966528     4,852  .008346384   R-squared       =    0.1595
+-------------+----------------------------------   Adj R-squared   =    0.1593
+       Total |  48.1805664     4,853  .009927996   Root MSE        =    .09136
+
+----------------------------------------------------------------------------------
+va_enr_4year_b.. | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+va_ela_b_sp_b_ct |   .2572377    .008478    30.34   0.000      .240617    .2738583
+           _cons |   .0032039   .0013113     2.44   0.015     .0006331    .0057746
+----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_ela_scatter_b_sp_b_
+    > ct_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_ela_scatter_b_sp_b_
+    > ct_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_4year_ela_scatt
+> er_b_sp_b_ct_v2_nw.gph saved
+(obs=4,637)
+
+             | va_enr.. va_ela..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_ela_las.. |   0.2973   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,637
+-------------+----------------------------------   F(1, 4635)      =    449.24
+       Model |  .959503738         1  .959503738   Prob > F        =    0.0000
+    Residual |  9.89956512     4,635  .002135829   R-squared       =    0.0884
+-------------+----------------------------------   Adj R-squared   =    0.0882
+       Total |  10.8590689     4,636  .002342336   Root MSE        =    .04622
+
+----------------------------------------------------------------------------------------
+va_enr_4year_~las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-----------------------+----------------------------------------------------------------
+va_ela_las_sp_las_ct_p |   .1305684   .0061602    21.20   0.000     .1184913    .1426454
+                 _cons |   .0012723   .0006789     1.87   0.061    -.0000586    .0026032
+----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_ela_scatter_las_sp_
+    > las_ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_ela_scatter_las_sp_
+    > las_ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_4year_ela_scatt
+> er_las_sp_las_ct_p_v2_nw.gph saved
+(obs=4,849)
+
+             | va_enr.. va_mat..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+~h_b_sp_b_ct |   0.4750   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,849
+-------------+----------------------------------   F(1, 4847)      =   1412.38
+       Model |  10.8367374         1  10.8367374   Prob > F        =    0.0000
+    Residual |  37.1894914     4,847  .007672682   R-squared       =    0.2256
+-------------+----------------------------------   Adj R-squared   =    0.2255
+       Total |  48.0262288     4,848    .0099064   Root MSE        =    .08759
+
+-----------------------------------------------------------------------------------
+va_enr_4year_b_.. | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------+----------------------------------------------------------------
+va_math_b_sp_b_ct |   .2969541   .0079016    37.58   0.000     .2814634    .3124448
+            _cons |   .0061232   .0012605     4.86   0.000      .003652    .0085945
+-----------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_math_scatter_b_sp_b
+    > _ct_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_math_scatter_b_sp_b
+    > _ct_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_4year_math_scat
+> ter_b_sp_b_ct_v2_nw.gph saved
+(obs=4,627)
+
+             | va_enr.. va_mat..
+-------------+------------------
+va_enr_4ye.. |   1.0000
+va_math_la.. |   0.3579   1.0000
+
+
+      Source |       SS           df       MS      Number of obs   =     4,627
+-------------+----------------------------------   F(1, 4625)      =    679.32
+       Model |   1.3894142         1   1.3894142   Prob > F        =    0.0000
+    Residual |  9.45948177     4,625  .002045293   R-squared       =    0.1281
+-------------+----------------------------------   Adj R-squared   =    0.1279
+       Total |   10.848896     4,626    .0023452   Root MSE        =    .04522
+
+-----------------------------------------------------------------------------------------
+va_enr_4year_l~las_ct_p | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+------------------------+----------------------------------------------------------------
+va_math_las_sp_las_ct_p |   .1636432   .0062786    26.06   0.000     .1513342    .1759522
+                  _cons |    .001904   .0006649     2.86   0.004     .0006004    .0032076
+-----------------------------------------------------------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_math_scatter_las_sp
+    > _las_ct_p_v2_wt.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_4year_math_scatter_las_sp
+    > _las_ct_p_v2_nw.pdf saved as PDF format
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/gph_files/va_cfr_all_v2/va_enr_4year_math_scat
+> ter_las_sp_las_ct_p_v2_nw.gph saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_4year_ela_scatter_c
+    > ombined_v2_nw.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/va_enr_2year_4year_math_scatter_
+    > combined_v2_nw.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_2year_va_ela_x_prior
+    > _ela_b_sp_b_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_4year_va_ela_x_prior
+    > _ela_b_sp_b_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_2year_va_ela_x_prior
+    > _ela_las_sp_las_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_4year_va_ela_x_prior
+    > _ela_las_sp_las_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_va_ela_x_prior_ela_combi
+    > ned_v2.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_2year_va_ela_x_prior
+    > _ela_b_sp_bd_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_4year_va_ela_x_prior
+    > _ela_b_sp_bd_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_2year_va_ela_x_prior
+    > _ela_las_sp_lasd_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_4year_va_ela_x_prior
+    > _ela_las_sp_lasd_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_distance_va_ela_x_prior_
+    > ela_combined_v2.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_2year_va_math_x_prio
+    > r_math_b_sp_b_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_4year_va_math_x_prio
+    > r_math_b_sp_b_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_2year_va_math_x_prio
+    > r_math_las_sp_las_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_4year_va_math_x_prio
+    > r_math_las_sp_las_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_va_math_x_prior_math_com
+    > bined_v2.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_2year_va_math_x_prio
+    > r_math_b_sp_bd_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_4year_va_math_x_prio
+    > r_math_b_sp_bd_ct_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_2year_va_math_x_prio
+    > r_math_las_sp_lasd_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_enr_4year_va_math_x_prio
+    > r_math_las_sp_lasd_ct_p_m.pdf saved as PDF format
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v2/het_reg_distance_va_math_x_prior
+    > _math_combined_v2.pdf saved as PDF format
+
+. 
+. 
+. 
+. 
+. set trace off
+
+. 
+. 
+. 
+. local date2 = c(current_date)
+
+. local time2 = c(current_time)
+
+. 
+. di "Start date time: `date1' `time1'"
+Start date time:  3 Jun 2026 02:27:31
+
+. di "End date time: `date2' `time2'"
+End date time:  3 Jun 2026 02:29:31
+
+. 
+. cap log close va_scatter

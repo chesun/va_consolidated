@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/qoiclean/staff/staffqoiclean181
 > 9_1718.smcl
   log type:  text
- opened on:  26 May 2026, 22:29:41
+ opened on:   1 Jun 2026, 23:04:55
 
 . 
 . /* the code for cleaning 1819 and 1718 is exactly the same, so use loop */

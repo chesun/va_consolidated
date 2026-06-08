@@ -1,0 +1,132 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------------------------------------------
+> -----------------------------------------------------------------------------
+> -----------------
+      name:  siblingpairxwalk
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> share/siblingxwalk/siblingpairxwalk.smcl
+  log type:  text
+ opened on:   1 Jun 2026, 18:38:30
+
+. 
+. use $datadir_clean/siblingxwalk/uniquelinkedfamilyclean, clear
+(CST data siblings crosswalk matching on same year, last name, and address)
+
+. 
+. /* make tempfile for merging with joinby command */
+. drop year numsiblings street_address_line_one street_address_line_two city st
+> ate zip_code
+
+. rename state_student_id sibling_state_student_id
+
+. rename first_name sibling_first_name
+
+. rename last_name sibling_last_name
+
+. rename birth_date sibling_birth_date
+
+. rename middle_intl sibling_middle_intl
+
+. 
+. label var sibling_state_student_id "Sibling State Student ID"
+
+. label var sibling_first_name "Sibling First Name"
+
+. label var sibling_last_name "Sibling Last Name"
+
+. label var sibling_birth_date "Sibling Birth Date"
+
+. label var sibling_middle_intl "Sibling Middle Initial"
+
+. 
+. tempfile formerge
+
+. save `formerge'
+file /home/tmp/St19609.000001 saved as .dta format
+
+. 
+. use $datadir_clean/siblingxwalk/uniquelinkedfamilyclean, clear
+(CST data siblings crosswalk matching on same year, last name, and address)
+
+. drop year numsiblings street_address_line_one street_address_line_two city st
+> ate zip_code
+
+. joinby ufamilyid using `formerge'
+
+. 
+. /* drop observations where self joins on self */
+. drop if state_student_id == sibling_state_student_id
+(4,095,244 observations deleted)
+
+. 
+. order ufamilyid state_student_id sibling_state_student_id
+
+. 
+. 
+. save $datadir_clean/siblingxwalk/siblingpairxwalk, replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/siblingxwalk/siblingpairxwalk.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /siblingxwalk/siblingpairxwalk.dta saved
+
+. 
+. 
+. 
+. 
+. *******create unique sibling pairs by dropping permutations
+. //load the pairwise combination of siblings dataset
+. use $datadir_clean/siblingxwalk/siblingpairxwalk, clear
+(CST data siblings crosswalk matching on same year, last name, and address)
+
+. egen pairorder1 = concat(state_student_id sibling_state_student_id)
+
+. egen pairorder2 = concat(sibling_state_student_id state_student_id)
+
+. 
+. //pairorder1 has pairs in ascending order
+. replace pairorder1 = pairorder2 if state_student_id > sibling_state_student_i
+> d
+(3,373,719 real changes made)
+
+. 
+. //remove duplicate permutations within family
+. bysort ufamilyid pairorder1: gen i = _n
+
+. keep if i==1
+(3,373,719 observations deleted)
+
+. 
+. drop pairorder1 pairorder2 i
+
+. 
+. 
+. //distance between birth dates for sibling pairs
+. gen birth_date_distance = abs(birth_date - sibling_birth_date)
+(216 missing values generated)
+
+. 
+. bysort ufamilyid: egen avg_birth_date_distance_family = mean(birth_date_dista
+> nce)
+(92 missing values generated)
+
+. 
+. replace avg_birth_date_distance_family = avg_birth_date_distance_family/365
+(3,319,955 real changes made)
+
+. label var avg_birth_date_distance_family "Average distance of birth dates in 
+> family in years"
+
+. 
+. 
+. label data "Unique sibling pairs after dropping duplicate permutations"
+
+. 
+. save $datadir_clean/siblingxwalk/uniquesiblingpairxwalk, replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleane
+> d/siblingxwalk/uniquesiblingpairxwalk.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /siblingxwalk/uniquesiblingpairxwalk.dta saved
+
+. 
+. 
+. cap log close siblingpairxwalk

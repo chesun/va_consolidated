@@ -1,0 +1,137 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  check_merges
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/check/check_merges.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 03:01:23
+
+. 
+. di as text _n "{hline 80}"
+
+--------------------------------------------------------------------------------
+
+. di as text "check_merges.do — RUN START: `c(current_date)' `c(current_time)'"
+check_merges.do — RUN START:  3 Jun 2026 03:01:23
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. 
+. /*==============================================================================
+> SUB-CHECK 1 — score_b merge flags
+> ==============================================================================*/
+. 
+. * TODO Phase 1a §3.3: confirm post-relocation path (sample-construction).
+. local in_score_b "$datadir_clean/va_samples_v1/score_b.dta"
+
+. 
+. capture confirm file "`in_score_b'"
+
+. if _rc {
+.     di as text "  [SKELETON] `in_score_b' not found — produced by Phase 1a §3.3"
+.     di as text "             sample-construction relocation.  Skipping sub-check 1."
+. }
+
+. else {
+.     use "`in_score_b'", clear
+(Base Test Score VA Sample)
+. 
+.     * _merge values are 1..5 (master-only / using-only / matched / etc.).
+.     * inspect r(N_unique) bounds the distinct value count.
+.     foreach m in merge_grade_span merge_cohort_size merge_public_schools {
+  2.         capture confirm variable `m'
+  3.         if _rc {
+  4.             di as error "  SOFT: expected merge column `m' not found in score_b — investigating."
+  5.             continue
+  6.         }
+  7.         qui inspect `m'
+  8.         capture assert r(N_unique) <= 5
+  9.         if _rc {
+ 10.             di as error "  FAIL: `m' has more than 5 distinct values"
+ 11.             qui tab `m', missing
+ 12.             cap log close check_merges
+ 13.             cap translate "$logdir/check/check_merges.smcl" "$logdir/check/check_merges.log", replace
+ 14.             exit _rc
+ 15.         }
+ 16.         di as text "  PASS: `m' has <=5 distinct values (canonical _merge codes)"
+ 17.     }
+  PASS: merge_grade_span has <=5 distinct values (canonical _merge codes)
+  PASS: merge_cohort_size has <=5 distinct values (canonical _merge codes)
+  PASS: merge_public_schools has <=5 distinct values (canonical _merge codes)
+. }
+
+. 
+. 
+. /*==============================================================================
+> SUB-CHECK 2 — k12_main school count
+> ==============================================================================*/
+. 
+. * TODO Phase 1a §3.3: confirm post-relocation path (VA-estimation outputs).
+. local in_k12_main "$estimates_dir/va_cfr_all_v1/va_est_dta/va_all_schl_char.dta"
+
+. 
+. capture confirm file "`in_k12_main'"
+
+. if _rc {
+.     di as text "  [SKELETON] `in_k12_main' not found — produced by Phase 1a §3.3"
+.     di as text "             VA-estimation relocation (do/va/heterogeneity/va_het.do)."
+.     di as text "             Skipping sub-check 2."
+. }
+
+. else {
+.     use "`in_k12_main'", clear
+(ela estimates from all sample and control combinations)
+.     * 5,625 calschls schools → 5,009 k12_main schools = 89% retention (design memo §3).
+.     assert _N == 5009
+.     di as text "  PASS: k12_main _N == 5009 (89% retention from CalSCHLS school universe)"
+  PASS: k12_main _N == 5009 (89% retention from CalSCHLS school universe)
+. }
+
+. 
+. 
+. /*==============================================================================
+> SUB-CHECK 3 — bridge match-level distributions  (TBD-codebook)
+> ==============================================================================*/
+. 
+. * TBD-codebook per design memo §9 open items: needs production-run baseline.
+. * The K12↔CCC bridge is in $vaprojxwalks (LEGACY; static predecessor input).
+. * `match_level` ∈ {1, 2, 3, 4} per codebook lines 77317-77321 with freqs
+. * (2.21M, 63K, 918K, 27K).  Bound the share of match_level==1 against
+. * historical ~68.7% once that baseline is locked from the first production run.
+. 
+. local in_k12_ccc_xw "$vaprojxwalks/k12_ccc_crosswalk.dta"
+
+. capture confirm file "`in_k12_ccc_xw'"
+
+. if _rc {
+.     di as text "  [SKELETON] `in_k12_ccc_xw' not found in LEGACY — Matt-owned static crosswalk"
+.     di as text "             (per ADR-0017).  Skipping bridge match-level check."
+. }
+
+. else {
+.     use "`in_k12_ccc_xw'", clear
+.     qui count if match_level == 1
+.     local share_ml1 = r(N) / _N
+.     di as text "  INFO: K12↔CCC match_level==1 share = " %5.3f `share_ml1'
+  INFO: K12↔CCC match_level==1 share = 0.687
+.     * TBD-codebook: convert to hard assert with ±0.5pp tolerance once baseline locked.
+. }
+
+. 
+. 
+. /*==============================================================================
+> WRAP-UP
+> ==============================================================================*/
+. 
+. di as text _n "{hline 80}"
+
+--------------------------------------------------------------------------------
+
+. di as text "check_merges.do — RUN END: `c(current_date)' `c(current_time)'"
+check_merges.do — RUN END:  3 Jun 2026 03:01:24
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. cap log close check_merges

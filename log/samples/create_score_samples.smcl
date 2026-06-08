@@ -2,7 +2,7 @@
       name:  create_score_samples
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/samples/create_score_samples.smcl
   log type:  text
- opened on:  27 May 2026, 01:04:57
+ opened on:   2 Jun 2026, 00:29:23
 
 . 
 .  di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 .  di as text "create_score_samples.do — RUN START: `c(current_date)' `c(current_time)'"
-create_score_samples.do — RUN START: 27 May 2026 01:04:57
+create_score_samples.do — RUN START:  2 Jun 2026 00:29:23
 
 .  di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -1128,7 +1128,7 @@ delimiter now cr
 
 .   variable cohort_size was float now int
   (147,709,498 bytes saved)
-file /home/tmp/St179422.000001 saved as .dta format
+file /home/tmp/St29294.000001 saved as .dta format
 
 . /*------------------------------------------------------------------------------
 > do/samples/create_va_g11_sample_v1.doh — g11 SCORE-VA sample (v1 prior scores)
@@ -1360,7 +1360,7 @@ file /home/tmp/St179422.000001 saved as .dta format
 . tempfile va_g11_dataset
 
 . save `va_g11_dataset'
-file /home/tmp/St179422.000002 saved as .dta format
+file /home/tmp/St29294.000002 saved as .dta format
 
 . 
 . /*------------------------------------------------------------------------------
@@ -2267,7 +2267,6 @@ delimiter now cr
 . drop L4_cst_ela_z_score L5_cst_ela_z_score
 
 .   (0 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_b.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_b.dta saved
 (Base Test Score VA Sample)
 
@@ -2387,7 +2386,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 
 .   variable age was float now int
   (2,614,002 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_l.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_l.dta saved
 
 . /*------------------------------------------------------------------------------
@@ -3268,7 +3266,7 @@ delimiter now cr
 . tempfile census_geocode
 
 . save `census_geocode'
-file /home/tmp/St179422.000003 saved as .dta format
+file /home/tmp/St29294.000003 saved as .dta format
 
 . 
 . use merge_id_k12_test_scores state_student_id student_id cdscode year grade ///
@@ -3311,7 +3309,7 @@ Duplicates in terms of state_student_id
 . tempfile lagged_address
 
 . save `lagged_address'
-file /home/tmp/St179422.000004 saved as .dta format
+file /home/tmp/St29294.000004 saved as .dta format
 
 . 
 . use $vaprojdir/data/restricted_access/clean/crosswalks/address_list.dta, clear
@@ -3330,7 +3328,7 @@ Duplicates in terms of all variables
 . tempfile address_id
 
 . save `address_id'
-file /home/tmp/St179422.000005 saved as .dta format
+file /home/tmp/St29294.000005 saved as .dta format
 
 . 
 . use $vaprojdir/data/public_access/clean/acs/acs_ca_census_tract_clean.dta, clear
@@ -3343,7 +3341,7 @@ file /home/tmp/St179422.000005 saved as .dta format
 . tempfile lagged_acs
 
 . save `lagged_acs'
-file /home/tmp/St179422.000006 saved as .dta format
+file /home/tmp/St29294.000006 saved as .dta format
 
 . 
 . 
@@ -3433,7 +3431,6 @@ end of do-file
   variable age was float now int
   variable geodisplaylabel was str94 now str55
   (33,696,014 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_a.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_a.dta saved
 (Base Test Score VA Sample)
 
@@ -3535,7 +3532,6 @@ note: label truncated to 80 characters
 
 .   variable age was float now int
   (1,764,604 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_s.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_s.dta saved
 
 . /*------------------------------------------------------------------------------
@@ -4416,7 +4412,7 @@ delimiter now cr
 . tempfile census_geocode
 
 . save `census_geocode'
-file /home/tmp/St179422.000003 saved as .dta format
+file /home/tmp/St29294.000003 saved as .dta format
 
 . 
 . use merge_id_k12_test_scores state_student_id student_id cdscode year grade ///
@@ -4459,7 +4455,7 @@ Duplicates in terms of state_student_id
 . tempfile lagged_address
 
 . save `lagged_address'
-file /home/tmp/St179422.000004 saved as .dta format
+file /home/tmp/St29294.000004 saved as .dta format
 
 . 
 . use $vaprojdir/data/restricted_access/clean/crosswalks/address_list.dta, clear
@@ -4478,7 +4474,7 @@ Duplicates in terms of all variables
 . tempfile address_id
 
 . save `address_id'
-file /home/tmp/St179422.000005 saved as .dta format
+file /home/tmp/St29294.000005 saved as .dta format
 
 . 
 . use $vaprojdir/data/public_access/clean/acs/acs_ca_census_tract_clean.dta, clear
@@ -4491,7 +4487,7 @@ file /home/tmp/St179422.000005 saved as .dta format
 . tempfile lagged_acs
 
 . save `lagged_acs'
-file /home/tmp/St179422.000006 saved as .dta format
+file /home/tmp/St29294.000006 saved as .dta format
 
 . 
 . 
@@ -4578,7 +4574,6 @@ VA sample including ACS controls created
 
 . 
 end of do-file
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_la.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_la.dta saved
 (Test Score VA Sample with Leave Out Scores)
 
@@ -4679,7 +4674,6 @@ note: label truncated to 80 characters
 note: label truncated to 80 characters
 
 .   (0 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_ls.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_ls.dta saved
 (Test Score VA Sample with ACS Controls)
 
@@ -4780,7 +4774,6 @@ note: label truncated to 80 characters
 note: label truncated to 80 characters
 
 .   (0 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_as.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_as.dta saved
 (Test Score VA Sample with Leave Out Scores and ACS Controls)
 
@@ -4882,8 +4875,6 @@ note: label truncated to 80 characters
 
 .   variable geodisplaylabel was str94 now str55
   (17,133,792 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_las.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v1/score_las.dta saved
 (Base Test Score VA Sample)
 (552,183 missing values generated)
@@ -5096,7 +5087,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 
 .   variable cohort_size was float now int
   (147,709,498 bytes saved)
-file /home/tmp/St179422.000003 saved as .dta format
+file /home/tmp/St29294.000003 saved as .dta format
 
 . /*------------------------------------------------------------------------------
 > do/samples/create_va_g11_sample_v2.doh — g11 SCORE-VA sample (v2 prior scores)
@@ -5309,7 +5300,7 @@ file /home/tmp/St179422.000003 saved as .dta format
 . tempfile va_g11_dataset
 
 . save `va_g11_dataset'
-file /home/tmp/St179422.000004 saved as .dta format
+file /home/tmp/St29294.000004 saved as .dta format
 
 . 
 . /*------------------------------------------------------------------------------
@@ -6216,7 +6207,6 @@ delimiter now cr
 . drop L4_cst_ela_z_score L5_cst_ela_z_score
 
 .   (0 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_b.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_b.dta saved
 (Base Test Score VA Sample)
 
@@ -6336,7 +6326,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 
 .   variable age was float now int
   (2,614,002 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_l.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_l.dta saved
 
 . /*------------------------------------------------------------------------------
@@ -7217,7 +7206,7 @@ delimiter now cr
 . tempfile census_geocode
 
 . save `census_geocode'
-file /home/tmp/St179422.000005 saved as .dta format
+file /home/tmp/St29294.000005 saved as .dta format
 
 . 
 . use merge_id_k12_test_scores state_student_id student_id cdscode year grade ///
@@ -7260,7 +7249,7 @@ Duplicates in terms of state_student_id
 . tempfile lagged_address
 
 . save `lagged_address'
-file /home/tmp/St179422.000006 saved as .dta format
+file /home/tmp/St29294.000006 saved as .dta format
 
 . 
 . use $vaprojdir/data/restricted_access/clean/crosswalks/address_list.dta, clear
@@ -7279,7 +7268,7 @@ Duplicates in terms of all variables
 . tempfile address_id
 
 . save `address_id'
-file /home/tmp/St179422.000007 saved as .dta format
+file /home/tmp/St29294.000007 saved as .dta format
 
 . 
 . use $vaprojdir/data/public_access/clean/acs/acs_ca_census_tract_clean.dta, clear
@@ -7292,7 +7281,7 @@ file /home/tmp/St179422.000007 saved as .dta format
 . tempfile lagged_acs
 
 . save `lagged_acs'
-file /home/tmp/St179422.000008 saved as .dta format
+file /home/tmp/St29294.000008 saved as .dta format
 
 . 
 . 
@@ -7382,7 +7371,6 @@ end of do-file
   variable age was float now int
   variable geodisplaylabel was str94 now str55
   (33,696,014 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_a.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_a.dta saved
 (Base Test Score VA Sample)
 
@@ -7484,7 +7472,6 @@ note: label truncated to 80 characters
 
 .   variable age was float now int
   (1,764,604 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_s.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_s.dta saved
 
 . /*------------------------------------------------------------------------------
@@ -8365,7 +8352,7 @@ delimiter now cr
 . tempfile census_geocode
 
 . save `census_geocode'
-file /home/tmp/St179422.000005 saved as .dta format
+file /home/tmp/St29294.000005 saved as .dta format
 
 . 
 . use merge_id_k12_test_scores state_student_id student_id cdscode year grade ///
@@ -8408,7 +8395,7 @@ Duplicates in terms of state_student_id
 . tempfile lagged_address
 
 . save `lagged_address'
-file /home/tmp/St179422.000006 saved as .dta format
+file /home/tmp/St29294.000006 saved as .dta format
 
 . 
 . use $vaprojdir/data/restricted_access/clean/crosswalks/address_list.dta, clear
@@ -8427,7 +8414,7 @@ Duplicates in terms of all variables
 . tempfile address_id
 
 . save `address_id'
-file /home/tmp/St179422.000007 saved as .dta format
+file /home/tmp/St29294.000007 saved as .dta format
 
 . 
 . use $vaprojdir/data/public_access/clean/acs/acs_ca_census_tract_clean.dta, clear
@@ -8440,7 +8427,7 @@ file /home/tmp/St179422.000007 saved as .dta format
 . tempfile lagged_acs
 
 . save `lagged_acs'
-file /home/tmp/St179422.000008 saved as .dta format
+file /home/tmp/St29294.000008 saved as .dta format
 
 . 
 . 
@@ -8527,7 +8514,6 @@ VA sample including ACS controls created
 
 . 
 end of do-file
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_la.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_la.dta saved
 (Test Score VA Sample with Leave Out Scores)
 
@@ -8628,7 +8614,6 @@ note: label truncated to 80 characters
 note: label truncated to 80 characters
 
 .   (0 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_ls.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_ls.dta saved
 (Test Score VA Sample with ACS Controls)
 
@@ -8729,7 +8714,6 @@ note: label truncated to 80 characters
 note: label truncated to 80 characters
 
 .   (0 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_as.dta not found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_as.dta saved
 (Test Score VA Sample with Leave Out Scores and ACS Controls)
 
@@ -8831,8 +8815,6 @@ note: label truncated to 80 characters
 
 .   variable geodisplaylabel was str94 now str55
   (17,133,792 bytes saved)
-(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_las.dta not
-    found)
 file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/va_samples_v2/score_las.dta saved
 (Base Test Score VA Sample)
 (552,183 missing values generated)
@@ -8867,7 +8849,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:   9895.30 /        2 =    4947.6505
+   1:   5792.96 /        2 =    2896.4815
 
 . 
 . cap log close create_score_samples

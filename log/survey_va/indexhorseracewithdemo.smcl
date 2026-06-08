@@ -1,0 +1,593 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  indexhorseracewithdemo
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/survey_va/indexhorseracewithdemo.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:23:35
+
+. 
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. set seed 1984
+
+. 
+. 
+. local date1 = c(current_date)
+
+. local time1 = c(current_time)
+
+. 
+. 
+. local datatype compcase imputed
+
+. 
+. foreach type of local datatype {
+  2.   use $datadir_clean/survey_va/categoryindex/`type'categoryindex, clear
+  3.   //merge with pooled average enrollment characteristics over 1415-1718 constructed from Matt Naven's data
+.   //keep only merged observations or unmatched master observations
+.   merge 1:1 cdscode using $datadir_clean/schoolchar/schlcharpooledmeans, keep(1 3) nogen
+  4. 
+.   merge 1:1 cdscode using $datadir_clean/schoolchar/testscorecontrols, keep(1 3) nogen
+  5. 
+.   cap mkdir "$estimates_dir/survey_va/factor/indexhorsewithdemo/`type'"
+  6. 
+.   // local macro for index vars
+.   local indexsdvars z_climateindex z_qualityindex z_supportindex
+  7. 
+.   //local macro for demographics vars
+.   local demovars minorityenrprop maleenrprop freemealprop elprop maleteachprop minoritystaffprop newteachprop fullcred
+> prop fteteachperstudent fteadminperstudent fteserviceperstudent
+  8. 
+.   //local macro for SBAC test scores
+.   local scorevars avg_gr6math_zscore avg_gr8ela_zscore
+  9. 
+.   //log transform the demo vars, adding 0.0000001 does not affect interpretation because it is small compared to varia
+> ble values
+.   foreach i of local demovars {
+ 10.     gen ln_`i' = log(`i'+ 0.0000001)
+ 11.   }
+ 12. 
+. 
+.   // macros for different VA estimates to be used in each sample
+.   local b_sample_controls b
+ 13.   local las_sample_controls las
+ 14. 
+.   foreach va_outcome in ela math enr enr_2year enr_4year dk_enr dk_enr_2year dk_enr_4year {
+ 15. 
+.         foreach sample in b las {
+ 16.           foreach control of local `sample'_sample_controls {
+ 17.             //macro for whether to use the VA estimates with peer effects
+.             if "`sample'" == "b" {
+ 18.               local peer
+ 19.               local peer_yn "N"
+ 20.             }
+ 21.             if "`sample'" == "las" {
+ 22.               local peer "_p"
+ 23.               local peer_yn "Y"
+ 24. 
+.             }
+ 25. 
+. 
+.                 qui reg va_`va_outcome'_`sample'_sp_`control'_ct`peer' `indexsdvars' ln_* `scorevars'
+ 26. 
+.                 regsave using $estimates_dir/survey_va/factor/indexhorsewithdemo/`type'/va_`va_outcome'_`sample'_sp_`c
+> ontrol'_ct`peer' ///
+>                   , replace ///
+>                   table(va_`va_outcome'_`sample'_sp_`control'_ct`peer', format(%7.2f) parentheses(stderr) asterisk()) 
+> ///
+>                   addlabel(va, `va_outcome', sample, `sample', control, `control', peer, `peer_yn')
+ 27. 
+. 
+. 
+.             }
+ 28. 
+.           }
+ 29.   }
+ 30. 
+. 
+.   //-----------------------------------------------------------
+.   //merge the va index horse race reg datasets to produce combined table
+.   //-----------------------------------------------------------
+. 
+. 
+.   local merge_command use
+ 31.   local merge_options clear
+ 32. 
+.   foreach va_outcome in ela math enr enr_2year enr_4year dk_enr dk_enr_2year dk_enr_4year {
+ 33.     di "va: `va_outcome'"
+ 34.     foreach sample in b las {
+ 35.       di "sample: `sample'"
+ 36.       foreach control of local `sample'_sample_controls {
+ 37.         //macro for whether to use the VA estimates with peer effects
+.         if "`sample'" == "b" {
+ 38.           local peer
+ 39.           local peer_yn "N"
+ 40.         }
+ 41.         if "`sample'" == "las" {
+ 42.           local peer "_p"
+ 43.           local peer_yn "Y"
+ 44.         }
+ 45. 
+.         di "peer controls in VA estimates (empty if no peer, _p if peer): `peer'"
+ 46. 
+. 
+.         `merge_command' $estimates_dir/survey_va/factor/indexhorsewithdemo/`type'/va_`va_outcome'_`sample'_sp_`control
+> '_ct`peer', `merge_options'
+ 47. 
+.         local merge_command "merge 1:1 var using"
+ 48.         local merge_options nogen
+ 49.       }
+ 50.     }
+ 51.   }
+ 52. 
+. 
+.   save $estimates_dir/survey_va/factor/indexhorsewithdemo/`type'_index_horse_wdemo, replace
+ 53. 
+.   export excel using $output_dir/csv/factoranalysis/indexhorsewithdemo/`type'_index_horse_wdemo.csv, replace firstrow(
+> variables)
+ 54. 
+. }
+(parent pooled (over years) dataset ready for analysis with stats and response ra)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           160
+        from master                       160  
+        from using                          0  
+
+    Matched                             5,465  
+    -----------------------------------------
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         3,984
+        from master                     3,984  
+        from using                          0  
+
+    Matched                             1,641  
+    -----------------------------------------
+(162 missing values generated)
+(162 missing values generated)
+(160 missing values generated)
+(160 missing values generated)
+(161 missing values generated)
+(169 missing values generated)
+(161 missing values generated)
+(161 missing values generated)
+(161 missing values generated)
+(161 missing values generated)
+(161 missing values generated)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_ela_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_ela_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_math_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_math_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_enr_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_enr_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_enr_2year_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_enr_2year_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_enr_4year_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_enr_4year_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_dk_enr_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_dk_enr_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_dk_enr_2year_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_dk_enr_2year_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_dk_enr_4year_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se/va_dk_enr_4year_las_sp_las_ct_p.dta saved
+va: ela
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: math
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: enr
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: enr_2year
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: enr_4year
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: dk_enr
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: dk_enr_2year
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: dk_enr_4year
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/compca
+    > se_index_horse_wdemo.dta saved
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/factoranalysis/indexhorsewithdemo/compcase
+> _index_horse_wdemo.csv saved
+(parent pooled (over years) dataset ready for analysis with stats and response ra)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           160
+        from master                       160  
+        from using                          0  
+
+    Matched                             5,465  
+    -----------------------------------------
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         3,984
+        from master                     3,984  
+        from using                          0  
+
+    Matched                             1,641  
+    -----------------------------------------
+(162 missing values generated)
+(162 missing values generated)
+(160 missing values generated)
+(160 missing values generated)
+(161 missing values generated)
+(169 missing values generated)
+(161 missing values generated)
+(161 missing values generated)
+(161 missing values generated)
+(161 missing values generated)
+(161 missing values generated)
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_ela_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_ela_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_math_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_math_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_enr_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_enr_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_enr_2year_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_enr_2year_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_enr_4year_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_enr_4year_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_dk_enr_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_dk_enr_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_dk_enr_2year_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_dk_enr_2year_las_sp_las_ct_p.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_dk_enr_4year_b_sp_b_ct.dta saved
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d/va_dk_enr_4year_las_sp_las_ct_p.dta saved
+va: ela
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: math
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: enr
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: enr_2year
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: enr_4year
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: dk_enr
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: dk_enr_2year
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+va: dk_enr_4year
+sample: b
+peer controls in VA estimates (empty if no peer, _p if peer): 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+sample: las
+peer controls in VA estimates (empty if no peer, _p if peer): _p
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                                40  
+    -----------------------------------------
+file
+    /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/survey_va/factor/indexhorsewithdemo/impute
+    > d_index_horse_wdemo.dta saved
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/factoranalysis/indexhorsewithdemo/imputed_
+> index_horse_wdemo.csv saved
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. local date2 = c(current_date)
+
+. local time2 = c(current_time)
+
+. 
+. di "Start date time: `date1' `time1'"
+Start date time:  3 Jun 2026 02:23:35
+
+. di "End date time: `date2' `time2'"
+End date time:  3 Jun 2026 02:23:37
+
+. 
+. cap log close indexhorseracewithdemo

@@ -1,0 +1,453 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  svyindex_tab
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/svyindex_tab.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:29:36
+
+. 
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. set seed 1984
+
+. 
+. 
+. local date1 = c(current_date)
+
+. local time1 = c(current_time)
+
+. 
+. local datatype compcase imputed
+
+. 
+. local regtype bivar horse
+
+. 
+. local bivartitle "Value-added regressed on each index separately"
+
+. local horsetitle "Value-added regressed on all 3 indices simultaneously"
+
+. 
+. foreach type of local datatype {
+  2. 
+.   foreach reg of local regtype {  // load the dta dataset of the stacked regression estimates
+  3.     use $estimates_dir/survey_va/factor/index`reg'withdemo/`type'_index_`reg'_wdemo, replace
+  4. 
+.     // keep only ela, math, 2 year, 4 year
+.     drop va_dk* va_enr_l* va_enr_b*
+  5.     // drop base sample, keep only fully restricted specifications
+.     drop va_*b_sp_*
+  6. 
+.     // drop demographic controls and constants
+.     drop if strpos(var, "ln")==1
+  7.     drop if strpos(var, "avg")==1
+  8.     drop if strpos(var, "_")==1
+  9.     drop if var=="N" | var=="r2"
+ 10. 
+.     foreach i in climate quality support {
+ 11.       replace var="`i'_coef" if var=="z_`i'index_coef"
+ 12.       replace var="`i'_stderr" if var=="z_`i'index_stderr"
+ 13.     }
+ 14. 
+.     gen rowgroup1=1 if strpos(var, "climate")==1
+ 15.     replace rowgroup1=2 if strpos(var, "quality")==1
+ 16.     replace rowgroup1=3 if strpos(var, "support")==1
+ 17.     replace rowgroup1=4 if rowgroup1==.
+ 18. 
+. 
+.       reshape long va_,  i(var) j(stub) string
+ 19. 
+.       replace va_="Base" if va_=="b"
+ 20.       replace va_="Base + LOS + Sibling + ACS" if va_=="las"
+ 21.       replace va_="Yes" if va_=="Y"
+ 22.       replace va_="No" if va_=="N"
+ 23.       replace va_="ELA" if va_=="ela"
+ 24.       replace va_="Math" if va_=="math"
+ 25.       replace va_="2 Year Enrollment" if va_=="enr_2year"
+ 26.       replace va_="4 Year Enrollment" if va_=="enr_4year"
+ 27. 
+.       reshape wide va_, i(var) j(stub) string
+ 28. 
+.     bysort rowgroup1: gen rowgroup2=(strpos(var, "coef")!=0)*1 + (strpos(var, "stderr")!=0)*2
+ 29.     replace rowgroup2=1 if var=="va"
+ 30.     replace rowgroup2=2 if var=="control"
+ 31.     replace rowgroup2=3 if var=="peer"
+ 32.     sort rowgroup1 rowgroup2
+ 33. 
+.     foreach i in climate quality support {
+ 34.       replace var="`i'" if var=="`i'_coef"
+ 35.       replace var="" if var=="`i'_stderr"
+ 36.     }
+ 37. 
+. 
+. 
+.     replace var="School Climate" if var=="climate"
+ 38.     replace var="Teacher and Staff Quality" if var=="quality"
+ 39.     replace var="Counseling Support" if var=="support"
+ 40. 
+.     replace var="VA" if var=="va"
+ 41.     replace var="Peer" if var=="peer"
+ 42.     replace var="Controls" if var=="control"
+ 43. 
+.     drop if var=="sample"
+ 44.     drop rowgroup*
+ 45. 
+.     // rename the longest variale names to avoid character limit error with texsave
+.     foreach i in enr_2year enr_4year {
+ 46.       rename va_`i'_las_sp_las_ct_p `i'_las_p
+ 47.     }
+ 48. 
+.     order var va_ela* va_math*
+ 49. 
+.     tempfile `reg'_`type'
+ 50.     save ``reg'_`type'', replace
+ 51. 
+.     local texsave_options_single autonumber nonames replace size(footnotesize)  hlines(-3)
+ 52.       /*title("``reg'title'") ///
+>        footnote("Standard errors in paranthesis. * \(p<0.05)\) ** \(p<0.01\) *** \(p<0.001\)") */
+. 
+.     // a folder for checking the tables
+.     texsave using "$tables_dir/share/survey/check/`type'_index_`reg'_wdemo.tex", `texsave_options_single'
+ 53.     // folder for publication ready tables using the frag option for texsave
+.     texsave using "$tables_dir/share/survey/pub/`type'_index_`reg'_wdemo.tex", `texsave_options_single' frag
+ 54. 
+.   }
+ 55. 
+.   // combine the bivar table and horse race table 
+.   use `bivar_`type'', clear 
+ 56.   // delete lines indicating va outcome, control, and peer 
+.   drop if var=="VA"
+ 57.   drop if var=="Peer"
+ 58.   drop if var=="Controls"
+ 59. 
+.   insobs 1, before(1)
+ 60.   replace var="Panel A: Separate Regressions for Each Index" if _n==1
+ 61.   insobs 1, after(7)
+ 62.   replace var="Panel B: Regressions Including All Indices" if _n==8
+ 63. 
+.   // append the horse race table 
+.   append using `horse_`type''
+ 64. 
+.   local texsave_options_combined autonumber nonames replace size(footnotesize)  hlines(1 7 7 8 -3)
+ 65. 
+.   // a folder for checking the tables
+.   texsave using "$tables_dir/share/survey/check/`type'_index_combined_wdemo.tex", `texsave_options_combined'
+ 66.   // folder for publication ready tables using the frag option for texsave
+.   texsave using "$tables_dir/share/survey/pub/`type'_index_combined_wdemo.tex", `texsave_options_combined' frag
+ 67. 
+. 
+. 
+. }
+(22 observations deleted)
+(4 observations deleted)
+(2 observations deleted)
+(2 observations deleted)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(8 missing values generated)
+(2 real changes made)
+(2 real changes made)
+(4 real changes made)
+(j = ela_las_sp_las_ct_p enr_2year_las_sp_las_ct_p enr_4year_las_sp_las_ct_p math_las_sp_las_ct_p)
+
+Data                               Wide   ->   Long
+-----------------------------------------------------------------------------
+Number of observations               10   ->   40          
+Number of variables                   6   ->   4           
+j variable (4 values)                     ->   stub
+xij variables:
+va_ela_las_sp_las_ct_p va_enr_2year_las_sp_las_ct_p ... va_math_las_sp_las_ct_p->va_
+-----------------------------------------------------------------------------
+(0 real changes made)
+variable va_ was str9 now str26
+(8 real changes made)
+(4 real changes made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(j = ela_las_sp_las_ct_p enr_2year_las_sp_las_ct_p enr_4year_las_sp_las_ct_p math_las_sp_las_ct_p)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               40   ->   10          
+Number of variables                   4   ->   6           
+j variable (4 values)              stub   ->   (dropped)
+xij variables:
+                                    va_   ->   va_ela_las_sp_las_ct_p va_enr_2year_las_sp_las_ct_p ... va_math_las_sp_la
+> s_ct_p
+-----------------------------------------------------------------------------
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 observation deleted)
+(file /home/tmp/St29294.000001 not found)
+file /home/tmp/St29294.000001 saved as .dta format
+(22 observations deleted)
+(4 observations deleted)
+(2 observations deleted)
+(2 observations deleted)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(8 missing values generated)
+(2 real changes made)
+(2 real changes made)
+(4 real changes made)
+(j = ela_las_sp_las_ct_p enr_2year_las_sp_las_ct_p enr_4year_las_sp_las_ct_p math_las_sp_las_ct_p)
+
+Data                               Wide   ->   Long
+-----------------------------------------------------------------------------
+Number of observations               10   ->   40          
+Number of variables                   6   ->   4           
+j variable (4 values)                     ->   stub
+xij variables:
+va_ela_las_sp_las_ct_p va_enr_2year_las_sp_las_ct_p ... va_math_las_sp_las_ct_p->va_
+-----------------------------------------------------------------------------
+(0 real changes made)
+variable va_ was str9 now str26
+(8 real changes made)
+(4 real changes made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(j = ela_las_sp_las_ct_p enr_2year_las_sp_las_ct_p enr_4year_las_sp_las_ct_p math_las_sp_las_ct_p)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               40   ->   10          
+Number of variables                   4   ->   6           
+j variable (4 values)              stub   ->   (dropped)
+xij variables:
+                                    va_   ->   va_ela_las_sp_las_ct_p va_enr_2year_las_sp_las_ct_p ... va_math_las_sp_la
+> s_ct_p
+-----------------------------------------------------------------------------
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 observation deleted)
+(file /home/tmp/St29294.000002 not found)
+file /home/tmp/St29294.000002 saved as .dta format
+(1 observation deleted)
+(1 observation deleted)
+(1 observation deleted)
+(1 observation added)
+variable var was str30 now str44
+(1 real change made)
+(1 observation added)
+(1 real change made)
+(22 observations deleted)
+(4 observations deleted)
+(2 observations deleted)
+(2 observations deleted)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(8 missing values generated)
+(2 real changes made)
+(2 real changes made)
+(4 real changes made)
+(j = ela_las_sp_las_ct_p enr_2year_las_sp_las_ct_p enr_4year_las_sp_las_ct_p math_las_sp_las_ct_p)
+
+Data                               Wide   ->   Long
+-----------------------------------------------------------------------------
+Number of observations               10   ->   40          
+Number of variables                   6   ->   4           
+j variable (4 values)                     ->   stub
+xij variables:
+va_ela_las_sp_las_ct_p va_enr_2year_las_sp_las_ct_p ... va_math_las_sp_las_ct_p->va_
+-----------------------------------------------------------------------------
+(0 real changes made)
+variable va_ was str9 now str26
+(8 real changes made)
+(4 real changes made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(j = ela_las_sp_las_ct_p enr_2year_las_sp_las_ct_p enr_4year_las_sp_las_ct_p math_las_sp_las_ct_p)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               40   ->   10          
+Number of variables                   4   ->   6           
+j variable (4 values)              stub   ->   (dropped)
+xij variables:
+                                    va_   ->   va_ela_las_sp_las_ct_p va_enr_2year_las_sp_las_ct_p ... va_math_las_sp_la
+> s_ct_p
+-----------------------------------------------------------------------------
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 observation deleted)
+(file /home/tmp/St29294.000003 not found)
+file /home/tmp/St29294.000003 saved as .dta format
+(22 observations deleted)
+(4 observations deleted)
+(2 observations deleted)
+(2 observations deleted)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(8 missing values generated)
+(2 real changes made)
+(2 real changes made)
+(4 real changes made)
+(j = ela_las_sp_las_ct_p enr_2year_las_sp_las_ct_p enr_4year_las_sp_las_ct_p math_las_sp_las_ct_p)
+
+Data                               Wide   ->   Long
+-----------------------------------------------------------------------------
+Number of observations               10   ->   40          
+Number of variables                   6   ->   4           
+j variable (4 values)                     ->   stub
+xij variables:
+va_ela_las_sp_las_ct_p va_enr_2year_las_sp_las_ct_p ... va_math_las_sp_las_ct_p->va_
+-----------------------------------------------------------------------------
+(0 real changes made)
+variable va_ was str9 now str26
+(8 real changes made)
+(4 real changes made)
+(0 real changes made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(j = ela_las_sp_las_ct_p enr_2year_las_sp_las_ct_p enr_4year_las_sp_las_ct_p math_las_sp_las_ct_p)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               40   ->   10          
+Number of variables                   4   ->   6           
+j variable (4 values)              stub   ->   (dropped)
+xij variables:
+                                    va_   ->   va_ela_las_sp_las_ct_p va_enr_2year_las_sp_las_ct_p ... va_math_las_sp_la
+> s_ct_p
+-----------------------------------------------------------------------------
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 observation deleted)
+(file /home/tmp/St29294.000004 not found)
+file /home/tmp/St29294.000004 saved as .dta format
+(1 observation deleted)
+(1 observation deleted)
+(1 observation deleted)
+(1 observation added)
+variable var was str30 now str44
+(1 real change made)
+(1 observation added)
+(1 real change made)
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. local date2 = c(current_date)
+
+. local time2 = c(current_time)
+
+. 
+. di "Start date time: `date1' `time1'"
+Start date time:  3 Jun 2026 02:29:36
+
+. di "End date time: `date2' `time2'"
+End date time:  3 Jun 2026 02:29:37
+
+. 
+. cap log close svyindex_tab

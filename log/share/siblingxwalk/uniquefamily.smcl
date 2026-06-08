@@ -1,0 +1,218 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  uniquefamily
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/siblingxwalk/uniquefamily.smcl
+  log type:  text
+ opened on:   1 Jun 2026, 18:23:38
+
+. 
+. use $datadir_clean/siblingxwalk/k12_xwalk_name_address_year, clear
+(CST data siblings crosswalk matching on same year, last name, and address)
+
+. 
+. /* install ssc package that group observations by the connected components of two variables  */
+. /* ssc install group_twoway, replace */
+. 
+. /* convert to string to match variable format of state student ID in order to run group_twoway */
+. tostring siblings_name_address_year, replace format("%17.0f")
+siblings_name_address_year was long now str8
+
+. /* make family ID and state student ID disjoint to avoid error with command
+> https://haghish.com/statistics/stata-blog/stata-programming/download/group_twoway.html  */
+. replace siblings_name_address_year = "family"+siblings_name_address_year
+variable siblings_name_address_year was str8 now str14
+(12,220,119 real changes made)
+
+. 
+. /* this creates a group for all students that are linked to each other through the same family across years.
+> This command links observations that are connected through famnily ID and student ID. So if two siblings are observed in the same year
+> but one of them is observed in another year with another sibling, they will be linked together. This also links siblings even if they move*/
+. group_twoway siblings_name_address_year state_student_id, generate(ufamilyid)
+
+Duplicates in terms of all variables
+
+(0 observations are duplicates)
+(12,220,119 observations created)
+(12,220,119 missing values generated)
+(12,220,119 real changes made)
+(24,440,238 real changes made)
+(14,776,071 real changes made)
+(10,318,970 real changes made)
+0
+(9,153,111 real changes made)
+(1,794,486 real changes made)
+1
+(690,797 real changes made)
+(386,200 real changes made)
+2
+(118,021 real changes made)
+(104,202 real changes made)
+3
+(34,413 real changes made)
+(33,851 real changes made)
+4
+(11,388 real changes made)
+(11,344 real changes made)
+5
+(4,274 real changes made)
+(4,274 real changes made)
+6
+(1,900 real changes made)
+(1,900 real changes made)
+7
+(938 real changes made)
+(938 real changes made)
+8
+(564 real changes made)
+(564 real changes made)
+9
+(459 real changes made)
+(459 real changes made)
+10
+(334 real changes made)
+(334 real changes made)
+11
+(215 real changes made)
+(215 real changes made)
+12
+(91 real changes made)
+(91 real changes made)
+13
+(48 real changes made)
+(48 real changes made)
+14
+(13 real changes made)
+(13 real changes made)
+15
+(2 real changes made)
+(2 real changes made)
+16
+(0 real changes made)
+(0 real changes made)
+17
+
+Duplicates in terms of __000002
+
+(14,776,071 observations deleted)
+file /home/tmp/St19609.000001 saved as .dta format
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                        12,220,119  
+    -----------------------------------------
+
+. 
+. bysort ufamilyid: replace numsiblings = _N-1
+(11,281,372 real changes made)
+
+. save $datadir_clean/siblingxwalk/uniquelinkedfamilyraw, replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/siblingxwalk/uniquelinkedfamilyraw.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/siblingxwalk/uniquelinkedfamilyraw.dta saved
+
+. 
+. /* keep one copy per student */
+. duplicates report state_student_id
+
+Duplicates in terms of state_student_id
+
+--------------------------------------
+   Copies | Observations       Surplus
+----------+---------------------------
+        1 |      1185502             0
+        2 |      1731564        865782
+        3 |      1983930       1322620
+        4 |      2013820       1510365
+        5 |      1838690       1470952
+        6 |      1498428       1248690
+        7 |      1088927        933366
+        8 |       635824        556346
+        9 |       210825        187400
+       10 |        32160         28944
+       11 |          308           280
+       12 |           72            66
+       13 |           39            36
+       14 |           14            13
+       16 |           16            15
+--------------------------------------
+
+. duplicates drop state_student_id, force
+
+Duplicates in terms of state_student_id
+
+(8,124,875 observations deleted)
+
+. 
+. bysort ufamilyid: replace numsiblings = _N-1
+(3,156,497 real changes made)
+
+. label var ufamilyid "unique family ID after linking all siblings in same family"
+
+. 
+. /* Note: for large number of siblings the reason could be cousins/other relatives with the same
+> last name lived in the same address at a certain point so that links all of the cousins etc */
+. drop siblings_name_address_year
+
+. order ufamilyid year numsiblings state_student_id first_name  last_name birth_date street_address_line_one street_address_line_two city state zip_code
+
+. hist numsiblings
+(bin=66, start=1, width=1.0454545)
+
+. graph export $output_dir/graph/siblingxwalk/numsiblingdist.png, replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/siblingxwalk/numsiblingdist.png not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph/siblingxwalk/numsiblingdist.png written in PNG format
+
+. save $datadir_clean/siblingxwalk/uniquelinkedfamilyclean, replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/siblingxwalk/uniquelinkedfamilyclean.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/siblingxwalk/uniquelinkedfamilyclean.dta saved
+
+. 
+. //artificial cutoff of max 10 children per family, anything above that likely to be matching error
+. drop if numsiblings >= 9
+(10,565 observations deleted)
+
+. keep ufamilyid numsiblings state_student_id first_name last_name birth_date
+
+. 
+. rename numsiblings numsiblings_exclude_sef
+
+. gen numsiblings_total = numsiblings_exclude_sef + 1
+
+. label var numsiblings_total "Total number of siblings in the family"
+
+. 
+. //order the siblings within a family by birth order, oldest sibling is first born so has birth order 1, etc.
+. sort ufamilyid birth_date
+
+. by ufamilyid: gen birth_order = _n
+
+. label var birth_order "Order of birth in the family"
+
+. 
+. //number of older siblings
+. gen numsiblings_older = birth_order - 1
+
+. label var numsiblings_older "Number of older siblings"
+
+. 
+. gen sibling_full_sample = 1
+
+. label var sibling_full_sample "Indicator for the entire matched siblings sample"
+
+. 
+. compress
+  variable numsiblings_exclude_sef was int now byte
+  variable numsiblings_total was float now byte
+  variable birth_order was float now byte
+  variable numsiblings_older was float now byte
+  variable sibling_full_sample was float now byte
+  (53,100,827 bytes saved)
+
+. label data "dataset with unique family ID for each SSID, family size capped at 10 children"
+
+. save $datadir_clean/siblingxwalk/ufamilyxwalk, replace
+(file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/siblingxwalk/ufamilyxwalk.dta not found)
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/siblingxwalk/ufamilyxwalk.dta saved
+
+. 
+. 
+. cap log close uniquefamily

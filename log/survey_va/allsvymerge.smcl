@@ -1,0 +1,105 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  allsvymerge
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/survey_va/allsvymerge.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:21:32
+
+. 
+. /* rename vars and prep parentanalysisready.dta for merging */
+. use $datadir_clean/calschls/analysisready/parentanalysisready, clear
+(parent pooled (over years) dataset ready for analysis with stats and response ra)
+
+. 
+. /* keep only the qoimean vars  and va to be used in factor analysis */
+. keep cdscode qoi* 
+
+. 
+. /* rename variables and drop common vars to prepare for merging across surveys */
+. rename qoi* parentqoi*
+
+. 
+. save $datadir_clean/survey_va/formerge/parentqoimeans, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/survey_va/formerge/parentqoimeans.dta
+    saved
+
+. 
+. 
+. /* rename vars in secanalysisready.dta and prep for merging */
+. use $datadir_clean/calschls/analysisready/secanalysisready, clear
+(secondary pooled dataset ready for analysis with stats and response rate)
+
+. 
+. keep cdscode qoi* 
+
+. rename qoi* secqoi*
+
+. 
+. save $datadir_clean/survey_va/formerge/secqoimeans, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/survey_va/formerge/secqoimeans.dta
+    saved
+
+. 
+. 
+. /* rename vars in staffanalysisready.dta and prep for merging */
+. use $datadir_clean/calschls/analysisready/staffanalysisready, clear
+(weighted average staff qoi statistics pooled over years)
+
+. 
+. keep cdscode qoi* 
+
+. rename qoi* staffqoi*
+
+. 
+. save $datadir_clean/survey_va/formerge/staffqoimeans, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/survey_va/formerge/staffqoimeans.dta
+    saved
+
+. 
+. 
+. 
+. /* merge all surveys */
+. use $datadir_clean/survey_va/formerge/parentqoimeans, clear
+(parent pooled (over years) dataset ready for analysis with stats and response ra)
+
+. merge 1:1 cdscode using $datadir_clean/survey_va/formerge/secqoimeans, nogen 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         3,505
+        from master                     1,558  
+        from using                      1,947  
+
+    Matched                             1,438  
+    -----------------------------------------
+
+. merge 1:1 cdscode using $datadir_clean/survey_va/formerge/staffqoimeans, nogen 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         2,095
+        from master                     1,413  
+        from using                        682  
+
+    Matched                             3,530  
+    -----------------------------------------
+
+. 
+. // merge on VA 
+. merge 1:1 cdscode using $datadir_clean/calschls/va/va_pooled_all.dta, keep(1 3) nogen 
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         4,690
+        from master                     4,690  
+        from using                          0  
+
+    Matched                               935  
+    -----------------------------------------
+
+. 
+. save $datadir_clean/survey_va/allsvyqoimeans, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/survey_va/allsvyqoimeans.dta saved
+
+. 
+. 
+. cap log close allsvymerge

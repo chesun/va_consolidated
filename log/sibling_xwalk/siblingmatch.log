@@ -1,0 +1,562 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------------------------------------------
+> -----------------------------------------------------------------------------
+> -----------------
+      name:  siblingmatch
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> sibling_xwalk/siblingmatch.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:31:02
+
+. 
+. //append all years of CST datasets, from 2004 to 2013
+. foreach year of numlist 2004 (1) 2013 {
+  2.   append using $cstdtadir/cst_`year', keep (state_student_id birth_date ye
+> ar ///
+>   first_name middle_intl last_name ///
+>   street_address_line_one street_address_line_two city state zip_code)
+  3. }
+(variable zip_code was str1, now str9 to accommodate using data's values)
+(label cst_cma_capa_sts_perf_level already defined)
+(label cst_capa_sts_raw_score already defined)
+(label cst_eoc_science_subject already defined)
+(label cst_math_subject already defined)
+(label cbeds_school already defined)
+(label cbeds_district already defined)
+(label parent_education already defined)
+(label white already defined)
+(label other_pacific_islander already defined)
+(label tahitian already defined)
+(label samoan already defined)
+(label guamanian already defined)
+(label native_hawaiian already defined)
+(label hispanic already defined)
+(label filipino already defined)
+(label other_asian already defined)
+(label cambodian already defined)
+(label laotian already defined)
+(label indian already defined)
+(label vietnamese already defined)
+(label korean already defined)
+(label japanese already defined)
+(label chinese already defined)
+(label native_american already defined)
+(label black already defined)
+(label ethnicity already defined)
+(label disability_code already defined)
+(label free_lunch already defined)
+(label asam_enrolled_under_90_days already defined)
+(label el_us_schools_under_12_months already defined)
+(label gifted_talented already defined)
+(label language already defined)
+(label cst_ela_passed_3_years already defined)
+(label english_proficiency already defined)
+(label pre_id_indicator already defined)
+(label male already defined)
+(label record_type already defined)
+(label cst_cma_capa_sts_perf_level already defined)
+(label cst_capa_sts_raw_score already defined)
+(label cst_eoc_science_subject already defined)
+(label cst_math_subject already defined)
+(label cbeds_school already defined)
+(label cbeds_district already defined)
+(label parent_education already defined)
+(label white already defined)
+(label other_pacific_islander already defined)
+(label tahitian already defined)
+(label samoan already defined)
+(label guamanian already defined)
+(label native_hawaiian already defined)
+(label hispanic already defined)
+(label filipino already defined)
+(label other_asian already defined)
+(label cambodian already defined)
+(label laotian already defined)
+(label indian already defined)
+(label vietnamese already defined)
+(label korean already defined)
+(label japanese already defined)
+(label chinese already defined)
+(label native_american already defined)
+(label black already defined)
+(label ethnicity already defined)
+(label disability_code already defined)
+(label free_lunch already defined)
+(label asam_enrolled_under_90_days already defined)
+(label el_us_schools_under_12_months already defined)
+(label gifted_talented already defined)
+(label language already defined)
+(label cst_ela_passed_3_years already defined)
+(label english_proficiency already defined)
+(label not_tested already defined)
+(label male already defined)
+(label record_type already defined)
+(label cst_cma_capa_sts_perf_level already defined)
+(label cst_capa_sts_raw_score already defined)
+(label cst_capa_sts_include already defined)
+(label cst_eoc_science_subject already defined)
+(label cst_math_subject already defined)
+(label cbeds_school already defined)
+(label cbeds_district already defined)
+(label parent_education already defined)
+(label white already defined)
+(label other_pacific_islander already defined)
+(label tahitian already defined)
+(label samoan already defined)
+(label guamanian already defined)
+(label native_hawaiian already defined)
+(label hispanic already defined)
+(label filipino already defined)
+(label other_asian already defined)
+(label cambodian already defined)
+(label laotian already defined)
+(label indian already defined)
+(label vietnamese already defined)
+(label korean already defined)
+(label japanese already defined)
+(label chinese already defined)
+(label native_american already defined)
+(label black already defined)
+(label ethnicity already defined)
+(label iep_nonpublic_nonsectarian already defined)
+(label disability_code already defined)
+(label free_lunch already defined)
+(label asam_enrolled_under_90_days already defined)
+(label el_us_schools_under_12_months already defined)
+(label gifted_talented already defined)
+(label language already defined)
+(label cst_ela_passed_3_years already defined)
+(label english_proficiency already defined)
+(label not_tested already defined)
+(label male already defined)
+(label record_type already defined)
+(label cst_cma_capa_sts_perf_level already defined)
+(label cst_capa_sts_raw_score already defined)
+(label cst_eoc_science_subject already defined)
+(label cst_math_subject already defined)
+(label cbeds_school already defined)
+(label cbeds_district already defined)
+(label parent_education already defined)
+(label white already defined)
+(label other_pacific_islander already defined)
+(label tahitian already defined)
+(label samoan already defined)
+(label guamanian already defined)
+(label native_hawaiian already defined)
+(label hispanic already defined)
+(label filipino already defined)
+(label other_asian already defined)
+(label cambodian already defined)
+(label laotian already defined)
+(label indian already defined)
+(label vietnamese already defined)
+(label korean already defined)
+(label japanese already defined)
+(label chinese already defined)
+(label native_american already defined)
+(label black already defined)
+(label ethnicity already defined)
+(label iep_nonpublic_nonsectarian already defined)
+(label disability_code already defined)
+(label free_lunch already defined)
+(label asam_enrolled_under_90_days already defined)
+(label el_us_schools_under_12_months already defined)
+(label gifted_talented already defined)
+(label language already defined)
+(label cst_ela_passed_3_years already defined)
+(label english_proficiency already defined)
+(label not_tested already defined)
+(label independent_charter_school already defined)
+(label male already defined)
+(label record_type already defined)
+(label cst_cma_capa_sts_perf_level already defined)
+(label cma_raw_score already defined)
+(label cst_capa_sts_raw_score already defined)
+(label cst_cma_results_reported already defined)
+(label cst_eoc_science_subject already defined)
+(label cst_math_subject already defined)
+(label cbeds_school already defined)
+(label cbeds_district already defined)
+(label parent_education already defined)
+(label white already defined)
+(label other_pacific_islander already defined)
+(label tahitian already defined)
+(label samoan already defined)
+(label guamanian already defined)
+(label native_hawaiian already defined)
+(label hispanic already defined)
+(label filipino already defined)
+(label other_asian already defined)
+(label cambodian already defined)
+(label laotian already defined)
+(label indian already defined)
+(label vietnamese already defined)
+(label korean already defined)
+(label japanese already defined)
+(label chinese already defined)
+(label native_american already defined)
+(label black already defined)
+(label ethnicity already defined)
+(label iep_nonpublic_nonsectarian already defined)
+(label disability_code already defined)
+(label free_lunch already defined)
+(label asam_enrolled_under_90_days already defined)
+(label el_us_schools_under_12_months already defined)
+(label gifted_talented already defined)
+(label language already defined)
+(label cst_ela_passed_3_years already defined)
+(label english_proficiency already defined)
+(label independent_charter_school already defined)
+(label male already defined)
+(label record_type already defined)
+(variable first_name was str9, now str10 to accommodate using data's values)
+(label unmatched_writing_test already defined)
+(label cst_cma_capa_sts_perf_level already defined)
+(label cma_raw_score already defined)
+(label cst_capa_sts_raw_score already defined)
+(label cst_cma_results_reported already defined)
+(label cst_eoc_science_subject already defined)
+(label cst_math_subject already defined)
+(label cbeds_school already defined)
+(label cbeds_district already defined)
+(label parent_education already defined)
+(label ethnicity already defined)
+(label white already defined)
+(label black already defined)
+(label filipino already defined)
+(label other_pacific_islander already defined)
+(label tahitian already defined)
+(label samoan already defined)
+(label guamanian already defined)
+(label native_hawaiian already defined)
+(label other_asian already defined)
+(label cambodian already defined)
+(label laotian already defined)
+(label indian already defined)
+(label vietnamese already defined)
+(label korean already defined)
+(label japanese already defined)
+(label chinese already defined)
+(label native_american already defined)
+(label hispanic already defined)
+(label iep_nonpublic_nonsectarian already defined)
+(label disability_code already defined)
+(label free_lunch already defined)
+(label asam_enrolled_under_90_days already defined)
+(label el_us_schools_under_12_months already defined)
+(label gifted_talented already defined)
+(label language already defined)
+(label cst_ela_passed_3_years already defined)
+(label english_proficiency already defined)
+(label independent_charter_school already defined)
+(label male already defined)
+(label record_type already defined)
+(label unmatched_writing_test already defined)
+(label cst_cma_capa_sts_perf_level already defined)
+(label cma_raw_score already defined)
+(label cst_capa_sts_raw_score already defined)
+(label cst_cma_results_reported already defined)
+(label cst_eoc_science_subject already defined)
+(label cst_math_subject already defined)
+(label cbeds_school already defined)
+(label cbeds_district already defined)
+(label parent_education already defined)
+(label ethnicity already defined)
+(label white already defined)
+(label black already defined)
+(label filipino already defined)
+(label other_pacific_islander already defined)
+(label tahitian already defined)
+(label samoan already defined)
+(label guamanian already defined)
+(label native_hawaiian already defined)
+(label other_asian already defined)
+(label hmong already defined)
+(label cambodian already defined)
+(label laotian already defined)
+(label indian already defined)
+(label vietnamese already defined)
+(label korean already defined)
+(label japanese already defined)
+(label chinese already defined)
+(label native_american already defined)
+(label hispanic already defined)
+(label iep_nonpublic_nonsectarian already defined)
+(label disability_code already defined)
+(label free_lunch already defined)
+(label asam_enrolled_under_90_days already defined)
+(label el_us_schools_under_12_months already defined)
+(label gifted_talented already defined)
+(label language already defined)
+(label cst_ela_passed_3_years already defined)
+(label english_proficiency already defined)
+(label independent_charter_school already defined)
+(label male already defined)
+(label record_type already defined)
+(label unmatched_writing_test already defined)
+(label cst_cma_capa_sts_perf_level already defined)
+(label cma_raw_score already defined)
+(label cst_capa_sts_raw_score already defined)
+(label cst_cma_results_reported already defined)
+(label cma_assessed already defined)
+(label cst_eoc_science_subject already defined)
+(label cst_math_subject already defined)
+(label cbeds_school already defined)
+(label cbeds_district already defined)
+(label parent_education already defined)
+(label ethnicity already defined)
+(label white already defined)
+(label black already defined)
+(label filipino already defined)
+(label other_pacific_islander already defined)
+(label tahitian already defined)
+(label samoan already defined)
+(label guamanian already defined)
+(label native_hawaiian already defined)
+(label other_asian already defined)
+(label hmong already defined)
+(label cambodian already defined)
+(label laotian already defined)
+(label indian already defined)
+(label vietnamese already defined)
+(label korean already defined)
+(label japanese already defined)
+(label chinese already defined)
+(label native_american already defined)
+(label hispanic already defined)
+(label iep_nonpublic_nonsectarian already defined)
+(label disability_code already defined)
+(label free_lunch already defined)
+(label el_us_schools_under_12_months already defined)
+(label gifted_talented already defined)
+(label language already defined)
+(label cst_ela_passed_3_years already defined)
+(label english_proficiency already defined)
+(label independent_charter_school already defined)
+(label male already defined)
+(label record_type already defined)
+(label unmatched_writing_test already defined)
+(label cst_cma_capa_sts_perf_level already defined)
+(label cma_raw_score already defined)
+(label cst_capa_sts_raw_score already defined)
+(label cst_cma_results_reported already defined)
+(label cma_assessed already defined)
+(label cst_eoc_science_subject already defined)
+(label cst_math_subject already defined)
+(label parent_education already defined)
+(label ethnicity already defined)
+(label white already defined)
+(label black already defined)
+(label filipino already defined)
+(label other_pacific_islander already defined)
+(label tahitian already defined)
+(label samoan already defined)
+(label guamanian already defined)
+(label native_hawaiian already defined)
+(label other_asian already defined)
+(label hmong already defined)
+(label cambodian already defined)
+(label laotian already defined)
+(label indian already defined)
+(label vietnamese already defined)
+(label korean already defined)
+(label japanese already defined)
+(label chinese already defined)
+(label native_american already defined)
+(label hispanic already defined)
+(label iep_nonpublic_nonsectarian already defined)
+(label disability_code already defined)
+(label free_lunch already defined)
+(label el_us_schools_under_12_months already defined)
+(label gifted_talented already defined)
+(label language already defined)
+(label cst_ela_passed_3_years already defined)
+(label english_proficiency already defined)
+(label independent_charter_school already defined)
+(label male already defined)
+(label record_type already defined)
+
+. 
+. //drop observations with missing street address line 1. Note that missing() d
+> oes not work since some observations have one character such as Y or 0
+. drop if strlen(street_address_line_one) <= 1
+(13,251,999 observations deleted)
+
+. drop if missing(state_student_id)
+(3,380,685 observations deleted)
+
+. tempfile master
+
+. save `master'
+file /home/tmp/St29294.000001 saved as .dta format
+
+. 
+. 
+. *****************************************************************************
+> ***
+. /* Match siblings based on last name, address, and year. This rules out cases
+> where someone with the same last name moves to the same address after the pre
+> vious
+> student moves out */
+. local matchonsameyear = 1
+
+. if `matchonsameyear' == 1 {
+. 
+.   use `master', clear
+. 
+.   /* check for duplicates. Do not need middle initial and zip code to be the 
+> same to count as duplicates, because
+>   middle initial has 38.56% missing and zip code has 7.36% missing, whereas c
+> ity and state have around 0.01% and 0% missing, respectively.
+>   This avoids treating the same person with and w/o middle initial or zip cod
+> e as different people
+>   Q: what if 2 people with same last and first names but different middle ini
+> tial and born on the same day are twins? */
+.   duplicates report state_student_id year street_address_line_one street_addr
+> ess_line_two city state
+
+Duplicates in terms of state_student_id year street_address_line_one street_add
+> ress_line_two city state
+
+--------------------------------------
+   Copies | Observations       Surplus
+----------+---------------------------
+        1 |     31572828             0
+        2 |       378702        189351
+        3 |           72            48
+--------------------------------------
+.   /* only keep one observation per state student ID, year, name, and address*
+> /
+.   duplicates drop state_student_id year street_address_line_one street_addres
+> s_line_two city state, force
+
+Duplicates in terms of state_student_id year street_address_line_one street_add
+> ress_line_two city state
+
+(189,399 observations deleted)
+. 
+. 
+. 
+.   /* generate family groups based on last name, address, and year. Treat miss
+> ing
+>   as any other variables and group observations with match vars missing into 
+> the same family */
+.   egen long siblings_name_address_year = group(year last_name street_address_
+> line_one street_address_line_two city state zip_code), mi
+.   /* tostring siblings_name_address_year, replace format("%17.0f") */
+. 
+.   /* drop if no siblings */
+.   bysort siblings_name_address_year: drop if _N==1
+(19,542,084 observations deleted)
+. 
+.   //generate a variable for number of siblings for each student
+.   bysort siblings_name_address_year: gen numsiblings = _N-1
+.   label var numsiblings "number of siblings excluding self"
+. 
+. 
+.   // Save data
+.   order siblings_name_address_year year numsiblings state_student_id first_na
+> me  last_name birth_date street_address_line_one street_address_line_two city
+>  state zip_code
+.   sort siblings_name_address_year year
+.   label var siblings_name_address_year "family ID after matching on name addr
+> ess and year"
+.   compress
+  variable year was float now int
+  variable numsiblings was float now byte
+  variable birth_date was float now int
+  (85,540,833 bytes saved)
+. 
+.   label data "CST data siblings crosswalk matching on same year, last name, a
+> nd address"
+. 
+.   save $datadir_clean/siblingxwalk/k12_xwalk_name_address_year, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /siblingxwalk/k12_xwalk_name_address_year.dta saved
+. }
+
+. 
+. /* duplicates report state_student_id birth_date first_name last_name street_
+> address_line_one street_address_line_two city state zip_code
+> duplicates report state_student_id birth_date first_name last_name street_add
+> ress_line_one street_address_line_two city state */
+. 
+. 
+. *****************************************************************************
+> ***
+. /* Match siblings based on last name and address */
+. local matchacrossyears = 1
+
+. if `matchacrossyears' == 1 {
+.   use `master', clear
+. 
+.   /* check for duplicates and keep one observation per state student ID, last
+>  name, and address*/
+.   duplicates report state_student_id street_address_line_one street_address_l
+> ine_two city state
+
+Duplicates in terms of state_student_id street_address_line_one street_address_
+> line_two city state
+
+--------------------------------------
+   Copies | Observations       Surplus
+----------+---------------------------
+        1 |      7281362             0
+        2 |      6420068       3210034
+        3 |      5274033       3516022
+        4 |      4033508       3025131
+        5 |      3029610       2423688
+        6 |      2234802       1862335
+        7 |      1694406       1452348
+        8 |      1223056       1070174
+        9 |       633780        563360
+       10 |       119520        107568
+       11 |         5544          5040
+       12 |         1416          1298
+       13 |          455           420
+       14 |           42            39
+--------------------------------------
+.   duplicates drop state_student_id street_address_line_one street_address_lin
+> e_two city state, force
+
+Duplicates in terms of state_student_id street_address_line_one street_address_
+> line_two city state
+
+(17,237,457 observations deleted)
+. 
+.   // Group observations if they match on last name, and address
+.   egen long siblings_name_address = group(last_name street_address_line_one s
+> treet_address_line_two city state zip_code), mi
+.   /* tostring siblings_name_address, replace format("%17.0f") */
+. 
+.   // Drop if no siblings
+.   bysort siblings_name_address: drop if _N==1
+(8,897,611 observations deleted)
+. 
+.   //generate a variable for number of siblings for each student
+.   bysort siblings_name_address: gen numsiblings = _N-1
+.   label var numsiblings "number of siblings excluding self"
+. 
+.   //save data
+.   order siblings_name_address numsiblings state_student_id first_name last_na
+> me birth_date street_address_line_one street_address_line_two city state zip_
+> code
+.   sort siblings_name_address
+.   label var siblings_name_address "family ID after matching on name and addre
+> ss"
+.   compress
+  variable numsiblings was float now byte
+  variable birth_date was float now int
+  variable year was float now int
+  (40,715,738 bytes saved)
+. 
+.   label data "CST data siblings crosswalk matching on same last name and addr
+> ess"
+. 
+.   save $datadir_clean/siblingxwalk/k12_xwalk_name_address, replace
+file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
+> /siblingxwalk/k12_xwalk_name_address.dta saved
+. }
+
+. 
+. cap log close siblingmatch

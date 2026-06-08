@@ -1,0 +1,153 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  check_paper_outputs
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> check/check_paper_outputs.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 03:01:24
+
+. 
+. di as text _n "--------------------------------------------------------------
+------------------"
+
+-------------------------------------------------------------------------------
+> -
+
+. di as text "check_paper_outputs.do — RUN START: `c(current_date)' `c(current_
+> time)'"
+check_paper_outputs.do — RUN START:  3 Jun 2026 03:01:24
+
+. di as text "-----------------------------------------------------------------
+---------------"
+-------------------------------------------------------------------------------
+> -
+
+. 
+. 
+. /*===========================================================================
+> ===
+> SUB-CHECK 1 — Table 1 sample N (student-years)
+> =============================================================================
+> =*/
+. 
+. * TODO Phase 1a §3.3: confirm post-relocation path (sample-construction).
+. local in_score_b "$datadir_clean/va_samples_v1/score_b.dta"
+
+. 
+. capture confirm file "`in_score_b'"
+
+. if _rc {
+.     di as text "  [SKELETON] `in_score_b' not found — produced by Phase 1a §3
+> .3"
+.     di as text "             sample-construction relocation.  Skipping Table 
+> 1 N check."
+. }
+
+. else {
+.     use "`in_score_b'", clear
+(Base Test Score VA Sample)
+.     capture assert _N == 1784445
+.     if _rc {
+.         di as error "  FAIL: paper Table 1 N = " r(N) " (expected 1,784,445 s
+> tudent-years)"
+.         cap log close check_paper_outputs
+.         cap translate "$logdir/check/check_paper_outputs.smcl" "$logdir/check
+> /check_paper_outputs.log", replace
+.         exit _rc
+.     }
+.     di as text "  PASS: paper Table 1 N == 1,784,445 (cf. score_b)"
+  PASS: paper Table 1 N == 1,784,445 (cf. score_b)
+. }
+
+. 
+. 
+. /*===========================================================================
+> ===
+> SUB-CHECK 2 — Table 2 N schools
+> =============================================================================
+> =*/
+. 
+. * TODO Phase 1a §3.3: confirm post-relocation path (VA-estimation outputs).
+. local in_k12_main "$estimates_dir/va_cfr_all_v1/va_est_dta/va_all_schl_char.d
+> ta"
+
+. 
+. capture confirm file "`in_k12_main'"
+
+. if _rc {
+.     di as text "  [SKELETON] `in_k12_main' not found — produced by Phase 1a §
+> 3.3"
+.     di as text "             VA-estimation relocation.  Skipping Table 2 N ch
+> eck."
+. }
+
+. else {
+.     use "`in_k12_main'", clear
+(ela estimates from all sample and control combinations)
+.     capture assert _N == 5009
+.     if _rc {
+.         di as error "  FAIL: paper Table 2 N schools = " r(N) " (expected 5,0
+> 09)"
+.         cap log close check_paper_outputs
+.         cap translate "$logdir/check/check_paper_outputs.smcl" "$logdir/check
+> /check_paper_outputs.log", replace
+.         exit _rc
+.     }
+.     di as text "  PASS: paper Table 2 N schools == 5,009 (cf. k12_main)"
+  PASS: paper Table 2 N schools == 5,009 (cf. k12_main)
+. }
+
+. 
+. 
+. /*===========================================================================
+> ===
+> SUB-CHECK 3 — Specific table cells  (TBD-codebook)
+> =============================================================================
+> =*/
+. 
+. * TBD-codebook per design memo §9 open items.  Once Phase 1a §3.3 relocates
+. * the share/ table producers, their output paths (e.g.,
+. * $consolidated_dir/tables/share/va/v1/va_main.tex) become known.  This
+. * section will then load the .tex fragments (or .dta sidecars if producers
+. * save them) and assert that the printed cell magnitudes match the analytic
+. * pipeline's outputs to the tolerance specified in plan v3 §3.5 (estimates
+. * match to ≤ 0.01 per replication-protocol.md tolerance table).
+. 
+. di as text "  [TBD-codebook] specific cell magnitudes deferred to Phase 1a §3
+> .3"
+  [TBD-codebook] specific cell magnitudes deferred to Phase 1a §3.3
+
+. di as text "                 share/ relocation per design memo §9 open items.
+> "
+                 share/ relocation per design memo §9 open items.
+
+. 
+. * TODO Phase 1c §5.3 step 12: when share/ producers are relocated, replace
+. *    the [TBD-codebook] block above with concrete cell-loading + assert
+. *    blocks for paper Tables 2/3 main coefficients (and any other cells
+. *    Christina decides are load-bearing for offboarding).
+. 
+. 
+. /*===========================================================================
+> ===
+> WRAP-UP
+> =============================================================================
+> =*/
+. 
+. di as text _n "--------------------------------------------------------------
+------------------"
+
+-------------------------------------------------------------------------------
+> -
+
+. di as text "check_paper_outputs.do — RUN END: `c(current_date)' `c(current_ti
+> me)'"
+check_paper_outputs.do — RUN END:  3 Jun 2026 03:01:24
+
+. di as text "-----------------------------------------------------------------
+---------------"
+-------------------------------------------------------------------------------
+> -
+
+. 
+. cap log close check_paper_outputs

@@ -1,0 +1,96 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  check_va_estimates
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/check/check_va_estimates.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 03:01:24
+
+. 
+. di as text _n "{hline 80}"
+
+--------------------------------------------------------------------------------
+
+. di as text "check_va_estimates.do — RUN START: `c(current_date)' `c(current_time)'"
+check_va_estimates.do — RUN START:  3 Jun 2026 03:01:24
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. 
+. /*==============================================================================
+> INPUT
+> ==============================================================================*/
+. 
+. * TODO Phase 1a §3.3: confirm post-relocation path (VA-estimation outputs).
+. local in_dta "$estimates_dir/va_cfr_all_v1/va_est_dta/va_all_schl_char.dta"
+
+. 
+. capture confirm file "`in_dta'"
+
+. if _rc {
+.     di as text "  [SKELETON] `in_dta' not found — produced by Phase 1a §3.3"
+.     di as text "             VA-estimation relocation (do/va/heterogeneity/va_het.do)."
+.     di as text "             Skipping check_va_estimates.do."
+.     cap log close check_va_estimates
+.     cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
+.     exit 0
+. }
+
+. 
+. use "`in_dta'", clear
+(ela estimates from all sample and control combinations)
+
+. 
+. 
+. /*==============================================================================
+> HARD ASSERTS (from design memo §4)
+> ==============================================================================*/
+. 
+. * Main-spec VA centered.  School-level VA ≈ 0 by construction after BLUP
+. * shrinkage; tight tolerance because paper reports school VA centered.
+. foreach v of varlist va_ela_*_ct va_math_*_ct va_*_ct_p {
+  2.     qui sum `v'
+  3.     if r(N) == 0 continue
+  4.     capture assert abs(r(mean)) < 0.05
+  5.     if _rc {
+  6.         di as error "  FAIL: `v' mean = " %7.4f r(mean) " — outside |.| < 0.05 tolerance"
+  7.         cap log close check_va_estimates
+  8.         cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
+  9.         exit _rc
+ 10.     }
+ 11. }
+
+. di as text "  PASS: all va_<subj>_*_ct and va_*_ct_p columns have |mean| < 0.05"
+  PASS: all va_<subj>_*_ct and va_*_ct_p columns have |mean| < 0.05
+
+. 
+. * Paper-reported SD bound on the b-sample b-control reference spec.
+. qui sum va_ela_b_sp_b_ct
+
+. capture assert inrange(r(sd), 0.05, 0.30)
+
+. if _rc {
+.     di as error "  FAIL: va_ela_b_sp_b_ct SD = " %7.4f r(sd) " — outside [0.05, 0.30]"
+.     di as error "        paper Tables 2-3 report ~0.10-0.15 σ"
+.     cap log close check_va_estimates
+.     cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
+.     exit _rc
+. }
+
+. di as text "  PASS: va_ela_b_sp_b_ct SD ∈ [0.05, 0.30] (paper-reported envelope)"
+  PASS: va_ela_b_sp_b_ct SD ∈ [0.05, 0.30] (paper-reported envelope)
+
+. 
+. * Per-spec student-year counts non-zero — CFR estimator minimum cell size.
+. foreach v of varlist n_g11_ela_*_sp n_g11_math_*_sp {
+  2.     qui sum `v'
+  3.     if r(N) == 0 continue
+  4.     capture assert r(min) >= 5
+  5.     if _rc {
+  6.         di as error "  FAIL: `v' has min student-year count = " %5.0f r(min) " — below CFR minimum 5"
+  7.         cap log close check_va_estimates
+  8.         cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
+  9.         exit _rc
+ 10.     }
+ 11. }
+  FAIL: n_g11_ela_l_sp has min student-year count =     4 — below CFR minimum 5

@@ -1,0 +1,562 @@
+-------------------------------------------------------------------------------
+> -----------------------------------------
+      name:  corr_dk_score_va
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> share/check/corr_dk_score_va.smcl
+  log type:  text
+ opened on:   3 Jun 2026, 02:29:37
+
+. 
+. graph drop _all
+
+. set more off
+
+. set varabbrev off
+
+. set graphics off
+
+. set scheme s1color
+
+. set seed 1984
+
+. set linesize 250
+
+. 
+. 
+. local date1 = c(current_date)
+
+. local time1 = c(current_time)
+
+. 
+. 
+. // load macros 
+. /* include $consolidated_dir/do/va/helpers/macros_va.doh */
+. /* include $vaprojdir/do_files/sbac/macros_va_all_samples_controls.doh */
+. 
+. local samples b las 
+
+. local b_sample_controls b_ct 
+
+. local las_sample_controls b_ct b_ct_p a_ct_p las_ct_p lasd_ct_p 
+
+. 
+. 
+. // correlation matrices of DK and test score VAs for the 10 specifications in
+>  the tables
+. foreach version in v1 v2 {
+  2.     use $estimates_dir/va_cfr_all_`version'/va_est_dta/va_all.dta, clear 
+  3. 
+.     foreach va_outcome in enr_2year enr_4year {
+  4.         di "Postsec outcome: `va_outcome'"
+  5. 
+.         foreach sample of local samples {
+  6.             di "sample: `sample'"
+  7. 
+.                 foreach va_ctrl of local `sample'_sample_controls {
+  8. 
+.                     di "control: `va_ctrl'"
+  9. 
+.                     di "`va_outcome' DK VA covariance with ELA VA, `sample' s
+> ample, `va_ctrl' control, _p at the end means peer"
+ 10.                     corr va_dk_`va_outcome'_`sample'_sp_`va_ctrl' va_ela_`
+> sample'_sp_`va_ctrl', cov wrap
+ 11. 
+.                     di "`va_outcome' DK VA covariance with math VA, `sample' 
+> sample, `va_ctrl' control, _p at the end means peer"
+ 12.                     corr va_dk_`va_outcome'_`sample'_sp_`va_ctrl' va_math_
+> `sample'_sp_`va_ctrl', cov wrap
+ 13. 
+.                 }
+ 14. 
+.         }
+ 15.     }
+ 16. }
+(ela estimates from all sample and control combinations)
+Postsec outcome: enr_2year
+sample: b
+control: b_ct
+enr_2year DK VA covariance with ELA VA, b sample, b_ct control, _p at the end m
+> eans peer
+(obs=4,850)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |   .00942
+~a_b_sp_b_ct |  .000129  .021171
+
+enr_2year DK VA covariance with math VA, b sample, b_ct control, _p at the end 
+> means peer
+(obs=4,849)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .009418
+~h_b_sp_b_ct |  .000278  .022703
+
+sample: las
+control: b_ct
+enr_2year DK VA covariance with ELA VA, las sample, b_ct control, _p at the end
+>  means peer
+(obs=4,671)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .007419
+va_ela_las.. | -.000012  .014942
+
+enr_2year DK VA covariance with math VA, las sample, b_ct control, _p at the en
+> d means peer
+(obs=4,667)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .007428
+va_math_la.. |  -.00002  .016242
+
+control: b_ct_p
+enr_2year DK VA covariance with ELA VA, las sample, b_ct_p control, _p at the e
+> nd means peer
+(obs=4,671)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .004083
+va_ela_las.. | -.000104  .011943
+
+enr_2year DK VA covariance with math VA, las sample, b_ct_p control, _p at the 
+> end means peer
+(obs=4,667)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .004084
+va_math_la.. |  -.00003  .011847
+
+control: a_ct_p
+enr_2year DK VA covariance with ELA VA, las sample, a_ct_p control, _p at the e
+> nd means peer
+(obs=4,657)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |   .00358
+va_ela_las.. |  .000053  .011142
+
+enr_2year DK VA covariance with math VA, las sample, a_ct_p control, _p at the 
+> end means peer
+(obs=4,653)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .003583
+va_math_la.. |  .000095  .010299
+
+control: las_ct_p
+enr_2year DK VA covariance with ELA VA, las sample, las_ct_p control, _p at the
+>  end means peer
+(obs=4,631)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .002175
+va_ela_las.. |  .000097  .011071
+
+enr_2year DK VA covariance with math VA, las sample, las_ct_p control, _p at th
+> e end means peer
+(obs=4,627)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .002177
+va_math_la.. |  .000136  .010201
+
+control: lasd_ct_p
+enr_2year DK VA covariance with ELA VA, las sample, lasd_ct_p control, _p at th
+> e end means peer
+(obs=4,594)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .002113
+va_ela_las.. |  .000087  .011077
+
+enr_2year DK VA covariance with math VA, las sample, lasd_ct_p control, _p at t
+> he end means peer
+(obs=4,590)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .002114
+va_math_la.. |  .000148  .010278
+
+Postsec outcome: enr_4year
+sample: b
+control: b_ct
+enr_4year DK VA covariance with ELA VA, b sample, b_ct control, _p at the end m
+> eans peer
+(obs=4,850)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .007151
+~a_b_sp_b_ct |  .002376  .021171
+
+enr_4year DK VA covariance with math VA, b sample, b_ct control, _p at the end 
+> means peer
+(obs=4,849)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .007138
+~h_b_sp_b_ct |  .002378  .022703
+
+sample: las
+control: b_ct
+enr_4year DK VA covariance with ELA VA, las sample, b_ct control, _p at the end
+>  means peer
+(obs=4,671)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .005959
+va_ela_las.. |  .001696  .014942
+
+enr_4year DK VA covariance with math VA, las sample, b_ct control, _p at the en
+> d means peer
+(obs=4,667)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .005956
+va_math_la.. |  .001797  .016242
+
+control: b_ct_p
+enr_4year DK VA covariance with ELA VA, las sample, b_ct_p control, _p at the e
+> nd means peer
+(obs=4,671)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .004181
+va_ela_las.. |  .001249  .011943
+
+enr_4year DK VA covariance with math VA, las sample, b_ct_p control, _p at the 
+> end means peer
+(obs=4,667)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .004181
+va_math_la.. |  .001312  .011847
+
+control: a_ct_p
+enr_4year DK VA covariance with ELA VA, las sample, a_ct_p control, _p at the e
+> nd means peer
+(obs=4,657)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .003198
+va_ela_las.. |  .000872  .011142
+
+enr_4year DK VA covariance with math VA, las sample, a_ct_p control, _p at the 
+> end means peer
+(obs=4,653)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .003198
+va_math_la.. |  .000879  .010299
+
+control: las_ct_p
+enr_4year DK VA covariance with ELA VA, las sample, las_ct_p control, _p at the
+>  end means peer
+(obs=4,631)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |    .0019
+va_ela_las.. |  .000598  .011071
+
+enr_4year DK VA covariance with math VA, las sample, las_ct_p control, _p at th
+> e end means peer
+(obs=4,627)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |    .0019
+va_math_la.. |  .000608  .010201
+
+control: lasd_ct_p
+enr_4year DK VA covariance with ELA VA, las sample, lasd_ct_p control, _p at th
+> e end means peer
+(obs=4,594)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .001843
+va_ela_las.. |  .000597  .011077
+
+enr_4year DK VA covariance with math VA, las sample, lasd_ct_p control, _p at t
+> he end means peer
+(obs=4,590)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .001844
+va_math_la.. |  .000611  .010278
+
+(ela estimates from all sample and control combinations)
+Postsec outcome: enr_2year
+sample: b
+control: b_ct
+enr_2year DK VA covariance with ELA VA, b sample, b_ct control, _p at the end m
+> eans peer
+(obs=4,850)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .009479
+~a_b_sp_b_ct |  .000306  .023933
+
+enr_2year DK VA covariance with math VA, b sample, b_ct control, _p at the end 
+> means peer
+(obs=4,849)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .009477
+~h_b_sp_b_ct |  .000397  .025349
+
+sample: las
+control: b_ct
+enr_2year DK VA covariance with ELA VA, las sample, b_ct control, _p at the end
+>  means peer
+(obs=4,671)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .007493
+va_ela_las.. |  .000082  .016533
+
+enr_2year DK VA covariance with math VA, las sample, b_ct control, _p at the en
+> d means peer
+(obs=4,667)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .007501
+va_math_la.. |  .000038  .017872
+
+control: b_ct_p
+enr_2year DK VA covariance with ELA VA, las sample, b_ct_p control, _p at the e
+> nd means peer
+(obs=4,671)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .003962
+va_ela_las.. | -.000059  .012871
+
+enr_2year DK VA covariance with math VA, las sample, b_ct_p control, _p at the 
+> end means peer
+(obs=4,667)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .003964
+va_math_la.. | -.000046  .012696
+
+control: a_ct_p
+enr_2year DK VA covariance with ELA VA, las sample, a_ct_p control, _p at the e
+> nd means peer
+(obs=4,657)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .003587
+va_ela_las.. |  .000094   .01232
+
+enr_2year DK VA covariance with math VA, las sample, a_ct_p control, _p at the 
+> end means peer
+(obs=4,653)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |   .00359
+va_math_la.. |  .000072  .011509
+
+control: las_ct_p
+enr_2year DK VA covariance with ELA VA, las sample, las_ct_p control, _p at the
+>  end means peer
+(obs=4,631)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .002183
+va_ela_las.. |  .000127   .01215
+
+enr_2year DK VA covariance with math VA, las sample, las_ct_p control, _p at th
+> e end means peer
+(obs=4,627)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .002185
+va_math_la.. |  .000138  .011216
+
+control: lasd_ct_p
+enr_2year DK VA covariance with ELA VA, las sample, lasd_ct_p control, _p at th
+> e end means peer
+(obs=4,594)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .002112
+va_ela_las.. |  .000106  .012158
+
+enr_2year DK VA covariance with math VA, las sample, lasd_ct_p control, _p at t
+> he end means peer
+(obs=4,590)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .002113
+va_math_la.. |   .00014  .011312
+
+Postsec outcome: enr_4year
+sample: b
+control: b_ct
+enr_4year DK VA covariance with ELA VA, b sample, b_ct control, _p at the end m
+> eans peer
+(obs=4,850)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .007135
+~a_b_sp_b_ct |  .002554  .023933
+
+enr_4year DK VA covariance with math VA, b sample, b_ct control, _p at the end 
+> means peer
+(obs=4,849)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .007122
+~h_b_sp_b_ct |  .002477  .025349
+
+sample: las
+control: b_ct
+enr_4year DK VA covariance with ELA VA, las sample, b_ct control, _p at the end
+>  means peer
+(obs=4,671)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .005963
+va_ela_las.. |  .001843  .016533
+
+enr_4year DK VA covariance with math VA, las sample, b_ct control, _p at the en
+> d means peer
+(obs=4,667)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .005961
+va_math_la.. |  .001906  .017872
+
+control: b_ct_p
+enr_4year DK VA covariance with ELA VA, las sample, b_ct_p control, _p at the e
+> nd means peer
+(obs=4,671)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .003811
+va_ela_las.. |  .001267  .012871
+
+enr_4year DK VA covariance with math VA, las sample, b_ct_p control, _p at the 
+> end means peer
+(obs=4,667)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |   .00381
+va_math_la.. |  .001295  .012696
+
+control: a_ct_p
+enr_4year DK VA covariance with ELA VA, las sample, a_ct_p control, _p at the e
+> nd means peer
+(obs=4,657)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .003141
+va_ela_las.. |  .000977   .01232
+
+enr_4year DK VA covariance with math VA, las sample, a_ct_p control, _p at the 
+> end means peer
+(obs=4,653)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .003141
+va_math_la.. |  .000987  .011509
+
+control: las_ct_p
+enr_4year DK VA covariance with ELA VA, las sample, las_ct_p control, _p at the
+>  end means peer
+(obs=4,631)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .001869
+va_ela_las.. |  .000636   .01215
+
+enr_4year DK VA covariance with math VA, las sample, las_ct_p control, _p at th
+> e end means peer
+(obs=4,627)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |   .00187
+va_math_la.. |  .000633  .011216
+
+control: lasd_ct_p
+enr_4year DK VA covariance with ELA VA, las sample, lasd_ct_p control, _p at th
+> e end means peer
+(obs=4,594)
+
+             | va_dk_.. va_ela..
+-------------+------------------
+va_dk_enr_.. |  .001811
+va_ela_las.. |  .000645  .012158
+
+enr_4year DK VA covariance with math VA, las sample, lasd_ct_p control, _p at t
+> he end means peer
+(obs=4,590)
+
+             | va_dk_.. va_mat..
+-------------+------------------
+va_dk_enr_.. |  .001811
+va_math_la.. |  .000646  .011312
+
+
+. 
+. 
+. 
+. 
+. local date2 = c(current_date)
+
+. local time2 = c(current_time)
+
+. 
+. 
+. di "Start date time /reg_out_va_all.do: `date1' `time1'"
+Start date time /reg_out_va_all.do:  3 Jun 2026 02:29:37
+
+. di "End date time: `date2' `time2'"
+End date time:  3 Jun 2026 02:29:37
+
+. 
+. cap log close corr_dk_score_va

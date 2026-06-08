@@ -5,7 +5,7 @@
 > data_prep/responserate/secresponserate.sm
 > cl
   log type:  text
- opened on:  26 May 2026, 22:29:43
+ opened on:   1 Jun 2026, 23:04:56
 
 . 
 . use $datadir_clean/calschls/demotrim/secondary/trimsecdemo1415, replace
