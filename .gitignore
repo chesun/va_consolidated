@@ -29,6 +29,16 @@ slides/**/*.out
 supplementary/**/*.log
 supplementary/**/*.out
 
+# --- Stata terminal background-run artifacts ---
+# `stata -b do do/main.do` writes a batch auto-log named after the do-file
+# (e.g. main.log) into the working directory (repo root); a `nohup ... &`
+# launch writes nohup.out. Both capture the entire run and can exceed GitHub's
+# 100 MB file limit (this is what blocked the server push 2026-06-08).
+# Anchored leading-slash + the log/ subdir mean these match ONLY root-level
+# files — the curated per-file logs under log/<reldir>/ stay tracked.
+/*.log
+nohup.out
+
 # --- Python ---
 __pycache__/
 *.pyc
