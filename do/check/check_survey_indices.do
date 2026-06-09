@@ -10,9 +10,11 @@ PURPOSE
     specification.
 
 INPUTS
-    Source CalSCHLS files (LEGACY — static predecessor inputs):
-      $caschls_projdir/dta/allsvyfactor/imputedallsvyqoimeans.dta  (calschls_1)
-      $caschls_projdir/dta/allsvyfactor/allsvyqoimeans.dta         (calschls_2)
+    Source survey-VA files (CANONICAL — consolidated pipeline outputs; re-pointed
+    from LEGACY $caschls_projdir per ADR-0027 so SUB-CHECK 1 validates the
+    consolidated output, not the static predecessor artifact):
+      $datadir_clean/survey_va/imputedallsvyqoimeans.dta  (calschls_1; imputation.do, clamped)
+      $datadir_clean/survey_va/allsvyqoimeans.dta         (calschls_2; allsvymerge.do)
     Built index files (post-Phase-1a §3.3 CANONICAL):
       $datadir_clean/survey_va/categoryindex/imputedcategoryindex.dta
       $datadir_clean/survey_va/categoryindex/compcasecategoryindex.dta
@@ -24,11 +26,11 @@ OUTPUTS
     On `assert` failure: pipeline halts; partial outputs preserved.
 
 ROLE IN ADR-0021 SANDBOX
-    Reads from LEGACY ($caschls_projdir, static predecessor source — static
-    CalSCHLS surveys don't change) and CANONICAL ($datadir_clean/survey_va/,
-    post-Phase-1a relocated index outputs).  Writes only to $logdir (CANONICAL).
-    Skeleton uses capture-confirm-file shim on the CANONICAL inputs so a
-    pre-relocation main.do run skips those sub-checks cleanly.
+    Reads only from CANONICAL ($datadir_clean/survey_va/ — both the SUB-CHECK 1
+    sources, re-pointed from LEGACY per ADR-0027, and the SUB-CHECK 2 built-index
+    outputs).  Writes only to $logdir (CANONICAL).  Skeleton uses
+    capture-confirm-file shim on the CANONICAL inputs so a pre-relocation
+    main.do run skips those sub-checks cleanly.
 
 INDEX STRUCTURE (resolved 2026-04-28; design memo §5)
     Both `imputedcategoryindex.do` + `compcasecategoryindex.do` use IDENTICAL
@@ -128,18 +130,19 @@ SUB-CHECK 1 — source files (imputed + compcase)
 
 foreach src_tag in calschls_1 calschls_2 {
     if "`src_tag'" == "calschls_1" {
-        local src_dta "$caschls_projdir/dta/allsvyfactor/imputedallsvyqoimeans.dta"
+        local src_dta "$datadir_clean/survey_va/imputedallsvyqoimeans.dta"
         local src_label "imputed"
     }
     else {
-        local src_dta "$caschls_projdir/dta/allsvyfactor/allsvyqoimeans.dta"
+        local src_dta "$datadir_clean/survey_va/allsvyqoimeans.dta"
         local src_label "compcase"
     }
 
     capture confirm file "`src_dta'"
     if _rc {
-        di as text "  [LEGACY-MISSING] `src_dta' — predecessor caschls source not present."
-        di as text "                   Skipping `src_label' source-item checks."
+        di as text "  [SKELETON] `src_dta' — CANONICAL survey-VA output not present"
+        di as text "             (produced by Phase 5 allsvymerge.do / imputation.do)."
+        di as text "             Skipping `src_label' source-item checks."
         continue
     }
 
@@ -147,11 +150,12 @@ foreach src_tag in calschls_1 calschls_2 {
 
     * School-level row count -- design memo §5 (codebook line 105 / 24269)
     capture assert _N == 5625
+    local rc = _rc
     if _rc {
         di as error "  FAIL: `src_label' source _N = " r(N) " (expected 5625)"
         cap log close check_survey_indices
         cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-        exit _rc
+        exit `rc'
     }
     di as text "  PASS: `src_label' source _N == 5625"
 
@@ -161,18 +165,20 @@ foreach src_tag in calschls_1 calschls_2 {
         qui sum `v'
         if r(N) == 0 continue
         capture assert inrange(r(min), -2.01, 0)
+        local rc = _rc
         if _rc {
             di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (expected ∈ [-2.01, 0])"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit _rc
+            exit `rc'
         }
         capture assert inrange(r(max), 0, 2.01)
+        local rc = _rc
         if _rc {
             di as error "  FAIL: `src_label' `v' max = " %7.4f r(max) " (expected ∈ [0, 2.01])"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit _rc
+            exit `rc'
         }
     }
     di as text "  PASS: `src_label' source items within Likert [-2.01, 2.01]"
@@ -180,11 +186,12 @@ foreach src_tag in calschls_1 calschls_2 {
     * Every index component present in the source file.
     foreach v in `climateitems' `qualityitems' `supportitems' {
         capture confirm variable `v'
+        local rc = _rc
         if _rc {
             di as error "  FAIL: `src_label' source missing required item `v'"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit _rc
+            exit `rc'
         }
     }
     di as text "  PASS: `src_label' source has all 28 (=9+15+4) required index components"
@@ -214,32 +221,36 @@ foreach idx_tag in imputed compcase {
         qui sum `z'
         if r(N) == 0 continue
         capture assert abs(r(mean)) < 0.01
+        local rc = _rc
         if _rc {
             di as error "  FAIL: `idx_tag' `z' mean = " %7.4f r(mean) " (expected |.| < 0.01)"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit _rc
+            exit `rc'
         }
         capture assert inrange(r(sd), 0.95, 1.05)
+        local rc = _rc
         if _rc {
             di as error "  FAIL: `idx_tag' `z' SD = " %7.4f r(sd) " (expected ∈ [0.95, 1.05])"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit _rc
+            exit `rc'
         }
         capture assert inrange(r(min), -5, -1)
+        local rc = _rc
         if _rc {
             di as error "  FAIL: `idx_tag' `z' min = " %7.4f r(min) " (expected ∈ [-5, -1])"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit _rc
+            exit `rc'
         }
         capture assert inrange(r(max), 1, 5)
+        local rc = _rc
         if _rc {
             di as error "  FAIL: `idx_tag' `z' max = " %7.4f r(max) " (expected ∈ [1, 5])"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit _rc
+            exit `rc'
         }
     }
     di as text "  PASS: `idx_tag' z-scored indices have mean≈0, SD≈1, typical tail ranges"
@@ -251,20 +262,22 @@ foreach idx_tag in imputed compcase {
         qui sum `idx'
         if r(N) == 0 continue
         capture assert inrange(r(min), -2.01, 0)
+        local rc = _rc
         if _rc {
             di as error "  FAIL: `idx_tag' raw `idx' min = " %7.4f r(min) " (expected ∈ [-2.01, 0])"
             di as error "        Indicates ADR-0011 sums→means fix has NOT been applied to `idx_tag'."
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit _rc
+            exit `rc'
         }
         capture assert inrange(r(max), 0, 2.01)
+        local rc = _rc
         if _rc {
             di as error "  FAIL: `idx_tag' raw `idx' max = " %7.4f r(max) " (expected ∈ [0, 2.01])"
             di as error "        Indicates ADR-0011 sums→means fix has NOT been applied to `idx_tag'."
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit _rc
+            exit `rc'
         }
     }
     di as text "  PASS: `idx_tag' raw indices ∈ [-2.01, 2.01] (ADR-0011 sums→means fix verified)"

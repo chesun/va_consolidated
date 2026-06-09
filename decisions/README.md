@@ -115,6 +115,8 @@ What this commits us to. What it rules out. Open questions it creates.
 | [0024](0024_tables-vs-estimates-dir-for-regsave-summaries.md) | regsave summary `.dta` tables (`fb_*_all`, `spec_*_all`) live under `$tables_dir`, raw `.ster` estimates under `$estimates_dir`; fixes va_spec_fb_tab_all r(601) producer/consumer root mismatch; refines ADR-0021, supersedes the misleading file-header relocation note | 2026-06-01 | Decided | Specification |
 | [0025](0025_nsc-codebook-descoped.md) | `nsc_codebook.do` descoped + archived to `do/_archive/out_of_scope/` — input `nsc_2010_2017_clean` removed from Scribe (re-cleaned under new names), out of scope; removed from main.do Phase 6 | 2026-06-01 | Decided | Data |
 | [0026](0026_sibling-xwalk-files-consolidated.md) | sibling-crosswalk producers consolidated under `do/sibling_xwalk/` (3 files moved from `do/share/siblingxwalk/`, log paths repointed to mirror); extends ADR-0005 | 2026-06-01 | Decided | Infrastructure |
+| [0027](0027_clamp-imputed-survey-items-and-repoint-check.md) | clamp OLS-imputed survey QOI items to Likert [-2,2] (imputation.do) + re-point check_survey_indices SUB-CHECK 1 from LEGACY predecessor files to CANONICAL pipeline outputs; resolves e968d13 Phase-7 survey FAIL | 2026-06-09 | Decided | Methodology |
+| [0028](0028_accept-thin-variant-va-cells-soft-check.md) | accept thin per-spec VA cells in restricted-variant samples (subsamples drop students post-merge; CFR shrinks them; weight-only) + downgrade check_va_estimates per-spec count assert from hard-halt to soft; resolves e968d13 Phase-7 VA FAIL | 2026-06-09 | Decided | Specification |
 
 ---
 

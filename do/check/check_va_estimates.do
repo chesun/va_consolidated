@@ -14,7 +14,9 @@ INPUTS
 
 OUTPUTS
     Per-do-file log: $logdir/check/check_va_estimates.smcl + .log
-    On `assert` failure: pipeline halts; partial outputs preserved.
+    On a HARD `assert` failure (centered-mean, reference-SD): pipeline halts,
+    partial outputs preserved.  The per-spec count check is SOFT (ADR-0028) —
+    reports below-floor cells but does not halt.
 
 ROLE IN ADR-0021 SANDBOX
     Reads from CANONICAL ($estimates_dir/...).  Writes only to $logdir
@@ -37,9 +39,11 @@ INVARIANTS (verbatim from design memo §4)
       - Paper-reported SD: VA SD ∈ [0.05, 0.30] for va_ela_b_sp_b_ct
         (paper Tables 2-3 report ~0.10-0.15 σ; wide tolerance halts only on
         absurd values).
-      - Per-spec student-year counts: min N >= 5 (CFR-style estimator
-        minimum cell size).
     Soft signals (display as error, non-halting):
+      - Per-spec student-year counts: min N >= 5 (CFR-style estimator minimum
+        cell size).  DOWNGRADED hard->soft per ADR-0028: restricted variants are
+        subsamples that legitimately fall below 5 (merges drop students); the
+        count is a scatter weight only, and CFR shrinkage handles thin cells.
       - Cross-spec correlation va_ela_b_sp_b_ct vs va_ela_l_sp_l_ct: ~0.85+
         per chunk-3 audit; flag if <0.7.
       - _p (peer controls) vs no-_p correlation: ~0.97; flag if <0.9.
@@ -99,11 +103,12 @@ foreach v of varlist va_ela_*_ct va_math_*_ct va_*_ct_p {
     qui sum `v'
     if r(N) == 0 continue
     capture assert abs(r(mean)) < 0.05
+    local rc = _rc
     if _rc {
         di as error "  FAIL: `v' mean = " %7.4f r(mean) " — outside |.| < 0.05 tolerance"
         cap log close check_va_estimates
         cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
-        exit _rc
+        exit `rc'
     }
 }
 di as text "  PASS: all va_<subj>_*_ct and va_*_ct_p columns have |mean| < 0.05"
@@ -111,28 +116,34 @@ di as text "  PASS: all va_<subj>_*_ct and va_*_ct_p columns have |mean| < 0.05"
 * Paper-reported SD bound on the b-sample b-control reference spec.
 qui sum va_ela_b_sp_b_ct
 capture assert inrange(r(sd), 0.05, 0.30)
+local rc = _rc
 if _rc {
     di as error "  FAIL: va_ela_b_sp_b_ct SD = " %7.4f r(sd) " — outside [0.05, 0.30]"
     di as error "        paper Tables 2-3 report ~0.10-0.15 σ"
     cap log close check_va_estimates
     cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
-    exit _rc
+    exit `rc'
 }
 di as text "  PASS: va_ela_b_sp_b_ct SD ∈ [0.05, 0.30] (paper-reported envelope)"
 
-* Per-spec student-year counts non-zero — CFR estimator minimum cell size.
+* Per-spec student-year counts — CFR estimator minimum cell size.
+* SOFT (non-halting) per ADR-0028 (Christina 2026-06-09): the restricted
+* variant samples (l/a/s/...) are subsamples of the base and legitimately fall
+* below the base >=7 floor — the leave-out/sibling/ACS merges drop students
+* (e.g. merge_loscore.doh:76,82 drop students with no leave-out prior score),
+* and the per-spec count is computed AFTER those drops (collapse (sum) of the
+* base touse flag in va_score_all.do:247). CFR shrinkage handles thin cells, and
+* the count is only a scatter-plot weight (va_scatter.do), not the estimation
+* sample. Report cells below the floor but do not halt.
 foreach v of varlist n_g11_ela_*_sp n_g11_math_*_sp {
     qui sum `v'
     if r(N) == 0 continue
     capture assert r(min) >= 5
     if _rc {
-        di as error "  FAIL: `v' has min student-year count = " %5.0f r(min) " — below CFR minimum 5"
-        cap log close check_va_estimates
-        cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/check_va_estimates.log", replace
-        exit _rc
+        di as error "  SOFT: `v' min student-year count = " %5.0f r(min) " — below CFR floor 5 (expected for restricted variants; non-halting)"
     }
 }
-di as text "  PASS: all n_g11_<subj>_*_sp counts >= 5 (CFR minimum cell size)"
+di as text "  PASS (soft): per-spec student-year count check complete"
 
 
 /*==============================================================================

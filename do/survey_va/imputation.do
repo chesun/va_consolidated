@@ -135,6 +135,11 @@ foreach i of local climatevars {
   reg `i' `xvars' `xdummies'
   predict hat_`i'
   replace `i' = hat_`i' if imputed`i' == 1
+  // clamp OLS-imputed predictions to the Likert range [-2, 2]: regression
+  // imputation is unbounded, so censor out-of-range predictions to the
+  // nearest bound (fixes secqoi27mean_pooled max=2.61 -> 2; check_survey_indices)
+  replace `i' = -2 if imputed`i' == 1 & `i' < -2
+  replace `i' =  2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
   drop hat_`i'
 }
 
@@ -148,6 +153,11 @@ foreach i of local qualityvars {
   reg `i' `xvars' `xdummies'
   predict hat_`i'
   replace `i' = hat_`i' if imputed`i' == 1
+  // clamp OLS-imputed predictions to the Likert range [-2, 2]: regression
+  // imputation is unbounded, so censor out-of-range predictions to the
+  // nearest bound (fixes secqoi27mean_pooled max=2.61 -> 2; check_survey_indices)
+  replace `i' = -2 if imputed`i' == 1 & `i' < -2
+  replace `i' =  2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
   drop hat_`i'
 }
 
@@ -161,6 +171,11 @@ foreach i of local supportvars {
   reg `i' `xvars' `xdummies'
   predict hat_`i'
   replace `i' = hat_`i' if imputed`i' == 1
+  // clamp OLS-imputed predictions to the Likert range [-2, 2]: regression
+  // imputation is unbounded, so censor out-of-range predictions to the
+  // nearest bound (fixes secqoi27mean_pooled max=2.61 -> 2; check_survey_indices)
+  replace `i' = -2 if imputed`i' == 1 & `i' < -2
+  replace `i' =  2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
   drop hat_`i'
 }
 
@@ -174,6 +189,11 @@ foreach i of local motivationvars {
   reg `i' `xvars' `xdummies'
   predict hat_`i'
   replace `i' = hat_`i' if imputed`i' == 1
+  // clamp OLS-imputed predictions to the Likert range [-2, 2]: regression
+  // imputation is unbounded, so censor out-of-range predictions to the
+  // nearest bound (fixes secqoi27mean_pooled max=2.61 -> 2; check_survey_indices)
+  replace `i' = -2 if imputed`i' == 1 & `i' < -2
+  replace `i' =  2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
   drop hat_`i'
 }
 
