@@ -2423,3 +2423,19 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 - Done: all session fixes committed + pushed; 4 coder-critic PASS (95/82/94/96) recorded; ledger + ADRs + reviews INDEX updated; working tree cleaned.
 - IN FLIGHT: full M4 golden-master on Scribe. Next: triage `m4_diff_summary.txt` (intended ADR deviations vs regressions; `va_all.dta` structural diff).
 - PENDING: clean Phase 5–7 re-run so the clamp propagates + all 6 checks complete.
+
+## 2026-06-09 (cont.) — golden-master: dd94f62 was smoke (not full); rc-fix confirmed; tier→full
+
+**Operations:**
+- Verified the server's `dd94f62` golden-master run was the **smoke tier (5 pairs)**, not full: summary header `# tier_filter: smoke`, `rows_compared: 5`; `do/check/m4_golden_master.do:394` was still `"smoke"` (the commit didn't flip it).
+- Confirmed the rc-report fix works: `va_all.dta` READ_ERROR now shows `rc=9 on cf _all` (was blank pre-fix). `rc=9` = the two `va_all.dta` don't conform (`cf` needs equal obs → structural mismatch; confirm exact cause via `count`/`describe` on both).
+- Smoke result: 4 PASS (`.dta` 0-diff, `.tex`/`.pdf` byte-identical, `.ster` 0 coef/SE) + 1 READ_ERROR (`va_all.dta`).
+- Flipped `tier_filter` `"smoke"→"full"` (`e999102`) so a `git pull` + run on Scribe does the full 8,324-pair comparison.
+
+**Commits:** `9d8bb78` (doc/state updates + worktree cleanup); `e999102` (tier→full).
+
+**Status / NEXT (fresh session):**
+- On Scribe: `git pull` → `nohup stata -b do do/check/m4_golden_master.do &` → full run (long; watch `row N / 8324`).
+- When done: triage `output/m4_diff_summary.txt` — sort FAIL/READ_ERROR/MISSING into intended ADR deviations (ADR-0011 sums→means, ADR-0027 clamp) vs regressions; start with whether `va_all.dta` structural mismatch repeats across v1/v2 super-master files.
+- PENDING: clean Phase 5–7 re-run to propagate the ADR-0027 clamp + complete all 6 Phase-7 checks.
+- After the acceptance run: revert `do/check/m4_golden_master.do:394` `tier_filter` → `"smoke"`.

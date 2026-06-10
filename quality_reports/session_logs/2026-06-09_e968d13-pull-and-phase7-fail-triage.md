@@ -51,3 +51,11 @@ The 3 fixes are code-reviewed + locally mechanic-tested but **not re-run on Scri
 - Updated state docs: `SESSION_REPORT.md` (+ `.claude/` mirror), `research_journal.md`, `TODO.md`, this log.
 
 **Now in flight:** full golden-master on Scribe (`tier_filter="full"`, 8,324 pairs). **Next:** triage `m4_diff_summary.txt` (intended ADR deviations vs regressions; `va_all.dta` structural diff). **Pending:** clean Phase 5–7 re-run to propagate the clamp + complete all six checks.
+
+## Addendum 2 — dd94f62 golden-master was SMOKE not full; tier flipped to full (2026-06-09, evening)
+
+- Checked the server's committed `dd94f62` golden-master output: it was the **smoke tier (5 pairs)**, not full — `output/m4_diff_summary.txt` header `# tier_filter: smoke`, `rows_compared: 5`, and `do/check/m4_golden_master.do:394` was still `"smoke"` (the `tier_filter→"full"` edit was never applied on the server).
+- The rc-report fix is confirmed working: `va_all.dta` READ_ERROR now prints `rc=9 on cf _all` (blank pre-fix). `rc=9` ⇒ the predecessor + consolidated `va_all.dta` don't conform (`cf` requires equal obs) → **structural mismatch**; confirm exact cause on Scribe with `count`/`describe` on both.
+- Flipped `tier_filter` → `"full"` and pushed (`e999102`) so the next Scribe `git pull` + run is the full 8,324-pair comparison.
+- **NEXT (fresh session):** on Scribe `git pull` → `nohup stata -b do do/check/m4_golden_master.do &` → triage `output/m4_diff_summary.txt`. Revert `tier_filter` → `"smoke"` after the acceptance run.
+- Commits this segment: `9d8bb78` (state docs + cleanup), `e999102` (tier→full).
