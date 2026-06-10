@@ -2,6 +2,34 @@
 
 Append-only agent-level history. One entry per agent invocation. See `.claude/rules/logging.md` §3.
 
+### 2026-06-09 (PM) — coder-critic
+**Phase:** Execution (golden-master harness fix)
+**Target:** `do/check/m4_golden_master.do` rc-reporting fix (`` `_rc' `` local-macro → blank rc; 4 branches)
+**Score:** 96/100 PASS
+**Verdict:** READ_ERROR/FAIL detail strings used `` `_rc' `` (empty local) not system `_rc` → summary printed `rc=` blank (smoke `va_all.dta`). Fix: `local rc=_rc` before the returns, detail uses `` `rc' ``. Reporting-only; categorization/tally unchanged. −4 ledger hygiene (rows added post-review).
+**Report:** `quality_reports/reviews/2026-06-09_golden-master-rc-report_coder_review.md`
+
+### 2026-06-09 — coder-critic
+**Phase:** Execution (Phase-7 check fixes)
+**Target:** `check_va_estimates.do` soft-downgrade (ADR-0028) + `check_survey_indices.do` SUB-CHECK 1 re-point (ADR-0027)
+**Score:** 94/100 PASS
+**Verdict:** Per-spec count check hard→soft (thin variant cells accepted); survey source re-pointed LEGACY→CANONICAL so it validates the clamped output. Correct, ADR-faithful, Tier-1 clean. 2 doc-hygiene Minors fixed post-review.
+**Report:** `quality_reports/reviews/2026-06-09_check-soft-and-repoint_coder_review.md`
+
+### 2026-06-09 — coder-critic
+**Phase:** Execution (survey imputation fix)
+**Target:** `do/survey_va/imputation.do` clamp OLS-imputed QOI items to Likert [-2,2] (ADR-0027)
+**Score:** 82/100 PASS
+**Verdict:** Clamp idiom correct (incl. `!missing` guard). HIGH flag (−15): clamp writes CANONICAL but the FAILing check read the LEGACY file → resolved by the re-point.
+**Report:** `quality_reports/reviews/2026-06-09_imputation-clamp_coder_review.md`
+
+### 2026-06-09 — coder-critic
+**Phase:** Execution (Phase-7 check harness fix)
+**Target:** `check_va_estimates.do` + `check_survey_indices.do` rc-clobber hard-halt fix (13 branches)
+**Score:** 95/100 PASS
+**Verdict:** Pre-fix `exit _rc` clobbered to 0 by `cap log close`/`translate` → FAILing checks exited clean, pipeline never halted (server run e968d13). Fix: `local rc=_rc` after each capture, `exit `rc''`. Complete, minimal, no over-reach.
+**Report:** `quality_reports/reviews/2026-06-09_check-files-rc-fix_coder_review.md`
+
 ### 2026-06-01 01:15 — coder
 **Phase:** Execution (Phase 1 consolidation debug)
 **Target:** `do/main.do` Phase 4 (VA TABLES + FIGURES) — empty no-op with `<...>` placeholders
