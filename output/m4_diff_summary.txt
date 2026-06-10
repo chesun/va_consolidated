@@ -1,17 +1,17 @@
 # M4 golden-master diff summary
-# generated: 17 May 2026 13:30:57
+# generated:  9 Jun 2026 20:27:00
 # tier_filter: smoke
 # rows_compared: 5
 # format: <STATUS>  <tier>  <filetype>  <consolidated_relpath>  <details>
 #
-MISSING_CONSOLIDATED    smoke   dta     data/cleaned/calschls/secondary/sec1718.dta  cons not found: /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/calschls/secondary/sec1718.dta
-MISSING_CONSOLIDATED    smoke   tex     tables/share/va/pub/persistence_single_subject.tex  cons not found: /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/va/pub/persistence_single_subject.tex
-MISSING_CONSOLIDATED    smoke   pdf     figures/share/va/v1/va_combined_scatter_las_sp_b_vs_las_ct_p_v1_nw.pdf  cons not found: /home/research/ca_ed_lab/projects/common_core_va/consolidated/figures/share/va/v1/va_combined_scatter_las_sp_b_vs_las_ct_p_v1_nw.pdf
-MISSING_CONSOLIDATED    smoke   dta     estimates/va_cfr_all_v1/va_est_dta/va_all.dta  cons not found: /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/va_est_dta/va_all.dta
-MISSING_CONSOLIDATED    smoke   ster    estimates/va_cfr_all_v1/spec_test/spec_math_b_sp_b_ct.ster  cons not found: /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/spec_test/spec_math_b_sp_b_ct.ster
+PASS                    smoke   dta     data/cleaned/calschls/secondary/sec1718.dta  cf _all: 0 cumulative diffs
+PASS                    smoke   tex     tables/share/va/pub/persistence_single_subject.tex  byte-identical
+PASS                    smoke   pdf     figures/share/va/v1/va_combined_scatter_las_sp_b_vs_las_ct_p_v1_nw.pdf  byte-identical
+READ_ERROR              smoke   dta     estimates/va_cfr_all_v1/va_est_dta/va_all.dta  rc=9 on cf _all
+PASS                    smoke   ster    estimates/va_cfr_all_v1/spec_test/spec_math_b_sp_b_ct.ster  coef and SE within tolerance (max|db|= 0.0000 max|dSE|= 0.0000)
 
 --- SUMMARY ---
-PASS: 0  FAIL: 0  MISSING_PRED: 0  MISSING_CONS: 5  READ_ERROR: 0  FAIL_VISUAL: 0  FAIL_BINARY: 0  SKIP: 0  UNKNOWN: 0
+PASS: 4  FAIL: 0  MISSING_PRED: 0  MISSING_CONS: 0  READ_ERROR: 1  FAIL_VISUAL: 0  FAIL_BINARY: 0  SKIP: 0  UNKNOWN: 0
 TIER: smoke
-RUNTIME:   0.0 minutes
+RUNTIME:   3.1 minutes
 ROWS: 5
