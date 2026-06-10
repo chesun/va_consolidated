@@ -134,8 +134,9 @@ program define cap_compare_dta, rclass
         quietly cf _all using "`cons_path'"
     }
     if _rc {
+        local rc = _rc
         return local status = "READ_ERROR"
-        return local details = "rc=`_rc' on cf _all"
+        return local details = "rc=`rc' on cf _all"
         exit
     }
 
@@ -158,8 +159,9 @@ program define cap_compare_dta, rclass
             quietly cfout _all using "`cons_path'", saving("`cfout_tmp'") replace
         }
         if _rc {
+            local rc = _rc
             return local status = "FAIL"
-            return local details = "cf:`nsum' obs-diffs (cfout fallback rc=`_rc')"
+            return local details = "cf:`nsum' obs-diffs (cfout fallback rc=`rc')"
             exit
         }
         local nd = r(diffs)
@@ -182,8 +184,9 @@ program define cap_compare_ster, rclass
     * Load predecessor estimates
     capture estimates use "`pred_path'"
     if _rc {
+        local rc = _rc
         return local status = "READ_ERROR"
-        return local details = "rc=`_rc' loading pred .ster"
+        return local details = "rc=`rc' loading pred .ster"
         exit
     }
     tempname b1 V1
@@ -203,8 +206,9 @@ program define cap_compare_ster, rclass
     * Load consolidated estimates
     capture estimates use "`cons_path'"
     if _rc {
+        local rc = _rc
         return local status = "READ_ERROR"
-        return local details = "rc=`_rc' loading cons .ster"
+        return local details = "rc=`rc' loading cons .ster"
         exit
     }
     tempname b2 V2
