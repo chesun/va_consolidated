@@ -119,6 +119,22 @@ For the 3 rc=900 files (`parentanalysisready`, `secanalysisready`, `sec1617`): `
 | `score_b` | Only **5 vars differ, all `mindist_*`** (uc/csu/pub4yr/ccc/any), 50,766 mismatches each (2.8% of 1.78M rows); other 72 vars identical. → the k12_postsec_distance input differs between predecessor and consolidated (matches the rc=9 on `k12_postsec_{distance,mindistance}.dta`). **No ADR documents a distance-data change — OPEN QUESTION.** Note: `d` in sample codes (`lad`, `lasd`) is plausibly the distance restriction, so mindist diffs may be the upstream root cause of part of the Section-1 N deltas. |
 | `va_all` (580/950 vars), `staff`/`parent`/`sec analysisready` (~577 each) | Differing vars are restricted-variant VA estimates (`va_*_s/ls/as_*`) — downstream propagation of the same sample shifts. |
 
-**Updated next step:** trace why `mindist_*` differs — compare `data/cleaned/k12_postsec_distance/clean/k12_postsec_mindistance.dta` build (do/data_prep/k12_postsec_distance/) vs predecessor; check whether the geocoded input was vendored/rebuilt differently (ADR-0003 only preserves the Python scripts). Also rule out sort-order artifacts in the 50,766-row mismatch (cf is row-order-sensitive). Once mindist is explained, the entire FAIL + READ_ERROR population is classified.
+## ROOT CAUSE — mindist_* divergence (2026-06-11, code + log traced)
+
+**The distance input is non-deterministic by design: the producer fetches the live CDE school directory at run time.** Chain of evidence:
+
+1. `do/data_prep/k12_postsec_distance/k12_postsec_distances.do:139` — `capture import delimited "https://www.cde.ca.gov/schooldirectory/report?rid=dl1&tp=txt", clear`; the cached `$distance_dtadir/raw/pubschls.txt` (downloaded 3/20/23) is only the `_rc!=0` fallback (`:142`). This is predecessor-original logic (relocated verbatim), not a consolidation change.
+2. The e968d13 acceptance-run log (`log/data_prep/k12_postsec_distance/k12_postsec_distances.log:276-282`) shows the URL import succeeded — the fallback `import delimited` echoes but produces **no obs-count output**, i.e. the `if _rc!=0` block did not execute. The consolidated distance file was therefore built from the **June-2026 CDE directory**, while the predecessor's on-disk file reflects an earlier directory snapshot.
+3. Downstream computation (`geodist` at `:178`, `collapse (min) … by(cdscode)` at `:186`) is deterministic, so the value diffs come entirely from the input vintage: school universe + coordinate updates between the two fetches → `mindist_*` changes for affected schools → 50,766 student rows (2.8%) in `score_b` → distance-restricted/controlled samples and restricted-variant VA estimates shift slightly → the 46 small-coef ster FAILs and the va_all/analysisready value diffs. (The `sib1` cluster may additionally reflect ADR-0026's sibling-xwalk consolidation; both contribute.)
+4. IPEDS HD2021 (`hd2021.do`, fixed 2021 vintage CSV on disk) is not a drift source.
+
+**Classification: input-vintage drift, not a code regression.** The consolidated pipeline is behavior-identical; the input moved underneath it.
+
+**Decision needed (Christina):**
+
+- **Option A — pin the input:** drop the live-URL fetch (or gate it behind a toggle) and always read the cached `pubschls.txt`, making the pipeline reproducible and golden-master-stable. Deviates from predecessor code; needs an ADR.
+- **Option B — accept the drift:** document via ADR that distance-derived artifacts are expected to differ across run dates; golden-master treats the mindist family as intended deviation. Keeps code identical; replication runs will keep drifting with CDE updates.
+
+With the root cause identified, the entire FAIL + READ_ERROR population is classified pending the Option A/B decision (plus the optional `sib1` attribution split between mindist drift and ADR-0026 — only worth doing if a precise per-ADR attribution is wanted).
 
 Grep `do/data_prep/` for the cde cleaning year-loop bounds; confirm 2013/2014/2019/2020 are deliberately excluded (analysis years 1415–1819 all PASS). Cite the existing plan/ADR if one records it; otherwise write a short ADR documenting the descope.

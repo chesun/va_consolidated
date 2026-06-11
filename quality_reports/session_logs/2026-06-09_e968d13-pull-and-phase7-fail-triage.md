@@ -77,3 +77,10 @@ The 3 fixes are code-reviewed + locally mechanic-tested but **not re-run on Scri
 - Sec 2: ALL six rc=9/rc=900 pairs have identical N + identical varlists → value diffs, not structural. sec1617 cf rc=0 (maxvar artifact → PASS). score_b: only 5 vars differ, all mindist_* (50,766 rows) → k12_postsec_distance input differs; NO ADR covers it — OPEN. va_all/analysisready: differing vars are restricted-variant va_* estimates (downstream of sample shifts).
 - ADR-0029 written (cde year coverage 2015–2018; 22 MISSING_CONS = intended). Commits: eeea9b2, 8322680, a60837c.
 - NEXT: trace mindist_* divergence (do/data_prep/k12_postsec_distance vs predecessor; rule out sort-order); then classify FAIL/READ_ERROR population and decide ADR-0018 acceptance. Pending: clean Phase 5–7 re-run; revert tier_filter→smoke.
+
+## Addendum 5 — mindist_* ROOT CAUSE identified (2026-06-11)
+
+- `k12_postsec_distances.do:139` fetches the LIVE CDE school directory URL at run time (cached pubschls.txt 3/20/23 is only the _rc!=0 fallback at :142) — predecessor-original logic, not a consolidation change.
+- e968d13 run log (`log/data_prep/k12_postsec_distance/k12_postsec_distances.log:276-282`) proves the URL fetch SUCCEEDED (fallback import echoed but produced no obs output) → consolidated distance file = June-2026 CDE directory; predecessor = older snapshot. geodist/collapse deterministic → all diffs are input-vintage drift.
+- Classification: NOT a code regression. Explains mindist_* (50,766 rows in score_b), distance-restricted sample N shifts, restricted-variant va_* value diffs, and (with ADR-0026 possibly contributing to sib1) the 46 ster FAILs.
+- DECISION PENDING (Christina): Option A pin input to cached pubschls.txt (reproducible, needs ADR + code change) vs Option B accept drift (document via ADR, code stays identical). See triage review §ROOT CAUSE.
