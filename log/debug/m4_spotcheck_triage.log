@@ -1,0 +1,2609 @@
+-------------------------------------------------------------------------------
+      name:  m4_spotcheck
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
+> debug/m4_spotcheck_triage.smcl
+  log type:  smcl
+ opened on:  11 Jun 2026, 09:22:38
+
+. 
+. di as text _n "m4_spotcheck_triage.do — RUN START: `c(current_date)' `c(curre
+> nt_time)'"
+
+m4_spotcheck_triage.do — RUN START: 11 Jun 2026 09:22:38
+
+. 
+. *============================================================================
+> ===
+. * SECTION 1 — e(N) comparison on FAILing .ster pairs (one per cluster)
+. *============================================================================
+> ===
+. di as text _n "{hline 79}" _n "[SECTION 1] e(N) on FAIL .ster pairs" _n "{hli
+> ne 79}"
+
+-------------------------------------------------------------------------------
+[SECTION 1] e(N) on FAIL .ster pairs
+-------------------------------------------------------------------------------
+
+. 
+. local pred_root  "/home/research/ca_ed_lab/projects/common_core_va"
+
+. local cons_root  "/home/research/ca_ed_lab/projects/common_core_va/consolidat
+> ed"
+
+. 
+. * cluster label : relpath (identical on both sides for these pairs)
+. local ster_1 "estimates/va_cfr_all_v1/spec_test/spec_math_s_sp_sib1_ct.ster"
+
+. local lab_1  "sib1 (ADR-0026 hypothesis)"
+
+. local ster_2 "estimates/va_cfr_all_v1/reg_out_va/reg_enr_2year_va_ela_las_sp_
+> ad_ct_p_m.ster"
+
+. local lab_2  "las (ADR-0028 hypothesis)"
+
+. local ster_3 "estimates/va_cfr_all_v1/spec_test/spec_ela_la_sp_lad_ct.ster"
+
+. local lab_3  "la (ADR-0028 hypothesis)"
+
+. 
+. forvalues i = 1/3 {
+  2.     di as text _n "--- [`lab_`i''] `ster_`i''"
+  3.     local Np = .
+  4.     local Nc = .
+  5.     local Cp = .
+  6.     local Cc = .
+  7.     capture estimates use "`pred_root'/`ster_`i''"
+  8.     if _rc di as error "    predecessor load FAILED rc=" _rc
+  9.     else {
+ 10.         local Np = e(N)
+ 11.         local Cp = cond(e(N_clust) < ., e(N_clust), .)
+ 12.     }
+ 13.     capture estimates use "`cons_root'/`ster_`i''"
+ 14.     if _rc di as error "    consolidated load FAILED rc=" _rc
+ 15.     else {
+ 16.         local Nc = e(N)
+ 17.         local Cc = cond(e(N_clust) < ., e(N_clust), .)
+ 18.     }
+ 19.     di as result "    e(N):       pred=`Np'  cons=`Nc'  delta=" `Nc' - `Np
+> '
+ 20.     di as result "    e(N_clust): pred=`Cp'  cons=`Cc'"
+ 21. }
+
+--- [sib1 (ADR-0026 hypothesis)] estimates/va_cfr_all_v1/spec_test/spec_math_s_
+> sp_sib1_ct.ster
+    e(N):       pred=25389  cons=25430  delta=41
+    e(N_clust): pred=1020  cons=1015
+
+--- [las (ADR-0028 hypothesis)] estimates/va_cfr_all_v1/reg_out_va/reg_enr_2yea
+> r_va_ela_las_sp_ad_ct_p_m.ster
+    e(N):       pred=423274  cons=422710  delta=-564
+    e(N_clust): pred=1228  cons=1219
+
+--- [la (ADR-0028 hypothesis)] estimates/va_cfr_all_v1/spec_test/spec_ela_la_sp
+> _lad_ct.ster
+    e(N):       pred=625749  cons=624665  delta=-1084
+    e(N_clust): pred=1263  cons=1252
+
+. 
+. *============================================================================
+> ===
+. * SECTION 2 — structural classification of rc=9 / rc=900 .dta pairs
+. *============================================================================
+> ===
+. di as text _n "{hline 79}" _n "[SECTION 2] count + varlist diff on READ_ERROR
+>  .dta pairs" _n "{hline 79}"
+
+-------------------------------------------------------------------------------
+[SECTION 2] count + varlist diff on READ_ERROR .dta pairs
+-------------------------------------------------------------------------------
+
+. 
+. * Pairs: pred_i = predecessor abs path, cons_i = consolidated abs path
+. * (verbatim from do/check/m4_path_matrix.csv)
+. local npairs = 6
+
+. 
+. local pred_1 "`pred_root'/data/va_samples_v1/score_b.dta"
+
+. local cons_1 "`cons_root'/data/cleaned/va_samples_v1/score_b.dta"
+
+. local lab_1  "score_b (rc=9 rep; family: va_samples score_/out_)"
+
+. 
+. local pred_2 "`pred_root'/estimates/va_cfr_all_v1/va_est_dta/va_all.dta"
+
+. local cons_2 "`cons_root'/estimates/va_cfr_all_v1/va_est_dta/va_all.dta"
+
+. local lab_2  "va_all v1 (rc=9 rep; family: va_est_dta)"
+
+. 
+. local pred_3 "/home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/buildanal
+> ysisdata/analysisready/staffanalysisready.dta"
+
+. local cons_3 "`cons_root'/data/cleaned/calschls/analysisready/staffanalysisre
+> ady.dta"
+
+. local lab_3  "staffanalysisready (rc=9 rep; family: calschls analysisready)"
+
+. 
+. local pred_4 "/home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/buildanal
+> ysisdata/analysisready/parentanalysisready.dta"
+
+. local cons_4 "`cons_root'/data/cleaned/calschls/analysisready/parentanalysisr
+> eady.dta"
+
+. local lab_4  "parentanalysisready (rc=900 — retry under maxvar 32767)"
+
+. 
+. local pred_5 "/home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/buildanal
+> ysisdata/analysisready/secanalysisready.dta"
+
+. local cons_5 "`cons_root'/data/cleaned/calschls/analysisready/secanalysisread
+> y.dta"
+
+. local lab_5  "secanalysisready (rc=900 — retry under maxvar 32767)"
+
+. 
+. local pred_6 "/home/research/ca_ed_lab/data/restricted_access/clean/calschls/
+> secondary/sec1617.dta"
+
+. local cons_6 "`cons_root'/data/cleaned/calschls/secondary/sec1617.dta"
+
+. local lab_6  "sec1617 (rc=900 — retry under maxvar 32767)"
+
+. 
+. forvalues i = 1/`npairs' {
+  2.     di as text _n "--- [`lab_`i'']"
+  3.     di as text "    pred: `pred_`i''"
+  4.     di as text "    cons: `cons_`i''"
+  5. 
+.     capture use "`pred_`i''", clear
+  6.     if _rc {
+  7.         di as error "    predecessor load FAILED rc=" _rc
+  8.         continue
+  9.     }
+ 10.     local Np = _N
+ 11.     local Kp = c(k)
+ 12.     qui ds
+ 13.     local vp `r(varlist)'
+ 14. 
+.     capture use "`cons_`i''", clear
+ 15.     if _rc {
+ 16.         di as error "    consolidated load FAILED rc=" _rc
+ 17.         continue
+ 18.     }
+ 19.     local Nc = _N
+ 20.     local Kc = c(k)
+ 21.     qui ds
+ 22.     local vc `r(varlist)'
+ 23. 
+.     di as result "    obs:  pred=`Np'  cons=`Nc'  delta=" `Nc' - `Np'
+ 24.     di as result "    vars: pred=`Kp'  cons=`Kc'"
+ 25. 
+.     local pred_only : list vp - vc
+ 26.     local cons_only : list vc - vp
+ 27.     local common    : list vp & vc
+ 28.     local n_po : word count `pred_only'
+ 29.     local n_co : word count `cons_only'
+ 30.     local n_cm : word count `common'
+ 31.     di as result "    vars only in PREDECESSOR (`n_po'): `pred_only'"
+ 32.     di as result "    vars only in CONSOLIDATED (`n_co'): `cons_only'"
+ 33. 
+.     * If obs counts match, value-compare the common variables.
+.     * CAVEAT: cf compares row-by-row — if reported diffs are large, rule out 
+> a
+.     *         sort-order difference before concluding data regression.
+.     if `Np' == `Nc' & `n_cm' > 0 {
+ 34.         di as text "    obs counts match -> cf on `n_cm' common vars:"
+ 35.         capture use "`pred_`i''", clear
+ 36.         if _rc {
+ 37.             di as error "    predecessor RE-load FAILED rc=" _rc " -> skip
+>  cf (would self-compare consolidated)"
+ 38.             continue
+ 39.         }
+ 40.         capture noisily cf `common' using "`cons_`i''"
+ 41.         di as result "    cf rc=" _rc " (0 = all common-var values identic
+> al)"
+ 42.     }
+ 43.     else if `Np' != `Nc' {
+ 44.         di as result "    obs counts DIFFER -> skip cf; triage the N delta
+>  (intended ADR change vs regression)"
+ 45.     }
+ 46. }
+
+--- [score_b (rc=9 rep; family: va_samples score_/out_)]
+    pred: /home/research/ca_ed_lab/projects/common_core_va/data/va_samples_v1/s
+> core_b.dta
+    cons: /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cl
+> eaned/va_samples_v1/score_b.dta
+    obs:  pred=1784445  cons=1784445  delta=0
+    vars: pred=77  cons=77
+    vars only in PREDECESSOR (0): 
+    vars only in CONSOLIDATED (0): 
+    obs counts match -> cf on 77 common vars:
+      mindist_uc: 50766 mismatches
+     mindist_csu: 50766 mismatches
+  mindist_pub4yr: 50766 mismatches
+mindist_any_no~r: 50766 mismatches
+     mindist_ccc: 50766 mismatches
+    cf rc=9 (0 = all common-var values identical)
+
+--- [va_all v1 (rc=9 rep; family: va_est_dta)]
+    pred: /home/research/ca_ed_lab/projects/common_core_va/estimates/va_cfr_all
+> _v1/va_est_dta/va_all.dta
+    cons: /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimat
+> es/va_cfr_all_v1/va_est_dta/va_all.dta
+    obs:  pred=5009  cons=5009  delta=0
+    vars: pred=950  cons=950
+    vars only in PREDECESSOR (0): 
+    vars only in CONSOLIDATED (0): 
+    obs counts match -> cf on 950 common vars:
+va_ela_s_sp_s_ct: 4838 mismatches
+va_ela_s_sp_s_~p: 4836 mismatches
+va_ela_ls_~_s_ct: 4831 mismatches
+v~a_ls_sp_s_ct_p: 4819 mismatches
+va_ela_as_~_s_ct: 4701 mismatches
+va_ela_a~_s_ct_p: 4668 mismatches
+va_ela_las~_s_ct: 4690 mismatches
+va_ela_l~_s_ct_p: 4649 mismatches
+va_ela_ls_s~s_ct: 4831 mismatches
+va_ela_ls~s_ct_p: 4819 mismatches
+va_ela_las~ls_ct: 4689 mismatches
+va_ela_l~ls_ct_p: 4649 mismatches
+va_ela_as_s~s_ct: 4700 mismatches
+va_ela_as~s_ct_p: 4668 mismatches
+va_ela_la~_as_ct: 4688 mismatches
+va_ela_~_as_ct_p: 4649 mismatches
+va_ela_las_~s_ct: 4690 mismatches
+va_ela_la~s_ct_p: 4648 mismatches
+va_ela_b_sp_bd~t: 4871 mismatches
+va_ela_b_sp_bd~p: 4871 mismatches
+va_ela_l_sp_bd~t: 4871 mismatches
+va_ela_l_sp_bd~p: 4871 mismatches
+va_ela_a_sp_bd~t: 4780 mismatches
+va_ela_a_sp_bd~p: 4780 mismatches
+va_ela_s_sp_bd~t: 4835 mismatches
+va_ela_s_sp_bd~p: 4835 mismatches
+va_ela_la_sp_b~t: 4773 mismatches
+va_ela_la_sp_b~p: 4773 mismatches
+va_ela_ls_sp_b~t: 4828 mismatches
+va_ela_ls_sp_b~p: 4828 mismatches
+va_ela_as_sp_b~t: 4698 mismatches
+va_ela_as_sp_b~p: 4698 mismatches
+va_ela_las~bd_ct: 4687 mismatches
+va_ela_l~bd_ct_p: 4687 mismatches
+va_ela_l_sp_ld~t: 4871 mismatches
+va_ela_l_sp_ld~p: 4871 mismatches
+va_ela_la_~ld_ct: 4772 mismatches
+va_ela_la_sp_ld~: 4773 mismatches
+va_ela_ls_~ld_ct: 4828 mismatches
+va_ela_ls_sp_ld~: 4828 mismatches
+va_ela_las~ld_ct: 4687 mismatches
+va_ela_l~ld_ct_p: 4687 mismatches
+va_ela_a_sp_ad~t: 4780 mismatches
+va_ela_a_sp_ad~p: 4758 mismatches
+va_ela_la_sp_a~t: 4773 mismatches
+va_ela_la_sp_a~p: 4742 mismatches
+va_ela_as_~ad_ct: 4698 mismatches
+va_ela_a~ad_ct_p: 4686 mismatches
+va_ela_la~_ad_ct: 4687 mismatches
+va_ela_~_ad_ct_p: 4673 mismatches
+va_ela_s_sp_sd~t: 4835 mismatches
+va_ela_s_sp_sd~p: 4833 mismatches
+va_ela_ls_sp_s~t: 4828 mismatches
+va_ela_ls_sp_s~p: 4816 mismatches
+va_ela_as_sp_s~t: 4698 mismatches
+va_ela_as_sp_s~p: 4665 mismatches
+va_ela_la~_sd_ct: 4687 mismatches
+va_ela_~_sd_ct_p: 4646 mismatches
+va_ela_la_sp_l~t: 4776 mismatches
+va_ela_la_sp_l~p: 4745 mismatches
+va_ela_las~ad_ct: 4690 mismatches
+va_ela_l~ad_ct_p: 4676 mismatches
+va_ela_ls_sp_l~t: 4828 mismatches
+va_ela_ls_sp_l~p: 4816 mismatches
+va_ela_la~lsd_ct: 4687 mismatches
+va_ela_~lsd_ct_p: 4646 mismatches
+va_ela_as_sp_a~t: 4698 mismatches
+va_ela_as_sp_a~p: 4664 mismatches
+va_ela_l~_asd_ct: 4687 mismatches
+va_ela~_asd_ct_p: 4646 mismatches
+va_ela_las_sp_~t: 4687 mismatches
+va_ela_las_sp_~p: 4646 mismatches
+va_math_s_s~s_ct: 4831 mismatches
+va_math_s~s_ct_p: 4829 mismatches
+va_math_ls~_s_ct: 4824 mismatches
+v~h_ls_sp_s_ct_p: 4812 mismatches
+va_math_as~_s_ct: 4689 mismatches
+v~h_as_sp_s_ct_p: 4658 mismatches
+va_math_la~_s_ct: 4680 mismatches
+va_math_~_s_ct_p: 4640 mismatches
+va_math_ls_~s_ct: 4823 mismatches
+~h_ls_sp_ls_ct_p: 4812 mismatches
+va_math_la~ls_ct: 4680 mismatches
+va_math_~ls_ct_p: 4639 mismatches
+va_math_as_~s_ct: 4690 mismatches
+va_math_a~s_ct_p: 4657 mismatches
+va_math_l~_as_ct: 4679 mismatches
+va_math~_as_ct_p: 4640 mismatches
+va_math_las~s_ct: 4681 mismatches
+va_math_l~s_ct_p: 4640 mismatches
+va_math_b_sp_b~t: 4868 mismatches
+va_math_b_sp_b~p: 4868 mismatches
+va_math_l_sp_b~t: 4868 mismatches
+va_math_l_sp_b~p: 4868 mismatches
+va_math_a_sp_b~t: 4772 mismatches
+va_math_a_sp_b~p: 4772 mismatches
+va_math_s_sp_b~t: 4827 mismatches
+va_math_s_sp_b~p: 4828 mismatches
+va_ma~a_sp_bd_ct: 4767 mismatches
+va_math_la_sp_b~: 4767 mismatches
+va_math_ls~bd_ct: 4820 mismatches
+va_math_ls_sp_b~: 4820 mismatches
+va_math_as~bd_ct: 4687 mismatches
+va_math_as_sp_b~: 4687 mismatches
+va_math_la~bd_ct: 4678 mismatches
+va_math_~bd_ct_p: 4678 mismatches
+va_math_l_sp_l~t: 4868 mismatches
+va_math_l_sp_l~p: 4868 mismatches
+va_ma~a_sp_ld_ct: 4767 mismatches
+~h_la_sp_ld_ct_p: 4767 mismatches
+va_math_ls~ld_ct: 4821 mismatches
+~h_ls_sp_ld_ct_p: 4821 mismatches
+va_math_la~ld_ct: 4678 mismatches
+va_math_~ld_ct_p: 4678 mismatches
+va_math_a_sp_a~t: 4772 mismatches
+va_math_a_sp_a~p: 4751 mismatches
+va_ma~a_sp_ad_ct: 4767 mismatches
+va_math_la_sp_a~: 4736 mismatches
+va_math_as~ad_ct: 4687 mismatches
+~h_as_sp_ad_ct_p: 4676 mismatches
+va_math_l~_ad_ct: 4678 mismatches
+va_math~_ad_ct_p: 4664 mismatches
+va_math_s_sp_s~t: 4828 mismatches
+va_math_s_sp_s~p: 4826 mismatches
+va_m~ls_sp_sd_ct: 4821 mismatches
+va_math_ls_sp_s~: 4809 mismatches
+va_math_a~_sd_ct: 4687 mismatches
+va_math_as_sp_s~: 4655 mismatches
+va_math_l~_sd_ct: 4678 mismatches
+va_math~_sd_ct_p: 4637 mismatches
+va_math_la_sp_~t: 4770 mismatches
+va_math_la_sp_~p: 4739 mismatches
+va_math_la~ad_ct: 4681 mismatches
+va_math_~ad_ct_p: 4667 mismatches
+va_math_ls_sp_~t: 4821 mismatches
+va_math_ls_sp_~p: 4809 mismatches
+va_math_l~lsd_ct: 4678 mismatches
+va_math~lsd_ct_p: 4637 mismatches
+va_math_as_sp_~t: 4687 mismatches
+va_math_as_sp_~p: 4655 mismatches
+va_math_~_asd_ct: 4678 mismatches
+va_mat~_asd_ct_p: 4637 mismatches
+va_math_las_sp~t: 4677 mismatches
+va_math_las_sp~p: 4636 mismatches
+va_enr_b_sp_b_ct: 24 mismatches
+       g11_enr_r: 1 mismatches
+va_enr_s_sp_s_ct: 4866 mismatches
+va_enr_s_sp_s_~p: 4864 mismatches
+va_dk_enr_s~s_ct: 4842 mismatches
+v~nr_s_sp_s_ct_p: 4841 mismatches
+va_enr_ls_~_s_ct: 4860 mismatches
+va_enr_ls_sp_s_~: 4847 mismatches
+va~nr_ls_sp_s_ct: 4837 mismatches
+~nr_ls_sp_s_ct_p: 4825 mismatches
+va_enr_as_~_s_ct: 4724 mismatches
+va_enr_a~_s_ct_p: 4691 mismatches
+va~nr_as_sp_s_ct: 4701 mismatches
+~nr_as_sp_s_ct_p: 4669 mismatches
+va_enr_las~_s_ct: 4715 mismatches
+va_enr_l~_s_ct_p: 4673 mismatches
+v~nr_las_sp_s_ct: 4692 mismatches
+va_dk_enr_las_..: 4653 mismatches
+va_enr_ls_s~s_ct: 4860 mismatches
+va_enr_ls~s_ct_p: 4847 mismatches
+v~nr_ls_sp_ls_ct: 4837 mismatches
+va_dk_enr_ls_s..: 4825 mismatches
+va_enr_las~ls_ct: 4715 mismatches
+va_enr_l~ls_ct_p: 4673 mismatches
+~nr_las_sp_ls_ct: 4693 mismatches
+va_dk_enr_las_..: 4653 mismatches
+va_enr_as_s~s_ct: 4725 mismatches
+va_enr_as~s_ct_p: 4691 mismatches
+va_dk_enr_a~s_ct: 4701 mismatches
+va_dk_enr_as_s..: 4669 mismatches
+va_enr_la~_as_ct: 4715 mismatches
+va_enr_las_sp_..: 4673 mismatches
+~nr_las_sp_as_ct: 4693 mismatches
+va_dk_enr_las_..: 4653 mismatches
+va_enr_las_~s_ct: 4715 mismatches
+va_enr_la~s_ct_p: 4673 mismatches
+va_dk_enr_l~s_ct: 4693 mismatches
+va_dk_enr_las_..: 4653 mismatches
+va_enr_b_sp_bd~t: 4892 mismatches
+va_enr_b_sp_bd~p: 4892 mismatches
+va_dk_enr_b_sp~t: 4871 mismatches
+va_dk_enr_b_sp~p: 4871 mismatches
+va_enr_l_sp_bd~t: 4892 mismatches
+va_enr_l_sp_bd~p: 4892 mismatches
+va~nr_l_sp_bd_ct: 4871 mismatches
+~nr_l_sp_bd_ct_p: 4871 mismatches
+va_enr_a_sp_bd~t: 4795 mismatches
+va_enr_a_sp_bd~p: 4795 mismatches
+va~nr_a_sp_bd_ct: 4769 mismatches
+~nr_a_sp_bd_ct_p: 4769 mismatches
+va_enr_s_sp_bd~t: 4863 mismatches
+va_enr_s_sp_bd~p: 4863 mismatches
+va~nr_s_sp_bd_ct: 4840 mismatches
+~nr_s_sp_bd_ct_p: 4840 mismatches
+va_enr_la_sp_b~t: 4789 mismatches
+va_enr_la_sp_b~p: 4789 mismatches
+v~nr_la_sp_bd_ct: 4764 mismatches
+va_dk_enr_la_s..: 4764 mismatches
+va_enr_ls_sp_b~t: 4857 mismatches
+va_enr_ls_sp_b~p: 4857 mismatches
+v~nr_ls_sp_bd_ct: 4834 mismatches
+va_dk_enr_ls_s..: 4834 mismatches
+va_enr_as_sp_b~t: 4720 mismatches
+va_enr_as_sp_b~p: 4722 mismatches
+v~nr_as_sp_bd_ct: 4698 mismatches
+va_dk_enr_as_s..: 4698 mismatches
+va_enr_las~bd_ct: 4712 mismatches
+va_enr_l~bd_ct_p: 4712 mismatches
+~nr_las_sp_bd_ct: 4690 mismatches
+va_dk_enr_las_..: 4690 mismatches
+va_enr_l_sp_ld~t: 4892 mismatches
+va_enr_l_sp_ld~p: 4892 mismatches
+va_dk_enr_l_sp~t: 4871 mismatches
+va_dk_enr_l_sp~p: 4871 mismatches
+va_enr_la_~ld_ct: 4789 mismatches
+va_enr_la_sp_ld~: 4788 mismatches
+v~nr_la_sp_ld_ct: 4764 mismatches
+va_dk_enr_la_s..: 4764 mismatches
+va_enr_ls_~ld_ct: 4857 mismatches
+va_enr_ls_sp_ld~: 4857 mismatches
+v~nr_ls_sp_ld_ct: 4834 mismatches
+va_dk_enr_ls_s..: 4834 mismatches
+va_enr_las~ld_ct: 4712 mismatches
+va_enr_l~ld_ct_p: 4712 mismatches
+~nr_las_sp_ld_ct: 4690 mismatches
+va_dk_enr_las_..: 4690 mismatches
+va_enr_a_sp_ad~t: 4795 mismatches
+va_enr_a_sp_ad~p: 4775 mismatches
+va_dk_enr_a_sp~t: 4769 mismatches
+va_dk_enr_a_sp~p: 4750 mismatches
+va_enr_la_sp_a~t: 4789 mismatches
+va_enr_la_sp_a~p: 4759 mismatches
+v~nr_la_sp_ad_ct: 4764 mismatches
+va_dk_enr_la_s..: 4736 mismatches
+va_enr_as_~ad_ct: 4722 mismatches
+va_enr_a~ad_ct_p: 4710 mismatches
+v~nr_as_sp_ad_ct: 4698 mismatches
+va_dk_enr_as_s..: 4687 mismatches
+va_enr_la~_ad_ct: 4712 mismatches
+va_enr_las_sp_..: 4698 mismatches
+~nr_las_sp_ad_ct: 4690 mismatches
+va_dk_enr_las_..: 4676 mismatches
+va_enr_s_sp_sd~t: 4862 mismatches
+va_enr_s_sp_sd~p: 4861 mismatches
+va_dk_enr_s_sp~t: 4840 mismatches
+va_dk_enr_s_sp~p: 4837 mismatches
+va_enr_ls_sp_s~t: 4857 mismatches
+va_enr_ls_sp_s~p: 4844 mismatches
+v~nr_ls_sp_sd_ct: 4834 mismatches
+va_dk_enr_ls_s..: 4822 mismatches
+va_enr_as_sp_s~t: 4722 mismatches
+va_enr_as_sp_s~p: 4688 mismatches
+v~nr_as_sp_sd_ct: 4698 mismatches
+va_dk_enr_as_s..: 4666 mismatches
+va_enr_la~_sd_ct: 4712 mismatches
+va_enr_las_sp_s~: 4670 mismatches
+~nr_las_sp_sd_ct: 4690 mismatches
+va_dk_enr_las_..: 4650 mismatches
+va_enr_la_sp_l~t: 4792 mismatches
+va_enr_la_sp_l~p: 4762 mismatches
+va_dk_enr_la_s~t: 4767 mismatches
+va_dk_enr_la_s~p: 4739 mismatches
+va_enr_las~ad_ct: 4715 mismatches
+va_enr_l~ad_ct_p: 4701 mismatches
+va_dk_enr_las_..: 4693 mismatches
+va_dk_enr_las_..: 4679 mismatches
+va_enr_ls_sp_l~t: 4857 mismatches
+va_enr_ls_sp_l~p: 4844 mismatches
+va_dk_enr_ls_s~t: 4833 mismatches
+va_dk_enr_ls_s~p: 4822 mismatches
+va_enr_la~lsd_ct: 4712 mismatches
+va_enr_las_sp_..: 4670 mismatches
+va_dk_enr_las_..: 4690 mismatches
+va_dk_enr_las_..: 4650 mismatches
+va_enr_as_sp_a~t: 4722 mismatches
+va_enr_as_sp_a~p: 4688 mismatches
+va_dk_enr_as_s~t: 4698 mismatches
+va_dk_enr_as_s~p: 4666 mismatches
+va_enr_l~_asd_ct: 4712 mismatches
+va_enr_las_sp_a~: 4670 mismatches
+va_dk_enr_las_..: 4690 mismatches
+va_dk_enr_las_..: 4650 mismatches
+va_enr_las_sp_~t: 4712 mismatches
+va_enr_las_sp_~p: 4670 mismatches
+va_dk_enr_las_~t: 4690 mismatches
+va_dk_enr_las_~p: 4650 mismatches
+va_enr_2year_s..: 4866 mismatches
+va_enr_2year_s..: 4864 mismatches
+~2year_s_sp_s_ct: 4843 mismatches
+va_dk_enr_2yea..: 4841 mismatches
+va_enr_2year_l..: 4860 mismatches
+va_enr_2year_l..: 4847 mismatches
+va_dk_enr_2yea..: 4837 mismatches
+va_dk_enr_2yea..: 4825 mismatches
+va_enr_2year_a..: 4725 mismatches
+va_enr_2year_a..: 4691 mismatches
+va_dk_enr_2yea..: 4700 mismatches
+va_dk_enr_2yea..: 4669 mismatches
+va_enr_2ye~_s_ct: 4715 mismatches
+va_enr_2~_s_ct_p: 4673 mismatches
+va_dk_enr_2yea..: 4693 mismatches
+va_dk_enr_2yea..: 4653 mismatches
+va_enr_2year_l..: 4860 mismatches
+va_enr_2year_l..: 4847 mismatches
+va_dk_enr_2yea..: 4836 mismatches
+va_dk_enr_2yea..: 4825 mismatches
+va_enr_2ye~ls_ct: 4714 mismatches
+va_enr_2~ls_ct_p: 4673 mismatches
+va_dk_enr_2yea..: 4692 mismatches
+va_dk_enr_2yea..: 4653 mismatches
+va_enr_2year_a..: 4725 mismatches
+va_enr_2year_a..: 4691 mismatches
+va_dk_enr_2yea..: 4700 mismatches
+va_dk_enr_2yea..: 4669 mismatches
+va_enr_2y~_as_ct: 4715 mismatches
+va_enr_2year_l..: 4673 mismatches
+va_dk_enr_2yea..: 4693 mismatches
+va_dk_enr_2yea..: 4653 mismatches
+va_enr_2yea~s_ct: 4715 mismatches
+va_enr_2y~s_ct_p: 4673 mismatches
+va_dk_enr_2~s_ct: 4692 mismatches
+va_dk_enr_2yea..: 4653 mismatches
+va_enr_2year_b~t: 4892 mismatches
+va_enr_2year_b~p: 4892 mismatches
+va_dk_enr_2yea..: 4871 mismatches
+va_dk_enr_2yea..: 4871 mismatches
+va_enr_2year_l..: 4892 mismatches
+va_enr_2year_l..: 4892 mismatches
+va_dk_enr_2yea..: 4870 mismatches
+va_dk_enr_2yea..: 4871 mismatches
+va_enr_2year_a..: 4795 mismatches
+va_enr_2year_a..: 4795 mismatches
+va_dk_enr_2yea..: 4769 mismatches
+va_dk_enr_2yea..: 4769 mismatches
+va_enr_2year_s..: 4863 mismatches
+va_enr_2year_s..: 4863 mismatches
+va_dk_enr_2yea..: 4840 mismatches
+va_dk_enr_2yea..: 4840 mismatches
+va_enr_2year_l..: 4789 mismatches
+va_enr_2year_l..: 4789 mismatches
+va_dk_enr_2yea..: 4764 mismatches
+va_dk_enr_2yea..: 4764 mismatches
+va_enr_2year_l..: 4857 mismatches
+va_enr_2year_l..: 4857 mismatches
+va_dk_enr_2yea..: 4834 mismatches
+va_dk_enr_2yea..: 4834 mismatches
+va_enr_2year_a..: 4722 mismatches
+va_enr_2year_a..: 4722 mismatches
+va_dk_enr_2yea..: 4698 mismatches
+va_dk_enr_2yea..: 4698 mismatches
+va_enr_2ye~bd_ct: 4712 mismatches
+va_enr_2~bd_ct_p: 4712 mismatches
+va_dk_enr_2yea..: 4690 mismatches
+va_dk_enr_2yea..: 4690 mismatches
+va_enr_2year_l..: 4892 mismatches
+va_enr_2year_l_~: 4892 mismatches
+va_dk_enr_2yea..: 4871 mismatches
+va_dk_enr_2yea..: 4871 mismatches
+va_enr_2year_l..: 4789 mismatches
+va_enr_2year_l..: 4789 mismatches
+va_dk_enr_2yea..: 4764 mismatches
+va_dk_enr_2yea..: 4763 mismatches
+va_enr_2year_l..: 4857 mismatches
+va_enr_2year_l..: 4857 mismatches
+va_dk_enr_2yea..: 4834 mismatches
+va_dk_enr_2yea..: 4834 mismatches
+va_enr_2ye~ld_ct: 4712 mismatches
+va_enr_2~ld_ct_p: 4712 mismatches
+va_dk_enr_2yea..: 4690 mismatches
+va_dk_enr_2yea..: 4690 mismatches
+va_enr_2year_a..: 4795 mismatches
+va_enr_2year_a_~: 4775 mismatches
+va_dk_enr_2yea..: 4769 mismatches
+va_dk_enr_2yea..: 4750 mismatches
+va_enr_2year_l..: 4789 mismatches
+va_enr_2year_l..: 4759 mismatches
+va_dk_enr_2yea..: 4764 mismatches
+va_dk_enr_2yea..: 4736 mismatches
+va_enr_2year_a..: 4721 mismatches
+va_enr_2year_a..: 4710 mismatches
+va_dk_enr_2yea..: 4698 mismatches
+va_dk_enr_2yea..: 4687 mismatches
+va_enr_2y~_ad_ct: 4712 mismatches
+va_enr_2year_l..: 4698 mismatches
+va_dk_enr_2yea..: 4690 mismatches
+va_dk_enr_2yea..: 4676 mismatches
+va_enr_2year_s~t: 4863 mismatches
+va_enr_2year_s~p: 4861 mismatches
+va_dk_enr_2yea..: 4840 mismatches
+va_dk_enr_2yea..: 4838 mismatches
+va_enr_2year_l..: 4857 mismatches
+va_enr_2year_l..: 4844 mismatches
+va_dk_enr_2yea..: 4834 mismatches
+va_dk_enr_2yea..: 4822 mismatches
+va_enr_2year_a..: 4722 mismatches
+va_enr_2year_a..: 4688 mismatches
+va_dk_enr_2yea..: 4698 mismatches
+va_dk_enr_2yea..: 4666 mismatches
+va_enr_2y~_sd_ct: 4712 mismatches
+va_enr_2year_l..: 4670 mismatches
+va_dk_enr_2yea..: 4690 mismatches
+va_dk_enr_2yea..: 4650 mismatches
+va_enr_2year_l..: 4792 mismatches
+va_enr_2year_l..: 4762 mismatches
+va_dk_enr_2yea..: 4767 mismatches
+va_dk_enr_2yea..: 4739 mismatches
+va_enr_2ye~ad_ct: 4715 mismatches
+va_enr_2~ad_ct_p: 4701 mismatches
+va_dk_enr_2yea..: 4693 mismatches
+va_dk_enr_2yea..: 4679 mismatches
+va_enr_2year_l..: 4857 mismatches
+va_enr_2year_ls~: 4844 mismatches
+va_dk_enr_2yea..: 4834 mismatches
+va_dk_enr_2yea..: 4822 mismatches
+va_enr_2y~lsd_ct: 4712 mismatches
+va_enr_2year_l..: 4670 mismatches
+va_dk_enr_2yea..: 4690 mismatches
+va_dk_enr_2yea..: 4650 mismatches
+va_enr_2year_a~t: 4722 mismatches
+va_enr_2year_a~p: 4688 mismatches
+va_dk_enr_2yea..: 4698 mismatches
+va_dk_enr_2yea..: 4666 mismatches
+va_enr_2~_asd_ct: 4712 mismatches
+va_enr_2year_l..: 4670 mismatches
+va_dk_enr_2yea..: 4690 mismatches
+va_dk_enr_2yea..: 4650 mismatches
+va_enr_2year_l~t: 4712 mismatches
+va_enr_2year_l~p: 4669 mismatches
+va_dk_enr_2yea~t: 4690 mismatches
+va_dk_enr_2yea~p: 4650 mismatches
+va_enr~b_sp_b_ct: 32 mismatches
+ g11_enr_4year_r: 2 mismatches
+va_en~_s_sp_s_ct: 4865 mismatches
+va_enr_4year_s..: 4864 mismatches
+va_dk~_s_sp_s_ct: 4843 mismatches
+va_~_s_sp_s_ct_p: 4841 mismatches
+va_en~ls_sp_s_ct: 4860 mismatches
+va_enr_4year_l..: 4847 mismatches
+va_dk~ls_sp_s_ct: 4837 mismatches
+va_~ls_sp_s_ct_p: 4825 mismatches
+va_e~_as_sp_s_ct: 4725 mismatches
+va_enr_4year_a..: 4691 mismatches
+va_d~_as_sp_s_ct: 4701 mismatches
+va~_as_sp_s_ct_p: 4669 mismatches
+va_enr_4ye~_s_ct: 4714 mismatches
+va_enr_4~_s_ct_p: 4673 mismatches
+va_dk_enr_~_s_ct: 4692 mismatches
+va_dk_en~_s_ct_p: 4653 mismatches
+va_e~ls_sp_ls_ct: 4860 mismatches
+va_enr_4year_l..: 4847 mismatches
+va_d~ls_sp_ls_ct: 4837 mismatches
+va~ls_sp_ls_ct_p: 4824 mismatches
+va_enr_4ye~ls_ct: 4712 mismatches
+va_enr_4~ls_ct_p: 4673 mismatches
+va_dk_enr_~ls_ct: 4691 mismatches
+va_dk_en~ls_ct_p: 4653 mismatches
+va_enr_4year_a..: 4725 mismatches
+va_enr_4year_a..: 4691 mismatches
+va_~_as_sp_as_ct: 4699 mismatches
+v~_as_sp_as_ct_p: 4669 mismatches
+va_enr_4y~_as_ct: 4715 mismatches
+va_enr_~_as_ct_p: 4673 mismatches
+va_dk_enr~_as_ct: 4693 mismatches
+va_dk_e~_as_ct_p: 4653 mismatches
+va_enr_4yea~s_ct: 4715 mismatches
+va_enr_4y~s_ct_p: 4673 mismatches
+va_dk_enr_4~s_ct: 4693 mismatches
+va_dk_enr~s_ct_p: 4653 mismatches
+va_enr_4year_b~t: 4892 mismatches
+va_enr_4year_b~p: 4892 mismatches
+va_dk~b_sp_bd_ct: 4871 mismatches
+va_~b_sp_bd_ct_p: 4871 mismatches
+va_en~l_sp_bd_ct: 4892 mismatches
+va_enr_4year_l..: 4892 mismatches
+va_dk~l_sp_bd_ct: 4871 mismatches
+va_~l_sp_bd_ct_p: 4871 mismatches
+va_e~_a_sp_bd_ct: 4795 mismatches
+va_enr_4year_a..: 4795 mismatches
+va_d~_a_sp_bd_ct: 4769 mismatches
+va~_a_sp_bd_ct_p: 4769 mismatches
+va_e~_s_sp_bd_ct: 4863 mismatches
+va_enr_4year_s..: 4863 mismatches
+va_d~_s_sp_bd_ct: 4840 mismatches
+va~_s_sp_bd_ct_p: 4840 mismatches
+va_en~a_sp_bd_ct: 4789 mismatches
+va_enr_4year_l..: 4789 mismatches
+va_dk~a_sp_bd_ct: 4764 mismatches
+va_~a_sp_bd_ct_p: 4764 mismatches
+va_e~ls_sp_bd_ct: 4857 mismatches
+va_enr_4year_l..: 4857 mismatches
+va_d~ls_sp_bd_ct: 4834 mismatches
+va~ls_sp_bd_ct_p: 4834 mismatches
+va_enr_4year_a..: 4722 mismatches
+va_enr_4year_a..: 4722 mismatches
+va_~_as_sp_bd_ct: 4697 mismatches
+v~_as_sp_bd_ct_p: 4698 mismatches
+va_enr_4ye~bd_ct: 4712 mismatches
+va_enr_4~bd_ct_p: 4712 mismatches
+va_dk_enr_~bd_ct: 4690 mismatches
+va_dk_en~bd_ct_p: 4690 mismatches
+va_en~l_sp_ld_ct: 4892 mismatches
+va_enr_4year_l_~: 4892 mismatches
+va_dk~l_sp_ld_ct: 4871 mismatches
+va_~l_sp_ld_ct_p: 4871 mismatches
+va_en~a_sp_ld_ct: 4789 mismatches
+va_enr_4year_l..: 4789 mismatches
+va_dk~a_sp_ld_ct: 4764 mismatches
+va_~a_sp_ld_ct_p: 4764 mismatches
+va_e~ls_sp_ld_ct: 4857 mismatches
+va_enr_4year_l..: 4857 mismatches
+va_d~ls_sp_ld_ct: 4834 mismatches
+va~ls_sp_ld_ct_p: 4834 mismatches
+va_enr_4ye~ld_ct: 4712 mismatches
+va_enr_4~ld_ct_p: 4712 mismatches
+va_dk_enr_~ld_ct: 4690 mismatches
+va_dk_en~ld_ct_p: 4690 mismatches
+va_e~_a_sp_ad_ct: 4795 mismatches
+va_enr_4year_a_~: 4775 mismatches
+va_d~_a_sp_ad_ct: 4769 mismatches
+va~_a_sp_ad_ct_p: 4750 mismatches
+va_en~a_sp_ad_ct: 4789 mismatches
+va_enr_4year_l..: 4759 mismatches
+va_dk~a_sp_ad_ct: 4764 mismatches
+va_~a_sp_ad_ct_p: 4736 mismatches
+va_enr_4year_a..: 4722 mismatches
+va_enr_4year_a..: 4710 mismatches
+va_~_as_sp_ad_ct: 4698 mismatches
+v~_as_sp_ad_ct_p: 4687 mismatches
+va_enr_4y~_ad_ct: 4712 mismatches
+va_enr_~_ad_ct_p: 4698 mismatches
+va_dk_enr~_ad_ct: 4690 mismatches
+va_dk_e~_ad_ct_p: 4676 mismatches
+va_enr_4year_s~t: 4863 mismatches
+va_enr_4year_s~p: 4861 mismatches
+va_d~_s_sp_sd_ct: 4840 mismatches
+va~_s_sp_sd_ct_p: 4838 mismatches
+va_e~ls_sp_sd_ct: 4857 mismatches
+va_enr_4year_l..: 4844 mismatches
+va_d~ls_sp_sd_ct: 4834 mismatches
+va~ls_sp_sd_ct_p: 4822 mismatches
+va_enr_4year_a..: 4722 mismatches
+va_enr_4year_a..: 4688 mismatches
+va_~_as_sp_sd_ct: 4698 mismatches
+v~_as_sp_sd_ct_p: 4666 mismatches
+va_enr_4y~_sd_ct: 4712 mismatches
+va_enr_~_sd_ct_p: 4670 mismatches
+va_dk_enr~_sd_ct: 4690 mismatches
+va_dk_e~_sd_ct_p: 4650 mismatches
+va_e~a_sp_lad_ct: 4792 mismatches
+va_enr_4year_l..: 4762 mismatches
+va_d~a_sp_lad_ct: 4767 mismatches
+va~a_sp_lad_ct_p: 4739 mismatches
+va_enr_4ye~ad_ct: 4715 mismatches
+va_enr_4~ad_ct_p: 4701 mismatches
+va_dk_enr_~ad_ct: 4693 mismatches
+va_dk_en~ad_ct_p: 4679 mismatches
+va_enr_4year_l..: 4857 mismatches
+va_enr_4year_ls~: 4844 mismatches
+va_~ls_sp_lsd_ct: 4834 mismatches
+v~ls_sp_lsd_ct_p: 4822 mismatches
+va_enr_4y~lsd_ct: 4712 mismatches
+va_enr_~lsd_ct_p: 4670 mismatches
+va_dk_enr~lsd_ct: 4690 mismatches
+va_dk_e~lsd_ct_p: 4650 mismatches
+va_enr_4year_a~t: 4722 mismatches
+va_enr_4year_a~p: 4688 mismatches
+va~_as_sp_asd_ct: 4698 mismatches
+~_as_sp_asd_ct_p: 4666 mismatches
+va_enr_4~_asd_ct: 4712 mismatches
+va_enr~_asd_ct_p: 4670 mismatches
+va_dk_en~_asd_ct: 4690 mismatches
+va_dk_~_asd_ct_p: 4650 mismatches
+va_enr_4year_l~t: 4712 mismatches
+va_enr_4year_l~p: 4669 mismatches
+va_dk_enr_4yea~t: 4690 mismatches
+va_dk_enr_4yea~p: 4650 mismatches
+    cf rc=9 (0 = all common-var values identical)
+
+--- [staffanalysisready (rc=9 rep; family: calschls analysisready)]
+    pred: /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/buildanalysisda
+> ta/analysisready/staffanalysisready.dta
+    cons: /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cl
+> eaned/calschls/analysisready/staffanalysisready.dta
+    obs:  pred=4212  cons=4212  delta=0
+    vars: pred=943  cons=943
+    vars only in PREDECESSOR (0): 
+    vars only in CONSOLIDATED (0): 
+    obs counts match -> cf on 943 common vars:
+va_ela_s_sp_s_ct: 575 mismatches
+va_ela_s_sp_s_~p: 575 mismatches
+va_ela_ls_~_s_ct: 574 mismatches
+v~a_ls_sp_s_ct_p: 574 mismatches
+va_ela_as_~_s_ct: 562 mismatches
+va_ela_a~_s_ct_p: 560 mismatches
+va_ela_las~_s_ct: 561 mismatches
+va_ela_l~_s_ct_p: 558 mismatches
+va_ela_ls_s~s_ct: 574 mismatches
+va_ela_ls~s_ct_p: 574 mismatches
+va_ela_las~ls_ct: 561 mismatches
+va_ela_l~ls_ct_p: 558 mismatches
+va_ela_as_s~s_ct: 562 mismatches
+va_ela_as~s_ct_p: 560 mismatches
+va_ela_la~_as_ct: 561 mismatches
+va_ela_~_as_ct_p: 558 mismatches
+va_ela_las_~s_ct: 561 mismatches
+va_ela_la~s_ct_p: 558 mismatches
+va_ela_b_sp_bd~t: 576 mismatches
+va_ela_b_sp_bd~p: 576 mismatches
+va_ela_l_sp_bd~t: 576 mismatches
+va_ela_l_sp_bd~p: 576 mismatches
+va_ela_a_sp_bd~t: 568 mismatches
+va_ela_a_sp_bd~p: 568 mismatches
+va_ela_s_sp_bd~t: 574 mismatches
+va_ela_s_sp_bd~p: 574 mismatches
+va_ela_la_sp_b~t: 568 mismatches
+va_ela_la_sp_b~p: 568 mismatches
+va_ela_ls_sp_b~t: 573 mismatches
+va_ela_ls_sp_b~p: 573 mismatches
+va_ela_as_sp_b~t: 561 mismatches
+va_ela_as_sp_b~p: 561 mismatches
+va_ela_las~bd_ct: 560 mismatches
+va_ela_l~bd_ct_p: 560 mismatches
+va_ela_l_sp_ld~t: 576 mismatches
+va_ela_l_sp_ld~p: 576 mismatches
+va_ela_la_~ld_ct: 568 mismatches
+va_ela_la_sp_ld~: 568 mismatches
+va_ela_ls_~ld_ct: 573 mismatches
+va_ela_ls_sp_ld~: 573 mismatches
+va_ela_las~ld_ct: 560 mismatches
+va_ela_l~ld_ct_p: 560 mismatches
+va_ela_a_sp_ad~t: 568 mismatches
+va_ela_a_sp_ad~p: 566 mismatches
+va_ela_la_sp_a~t: 568 mismatches
+va_ela_la_sp_a~p: 564 mismatches
+va_ela_as_~ad_ct: 561 mismatches
+va_ela_a~ad_ct_p: 561 mismatches
+va_ela_la~_ad_ct: 560 mismatches
+va_ela_~_ad_ct_p: 559 mismatches
+va_ela_s_sp_sd~t: 573 mismatches
+va_ela_s_sp_sd~p: 574 mismatches
+va_ela_ls_sp_s~t: 573 mismatches
+va_ela_ls_sp_s~p: 573 mismatches
+va_ela_as_sp_s~t: 561 mismatches
+va_ela_as_sp_s~p: 559 mismatches
+va_ela_la~_sd_ct: 560 mismatches
+va_ela_~_sd_ct_p: 557 mismatches
+va_ela_la_sp_l~t: 569 mismatches
+va_ela_la_sp_l~p: 565 mismatches
+va_ela_las~ad_ct: 561 mismatches
+va_ela_l~ad_ct_p: 560 mismatches
+va_ela_ls_sp_l~t: 573 mismatches
+va_ela_ls_sp_l~p: 573 mismatches
+va_ela_la~lsd_ct: 560 mismatches
+va_ela_~lsd_ct_p: 557 mismatches
+va_ela_as_sp_a~t: 561 mismatches
+va_ela_as_sp_a~p: 559 mismatches
+va_ela_l~_asd_ct: 560 mismatches
+va_ela~_asd_ct_p: 557 mismatches
+va_ela_las_sp_~t: 560 mismatches
+va_ela_las_sp_~p: 557 mismatches
+va_math_s_s~s_ct: 575 mismatches
+va_math_s~s_ct_p: 575 mismatches
+va_math_ls~_s_ct: 574 mismatches
+v~h_ls_sp_s_ct_p: 574 mismatches
+va_math_as~_s_ct: 562 mismatches
+v~h_as_sp_s_ct_p: 560 mismatches
+va_math_la~_s_ct: 561 mismatches
+va_math_~_s_ct_p: 558 mismatches
+va_math_ls_~s_ct: 574 mismatches
+~h_ls_sp_ls_ct_p: 574 mismatches
+va_math_la~ls_ct: 561 mismatches
+va_math_~ls_ct_p: 558 mismatches
+va_math_as_~s_ct: 562 mismatches
+va_math_a~s_ct_p: 560 mismatches
+va_math_l~_as_ct: 561 mismatches
+va_math~_as_ct_p: 558 mismatches
+va_math_las~s_ct: 561 mismatches
+va_math_l~s_ct_p: 558 mismatches
+va_math_b_sp_b~t: 576 mismatches
+va_math_b_sp_b~p: 576 mismatches
+va_math_l_sp_b~t: 576 mismatches
+va_math_l_sp_b~p: 576 mismatches
+va_math_a_sp_b~t: 568 mismatches
+va_math_a_sp_b~p: 568 mismatches
+va_math_s_sp_b~t: 574 mismatches
+va_math_s_sp_b~p: 574 mismatches
+va_ma~a_sp_bd_ct: 568 mismatches
+va_math_la_sp_b~: 568 mismatches
+va_math_ls~bd_ct: 573 mismatches
+va_math_ls_sp_b~: 573 mismatches
+va_math_as~bd_ct: 561 mismatches
+va_math_as_sp_b~: 561 mismatches
+va_math_la~bd_ct: 560 mismatches
+va_math_~bd_ct_p: 560 mismatches
+va_math_l_sp_l~t: 576 mismatches
+va_math_l_sp_l~p: 576 mismatches
+va_ma~a_sp_ld_ct: 568 mismatches
+~h_la_sp_ld_ct_p: 568 mismatches
+va_math_ls~ld_ct: 573 mismatches
+~h_ls_sp_ld_ct_p: 573 mismatches
+va_math_la~ld_ct: 560 mismatches
+va_math_~ld_ct_p: 560 mismatches
+va_math_a_sp_a~t: 568 mismatches
+va_math_a_sp_a~p: 566 mismatches
+va_ma~a_sp_ad_ct: 568 mismatches
+va_math_la_sp_a~: 564 mismatches
+va_math_as~ad_ct: 561 mismatches
+~h_as_sp_ad_ct_p: 561 mismatches
+va_math_l~_ad_ct: 560 mismatches
+va_math~_ad_ct_p: 559 mismatches
+va_math_s_sp_s~t: 574 mismatches
+va_math_s_sp_s~p: 574 mismatches
+va_m~ls_sp_sd_ct: 573 mismatches
+va_math_ls_sp_s~: 573 mismatches
+va_math_a~_sd_ct: 561 mismatches
+va_math_as_sp_s~: 559 mismatches
+va_math_l~_sd_ct: 560 mismatches
+va_math~_sd_ct_p: 557 mismatches
+va_math_la_sp_~t: 569 mismatches
+va_math_la_sp_~p: 565 mismatches
+va_math_la~ad_ct: 561 mismatches
+va_math_~ad_ct_p: 560 mismatches
+va_math_ls_sp_~t: 573 mismatches
+va_math_ls_sp_~p: 573 mismatches
+va_math_l~lsd_ct: 560 mismatches
+va_math~lsd_ct_p: 557 mismatches
+va_math_as_sp_~t: 561 mismatches
+va_math_as_sp_~p: 559 mismatches
+va_math_~_asd_ct: 560 mismatches
+va_mat~_asd_ct_p: 557 mismatches
+va_math_las_sp~t: 560 mismatches
+va_math_las_sp~p: 557 mismatches
+va_enr_s_sp_s_ct: 575 mismatches
+va_enr_s_sp_s_~p: 575 mismatches
+va_dk_enr_s~s_ct: 575 mismatches
+v~nr_s_sp_s_ct_p: 575 mismatches
+va_enr_ls_~_s_ct: 574 mismatches
+va_enr_ls_sp_s_~: 574 mismatches
+va~nr_ls_sp_s_ct: 574 mismatches
+~nr_ls_sp_s_ct_p: 574 mismatches
+va_enr_as_~_s_ct: 562 mismatches
+va_enr_a~_s_ct_p: 560 mismatches
+va~nr_as_sp_s_ct: 562 mismatches
+~nr_as_sp_s_ct_p: 560 mismatches
+va_enr_las~_s_ct: 561 mismatches
+va_enr_l~_s_ct_p: 558 mismatches
+v~nr_las_sp_s_ct: 561 mismatches
+va_dk_enr_las_..: 558 mismatches
+va_enr_ls_s~s_ct: 574 mismatches
+va_enr_ls~s_ct_p: 574 mismatches
+v~nr_ls_sp_ls_ct: 574 mismatches
+va_dk_enr_ls_s..: 574 mismatches
+va_enr_las~ls_ct: 561 mismatches
+va_enr_l~ls_ct_p: 558 mismatches
+~nr_las_sp_ls_ct: 561 mismatches
+va_dk_enr_las_..: 558 mismatches
+va_enr_as_s~s_ct: 562 mismatches
+va_enr_as~s_ct_p: 560 mismatches
+va_dk_enr_a~s_ct: 562 mismatches
+va_dk_enr_as_s..: 560 mismatches
+va_enr_la~_as_ct: 561 mismatches
+va_enr_las_sp_..: 558 mismatches
+~nr_las_sp_as_ct: 561 mismatches
+va_dk_enr_las_..: 558 mismatches
+va_enr_las_~s_ct: 561 mismatches
+va_enr_la~s_ct_p: 558 mismatches
+va_dk_enr_l~s_ct: 561 mismatches
+va_dk_enr_las_..: 558 mismatches
+va_enr_b_sp_bd~t: 576 mismatches
+va_enr_b_sp_bd~p: 576 mismatches
+va_dk_enr_b_sp~t: 576 mismatches
+va_dk_enr_b_sp~p: 576 mismatches
+va_enr_l_sp_bd~t: 576 mismatches
+va_enr_l_sp_bd~p: 576 mismatches
+va~nr_l_sp_bd_ct: 576 mismatches
+~nr_l_sp_bd_ct_p: 576 mismatches
+va_enr_a_sp_bd~t: 568 mismatches
+va_enr_a_sp_bd~p: 568 mismatches
+va~nr_a_sp_bd_ct: 567 mismatches
+~nr_a_sp_bd_ct_p: 567 mismatches
+va_enr_s_sp_bd~t: 574 mismatches
+va_enr_s_sp_bd~p: 574 mismatches
+va~nr_s_sp_bd_ct: 574 mismatches
+~nr_s_sp_bd_ct_p: 574 mismatches
+va_enr_la_sp_b~t: 568 mismatches
+va_enr_la_sp_b~p: 568 mismatches
+v~nr_la_sp_bd_ct: 567 mismatches
+va_dk_enr_la_s..: 567 mismatches
+va_enr_ls_sp_b~t: 573 mismatches
+va_enr_ls_sp_b~p: 573 mismatches
+v~nr_ls_sp_bd_ct: 573 mismatches
+va_dk_enr_ls_s..: 573 mismatches
+va_enr_as_sp_b~t: 561 mismatches
+va_enr_as_sp_b~p: 561 mismatches
+v~nr_as_sp_bd_ct: 561 mismatches
+va_dk_enr_as_s..: 561 mismatches
+va_enr_las~bd_ct: 560 mismatches
+va_enr_l~bd_ct_p: 560 mismatches
+~nr_las_sp_bd_ct: 560 mismatches
+va_dk_enr_las_..: 560 mismatches
+va_enr_l_sp_ld~t: 576 mismatches
+va_enr_l_sp_ld~p: 576 mismatches
+va_dk_enr_l_sp~t: 576 mismatches
+va_dk_enr_l_sp~p: 576 mismatches
+va_enr_la_~ld_ct: 568 mismatches
+va_enr_la_sp_ld~: 568 mismatches
+v~nr_la_sp_ld_ct: 567 mismatches
+va_dk_enr_la_s..: 567 mismatches
+va_enr_ls_~ld_ct: 573 mismatches
+va_enr_ls_sp_ld~: 573 mismatches
+v~nr_ls_sp_ld_ct: 573 mismatches
+va_dk_enr_ls_s..: 573 mismatches
+va_enr_las~ld_ct: 560 mismatches
+va_enr_l~ld_ct_p: 560 mismatches
+~nr_las_sp_ld_ct: 560 mismatches
+va_dk_enr_las_..: 560 mismatches
+va_enr_a_sp_ad~t: 568 mismatches
+va_enr_a_sp_ad~p: 567 mismatches
+va_dk_enr_a_sp~t: 567 mismatches
+va_dk_enr_a_sp~p: 566 mismatches
+va_enr_la_sp_a~t: 568 mismatches
+va_enr_la_sp_a~p: 565 mismatches
+v~nr_la_sp_ad_ct: 567 mismatches
+va_dk_enr_la_s..: 564 mismatches
+va_enr_as_~ad_ct: 561 mismatches
+va_enr_a~ad_ct_p: 561 mismatches
+v~nr_as_sp_ad_ct: 561 mismatches
+va_dk_enr_as_s..: 561 mismatches
+va_enr_la~_ad_ct: 560 mismatches
+va_enr_las_sp_..: 559 mismatches
+~nr_las_sp_ad_ct: 560 mismatches
+va_dk_enr_las_..: 559 mismatches
+va_enr_s_sp_sd~t: 574 mismatches
+va_enr_s_sp_sd~p: 574 mismatches
+va_dk_enr_s_sp~t: 574 mismatches
+va_dk_enr_s_sp~p: 574 mismatches
+va_enr_ls_sp_s~t: 573 mismatches
+va_enr_ls_sp_s~p: 573 mismatches
+v~nr_ls_sp_sd_ct: 573 mismatches
+va_dk_enr_ls_s..: 573 mismatches
+va_enr_as_sp_s~t: 561 mismatches
+va_enr_as_sp_s~p: 559 mismatches
+v~nr_as_sp_sd_ct: 561 mismatches
+va_dk_enr_as_s..: 559 mismatches
+va_enr_la~_sd_ct: 560 mismatches
+va_enr_las_sp_s~: 557 mismatches
+~nr_las_sp_sd_ct: 560 mismatches
+va_dk_enr_las_..: 557 mismatches
+va_enr_la_sp_l~t: 569 mismatches
+va_enr_la_sp_l~p: 566 mismatches
+va_dk_enr_la_s~t: 568 mismatches
+va_dk_enr_la_s~p: 565 mismatches
+va_enr_las~ad_ct: 561 mismatches
+va_enr_l~ad_ct_p: 560 mismatches
+va_dk_enr_las_..: 561 mismatches
+va_dk_enr_las_..: 560 mismatches
+va_enr_ls_sp_l~t: 573 mismatches
+va_enr_ls_sp_l~p: 573 mismatches
+va_dk_enr_ls_s~t: 573 mismatches
+va_dk_enr_ls_s~p: 573 mismatches
+va_enr_la~lsd_ct: 560 mismatches
+va_enr_las_sp_..: 557 mismatches
+va_dk_enr_las_..: 560 mismatches
+va_dk_enr_las_..: 557 mismatches
+va_enr_as_sp_a~t: 561 mismatches
+va_enr_as_sp_a~p: 559 mismatches
+va_dk_enr_as_s~t: 561 mismatches
+va_dk_enr_as_s~p: 559 mismatches
+va_enr_l~_asd_ct: 560 mismatches
+va_enr_las_sp_a~: 557 mismatches
+va_dk_enr_las_..: 560 mismatches
+va_dk_enr_las_..: 557 mismatches
+va_enr_las_sp_~t: 560 mismatches
+va_enr_las_sp_~p: 557 mismatches
+va_dk_enr_las_~t: 559 mismatches
+va_dk_enr_las_~p: 557 mismatches
+va_enr_2year_s..: 575 mismatches
+va_enr_2year_s..: 575 mismatches
+~2year_s_sp_s_ct: 575 mismatches
+va_dk_enr_2yea..: 575 mismatches
+va_enr_2year_l..: 574 mismatches
+va_enr_2year_l..: 574 mismatches
+va_dk_enr_2yea..: 574 mismatches
+va_dk_enr_2yea..: 574 mismatches
+va_enr_2year_a..: 562 mismatches
+va_enr_2year_a..: 560 mismatches
+va_dk_enr_2yea..: 562 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_enr_2ye~_s_ct: 561 mismatches
+va_enr_2~_s_ct_p: 558 mismatches
+va_dk_enr_2yea..: 561 mismatches
+va_dk_enr_2yea..: 558 mismatches
+va_enr_2year_l..: 574 mismatches
+va_enr_2year_l..: 574 mismatches
+va_dk_enr_2yea..: 574 mismatches
+va_dk_enr_2yea..: 574 mismatches
+va_enr_2ye~ls_ct: 561 mismatches
+va_enr_2~ls_ct_p: 557 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_dk_enr_2yea..: 558 mismatches
+va_enr_2year_a..: 562 mismatches
+va_enr_2year_a..: 560 mismatches
+va_dk_enr_2yea..: 562 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_enr_2y~_as_ct: 561 mismatches
+va_enr_2year_l..: 558 mismatches
+va_dk_enr_2yea..: 561 mismatches
+va_dk_enr_2yea..: 558 mismatches
+va_enr_2yea~s_ct: 561 mismatches
+va_enr_2y~s_ct_p: 558 mismatches
+va_dk_enr_2~s_ct: 561 mismatches
+va_dk_enr_2yea..: 558 mismatches
+va_enr_2year_b~t: 576 mismatches
+va_enr_2year_b~p: 576 mismatches
+va_dk_enr_2yea..: 576 mismatches
+va_dk_enr_2yea..: 576 mismatches
+va_enr_2year_l..: 576 mismatches
+va_enr_2year_l..: 576 mismatches
+va_dk_enr_2yea..: 576 mismatches
+va_dk_enr_2yea..: 576 mismatches
+va_enr_2year_a..: 568 mismatches
+va_enr_2year_a..: 568 mismatches
+va_dk_enr_2yea..: 567 mismatches
+va_dk_enr_2yea..: 567 mismatches
+va_enr_2year_s..: 574 mismatches
+va_enr_2year_s..: 574 mismatches
+va_dk_enr_2yea..: 574 mismatches
+va_dk_enr_2yea..: 574 mismatches
+va_enr_2year_l..: 568 mismatches
+va_enr_2year_l..: 568 mismatches
+va_dk_enr_2yea..: 567 mismatches
+va_dk_enr_2yea..: 567 mismatches
+va_enr_2year_l..: 573 mismatches
+va_enr_2year_l..: 573 mismatches
+va_dk_enr_2yea..: 573 mismatches
+va_dk_enr_2yea..: 573 mismatches
+va_enr_2year_a..: 561 mismatches
+va_enr_2year_a..: 561 mismatches
+va_dk_enr_2yea..: 561 mismatches
+va_dk_enr_2yea..: 561 mismatches
+va_enr_2ye~bd_ct: 560 mismatches
+va_enr_2~bd_ct_p: 560 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_enr_2year_l..: 576 mismatches
+va_enr_2year_l_~: 576 mismatches
+va_dk_enr_2yea..: 576 mismatches
+va_dk_enr_2yea..: 576 mismatches
+va_enr_2year_l..: 568 mismatches
+va_enr_2year_l..: 568 mismatches
+va_dk_enr_2yea..: 567 mismatches
+va_dk_enr_2yea..: 567 mismatches
+va_enr_2year_l..: 573 mismatches
+va_enr_2year_l..: 573 mismatches
+va_dk_enr_2yea..: 573 mismatches
+va_dk_enr_2yea..: 573 mismatches
+va_enr_2ye~ld_ct: 560 mismatches
+va_enr_2~ld_ct_p: 560 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_enr_2year_a..: 568 mismatches
+va_enr_2year_a_~: 567 mismatches
+va_dk_enr_2yea..: 567 mismatches
+va_dk_enr_2yea..: 566 mismatches
+va_enr_2year_l..: 568 mismatches
+va_enr_2year_l..: 565 mismatches
+va_dk_enr_2yea..: 567 mismatches
+va_dk_enr_2yea..: 564 mismatches
+va_enr_2year_a..: 561 mismatches
+va_enr_2year_a..: 561 mismatches
+va_dk_enr_2yea..: 561 mismatches
+va_dk_enr_2yea..: 561 mismatches
+va_enr_2y~_ad_ct: 560 mismatches
+va_enr_2year_l..: 559 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_dk_enr_2yea..: 559 mismatches
+va_enr_2year_s~t: 574 mismatches
+va_enr_2year_s~p: 574 mismatches
+va_dk_enr_2yea..: 574 mismatches
+va_dk_enr_2yea..: 574 mismatches
+va_enr_2year_l..: 573 mismatches
+va_enr_2year_l..: 573 mismatches
+va_dk_enr_2yea..: 573 mismatches
+va_dk_enr_2yea..: 573 mismatches
+va_enr_2year_a..: 561 mismatches
+va_enr_2year_a..: 559 mismatches
+va_dk_enr_2yea..: 561 mismatches
+va_dk_enr_2yea..: 559 mismatches
+va_enr_2y~_sd_ct: 560 mismatches
+va_enr_2year_l..: 557 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_dk_enr_2yea..: 557 mismatches
+va_enr_2year_l..: 569 mismatches
+va_enr_2year_l..: 566 mismatches
+va_dk_enr_2yea..: 568 mismatches
+va_dk_enr_2yea..: 565 mismatches
+va_enr_2ye~ad_ct: 561 mismatches
+va_enr_2~ad_ct_p: 560 mismatches
+va_dk_enr_2yea..: 561 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_enr_2year_l..: 573 mismatches
+va_enr_2year_ls~: 573 mismatches
+va_dk_enr_2yea..: 573 mismatches
+va_dk_enr_2yea..: 573 mismatches
+va_enr_2y~lsd_ct: 560 mismatches
+va_enr_2year_l..: 557 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_dk_enr_2yea..: 557 mismatches
+va_enr_2year_a~t: 561 mismatches
+va_enr_2year_a~p: 559 mismatches
+va_dk_enr_2yea..: 561 mismatches
+va_dk_enr_2yea..: 559 mismatches
+va_enr_2~_asd_ct: 560 mismatches
+va_enr_2year_l..: 557 mismatches
+va_dk_enr_2yea..: 560 mismatches
+va_dk_enr_2yea..: 557 mismatches
+va_enr_2year_l~t: 560 mismatches
+va_enr_2year_l~p: 557 mismatches
+va_dk_enr_2yea~t: 560 mismatches
+va_dk_enr_2yea~p: 557 mismatches
+va_enr~b_sp_b_ct: 3 mismatches
+va_en~_s_sp_s_ct: 575 mismatches
+va_enr_4year_s..: 575 mismatches
+va_dk~_s_sp_s_ct: 575 mismatches
+va_~_s_sp_s_ct_p: 575 mismatches
+va_en~ls_sp_s_ct: 574 mismatches
+va_enr_4year_l..: 574 mismatches
+va_dk~ls_sp_s_ct: 573 mismatches
+va_~ls_sp_s_ct_p: 574 mismatches
+va_e~_as_sp_s_ct: 562 mismatches
+va_enr_4year_a..: 560 mismatches
+va_d~_as_sp_s_ct: 562 mismatches
+va~_as_sp_s_ct_p: 560 mismatches
+va_enr_4ye~_s_ct: 561 mismatches
+va_enr_4~_s_ct_p: 558 mismatches
+va_dk_enr_~_s_ct: 561 mismatches
+va_dk_en~_s_ct_p: 558 mismatches
+va_e~ls_sp_ls_ct: 574 mismatches
+va_enr_4year_l..: 574 mismatches
+va_d~ls_sp_ls_ct: 574 mismatches
+va~ls_sp_ls_ct_p: 574 mismatches
+va_enr_4ye~ls_ct: 561 mismatches
+va_enr_4~ls_ct_p: 558 mismatches
+va_dk_enr_~ls_ct: 561 mismatches
+va_dk_en~ls_ct_p: 558 mismatches
+va_enr_4year_a..: 562 mismatches
+va_enr_4year_a..: 560 mismatches
+va_~_as_sp_as_ct: 562 mismatches
+v~_as_sp_as_ct_p: 560 mismatches
+va_enr_4y~_as_ct: 561 mismatches
+va_enr_~_as_ct_p: 558 mismatches
+va_dk_enr~_as_ct: 561 mismatches
+va_dk_e~_as_ct_p: 558 mismatches
+va_enr_4yea~s_ct: 561 mismatches
+va_enr_4y~s_ct_p: 558 mismatches
+va_dk_enr_4~s_ct: 561 mismatches
+va_dk_enr~s_ct_p: 558 mismatches
+va_enr_4year_b~t: 576 mismatches
+va_enr_4year_b~p: 576 mismatches
+va_dk~b_sp_bd_ct: 576 mismatches
+va_~b_sp_bd_ct_p: 576 mismatches
+va_en~l_sp_bd_ct: 576 mismatches
+va_enr_4year_l..: 576 mismatches
+va_dk~l_sp_bd_ct: 576 mismatches
+va_~l_sp_bd_ct_p: 576 mismatches
+va_e~_a_sp_bd_ct: 568 mismatches
+va_enr_4year_a..: 568 mismatches
+va_d~_a_sp_bd_ct: 567 mismatches
+va~_a_sp_bd_ct_p: 567 mismatches
+va_e~_s_sp_bd_ct: 574 mismatches
+va_enr_4year_s..: 574 mismatches
+va_d~_s_sp_bd_ct: 574 mismatches
+va~_s_sp_bd_ct_p: 574 mismatches
+va_en~a_sp_bd_ct: 568 mismatches
+va_enr_4year_l..: 568 mismatches
+va_dk~a_sp_bd_ct: 567 mismatches
+va_~a_sp_bd_ct_p: 567 mismatches
+va_e~ls_sp_bd_ct: 573 mismatches
+va_enr_4year_l..: 573 mismatches
+va_d~ls_sp_bd_ct: 573 mismatches
+va~ls_sp_bd_ct_p: 573 mismatches
+va_enr_4year_a..: 561 mismatches
+va_enr_4year_a..: 561 mismatches
+va_~_as_sp_bd_ct: 561 mismatches
+v~_as_sp_bd_ct_p: 561 mismatches
+va_enr_4ye~bd_ct: 560 mismatches
+va_enr_4~bd_ct_p: 560 mismatches
+va_dk_enr_~bd_ct: 560 mismatches
+va_dk_en~bd_ct_p: 560 mismatches
+va_en~l_sp_ld_ct: 576 mismatches
+va_enr_4year_l_~: 576 mismatches
+va_dk~l_sp_ld_ct: 576 mismatches
+va_~l_sp_ld_ct_p: 576 mismatches
+va_en~a_sp_ld_ct: 568 mismatches
+va_enr_4year_l..: 568 mismatches
+va_dk~a_sp_ld_ct: 567 mismatches
+va_~a_sp_ld_ct_p: 567 mismatches
+va_e~ls_sp_ld_ct: 573 mismatches
+va_enr_4year_l..: 573 mismatches
+va_d~ls_sp_ld_ct: 573 mismatches
+va~ls_sp_ld_ct_p: 573 mismatches
+va_enr_4ye~ld_ct: 560 mismatches
+va_enr_4~ld_ct_p: 560 mismatches
+va_dk_enr_~ld_ct: 560 mismatches
+va_dk_en~ld_ct_p: 560 mismatches
+va_e~_a_sp_ad_ct: 568 mismatches
+va_enr_4year_a_~: 567 mismatches
+va_d~_a_sp_ad_ct: 567 mismatches
+va~_a_sp_ad_ct_p: 566 mismatches
+va_en~a_sp_ad_ct: 568 mismatches
+va_enr_4year_l..: 565 mismatches
+va_dk~a_sp_ad_ct: 567 mismatches
+va_~a_sp_ad_ct_p: 564 mismatches
+va_enr_4year_a..: 561 mismatches
+va_enr_4year_a..: 561 mismatches
+va_~_as_sp_ad_ct: 561 mismatches
+v~_as_sp_ad_ct_p: 561 mismatches
+va_enr_4y~_ad_ct: 560 mismatches
+va_enr_~_ad_ct_p: 559 mismatches
+va_dk_enr~_ad_ct: 560 mismatches
+va_dk_e~_ad_ct_p: 559 mismatches
+va_enr_4year_s~t: 574 mismatches
+va_enr_4year_s~p: 574 mismatches
+va_d~_s_sp_sd_ct: 574 mismatches
+va~_s_sp_sd_ct_p: 574 mismatches
+va_e~ls_sp_sd_ct: 573 mismatches
+va_enr_4year_l..: 573 mismatches
+va_d~ls_sp_sd_ct: 573 mismatches
+va~ls_sp_sd_ct_p: 573 mismatches
+va_enr_4year_a..: 561 mismatches
+va_enr_4year_a..: 559 mismatches
+va_~_as_sp_sd_ct: 561 mismatches
+v~_as_sp_sd_ct_p: 559 mismatches
+va_enr_4y~_sd_ct: 560 mismatches
+va_enr_~_sd_ct_p: 557 mismatches
+va_dk_enr~_sd_ct: 560 mismatches
+va_dk_e~_sd_ct_p: 557 mismatches
+va_e~a_sp_lad_ct: 569 mismatches
+va_enr_4year_l..: 566 mismatches
+va_d~a_sp_lad_ct: 568 mismatches
+va~a_sp_lad_ct_p: 565 mismatches
+va_enr_4ye~ad_ct: 561 mismatches
+va_enr_4~ad_ct_p: 560 mismatches
+va_dk_enr_~ad_ct: 561 mismatches
+va_dk_en~ad_ct_p: 560 mismatches
+va_enr_4year_l..: 573 mismatches
+va_enr_4year_ls~: 573 mismatches
+va_~ls_sp_lsd_ct: 573 mismatches
+v~ls_sp_lsd_ct_p: 573 mismatches
+va_enr_4y~lsd_ct: 560 mismatches
+va_enr_~lsd_ct_p: 557 mismatches
+va_dk_enr~lsd_ct: 560 mismatches
+va_dk_e~lsd_ct_p: 557 mismatches
+va_enr_4year_a~t: 561 mismatches
+va_enr_4year_a~p: 559 mismatches
+va~_as_sp_asd_ct: 561 mismatches
+~_as_sp_asd_ct_p: 559 mismatches
+va_enr_4~_asd_ct: 560 mismatches
+va_enr~_asd_ct_p: 557 mismatches
+va_dk_en~_asd_ct: 560 mismatches
+va_dk_~_asd_ct_p: 557 mismatches
+va_enr_4year_l~t: 560 mismatches
+va_enr_4year_l~p: 557 mismatches
+va_dk_enr_4yea~t: 560 mismatches
+va_dk_enr_4yea~p: 557 mismatches
+    cf rc=9 (0 = all common-var values identical)
+
+--- [parentanalysisready (rc=900 — retry under maxvar 32767)]
+    pred: /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/buildanalysisda
+> ta/analysisready/parentanalysisready.dta
+    cons: /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cl
+> eaned/calschls/analysisready/parentanalysisready.dta
+    obs:  pred=2996  cons=2996  delta=0
+    vars: pred=1127  cons=1127
+    vars only in PREDECESSOR (0): 
+    vars only in CONSOLIDATED (0): 
+    obs counts match -> cf on 1127 common vars:
+va_ela_s_sp_s_ct: 415 mismatches
+va_ela_s_sp_s_~p: 415 mismatches
+va_ela_ls_~_s_ct: 414 mismatches
+v~a_ls_sp_s_ct_p: 414 mismatches
+va_ela_as_~_s_ct: 403 mismatches
+va_ela_a~_s_ct_p: 402 mismatches
+va_ela_las~_s_ct: 402 mismatches
+va_ela_l~_s_ct_p: 400 mismatches
+va_ela_ls_s~s_ct: 414 mismatches
+va_ela_ls~s_ct_p: 414 mismatches
+va_ela_las~ls_ct: 402 mismatches
+va_ela_l~ls_ct_p: 400 mismatches
+va_ela_as_s~s_ct: 403 mismatches
+va_ela_as~s_ct_p: 402 mismatches
+va_ela_la~_as_ct: 402 mismatches
+va_ela_~_as_ct_p: 400 mismatches
+va_ela_las_~s_ct: 402 mismatches
+va_ela_la~s_ct_p: 400 mismatches
+va_ela_b_sp_bd~t: 416 mismatches
+va_ela_b_sp_bd~p: 416 mismatches
+va_ela_l_sp_bd~t: 416 mismatches
+va_ela_l_sp_bd~p: 416 mismatches
+va_ela_a_sp_bd~t: 409 mismatches
+va_ela_a_sp_bd~p: 409 mismatches
+va_ela_s_sp_bd~t: 414 mismatches
+va_ela_s_sp_bd~p: 414 mismatches
+va_ela_la_sp_b~t: 409 mismatches
+va_ela_la_sp_b~p: 409 mismatches
+va_ela_ls_sp_b~t: 413 mismatches
+va_ela_ls_sp_b~p: 413 mismatches
+va_ela_as_sp_b~t: 402 mismatches
+va_ela_as_sp_b~p: 402 mismatches
+va_ela_las~bd_ct: 401 mismatches
+va_ela_l~bd_ct_p: 401 mismatches
+va_ela_l_sp_ld~t: 416 mismatches
+va_ela_l_sp_ld~p: 416 mismatches
+va_ela_la_~ld_ct: 409 mismatches
+va_ela_la_sp_ld~: 409 mismatches
+va_ela_ls_~ld_ct: 413 mismatches
+va_ela_ls_sp_ld~: 413 mismatches
+va_ela_las~ld_ct: 401 mismatches
+va_ela_l~ld_ct_p: 401 mismatches
+va_ela_a_sp_ad~t: 409 mismatches
+va_ela_a_sp_ad~p: 408 mismatches
+va_ela_la_sp_a~t: 409 mismatches
+va_ela_la_sp_a~p: 407 mismatches
+va_ela_as_~ad_ct: 402 mismatches
+va_ela_a~ad_ct_p: 402 mismatches
+va_ela_la~_ad_ct: 401 mismatches
+va_ela_~_ad_ct_p: 401 mismatches
+va_ela_s_sp_sd~t: 413 mismatches
+va_ela_s_sp_sd~p: 414 mismatches
+va_ela_ls_sp_s~t: 413 mismatches
+va_ela_ls_sp_s~p: 413 mismatches
+va_ela_as_sp_s~t: 402 mismatches
+va_ela_as_sp_s~p: 401 mismatches
+va_ela_la~_sd_ct: 401 mismatches
+va_ela_~_sd_ct_p: 399 mismatches
+va_ela_la_sp_l~t: 410 mismatches
+va_ela_la_sp_l~p: 408 mismatches
+va_ela_las~ad_ct: 402 mismatches
+va_ela_l~ad_ct_p: 402 mismatches
+va_ela_ls_sp_l~t: 413 mismatches
+va_ela_ls_sp_l~p: 413 mismatches
+va_ela_la~lsd_ct: 401 mismatches
+va_ela_~lsd_ct_p: 399 mismatches
+va_ela_as_sp_a~t: 402 mismatches
+va_ela_as_sp_a~p: 401 mismatches
+va_ela_l~_asd_ct: 401 mismatches
+va_ela~_asd_ct_p: 399 mismatches
+va_ela_las_sp_~t: 401 mismatches
+va_ela_las_sp_~p: 399 mismatches
+va_math_s_s~s_ct: 415 mismatches
+va_math_s~s_ct_p: 415 mismatches
+va_math_ls~_s_ct: 414 mismatches
+v~h_ls_sp_s_ct_p: 414 mismatches
+va_math_as~_s_ct: 403 mismatches
+v~h_as_sp_s_ct_p: 402 mismatches
+va_math_la~_s_ct: 402 mismatches
+va_math_~_s_ct_p: 400 mismatches
+va_math_ls_~s_ct: 414 mismatches
+~h_ls_sp_ls_ct_p: 414 mismatches
+va_math_la~ls_ct: 402 mismatches
+va_math_~ls_ct_p: 400 mismatches
+va_math_as_~s_ct: 403 mismatches
+va_math_a~s_ct_p: 402 mismatches
+va_math_l~_as_ct: 402 mismatches
+va_math~_as_ct_p: 400 mismatches
+va_math_las~s_ct: 402 mismatches
+va_math_l~s_ct_p: 400 mismatches
+va_math_b_sp_b~t: 416 mismatches
+va_math_b_sp_b~p: 416 mismatches
+va_math_l_sp_b~t: 416 mismatches
+va_math_l_sp_b~p: 416 mismatches
+va_math_a_sp_b~t: 409 mismatches
+va_math_a_sp_b~p: 409 mismatches
+va_math_s_sp_b~t: 414 mismatches
+va_math_s_sp_b~p: 414 mismatches
+va_ma~a_sp_bd_ct: 409 mismatches
+va_math_la_sp_b~: 409 mismatches
+va_math_ls~bd_ct: 413 mismatches
+va_math_ls_sp_b~: 413 mismatches
+va_math_as~bd_ct: 402 mismatches
+va_math_as_sp_b~: 402 mismatches
+va_math_la~bd_ct: 401 mismatches
+va_math_~bd_ct_p: 401 mismatches
+va_math_l_sp_l~t: 416 mismatches
+va_math_l_sp_l~p: 416 mismatches
+va_ma~a_sp_ld_ct: 409 mismatches
+~h_la_sp_ld_ct_p: 409 mismatches
+va_math_ls~ld_ct: 413 mismatches
+~h_ls_sp_ld_ct_p: 413 mismatches
+va_math_la~ld_ct: 401 mismatches
+va_math_~ld_ct_p: 401 mismatches
+va_math_a_sp_a~t: 409 mismatches
+va_math_a_sp_a~p: 408 mismatches
+va_ma~a_sp_ad_ct: 409 mismatches
+va_math_la_sp_a~: 407 mismatches
+va_math_as~ad_ct: 402 mismatches
+~h_as_sp_ad_ct_p: 402 mismatches
+va_math_l~_ad_ct: 401 mismatches
+va_math~_ad_ct_p: 401 mismatches
+va_math_s_sp_s~t: 414 mismatches
+va_math_s_sp_s~p: 414 mismatches
+va_m~ls_sp_sd_ct: 413 mismatches
+va_math_ls_sp_s~: 413 mismatches
+va_math_a~_sd_ct: 402 mismatches
+va_math_as_sp_s~: 401 mismatches
+va_math_l~_sd_ct: 401 mismatches
+va_math~_sd_ct_p: 399 mismatches
+va_math_la_sp_~t: 410 mismatches
+va_math_la_sp_~p: 408 mismatches
+va_math_la~ad_ct: 402 mismatches
+va_math_~ad_ct_p: 402 mismatches
+va_math_ls_sp_~t: 413 mismatches
+va_math_ls_sp_~p: 413 mismatches
+va_math_l~lsd_ct: 401 mismatches
+va_math~lsd_ct_p: 399 mismatches
+va_math_as_sp_~t: 402 mismatches
+va_math_as_sp_~p: 401 mismatches
+va_math_~_asd_ct: 401 mismatches
+va_mat~_asd_ct_p: 399 mismatches
+va_math_las_sp~t: 401 mismatches
+va_math_las_sp~p: 399 mismatches
+va_enr_s_sp_s_ct: 414 mismatches
+va_enr_s_sp_s_~p: 414 mismatches
+va_dk_enr_s~s_ct: 414 mismatches
+v~nr_s_sp_s_ct_p: 414 mismatches
+va_enr_ls_~_s_ct: 413 mismatches
+va_enr_ls_sp_s_~: 413 mismatches
+va~nr_ls_sp_s_ct: 413 mismatches
+~nr_ls_sp_s_ct_p: 413 mismatches
+va_enr_as_~_s_ct: 403 mismatches
+va_enr_a~_s_ct_p: 402 mismatches
+va~nr_as_sp_s_ct: 403 mismatches
+~nr_as_sp_s_ct_p: 402 mismatches
+va_enr_las~_s_ct: 402 mismatches
+va_enr_l~_s_ct_p: 400 mismatches
+v~nr_las_sp_s_ct: 402 mismatches
+va_dk_enr_las_..: 400 mismatches
+va_enr_ls_s~s_ct: 413 mismatches
+va_enr_ls~s_ct_p: 413 mismatches
+v~nr_ls_sp_ls_ct: 413 mismatches
+va_dk_enr_ls_s..: 413 mismatches
+va_enr_las~ls_ct: 402 mismatches
+va_enr_l~ls_ct_p: 400 mismatches
+~nr_las_sp_ls_ct: 402 mismatches
+va_dk_enr_las_..: 400 mismatches
+va_enr_as_s~s_ct: 403 mismatches
+va_enr_as~s_ct_p: 402 mismatches
+va_dk_enr_a~s_ct: 403 mismatches
+va_dk_enr_as_s..: 402 mismatches
+va_enr_la~_as_ct: 402 mismatches
+va_enr_las_sp_..: 400 mismatches
+~nr_las_sp_as_ct: 402 mismatches
+va_dk_enr_las_..: 400 mismatches
+va_enr_las_~s_ct: 402 mismatches
+va_enr_la~s_ct_p: 400 mismatches
+va_dk_enr_l~s_ct: 402 mismatches
+va_dk_enr_las_..: 400 mismatches
+va_enr_b_sp_bd~t: 415 mismatches
+va_enr_b_sp_bd~p: 415 mismatches
+va_dk_enr_b_sp~t: 415 mismatches
+va_dk_enr_b_sp~p: 415 mismatches
+va_enr_l_sp_bd~t: 415 mismatches
+va_enr_l_sp_bd~p: 415 mismatches
+va~nr_l_sp_bd_ct: 415 mismatches
+~nr_l_sp_bd_ct_p: 415 mismatches
+va_enr_a_sp_bd~t: 408 mismatches
+va_enr_a_sp_bd~p: 408 mismatches
+va~nr_a_sp_bd_ct: 407 mismatches
+~nr_a_sp_bd_ct_p: 407 mismatches
+va_enr_s_sp_bd~t: 413 mismatches
+va_enr_s_sp_bd~p: 413 mismatches
+va~nr_s_sp_bd_ct: 413 mismatches
+~nr_s_sp_bd_ct_p: 413 mismatches
+va_enr_la_sp_b~t: 408 mismatches
+va_enr_la_sp_b~p: 408 mismatches
+v~nr_la_sp_bd_ct: 407 mismatches
+va_dk_enr_la_s..: 407 mismatches
+va_enr_ls_sp_b~t: 412 mismatches
+va_enr_ls_sp_b~p: 412 mismatches
+v~nr_ls_sp_bd_ct: 412 mismatches
+va_dk_enr_ls_s..: 412 mismatches
+va_enr_as_sp_b~t: 402 mismatches
+va_enr_as_sp_b~p: 402 mismatches
+v~nr_as_sp_bd_ct: 402 mismatches
+va_dk_enr_as_s..: 402 mismatches
+va_enr_las~bd_ct: 401 mismatches
+va_enr_l~bd_ct_p: 401 mismatches
+~nr_las_sp_bd_ct: 401 mismatches
+va_dk_enr_las_..: 401 mismatches
+va_enr_l_sp_ld~t: 415 mismatches
+va_enr_l_sp_ld~p: 415 mismatches
+va_dk_enr_l_sp~t: 415 mismatches
+va_dk_enr_l_sp~p: 415 mismatches
+va_enr_la_~ld_ct: 408 mismatches
+va_enr_la_sp_ld~: 408 mismatches
+v~nr_la_sp_ld_ct: 407 mismatches
+va_dk_enr_la_s..: 407 mismatches
+va_enr_ls_~ld_ct: 412 mismatches
+va_enr_ls_sp_ld~: 412 mismatches
+v~nr_ls_sp_ld_ct: 412 mismatches
+va_dk_enr_ls_s..: 412 mismatches
+va_enr_las~ld_ct: 401 mismatches
+va_enr_l~ld_ct_p: 401 mismatches
+~nr_las_sp_ld_ct: 401 mismatches
+va_dk_enr_las_..: 401 mismatches
+va_enr_a_sp_ad~t: 408 mismatches
+va_enr_a_sp_ad~p: 408 mismatches
+va_dk_enr_a_sp~t: 407 mismatches
+va_dk_enr_a_sp~p: 407 mismatches
+va_enr_la_sp_a~t: 408 mismatches
+va_enr_la_sp_a~p: 407 mismatches
+v~nr_la_sp_ad_ct: 407 mismatches
+va_dk_enr_la_s..: 406 mismatches
+va_enr_as_~ad_ct: 402 mismatches
+va_enr_a~ad_ct_p: 402 mismatches
+v~nr_as_sp_ad_ct: 402 mismatches
+va_dk_enr_as_s..: 402 mismatches
+va_enr_la~_ad_ct: 401 mismatches
+va_enr_las_sp_..: 401 mismatches
+~nr_las_sp_ad_ct: 401 mismatches
+va_dk_enr_las_..: 401 mismatches
+va_enr_s_sp_sd~t: 413 mismatches
+va_enr_s_sp_sd~p: 413 mismatches
+va_dk_enr_s_sp~t: 413 mismatches
+va_dk_enr_s_sp~p: 413 mismatches
+va_enr_ls_sp_s~t: 412 mismatches
+va_enr_ls_sp_s~p: 412 mismatches
+v~nr_ls_sp_sd_ct: 412 mismatches
+va_dk_enr_ls_s..: 412 mismatches
+va_enr_as_sp_s~t: 402 mismatches
+va_enr_as_sp_s~p: 401 mismatches
+v~nr_as_sp_sd_ct: 402 mismatches
+va_dk_enr_as_s..: 401 mismatches
+va_enr_la~_sd_ct: 401 mismatches
+va_enr_las_sp_s~: 399 mismatches
+~nr_las_sp_sd_ct: 401 mismatches
+va_dk_enr_las_..: 399 mismatches
+va_enr_la_sp_l~t: 409 mismatches
+va_enr_la_sp_l~p: 408 mismatches
+va_dk_enr_la_s~t: 408 mismatches
+va_dk_enr_la_s~p: 407 mismatches
+va_enr_las~ad_ct: 402 mismatches
+va_enr_l~ad_ct_p: 402 mismatches
+va_dk_enr_las_..: 402 mismatches
+va_dk_enr_las_..: 402 mismatches
+va_enr_ls_sp_l~t: 412 mismatches
+va_enr_ls_sp_l~p: 412 mismatches
+va_dk_enr_ls_s~t: 412 mismatches
+va_dk_enr_ls_s~p: 412 mismatches
+va_enr_la~lsd_ct: 401 mismatches
+va_enr_las_sp_..: 399 mismatches
+va_dk_enr_las_..: 401 mismatches
+va_dk_enr_las_..: 399 mismatches
+va_enr_as_sp_a~t: 402 mismatches
+va_enr_as_sp_a~p: 401 mismatches
+va_dk_enr_as_s~t: 402 mismatches
+va_dk_enr_as_s~p: 401 mismatches
+va_enr_l~_asd_ct: 401 mismatches
+va_enr_las_sp_a~: 399 mismatches
+va_dk_enr_las_..: 401 mismatches
+va_dk_enr_las_..: 399 mismatches
+va_enr_las_sp_~t: 401 mismatches
+va_enr_las_sp_~p: 399 mismatches
+va_dk_enr_las_~t: 400 mismatches
+va_dk_enr_las_~p: 399 mismatches
+va_enr_2year_s..: 414 mismatches
+va_enr_2year_s..: 414 mismatches
+~2year_s_sp_s_ct: 414 mismatches
+va_dk_enr_2yea..: 414 mismatches
+va_enr_2year_l..: 413 mismatches
+va_enr_2year_l..: 413 mismatches
+va_dk_enr_2yea..: 413 mismatches
+va_dk_enr_2yea..: 413 mismatches
+va_enr_2year_a..: 403 mismatches
+va_enr_2year_a..: 402 mismatches
+va_dk_enr_2yea..: 403 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_enr_2ye~_s_ct: 402 mismatches
+va_enr_2~_s_ct_p: 400 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_dk_enr_2yea..: 400 mismatches
+va_enr_2year_l..: 413 mismatches
+va_enr_2year_l..: 413 mismatches
+va_dk_enr_2yea..: 413 mismatches
+va_dk_enr_2yea..: 413 mismatches
+va_enr_2ye~ls_ct: 402 mismatches
+va_enr_2~ls_ct_p: 399 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_dk_enr_2yea..: 400 mismatches
+va_enr_2year_a..: 403 mismatches
+va_enr_2year_a..: 402 mismatches
+va_dk_enr_2yea..: 403 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_enr_2y~_as_ct: 402 mismatches
+va_enr_2year_l..: 400 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_dk_enr_2yea..: 400 mismatches
+va_enr_2yea~s_ct: 402 mismatches
+va_enr_2y~s_ct_p: 400 mismatches
+va_dk_enr_2~s_ct: 402 mismatches
+va_dk_enr_2yea..: 400 mismatches
+va_enr_2year_b~t: 415 mismatches
+va_enr_2year_b~p: 415 mismatches
+va_dk_enr_2yea..: 415 mismatches
+va_dk_enr_2yea..: 415 mismatches
+va_enr_2year_l..: 415 mismatches
+va_enr_2year_l..: 415 mismatches
+va_dk_enr_2yea..: 415 mismatches
+va_dk_enr_2yea..: 415 mismatches
+va_enr_2year_a..: 408 mismatches
+va_enr_2year_a..: 408 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_enr_2year_s..: 413 mismatches
+va_enr_2year_s..: 413 mismatches
+va_dk_enr_2yea..: 413 mismatches
+va_dk_enr_2yea..: 413 mismatches
+va_enr_2year_l..: 408 mismatches
+va_enr_2year_l..: 408 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_enr_2year_l..: 412 mismatches
+va_enr_2year_l..: 412 mismatches
+va_dk_enr_2yea..: 412 mismatches
+va_dk_enr_2yea..: 412 mismatches
+va_enr_2year_a..: 402 mismatches
+va_enr_2year_a..: 402 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_enr_2ye~bd_ct: 401 mismatches
+va_enr_2~bd_ct_p: 401 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_enr_2year_l..: 415 mismatches
+va_enr_2year_l_~: 415 mismatches
+va_dk_enr_2yea..: 415 mismatches
+va_dk_enr_2yea..: 415 mismatches
+va_enr_2year_l..: 408 mismatches
+va_enr_2year_l..: 408 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_enr_2year_l..: 412 mismatches
+va_enr_2year_l..: 412 mismatches
+va_dk_enr_2yea..: 412 mismatches
+va_dk_enr_2yea..: 412 mismatches
+va_enr_2ye~ld_ct: 401 mismatches
+va_enr_2~ld_ct_p: 401 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_enr_2year_a..: 408 mismatches
+va_enr_2year_a_~: 408 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_enr_2year_l..: 408 mismatches
+va_enr_2year_l..: 407 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_dk_enr_2yea..: 406 mismatches
+va_enr_2year_a..: 402 mismatches
+va_enr_2year_a..: 402 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_enr_2y~_ad_ct: 401 mismatches
+va_enr_2year_l..: 401 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_enr_2year_s~t: 413 mismatches
+va_enr_2year_s~p: 413 mismatches
+va_dk_enr_2yea..: 413 mismatches
+va_dk_enr_2yea..: 413 mismatches
+va_enr_2year_l..: 412 mismatches
+va_enr_2year_l..: 412 mismatches
+va_dk_enr_2yea..: 412 mismatches
+va_dk_enr_2yea..: 412 mismatches
+va_enr_2year_a..: 402 mismatches
+va_enr_2year_a..: 401 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_enr_2y~_sd_ct: 401 mismatches
+va_enr_2year_l..: 399 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_dk_enr_2yea..: 399 mismatches
+va_enr_2year_l..: 409 mismatches
+va_enr_2year_l..: 408 mismatches
+va_dk_enr_2yea..: 408 mismatches
+va_dk_enr_2yea..: 407 mismatches
+va_enr_2ye~ad_ct: 402 mismatches
+va_enr_2~ad_ct_p: 402 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_enr_2year_l..: 412 mismatches
+va_enr_2year_ls~: 412 mismatches
+va_dk_enr_2yea..: 412 mismatches
+va_dk_enr_2yea..: 412 mismatches
+va_enr_2y~lsd_ct: 401 mismatches
+va_enr_2year_l..: 399 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_dk_enr_2yea..: 399 mismatches
+va_enr_2year_a~t: 402 mismatches
+va_enr_2year_a~p: 401 mismatches
+va_dk_enr_2yea..: 402 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_enr_2~_asd_ct: 401 mismatches
+va_enr_2year_l..: 399 mismatches
+va_dk_enr_2yea..: 401 mismatches
+va_dk_enr_2yea..: 399 mismatches
+va_enr_2year_l~t: 401 mismatches
+va_enr_2year_l~p: 399 mismatches
+va_dk_enr_2yea~t: 401 mismatches
+va_dk_enr_2yea~p: 399 mismatches
+va_en~_s_sp_s_ct: 414 mismatches
+va_enr_4year_s..: 414 mismatches
+va_dk~_s_sp_s_ct: 414 mismatches
+va_~_s_sp_s_ct_p: 414 mismatches
+va_en~ls_sp_s_ct: 413 mismatches
+va_enr_4year_l..: 413 mismatches
+va_dk~ls_sp_s_ct: 413 mismatches
+va_~ls_sp_s_ct_p: 413 mismatches
+va_e~_as_sp_s_ct: 403 mismatches
+va_enr_4year_a..: 402 mismatches
+va_d~_as_sp_s_ct: 403 mismatches
+va~_as_sp_s_ct_p: 402 mismatches
+va_enr_4ye~_s_ct: 402 mismatches
+va_enr_4~_s_ct_p: 400 mismatches
+va_dk_enr_~_s_ct: 402 mismatches
+va_dk_en~_s_ct_p: 400 mismatches
+va_e~ls_sp_ls_ct: 413 mismatches
+va_enr_4year_l..: 413 mismatches
+va_d~ls_sp_ls_ct: 413 mismatches
+va~ls_sp_ls_ct_p: 413 mismatches
+va_enr_4ye~ls_ct: 402 mismatches
+va_enr_4~ls_ct_p: 400 mismatches
+va_dk_enr_~ls_ct: 402 mismatches
+va_dk_en~ls_ct_p: 400 mismatches
+va_enr_4year_a..: 403 mismatches
+va_enr_4year_a..: 402 mismatches
+va_~_as_sp_as_ct: 403 mismatches
+v~_as_sp_as_ct_p: 402 mismatches
+va_enr_4y~_as_ct: 402 mismatches
+va_enr_~_as_ct_p: 400 mismatches
+va_dk_enr~_as_ct: 402 mismatches
+va_dk_e~_as_ct_p: 400 mismatches
+va_enr_4yea~s_ct: 402 mismatches
+va_enr_4y~s_ct_p: 400 mismatches
+va_dk_enr_4~s_ct: 402 mismatches
+va_dk_enr~s_ct_p: 400 mismatches
+va_enr_4year_b~t: 415 mismatches
+va_enr_4year_b~p: 415 mismatches
+va_dk~b_sp_bd_ct: 415 mismatches
+va_~b_sp_bd_ct_p: 415 mismatches
+va_en~l_sp_bd_ct: 415 mismatches
+va_enr_4year_l..: 415 mismatches
+va_dk~l_sp_bd_ct: 415 mismatches
+va_~l_sp_bd_ct_p: 415 mismatches
+va_e~_a_sp_bd_ct: 408 mismatches
+va_enr_4year_a..: 408 mismatches
+va_d~_a_sp_bd_ct: 407 mismatches
+va~_a_sp_bd_ct_p: 407 mismatches
+va_e~_s_sp_bd_ct: 413 mismatches
+va_enr_4year_s..: 413 mismatches
+va_d~_s_sp_bd_ct: 413 mismatches
+va~_s_sp_bd_ct_p: 413 mismatches
+va_en~a_sp_bd_ct: 408 mismatches
+va_enr_4year_l..: 408 mismatches
+va_dk~a_sp_bd_ct: 407 mismatches
+va_~a_sp_bd_ct_p: 407 mismatches
+va_e~ls_sp_bd_ct: 412 mismatches
+va_enr_4year_l..: 412 mismatches
+va_d~ls_sp_bd_ct: 412 mismatches
+va~ls_sp_bd_ct_p: 412 mismatches
+va_enr_4year_a..: 402 mismatches
+va_enr_4year_a..: 402 mismatches
+va_~_as_sp_bd_ct: 402 mismatches
+v~_as_sp_bd_ct_p: 402 mismatches
+va_enr_4ye~bd_ct: 401 mismatches
+va_enr_4~bd_ct_p: 401 mismatches
+va_dk_enr_~bd_ct: 401 mismatches
+va_dk_en~bd_ct_p: 401 mismatches
+va_en~l_sp_ld_ct: 415 mismatches
+va_enr_4year_l_~: 415 mismatches
+va_dk~l_sp_ld_ct: 415 mismatches
+va_~l_sp_ld_ct_p: 415 mismatches
+va_en~a_sp_ld_ct: 408 mismatches
+va_enr_4year_l..: 408 mismatches
+va_dk~a_sp_ld_ct: 407 mismatches
+va_~a_sp_ld_ct_p: 407 mismatches
+va_e~ls_sp_ld_ct: 412 mismatches
+va_enr_4year_l..: 412 mismatches
+va_d~ls_sp_ld_ct: 412 mismatches
+va~ls_sp_ld_ct_p: 412 mismatches
+va_enr_4ye~ld_ct: 401 mismatches
+va_enr_4~ld_ct_p: 401 mismatches
+va_dk_enr_~ld_ct: 401 mismatches
+va_dk_en~ld_ct_p: 401 mismatches
+va_e~_a_sp_ad_ct: 408 mismatches
+va_enr_4year_a_~: 408 mismatches
+va_d~_a_sp_ad_ct: 407 mismatches
+va~_a_sp_ad_ct_p: 407 mismatches
+va_en~a_sp_ad_ct: 408 mismatches
+va_enr_4year_l..: 407 mismatches
+va_dk~a_sp_ad_ct: 407 mismatches
+va_~a_sp_ad_ct_p: 406 mismatches
+va_enr_4year_a..: 402 mismatches
+va_enr_4year_a..: 402 mismatches
+va_~_as_sp_ad_ct: 402 mismatches
+v~_as_sp_ad_ct_p: 402 mismatches
+va_enr_4y~_ad_ct: 401 mismatches
+va_enr_~_ad_ct_p: 401 mismatches
+va_dk_enr~_ad_ct: 401 mismatches
+va_dk_e~_ad_ct_p: 401 mismatches
+va_enr_4year_s~t: 413 mismatches
+va_enr_4year_s~p: 413 mismatches
+va_d~_s_sp_sd_ct: 413 mismatches
+va~_s_sp_sd_ct_p: 413 mismatches
+va_e~ls_sp_sd_ct: 412 mismatches
+va_enr_4year_l..: 412 mismatches
+va_d~ls_sp_sd_ct: 412 mismatches
+va~ls_sp_sd_ct_p: 412 mismatches
+va_enr_4year_a..: 402 mismatches
+va_enr_4year_a..: 401 mismatches
+va_~_as_sp_sd_ct: 402 mismatches
+v~_as_sp_sd_ct_p: 401 mismatches
+va_enr_4y~_sd_ct: 401 mismatches
+va_enr_~_sd_ct_p: 399 mismatches
+va_dk_enr~_sd_ct: 401 mismatches
+va_dk_e~_sd_ct_p: 399 mismatches
+va_e~a_sp_lad_ct: 409 mismatches
+va_enr_4year_l..: 408 mismatches
+va_d~a_sp_lad_ct: 408 mismatches
+va~a_sp_lad_ct_p: 407 mismatches
+va_enr_4ye~ad_ct: 402 mismatches
+va_enr_4~ad_ct_p: 402 mismatches
+va_dk_enr_~ad_ct: 402 mismatches
+va_dk_en~ad_ct_p: 402 mismatches
+va_enr_4year_l..: 412 mismatches
+va_enr_4year_ls~: 412 mismatches
+va_~ls_sp_lsd_ct: 412 mismatches
+v~ls_sp_lsd_ct_p: 412 mismatches
+va_enr_4y~lsd_ct: 401 mismatches
+va_enr_~lsd_ct_p: 399 mismatches
+va_dk_enr~lsd_ct: 401 mismatches
+va_dk_e~lsd_ct_p: 399 mismatches
+va_enr_4year_a~t: 402 mismatches
+va_enr_4year_a~p: 401 mismatches
+va~_as_sp_asd_ct: 402 mismatches
+~_as_sp_asd_ct_p: 401 mismatches
+va_enr_4~_asd_ct: 401 mismatches
+va_enr~_asd_ct_p: 399 mismatches
+va_dk_en~_asd_ct: 401 mismatches
+va_dk_~_asd_ct_p: 399 mismatches
+va_enr_4year_l~t: 401 mismatches
+va_enr_4year_l~p: 399 mismatches
+va_dk_enr_4yea~t: 401 mismatches
+va_dk_enr_4yea~p: 399 mismatches
+    cf rc=9 (0 = all common-var values identical)
+
+--- [secanalysisready (rc=900 — retry under maxvar 32767)]
+    pred: /home/research/ca_ed_lab/users/chesun/gsr/caschls/dta/buildanalysisda
+> ta/analysisready/secanalysisready.dta
+    cons: /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cl
+> eaned/calschls/analysisready/secanalysisready.dta
+    obs:  pred=3385  cons=3385  delta=0
+    vars: pred=1122  cons=1122
+    vars only in PREDECESSOR (0): 
+    vars only in CONSOLIDATED (0): 
+    obs counts match -> cf on 1122 common vars:
+va_ela_s_sp_s_ct: 912 mismatches
+va_ela_s_sp_s_~p: 912 mismatches
+va_ela_ls_~_s_ct: 911 mismatches
+v~a_ls_sp_s_ct_p: 911 mismatches
+va_ela_as_~_s_ct: 889 mismatches
+va_ela_a~_s_ct_p: 887 mismatches
+va_ela_las~_s_ct: 887 mismatches
+va_ela_l~_s_ct_p: 882 mismatches
+va_ela_ls_s~s_ct: 911 mismatches
+va_ela_ls~s_ct_p: 911 mismatches
+va_ela_las~ls_ct: 887 mismatches
+va_ela_l~ls_ct_p: 882 mismatches
+va_ela_as_s~s_ct: 889 mismatches
+va_ela_as~s_ct_p: 887 mismatches
+va_ela_la~_as_ct: 887 mismatches
+va_ela_~_as_ct_p: 882 mismatches
+va_ela_las_~s_ct: 887 mismatches
+va_ela_la~s_ct_p: 882 mismatches
+va_ela_b_sp_bd~t: 914 mismatches
+va_ela_b_sp_bd~p: 914 mismatches
+va_ela_l_sp_bd~t: 914 mismatches
+va_ela_l_sp_bd~p: 914 mismatches
+va_ela_a_sp_bd~t: 901 mismatches
+va_ela_a_sp_bd~p: 901 mismatches
+va_ela_s_sp_bd~t: 911 mismatches
+va_ela_s_sp_bd~p: 911 mismatches
+va_ela_la_sp_b~t: 900 mismatches
+va_ela_la_sp_b~p: 900 mismatches
+va_ela_ls_sp_b~t: 910 mismatches
+va_ela_ls_sp_b~p: 910 mismatches
+va_ela_as_sp_b~t: 888 mismatches
+va_ela_as_sp_b~p: 888 mismatches
+va_ela_las~bd_ct: 886 mismatches
+va_ela_l~bd_ct_p: 886 mismatches
+va_ela_l_sp_ld~t: 914 mismatches
+va_ela_l_sp_ld~p: 914 mismatches
+va_ela_la_~ld_ct: 900 mismatches
+va_ela_la_sp_ld~: 900 mismatches
+va_ela_ls_~ld_ct: 910 mismatches
+va_ela_ls_sp_ld~: 910 mismatches
+va_ela_las~ld_ct: 886 mismatches
+va_ela_l~ld_ct_p: 886 mismatches
+va_ela_a_sp_ad~t: 901 mismatches
+va_ela_a_sp_ad~p: 897 mismatches
+va_ela_la_sp_a~t: 900 mismatches
+va_ela_la_sp_a~p: 893 mismatches
+va_ela_as_~ad_ct: 888 mismatches
+va_ela_a~ad_ct_p: 888 mismatches
+va_ela_la~_ad_ct: 886 mismatches
+va_ela_~_ad_ct_p: 884 mismatches
+va_ela_s_sp_sd~t: 910 mismatches
+va_ela_s_sp_sd~p: 911 mismatches
+va_ela_ls_sp_s~t: 910 mismatches
+va_ela_ls_sp_s~p: 910 mismatches
+va_ela_as_sp_s~t: 888 mismatches
+va_ela_as_sp_s~p: 886 mismatches
+va_ela_la~_sd_ct: 886 mismatches
+va_ela_~_sd_ct_p: 881 mismatches
+va_ela_la_sp_l~t: 901 mismatches
+va_ela_la_sp_l~p: 894 mismatches
+va_ela_las~ad_ct: 887 mismatches
+va_ela_l~ad_ct_p: 885 mismatches
+va_ela_ls_sp_l~t: 910 mismatches
+va_ela_ls_sp_l~p: 910 mismatches
+va_ela_la~lsd_ct: 886 mismatches
+va_ela_~lsd_ct_p: 881 mismatches
+va_ela_as_sp_a~t: 888 mismatches
+va_ela_as_sp_a~p: 886 mismatches
+va_ela_l~_asd_ct: 886 mismatches
+va_ela~_asd_ct_p: 881 mismatches
+va_ela_las_sp_~t: 886 mismatches
+va_ela_las_sp_~p: 881 mismatches
+va_math_s_s~s_ct: 911 mismatches
+va_math_s~s_ct_p: 911 mismatches
+va_math_ls~_s_ct: 910 mismatches
+v~h_ls_sp_s_ct_p: 910 mismatches
+va_math_as~_s_ct: 888 mismatches
+v~h_as_sp_s_ct_p: 886 mismatches
+va_math_la~_s_ct: 887 mismatches
+va_math_~_s_ct_p: 882 mismatches
+va_math_ls_~s_ct: 910 mismatches
+~h_ls_sp_ls_ct_p: 910 mismatches
+va_math_la~ls_ct: 887 mismatches
+va_math_~ls_ct_p: 882 mismatches
+va_math_as_~s_ct: 888 mismatches
+va_math_a~s_ct_p: 886 mismatches
+va_math_l~_as_ct: 887 mismatches
+va_math~_as_ct_p: 882 mismatches
+va_math_las~s_ct: 887 mismatches
+va_math_l~s_ct_p: 882 mismatches
+va_math_b_sp_b~t: 914 mismatches
+va_math_b_sp_b~p: 914 mismatches
+va_math_l_sp_b~t: 914 mismatches
+va_math_l_sp_b~p: 914 mismatches
+va_math_a_sp_b~t: 900 mismatches
+va_math_a_sp_b~p: 900 mismatches
+va_math_s_sp_b~t: 910 mismatches
+va_math_s_sp_b~p: 910 mismatches
+va_ma~a_sp_bd_ct: 900 mismatches
+va_math_la_sp_b~: 899 mismatches
+va_math_ls~bd_ct: 909 mismatches
+va_math_ls_sp_b~: 909 mismatches
+va_math_as~bd_ct: 887 mismatches
+va_math_as_sp_b~: 887 mismatches
+va_math_la~bd_ct: 886 mismatches
+va_math_~bd_ct_p: 886 mismatches
+va_math_l_sp_l~t: 914 mismatches
+va_math_l_sp_l~p: 914 mismatches
+va_ma~a_sp_ld_ct: 900 mismatches
+~h_la_sp_ld_ct_p: 900 mismatches
+va_math_ls~ld_ct: 909 mismatches
+~h_ls_sp_ld_ct_p: 909 mismatches
+va_math_la~ld_ct: 886 mismatches
+va_math_~ld_ct_p: 886 mismatches
+va_math_a_sp_a~t: 900 mismatches
+va_math_a_sp_a~p: 896 mismatches
+va_ma~a_sp_ad_ct: 900 mismatches
+va_math_la_sp_a~: 893 mismatches
+va_math_as~ad_ct: 887 mismatches
+~h_as_sp_ad_ct_p: 887 mismatches
+va_math_l~_ad_ct: 886 mismatches
+va_math~_ad_ct_p: 884 mismatches
+va_math_s_sp_s~t: 910 mismatches
+va_math_s_sp_s~p: 910 mismatches
+va_m~ls_sp_sd_ct: 909 mismatches
+va_math_ls_sp_s~: 909 mismatches
+va_math_a~_sd_ct: 887 mismatches
+va_math_as_sp_s~: 885 mismatches
+va_math_l~_sd_ct: 886 mismatches
+va_math~_sd_ct_p: 881 mismatches
+va_math_la_sp_~t: 901 mismatches
+va_math_la_sp_~p: 894 mismatches
+va_math_la~ad_ct: 887 mismatches
+va_math_~ad_ct_p: 885 mismatches
+va_math_ls_sp_~t: 909 mismatches
+va_math_ls_sp_~p: 909 mismatches
+va_math_l~lsd_ct: 886 mismatches
+va_math~lsd_ct_p: 881 mismatches
+va_math_as_sp_~t: 887 mismatches
+va_math_as_sp_~p: 885 mismatches
+va_math_~_asd_ct: 886 mismatches
+va_mat~_asd_ct_p: 881 mismatches
+va_math_las_sp~t: 886 mismatches
+va_math_las_sp~p: 881 mismatches
+va_enr_b_sp_b_ct: 2 mismatches
+va_enr_s_sp_s_ct: 912 mismatches
+va_enr_s_sp_s_~p: 912 mismatches
+va_dk_enr_s~s_ct: 911 mismatches
+v~nr_s_sp_s_ct_p: 911 mismatches
+va_enr_ls_~_s_ct: 911 mismatches
+va_enr_ls_sp_s_~: 911 mismatches
+va~nr_ls_sp_s_ct: 909 mismatches
+~nr_ls_sp_s_ct_p: 910 mismatches
+va_enr_as_~_s_ct: 889 mismatches
+va_enr_a~_s_ct_p: 887 mismatches
+va~nr_as_sp_s_ct: 888 mismatches
+~nr_as_sp_s_ct_p: 886 mismatches
+va_enr_las~_s_ct: 887 mismatches
+va_enr_l~_s_ct_p: 882 mismatches
+v~nr_las_sp_s_ct: 887 mismatches
+va_dk_enr_las_..: 882 mismatches
+va_enr_ls_s~s_ct: 911 mismatches
+va_enr_ls~s_ct_p: 911 mismatches
+v~nr_ls_sp_ls_ct: 910 mismatches
+va_dk_enr_ls_s..: 910 mismatches
+va_enr_las~ls_ct: 887 mismatches
+va_enr_l~ls_ct_p: 882 mismatches
+~nr_las_sp_ls_ct: 887 mismatches
+va_dk_enr_las_..: 882 mismatches
+va_enr_as_s~s_ct: 889 mismatches
+va_enr_as~s_ct_p: 887 mismatches
+va_dk_enr_a~s_ct: 888 mismatches
+va_dk_enr_as_s..: 886 mismatches
+va_enr_la~_as_ct: 887 mismatches
+va_enr_las_sp_..: 882 mismatches
+~nr_las_sp_as_ct: 887 mismatches
+va_dk_enr_las_..: 882 mismatches
+va_enr_las_~s_ct: 887 mismatches
+va_enr_la~s_ct_p: 882 mismatches
+va_dk_enr_l~s_ct: 887 mismatches
+va_dk_enr_las_..: 882 mismatches
+va_enr_b_sp_bd~t: 914 mismatches
+va_enr_b_sp_bd~p: 914 mismatches
+va_dk_enr_b_sp~t: 914 mismatches
+va_dk_enr_b_sp~p: 914 mismatches
+va_enr_l_sp_bd~t: 914 mismatches
+va_enr_l_sp_bd~p: 914 mismatches
+va~nr_l_sp_bd_ct: 914 mismatches
+~nr_l_sp_bd_ct_p: 914 mismatches
+va_enr_a_sp_bd~t: 901 mismatches
+va_enr_a_sp_bd~p: 901 mismatches
+va~nr_a_sp_bd_ct: 899 mismatches
+~nr_a_sp_bd_ct_p: 899 mismatches
+va_enr_s_sp_bd~t: 911 mismatches
+va_enr_s_sp_bd~p: 911 mismatches
+va~nr_s_sp_bd_ct: 910 mismatches
+~nr_s_sp_bd_ct_p: 910 mismatches
+va_enr_la_sp_b~t: 901 mismatches
+va_enr_la_sp_b~p: 901 mismatches
+v~nr_la_sp_bd_ct: 899 mismatches
+va_dk_enr_la_s..: 899 mismatches
+va_enr_ls_sp_b~t: 910 mismatches
+va_enr_ls_sp_b~p: 910 mismatches
+v~nr_ls_sp_bd_ct: 909 mismatches
+va_dk_enr_ls_s..: 909 mismatches
+va_enr_as_sp_b~t: 888 mismatches
+va_enr_as_sp_b~p: 888 mismatches
+v~nr_as_sp_bd_ct: 887 mismatches
+va_dk_enr_as_s..: 887 mismatches
+va_enr_las~bd_ct: 886 mismatches
+va_enr_l~bd_ct_p: 886 mismatches
+~nr_las_sp_bd_ct: 886 mismatches
+va_dk_enr_las_..: 886 mismatches
+va_enr_l_sp_ld~t: 914 mismatches
+va_enr_l_sp_ld~p: 914 mismatches
+va_dk_enr_l_sp~t: 914 mismatches
+va_dk_enr_l_sp~p: 914 mismatches
+va_enr_la_~ld_ct: 901 mismatches
+va_enr_la_sp_ld~: 901 mismatches
+v~nr_la_sp_ld_ct: 899 mismatches
+va_dk_enr_la_s..: 899 mismatches
+va_enr_ls_~ld_ct: 910 mismatches
+va_enr_ls_sp_ld~: 910 mismatches
+v~nr_ls_sp_ld_ct: 909 mismatches
+va_dk_enr_ls_s..: 909 mismatches
+va_enr_las~ld_ct: 886 mismatches
+va_enr_l~ld_ct_p: 886 mismatches
+~nr_las_sp_ld_ct: 886 mismatches
+va_dk_enr_las_..: 886 mismatches
+va_enr_a_sp_ad~t: 901 mismatches
+va_enr_a_sp_ad~p: 898 mismatches
+va_dk_enr_a_sp~t: 899 mismatches
+va_dk_enr_a_sp~p: 896 mismatches
+va_enr_la_sp_a~t: 901 mismatches
+va_enr_la_sp_a~p: 895 mismatches
+v~nr_la_sp_ad_ct: 899 mismatches
+va_dk_enr_la_s..: 893 mismatches
+va_enr_as_~ad_ct: 888 mismatches
+va_enr_a~ad_ct_p: 888 mismatches
+v~nr_as_sp_ad_ct: 887 mismatches
+va_dk_enr_as_s..: 887 mismatches
+va_enr_la~_ad_ct: 886 mismatches
+va_enr_las_sp_..: 884 mismatches
+~nr_las_sp_ad_ct: 886 mismatches
+va_dk_enr_las_..: 884 mismatches
+va_enr_s_sp_sd~t: 911 mismatches
+va_enr_s_sp_sd~p: 911 mismatches
+va_dk_enr_s_sp~t: 910 mismatches
+va_dk_enr_s_sp~p: 910 mismatches
+va_enr_ls_sp_s~t: 910 mismatches
+va_enr_ls_sp_s~p: 910 mismatches
+v~nr_ls_sp_sd_ct: 909 mismatches
+va_dk_enr_ls_s..: 909 mismatches
+va_enr_as_sp_s~t: 888 mismatches
+va_enr_as_sp_s~p: 886 mismatches
+v~nr_as_sp_sd_ct: 887 mismatches
+va_dk_enr_as_s..: 885 mismatches
+va_enr_la~_sd_ct: 886 mismatches
+va_enr_las_sp_s~: 881 mismatches
+~nr_las_sp_sd_ct: 886 mismatches
+va_dk_enr_las_..: 881 mismatches
+va_enr_la_sp_l~t: 902 mismatches
+va_enr_la_sp_l~p: 896 mismatches
+va_dk_enr_la_s~t: 900 mismatches
+va_dk_enr_la_s~p: 894 mismatches
+va_enr_las~ad_ct: 887 mismatches
+va_enr_l~ad_ct_p: 885 mismatches
+va_dk_enr_las_..: 887 mismatches
+va_dk_enr_las_..: 885 mismatches
+va_enr_ls_sp_l~t: 910 mismatches
+va_enr_ls_sp_l~p: 910 mismatches
+va_dk_enr_ls_s~t: 909 mismatches
+va_dk_enr_ls_s~p: 909 mismatches
+va_enr_la~lsd_ct: 886 mismatches
+va_enr_las_sp_..: 881 mismatches
+va_dk_enr_las_..: 886 mismatches
+va_dk_enr_las_..: 881 mismatches
+va_enr_as_sp_a~t: 888 mismatches
+va_enr_as_sp_a~p: 886 mismatches
+va_dk_enr_as_s~t: 887 mismatches
+va_dk_enr_as_s~p: 885 mismatches
+va_enr_l~_asd_ct: 886 mismatches
+va_enr_las_sp_a~: 881 mismatches
+va_dk_enr_las_..: 886 mismatches
+va_dk_enr_las_..: 881 mismatches
+va_enr_las_sp_~t: 886 mismatches
+va_enr_las_sp_~p: 881 mismatches
+va_dk_enr_las_~t: 885 mismatches
+va_dk_enr_las_~p: 881 mismatches
+va_enr_2year_s..: 912 mismatches
+va_enr_2year_s..: 912 mismatches
+~2year_s_sp_s_ct: 911 mismatches
+va_dk_enr_2yea..: 911 mismatches
+va_enr_2year_l..: 911 mismatches
+va_enr_2year_l..: 911 mismatches
+va_dk_enr_2yea..: 910 mismatches
+va_dk_enr_2yea..: 910 mismatches
+va_enr_2year_a..: 889 mismatches
+va_enr_2year_a..: 887 mismatches
+va_dk_enr_2yea..: 888 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_enr_2ye~_s_ct: 887 mismatches
+va_enr_2~_s_ct_p: 882 mismatches
+va_dk_enr_2yea..: 887 mismatches
+va_dk_enr_2yea..: 882 mismatches
+va_enr_2year_l..: 911 mismatches
+va_enr_2year_l..: 911 mismatches
+va_dk_enr_2yea..: 910 mismatches
+va_dk_enr_2yea..: 910 mismatches
+va_enr_2ye~ls_ct: 887 mismatches
+va_enr_2~ls_ct_p: 881 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_dk_enr_2yea..: 882 mismatches
+va_enr_2year_a..: 889 mismatches
+va_enr_2year_a..: 887 mismatches
+va_dk_enr_2yea..: 888 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_enr_2y~_as_ct: 887 mismatches
+va_enr_2year_l..: 882 mismatches
+va_dk_enr_2yea..: 887 mismatches
+va_dk_enr_2yea..: 882 mismatches
+va_enr_2yea~s_ct: 887 mismatches
+va_enr_2y~s_ct_p: 882 mismatches
+va_dk_enr_2~s_ct: 887 mismatches
+va_dk_enr_2yea..: 882 mismatches
+va_enr_2year_b~t: 914 mismatches
+va_enr_2year_b~p: 914 mismatches
+va_dk_enr_2yea..: 914 mismatches
+va_dk_enr_2yea..: 914 mismatches
+va_enr_2year_l..: 914 mismatches
+va_enr_2year_l..: 914 mismatches
+va_dk_enr_2yea..: 914 mismatches
+va_dk_enr_2yea..: 914 mismatches
+va_enr_2year_a..: 901 mismatches
+va_enr_2year_a..: 901 mismatches
+va_dk_enr_2yea..: 899 mismatches
+va_dk_enr_2yea..: 899 mismatches
+va_enr_2year_s..: 911 mismatches
+va_enr_2year_s..: 911 mismatches
+va_dk_enr_2yea..: 910 mismatches
+va_dk_enr_2yea..: 910 mismatches
+va_enr_2year_l..: 901 mismatches
+va_enr_2year_l..: 901 mismatches
+va_dk_enr_2yea..: 899 mismatches
+va_dk_enr_2yea..: 899 mismatches
+va_enr_2year_l..: 910 mismatches
+va_enr_2year_l..: 910 mismatches
+va_dk_enr_2yea..: 909 mismatches
+va_dk_enr_2yea..: 909 mismatches
+va_enr_2year_a..: 888 mismatches
+va_enr_2year_a..: 888 mismatches
+va_dk_enr_2yea..: 887 mismatches
+va_dk_enr_2yea..: 887 mismatches
+va_enr_2ye~bd_ct: 886 mismatches
+va_enr_2~bd_ct_p: 886 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_enr_2year_l..: 914 mismatches
+va_enr_2year_l_~: 914 mismatches
+va_dk_enr_2yea..: 914 mismatches
+va_dk_enr_2yea..: 914 mismatches
+va_enr_2year_l..: 901 mismatches
+va_enr_2year_l..: 901 mismatches
+va_dk_enr_2yea..: 899 mismatches
+va_dk_enr_2yea..: 899 mismatches
+va_enr_2year_l..: 910 mismatches
+va_enr_2year_l..: 910 mismatches
+va_dk_enr_2yea..: 909 mismatches
+va_dk_enr_2yea..: 909 mismatches
+va_enr_2ye~ld_ct: 886 mismatches
+va_enr_2~ld_ct_p: 886 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_enr_2year_a..: 901 mismatches
+va_enr_2year_a_~: 898 mismatches
+va_dk_enr_2yea..: 899 mismatches
+va_dk_enr_2yea..: 896 mismatches
+va_enr_2year_l..: 901 mismatches
+va_enr_2year_l..: 895 mismatches
+va_dk_enr_2yea..: 899 mismatches
+va_dk_enr_2yea..: 893 mismatches
+va_enr_2year_a..: 888 mismatches
+va_enr_2year_a..: 888 mismatches
+va_dk_enr_2yea..: 887 mismatches
+va_dk_enr_2yea..: 887 mismatches
+va_enr_2y~_ad_ct: 886 mismatches
+va_enr_2year_l..: 884 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_dk_enr_2yea..: 884 mismatches
+va_enr_2year_s~t: 911 mismatches
+va_enr_2year_s~p: 911 mismatches
+va_dk_enr_2yea..: 910 mismatches
+va_dk_enr_2yea..: 910 mismatches
+va_enr_2year_l..: 910 mismatches
+va_enr_2year_l..: 910 mismatches
+va_dk_enr_2yea..: 909 mismatches
+va_dk_enr_2yea..: 909 mismatches
+va_enr_2year_a..: 888 mismatches
+va_enr_2year_a..: 886 mismatches
+va_dk_enr_2yea..: 887 mismatches
+va_dk_enr_2yea..: 885 mismatches
+va_enr_2y~_sd_ct: 886 mismatches
+va_enr_2year_l..: 881 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_dk_enr_2yea..: 881 mismatches
+va_enr_2year_l..: 902 mismatches
+va_enr_2year_l..: 896 mismatches
+va_dk_enr_2yea..: 900 mismatches
+va_dk_enr_2yea..: 894 mismatches
+va_enr_2ye~ad_ct: 887 mismatches
+va_enr_2~ad_ct_p: 885 mismatches
+va_dk_enr_2yea..: 887 mismatches
+va_dk_enr_2yea..: 885 mismatches
+va_enr_2year_l..: 910 mismatches
+va_enr_2year_ls~: 910 mismatches
+va_dk_enr_2yea..: 909 mismatches
+va_dk_enr_2yea..: 909 mismatches
+va_enr_2y~lsd_ct: 886 mismatches
+va_enr_2year_l..: 881 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_dk_enr_2yea..: 881 mismatches
+va_enr_2year_a~t: 888 mismatches
+va_enr_2year_a~p: 886 mismatches
+va_dk_enr_2yea..: 887 mismatches
+va_dk_enr_2yea..: 885 mismatches
+va_enr_2~_asd_ct: 886 mismatches
+va_enr_2year_l..: 881 mismatches
+va_dk_enr_2yea..: 886 mismatches
+va_dk_enr_2yea..: 881 mismatches
+va_enr_2year_l~t: 886 mismatches
+va_enr_2year_l~p: 881 mismatches
+va_dk_enr_2yea~t: 886 mismatches
+va_dk_enr_2yea~p: 881 mismatches
+va_enr~b_sp_b_ct: 3 mismatches
+va_en~_s_sp_s_ct: 912 mismatches
+va_enr_4year_s..: 912 mismatches
+va_dk~_s_sp_s_ct: 911 mismatches
+va_~_s_sp_s_ct_p: 911 mismatches
+va_en~ls_sp_s_ct: 911 mismatches
+va_enr_4year_l..: 911 mismatches
+va_dk~ls_sp_s_ct: 909 mismatches
+va_~ls_sp_s_ct_p: 910 mismatches
+va_e~_as_sp_s_ct: 889 mismatches
+va_enr_4year_a..: 887 mismatches
+va_d~_as_sp_s_ct: 888 mismatches
+va~_as_sp_s_ct_p: 886 mismatches
+va_enr_4ye~_s_ct: 887 mismatches
+va_enr_4~_s_ct_p: 882 mismatches
+va_dk_enr_~_s_ct: 887 mismatches
+va_dk_en~_s_ct_p: 882 mismatches
+va_e~ls_sp_ls_ct: 911 mismatches
+va_enr_4year_l..: 911 mismatches
+va_d~ls_sp_ls_ct: 910 mismatches
+va~ls_sp_ls_ct_p: 910 mismatches
+va_enr_4ye~ls_ct: 887 mismatches
+va_enr_4~ls_ct_p: 882 mismatches
+va_dk_enr_~ls_ct: 887 mismatches
+va_dk_en~ls_ct_p: 882 mismatches
+va_enr_4year_a..: 889 mismatches
+va_enr_4year_a..: 887 mismatches
+va_~_as_sp_as_ct: 888 mismatches
+v~_as_sp_as_ct_p: 886 mismatches
+va_enr_4y~_as_ct: 887 mismatches
+va_enr_~_as_ct_p: 882 mismatches
+va_dk_enr~_as_ct: 887 mismatches
+va_dk_e~_as_ct_p: 882 mismatches
+va_enr_4yea~s_ct: 887 mismatches
+va_enr_4y~s_ct_p: 882 mismatches
+va_dk_enr_4~s_ct: 887 mismatches
+va_dk_enr~s_ct_p: 882 mismatches
+va_enr_4year_b~t: 914 mismatches
+va_enr_4year_b~p: 914 mismatches
+va_dk~b_sp_bd_ct: 914 mismatches
+va_~b_sp_bd_ct_p: 914 mismatches
+va_en~l_sp_bd_ct: 914 mismatches
+va_enr_4year_l..: 914 mismatches
+va_dk~l_sp_bd_ct: 914 mismatches
+va_~l_sp_bd_ct_p: 914 mismatches
+va_e~_a_sp_bd_ct: 901 mismatches
+va_enr_4year_a..: 901 mismatches
+va_d~_a_sp_bd_ct: 899 mismatches
+va~_a_sp_bd_ct_p: 899 mismatches
+va_e~_s_sp_bd_ct: 911 mismatches
+va_enr_4year_s..: 911 mismatches
+va_d~_s_sp_bd_ct: 910 mismatches
+va~_s_sp_bd_ct_p: 910 mismatches
+va_en~a_sp_bd_ct: 901 mismatches
+va_enr_4year_l..: 901 mismatches
+va_dk~a_sp_bd_ct: 899 mismatches
+va_~a_sp_bd_ct_p: 899 mismatches
+va_e~ls_sp_bd_ct: 910 mismatches
+va_enr_4year_l..: 910 mismatches
+va_d~ls_sp_bd_ct: 909 mismatches
+va~ls_sp_bd_ct_p: 909 mismatches
+va_enr_4year_a..: 888 mismatches
+va_enr_4year_a..: 888 mismatches
+va_~_as_sp_bd_ct: 887 mismatches
+v~_as_sp_bd_ct_p: 887 mismatches
+va_enr_4ye~bd_ct: 886 mismatches
+va_enr_4~bd_ct_p: 886 mismatches
+va_dk_enr_~bd_ct: 886 mismatches
+va_dk_en~bd_ct_p: 886 mismatches
+va_en~l_sp_ld_ct: 914 mismatches
+va_enr_4year_l_~: 914 mismatches
+va_dk~l_sp_ld_ct: 914 mismatches
+va_~l_sp_ld_ct_p: 914 mismatches
+va_en~a_sp_ld_ct: 901 mismatches
+va_enr_4year_l..: 901 mismatches
+va_dk~a_sp_ld_ct: 899 mismatches
+va_~a_sp_ld_ct_p: 899 mismatches
+va_e~ls_sp_ld_ct: 910 mismatches
+va_enr_4year_l..: 910 mismatches
+va_d~ls_sp_ld_ct: 909 mismatches
+va~ls_sp_ld_ct_p: 909 mismatches
+va_enr_4ye~ld_ct: 886 mismatches
+va_enr_4~ld_ct_p: 886 mismatches
+va_dk_enr_~ld_ct: 886 mismatches
+va_dk_en~ld_ct_p: 886 mismatches
+va_e~_a_sp_ad_ct: 901 mismatches
+va_enr_4year_a_~: 898 mismatches
+va_d~_a_sp_ad_ct: 899 mismatches
+va~_a_sp_ad_ct_p: 896 mismatches
+va_en~a_sp_ad_ct: 901 mismatches
+va_enr_4year_l..: 895 mismatches
+va_dk~a_sp_ad_ct: 899 mismatches
+va_~a_sp_ad_ct_p: 893 mismatches
+va_enr_4year_a..: 888 mismatches
+va_enr_4year_a..: 888 mismatches
+va_~_as_sp_ad_ct: 887 mismatches
+v~_as_sp_ad_ct_p: 887 mismatches
+va_enr_4y~_ad_ct: 886 mismatches
+va_enr_~_ad_ct_p: 884 mismatches
+va_dk_enr~_ad_ct: 886 mismatches
+va_dk_e~_ad_ct_p: 884 mismatches
+va_enr_4year_s~t: 911 mismatches
+va_enr_4year_s~p: 911 mismatches
+va_d~_s_sp_sd_ct: 910 mismatches
+va~_s_sp_sd_ct_p: 910 mismatches
+va_e~ls_sp_sd_ct: 910 mismatches
+va_enr_4year_l..: 910 mismatches
+va_d~ls_sp_sd_ct: 909 mismatches
+va~ls_sp_sd_ct_p: 909 mismatches
+va_enr_4year_a..: 888 mismatches
+va_enr_4year_a..: 886 mismatches
+va_~_as_sp_sd_ct: 887 mismatches
+v~_as_sp_sd_ct_p: 885 mismatches
+va_enr_4y~_sd_ct: 886 mismatches
+va_enr_~_sd_ct_p: 881 mismatches
+va_dk_enr~_sd_ct: 886 mismatches
+va_dk_e~_sd_ct_p: 881 mismatches
+va_e~a_sp_lad_ct: 902 mismatches
+va_enr_4year_l..: 896 mismatches
+va_d~a_sp_lad_ct: 900 mismatches
+va~a_sp_lad_ct_p: 894 mismatches
+va_enr_4ye~ad_ct: 887 mismatches
+va_enr_4~ad_ct_p: 885 mismatches
+va_dk_enr_~ad_ct: 887 mismatches
+va_dk_en~ad_ct_p: 885 mismatches
+va_enr_4year_l..: 910 mismatches
+va_enr_4year_ls~: 910 mismatches
+va_~ls_sp_lsd_ct: 909 mismatches
+v~ls_sp_lsd_ct_p: 909 mismatches
+va_enr_4y~lsd_ct: 886 mismatches
+va_enr_~lsd_ct_p: 881 mismatches
+va_dk_enr~lsd_ct: 886 mismatches
+va_dk_e~lsd_ct_p: 881 mismatches
+va_enr_4year_a~t: 888 mismatches
+va_enr_4year_a~p: 886 mismatches
+va~_as_sp_asd_ct: 887 mismatches
+~_as_sp_asd_ct_p: 885 mismatches
+va_enr_4~_asd_ct: 886 mismatches
+va_enr~_asd_ct_p: 881 mismatches
+va_dk_en~_asd_ct: 886 mismatches
+va_dk_~_asd_ct_p: 881 mismatches
+va_enr_4year_l~t: 886 mismatches
+va_enr_4year_l~p: 881 mismatches
+va_dk_enr_4yea~t: 886 mismatches
+va_dk_enr_4yea~p: 881 mismatches
+    cf rc=9 (0 = all common-var values identical)
+
+--- [sec1617 (rc=900 — retry under maxvar 32767)]
+    pred: /home/research/ca_ed_lab/data/restricted_access/clean/calschls/second
+> ary/sec1617.dta
+    cons: /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cl
+> eaned/calschls/secondary/sec1617.dta
+    obs:  pred=478523  cons=478523  delta=0
+    vars: pred=1065  cons=1065
+    vars only in PREDECESSOR (0): 
+    vars only in CONSOLIDATED (0): 
+    obs counts match -> cf on 1065 common vars:
+    cf rc=0 (0 = all common-var values identical)
+
+. 
+. di as text _n "m4_spotcheck_triage.do — RUN END: `c(current_date)' `c(current
+> _time)'"
+
+m4_spotcheck_triage.do — RUN END: 11 Jun 2026 09:23:47
+
+. 
+. cap log close m4_spotcheck
