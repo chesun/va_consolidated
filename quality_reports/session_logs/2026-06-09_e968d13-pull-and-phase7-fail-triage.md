@@ -59,3 +59,13 @@ The 3 fixes are code-reviewed + locally mechanic-tested but **not re-run on Scri
 - Flipped `tier_filter` → `"full"` and pushed (`e999102`) so the next Scribe `git pull` + run is the full 8,324-pair comparison.
 - **NEXT (fresh session):** on Scribe `git pull` → `nohup stata -b do do/check/m4_golden_master.do &` → triage `output/m4_diff_summary.txt`. Revert `tier_filter` → `"smoke"` after the acceptance run.
 - Commits this segment: `9d8bb78` (state docs + cleanup), `e999102` (tier→full).
+
+## Addendum 3 — FULL golden-master run triaged (2026-06-10)
+
+- Christina ran the full 8,324-pair golden master on Scribe (80.1 min, clean RUN END, rc-report fix confirmed) and pushed `7fe9c1a`; pulled and triaged locally.
+- **Tally:** 3,969 PASS / 46 FAIL / 560 READ_ERROR / 3,727 MISSING_PRED (3,717 of those "neither side exists" → benign matrix over-enumeration) / 22 MISSING_CONS.
+- **All paper-facing tex/pdf/csv/xlsx PASS** (byte-identical or within tolerance); 3,166 ster at 0 coef/SE diffs including all main specs.
+- **46 FAILs** = small coef diffs (max|db| 0.010–0.047, SEs within tol), 100% confined to `_la_`/`_las_`/`sib1` sample variants in `spec_test`+`reg_out_va` → hypothesis: intended ADR-0026/0028 deviations; confirm e(N) on Scribe.
+- **560 READ_ERRORs** = `cf` rc=9 structural mismatches (incl. va_samples `score_*`/`out_*`, va_est_dta, analysisready) + 3 rc=900 (too wide for cf; raise maxvar). Downstream PASSes suggest variable-set diffs, not data regressions; classify on Scribe with `describe`/`count`.
+- **22 MISSING_CONS** = cde clean years 2013/14/19/20 + sch_char_2019 → looks like intended year descope; needs ADR/plan citation.
+- Full triage: `quality_reports/reviews/2026-06-10_m4-full-golden-master_triage.md`. Not yet ADR-0018-certifiable pending the 3 on-server confirmations + clean Phase 5–7 re-run + tier_filter revert.
