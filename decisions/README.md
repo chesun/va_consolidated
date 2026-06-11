@@ -117,6 +117,7 @@ What this commits us to. What it rules out. Open questions it creates.
 | [0026](0026_sibling-xwalk-files-consolidated.md) | sibling-crosswalk producers consolidated under `do/sibling_xwalk/` (3 files moved from `do/share/siblingxwalk/`, log paths repointed to mirror); extends ADR-0005 | 2026-06-01 | Decided | Infrastructure |
 | [0027](0027_clamp-imputed-survey-items-and-repoint-check.md) | clamp OLS-imputed survey QOI items to Likert [-2,2] (imputation.do) + re-point check_survey_indices SUB-CHECK 1 from LEGACY predecessor files to CANONICAL pipeline outputs; resolves e968d13 Phase-7 survey FAIL | 2026-06-09 | Decided | Methodology |
 | [0028](0028_accept-thin-variant-va-cells-soft-check.md) | accept thin per-spec VA cells in restricted-variant samples (subsamples drop students post-merge; CFR shrinks them; weight-only) + downgrade check_va_estimates per-spec count assert from hard-halt to soft; resolves e968d13 Phase-7 VA FAIL | 2026-06-09 | Decided | Specification |
+| [0029](0029_cde-cleaning-year-coverage-2015-2018.md) | CDE cleaning year coverage = spring 2015–2018 (macro-driven via macros_va.doh test_score_min/max_year); predecessor's 2013/2014/2019/2020 cleaned files + sch_char_2019 intentionally not rebuilt; classifies the 22 M4 MISSING_CONSOLIDATED rows as intended deviation; records the plan-draft's deferred cohort-coverage earmark | 2026-06-11 | Decided | Data |
 
 ---
 
