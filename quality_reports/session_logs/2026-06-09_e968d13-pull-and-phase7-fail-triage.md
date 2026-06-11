@@ -69,3 +69,11 @@ The 3 fixes are code-reviewed + locally mechanic-tested but **not re-run on Scri
 - **560 READ_ERRORs** = `cf` rc=9 structural mismatches (incl. va_samples `score_*`/`out_*`, va_est_dta, analysisready) + 3 rc=900 (too wide for cf; raise maxvar). Downstream PASSes suggest variable-set diffs, not data regressions; classify on Scribe with `describe`/`count`.
 - **22 MISSING_CONS** = cde clean years 2013/14/19/20 + sch_char_2019 → looks like intended year descope; needs ADR/plan citation.
 - Full triage: `quality_reports/reviews/2026-06-10_m4-full-golden-master_triage.md`. Not yet ADR-0018-certifiable pending the 3 on-server confirmations + clean Phase 5–7 re-run + tier_filter revert.
+
+## Addendum 4 — spot-check results (2026-06-11)
+
+- Script `do/debug/m4_spotcheck_triage.do` (coder-critic PASS 97/100, commit 8322680) ran clean on Scribe (log commit aa43824, 69s).
+- Sec 1: FAIL .ster N deltas confirmed sample-driven — sib1 +41 (clust 1020→1015), las −564 (1228→1219), la −1,084 (1263→1252).
+- Sec 2: ALL six rc=9/rc=900 pairs have identical N + identical varlists → value diffs, not structural. sec1617 cf rc=0 (maxvar artifact → PASS). score_b: only 5 vars differ, all mindist_* (50,766 rows) → k12_postsec_distance input differs; NO ADR covers it — OPEN. va_all/analysisready: differing vars are restricted-variant va_* estimates (downstream of sample shifts).
+- ADR-0029 written (cde year coverage 2015–2018; 22 MISSING_CONS = intended). Commits: eeea9b2, 8322680, a60837c.
+- NEXT: trace mindist_* divergence (do/data_prep/k12_postsec_distance vs predecessor; rule out sort-order); then classify FAIL/READ_ERROR population and decide ADR-0018 acceptance. Pending: clean Phase 5–7 re-run; revert tier_filter→smoke.

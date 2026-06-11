@@ -107,4 +107,18 @@ For the 3 rc=900 files (`parentanalysisready`, `secanalysisready`, `sec1617`): `
 
 ### 3. cde year descope (local, no server)
 
+## Spot-check RESULTS (2026-06-11, log commit `aa43824`)
+
+**Section 1 — FAIL .ster e(N):** all three clusters show sample-composition shifts, confirming the coef diffs are sample-driven, not estimator-driven: sib1 N +41 (clusters 1020→1015), las N −564 (1228→1219), la N −1,084 (1263→1252).
+
+**Section 2 — READ_ERROR .dta:** all six pairs have **identical obs counts and identical variable sets** — the rc=9s were VALUE diffs, not structural. Per-pair cf on common vars:
+
+| Pair | Verdict |
+|---|---|
+| `sec1617` | **cf rc=0 — fully identical.** rc=900 was a pure maxvar artifact → reclassify PASS. |
+| `score_b` | Only **5 vars differ, all `mindist_*`** (uc/csu/pub4yr/ccc/any), 50,766 mismatches each (2.8% of 1.78M rows); other 72 vars identical. → the k12_postsec_distance input differs between predecessor and consolidated (matches the rc=9 on `k12_postsec_{distance,mindistance}.dta`). **No ADR documents a distance-data change — OPEN QUESTION.** Note: `d` in sample codes (`lad`, `lasd`) is plausibly the distance restriction, so mindist diffs may be the upstream root cause of part of the Section-1 N deltas. |
+| `va_all` (580/950 vars), `staff`/`parent`/`sec analysisready` (~577 each) | Differing vars are restricted-variant VA estimates (`va_*_s/ls/as_*`) — downstream propagation of the same sample shifts. |
+
+**Updated next step:** trace why `mindist_*` differs — compare `data/cleaned/k12_postsec_distance/clean/k12_postsec_mindistance.dta` build (do/data_prep/k12_postsec_distance/) vs predecessor; check whether the geocoded input was vendored/rebuilt differently (ADR-0003 only preserves the Python scripts). Also rule out sort-order artifacts in the 50,766-row mismatch (cf is row-order-sensitive). Once mindist is explained, the entire FAIL + READ_ERROR population is classified.
+
 Grep `do/data_prep/` for the cde cleaning year-loop bounds; confirm 2013/2014/2019/2020 are deliberately excluded (analysis years 1415–1819 all PASS). Cite the existing plan/ADR if one records it; otherwise write a short ADR documenting the descope.
