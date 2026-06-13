@@ -224,6 +224,21 @@ BEHAVIOR / CONFIG TOGGLES (not paths)
 * disables).  [2026-05-28]
 global run_prior_score 1
 
+* K12-postsec distance input source (ADR-0030).  The distance producer
+* (do/data_prep/k12_postsec_distance/k12_postsec_distances.do) historically
+* fetched the CDE school directory from a LIVE URL at run time, falling back to
+* the cached $distance_dtadir/raw/pubschls.txt only on HTTP error.  Because the
+* CDE directory is continuously updated, that made distance-derived outputs
+* (mindist_*, and every distance-restricted/-controlled VA sample downstream)
+* NON-REPRODUCIBLE: each run silently consumed whatever the directory was that
+* day.  The M4 golden-master mismatch on mindist_* (50,766 rows in score_b)
+* traced to exactly this drift.  Default 0 = read the pinned cached file, so a
+* fresh run reproduces.  Set to 1 ONLY to deliberately rebuild distances from
+* the current live directory (a new-data operation, not a replication run).
+* Gate condition used verbatim: `if "$refresh_cde_directory" == "1"`
+* (unset == pinned; only explicit 1 enables the live fetch).  [2026-06-12]
+global refresh_cde_directory 0
+
 * Confirm $consolidated_dir resolves before main.do tries to use it.
 capture confirm file "$consolidated_dir"
 if _rc {

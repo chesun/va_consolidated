@@ -15,8 +15,8 @@ INVOKED FROM
 INPUTS (verified via grep on file body)
     $consolidated_dir/do/data_prep/k12_postsec_distance/hd2021.do  (sub-script via `run')
     $datadir_clean/k12_postsec_distance/clean/k12_postsec_distance  (CHAIN read; from k12_postsec_distance.dta save earlier in this same script)
-    $distance_dtadir/raw/pubschls.txt  (LEGACY raw — fallback if URL fetch fails)
-    https://www.cde.ca.gov/schooldirectory/report  (LEGACY external URL — primary K12 directory source)
+    $distance_dtadir/raw/pubschls.txt  (LEGACY raw — PINNED default K12 directory source per ADR-0030; also the fallback when $refresh_cde_directory==1 and the URL fetch fails)
+    https://www.cde.ca.gov/schooldirectory/report  (LEGACY external URL — live K12 directory; used ONLY when $refresh_cde_directory==1, default off per ADR-0030)
 
 OUTPUTS (CANONICAL per ADR-0021 sandbox; verified via grep on file body)
     $datadir_clean/k12_postsec_distance/clean/k12_postsec_distance
@@ -131,13 +131,25 @@ local hn=_N
 
 
 
-/* (1b) K12: raw data downloaded 3/20/23 and stored as pubschls.txt. Code below pulls directly from url
-*/
+/* (1b) K12: raw data downloaded 3/20/23 and stored as pubschls.txt.
+   ADR-0030 reproducibility pin: the CDE directory is a LIVE, continuously-updated
+   feed, so the original "fetch URL, fall back to disk" logic made distance
+   outputs non-reproducible (each run consumed that day's directory).  Default
+   ($refresh_cde_directory==0) now reads the pinned cached file so a fresh run
+   reproduces.  Set $refresh_cde_directory==1 (in do/settings.do) ONLY to
+   deliberately rebuild from the current live directory.
+   Original predecessor logic preserved in the refresh branch below. */
 
-// may encounter CDE server error for this webpage, in which case use data on disk
-capture import delimited "https://www.cde.ca.gov/schooldirectory/report?rid=dl1&tp=txt", clear
-
-if _rc!=0 {
+if "$refresh_cde_directory" == "1" {
+	// LIVE fetch (predecessor-original); may hit a CDE server error, in which
+	// case fall back to the cached file on disk.
+	capture import delimited "https://www.cde.ca.gov/schooldirectory/report?rid=dl1&tp=txt", clear
+	if _rc!=0 {
+		import delimited $distance_dtadir/raw/pubschls.txt, clear
+	}
+}
+else {
+	// PINNED (default): always read the cached directory snapshot.
 	import delimited $distance_dtadir/raw/pubschls.txt, clear
 }
 

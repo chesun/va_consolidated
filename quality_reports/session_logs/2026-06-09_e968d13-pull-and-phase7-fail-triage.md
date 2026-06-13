@@ -84,3 +84,13 @@ The 3 fixes are code-reviewed + locally mechanic-tested but **not re-run on Scri
 - e968d13 run log (`log/data_prep/k12_postsec_distance/k12_postsec_distances.log:276-282`) proves the URL fetch SUCCEEDED (fallback import echoed but produced no obs output) → consolidated distance file = June-2026 CDE directory; predecessor = older snapshot. geodist/collapse deterministic → all diffs are input-vintage drift.
 - Classification: NOT a code regression. Explains mindist_* (50,766 rows in score_b), distance-restricted sample N shifts, restricted-variant va_* value diffs, and (with ADR-0026 possibly contributing to sib1) the 46 ster FAILs.
 - DECISION PENDING (Christina): Option A pin input to cached pubschls.txt (reproducible, needs ADR + code change) vs Option B accept drift (document via ADR, code stays identical). See triage review §ROOT CAUSE.
+
+## Addendum 6 — Option A implemented: pinned CDE directory input (2026-06-12)
+
+- ADR-0030 written + indexed. Implemented the reproducibility pin:
+  - `do/settings.do`: new toggle `global refresh_cde_directory 0` (BEHAVIOR/CONFIG TOGGLES block, mirrors run_prior_score). Default 0 = pinned/reproducible.
+  - `do/data_prep/k12_postsec_distance/k12_postsec_distances.do`: K12 directory load gated `if "$refresh_cde_directory"=="1"` (live URL + disk fallback, predecessor-original) `else` reads cached pubschls.txt directly (default). Header INPUTS updated.
+- coder-critic PASS 96/100 (no Critical/Major; Minor = ledger row, added). Review: 2026-06-12_cde-directory-pin_coder_review.md. Ledger rows added (settings.do refresh-cde-toggle-default-off; producer cde-directory-pin).
+- CONSEQUENCE (per ADR-0030): currently-committed canonical distance outputs were built from June-2026 live directory; after the pin they no longer match the code. Must REGENERATE on the next clean Phase 5-7 re-run → code+input+output internally consistent. Until then, knowingly inconsistent for the distance family. Subsequent golden master still won't byte-match predecessor on distance (predecessor vintage unrecoverable) — pin fixes FORWARD reproducibility.
+- FOLLOW-UP (replication deposit, not blocking): vendor pubschls.txt into the package (cf ADR-0023).
+- NEXT: clean Phase 5-7 re-run on Scribe (propagates clamp ADR-0027 + this pin; regenerates distance outputs; completes all 6 Phase-7 checks); revert tier_filter→smoke (m4_golden_master.do:394) after acceptance.
