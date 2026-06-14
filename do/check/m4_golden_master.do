@@ -17,7 +17,7 @@ INVOKED FROM
     NOT wired into do/main.do — one-shot golden-master check, not pipeline.
     Christina runs manually on Scribe:
         cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
-        stata -b do do/check/m4_golden_master.do
+        stata-mp -b do do/check/m4_golden_master.do
 
 INPUTS
     do/check/m4_path_matrix.csv — 8,324-row manifest of (predecessor,

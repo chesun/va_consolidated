@@ -11,7 +11,7 @@
                               counts match, cf on the common varlist to test
                               whether shared values are identical.
     Invoked:    standalone on Scribe from repo root —
-                  stata -b do do/debug/m4_spotcheck_triage.do
+                  stata-mp -b do do/debug/m4_spotcheck_triage.do
                 NOT called by do/main.do.
     Paths:      predecessor/consolidated pairs copied verbatim from
                 do/check/m4_path_matrix.csv (grep the filename to audit).

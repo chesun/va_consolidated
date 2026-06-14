@@ -92,9 +92,9 @@ va_consolidated/
 ## Commands
 
 ```bash
-# Pipeline run (on Scribe via SSH)
+# Pipeline run (on Scribe via SSH) — stata-mp is the canonical server command; never `stata -b`
 cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
-stata -b do do/main.do
+stata-mp -b do do/main.do
 
 # Paper compilation (canonical paper lives in ~/github_repos/va_paper_clone)
 cd ~/github_repos/va_paper_clone/paper

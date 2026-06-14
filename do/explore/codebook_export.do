@@ -18,8 +18,8 @@ INSTRUCTIONS
     2. Edit §0 globals — at minimum the CalSCHLS path(s).  Verify the rest.
        Blank a global to skip its dataset.
     3. Run from the project root:
-            cd /home/research/ca_ed_lab/projects/common_core_va
-            stata -b do do_files/explore/codebook_export.do
+            cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
+            stata-mp -b do do/explore/codebook_export.do
     4. Ship `log_files/codebooks/codebook_export_<stamp>.log` to Claude.
 
 NOTE

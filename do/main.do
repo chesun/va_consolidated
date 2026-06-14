@@ -4,7 +4,7 @@ do/main.do — single pipeline entry point for the consolidated VA project
 
 PURPOSE
     Replaces `cde_va_project_fork/do_files/do_all.do` and `caschls/do/master.do`.
-    One command (`stata -b do do/main.do` from `$consolidated_dir` on Scribe)
+    One command (`stata-mp -b do do/main.do` from `$consolidated_dir` on Scribe)
     runs the entire pipeline end-to-end.
 
 STATUS
@@ -15,7 +15,7 @@ STATUS
 
 INVOCATION
     cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
-    stata -b do do/main.do
+    stata-mp -b do do/main.do
 
 SANDBOX PRINCIPLE (per ADR-0021)
     The consolidated/ folder is a self-contained output sandbox.  Every WRITE

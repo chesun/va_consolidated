@@ -5,6 +5,9 @@
 ## Version
 - Server may use Stata 18 with older package versions — flag compatibility concerns
 
+## Invocation (server — Scribe)
+- **`stata-mp` is the canonical server command. Always `stata-mp`; NEVER `stata -b`.** Batch runs: `stata-mp -b do do/main.do` from `$consolidated_dir`. This is the only supported runtime for the pipeline (per ADR-0002). Any doc, comment, or instruction that gives a Scribe run command must use `stata-mp -b ...`, not `stata -b ...`. [Christina, 2026-06-13]
+
 ## Invocation (local machine)
 - **Always invoke as `stata17` from the command line** — `stata17 -b do file.do` for batch runs.
 - **Never call binaries inside `/Applications/Stata/StataMP.app/...` directly.** That path is the older Stata MP 14 install on this machine; both versions ship a binary literally named `StataMP` / `stata-mp` inside their respective `.app` bundles, so a direct path call to `/Applications/Stata/...` silently picks Stata 14.

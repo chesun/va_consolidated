@@ -58,7 +58,7 @@ This is the most important section. If you only read one section, read this one.
     ```
     ssh <your_username>@Scribe.ssds.ucdavis.edu
     cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
-    stata -b
+    stata-mp
     ```
 
    In Stata: `ssc install <package>` for each entry in `.claude/rules/stata-code-conventions.md` Required Packages. As of `v1.0-final` the list is: `reghdfe, estout, coefplot, ivreghdfe, palettes, cleanplots, egenmore, regsave, cdfplot, binscatter, binscatter2, filelist`. Plus the vendored `vam.ado` under `ado/` (per ADR-0006; do NOT replace with the upstream version — see §7).
@@ -69,7 +69,7 @@ From a Scribe SSH session:
 
 ```
 cd /home/research/ca_ed_lab/projects/common_core_va/consolidated
-stata -b do do/main.do
+stata-mp -b do do/main.do
 ```
 
 That's it. `main.do` orchestrates the whole pipeline through 7 phases (data prep → samples → VA estimation → VA tables → survey-VA → paper outputs → automated data checks). Each phase has a toggle near the top of `do/main.do`; defaults are all ON. A successful run produces:
@@ -114,7 +114,7 @@ consolidated/
 ├── TODO.md              # what's open / done / pending
 ├── SESSION_REPORT.md    # consolidated operations log across all working sessions
 │
-├── do/                  # ALL Stata code lives here. Run `stata -b do do/main.do` from `consolidated/`.
+├── do/                  # ALL Stata code lives here. Run `stata-mp -b do do/main.do` from `consolidated/`.
 │   ├── main.do          # the single entry point — phase toggles + orchestration
 │   ├── settings.do      # path globals (Scribe-branched); included by main.do
 │   ├── data_prep/       # raw → cleaned data transformations
@@ -186,7 +186,7 @@ Globals are defined in `do/settings.do` and labeled there. The payoff: a future 
 ### 6.1 Re-running after a data refresh (e.g., a new cohort year)
 
 1. Update `data/raw/` on Scribe with the new raw files (paths follow predecessor conventions; see `do/data_prep/` headers for which file each script reads).
-2. Re-run the full pipeline: `stata -b do do/main.do` from `consolidated/` with all toggles ON.
+2. Re-run the full pipeline: `stata-mp -b do do/main.do` from `consolidated/` with all toggles ON.
 3. Verify Phase 7 (`run_data_checks`) passes. Per-cohort N counts in `do/check/check_samples.do` will need updating to reflect the new cohort (the assertions are hardcoded against the 2015-2018 cohorts; see the design memo `quality_reports/reviews/2026-04-28_data-checks-design.md` §2 for the bound rationale).
 4. Compare new outputs against the prior run's outputs.
 
