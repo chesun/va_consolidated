@@ -2,6 +2,27 @@
 
 Append-only agent-level history. One entry per agent invocation. See `.claude/rules/logging.md` §3.
 
+### 2026-06-12 — coder-critic
+**Phase:** Execution (Phase 1b §4.2 — reproducibility pin)
+**Target:** `do/data_prep/k12_postsec_distance/k12_postsec_distances.do` + `do/settings.do` (ADR-0030 distance-input pin)
+**Score:** 96/100 PASS
+**Verdict:** Pinned `else` branch byte-identical to original `_rc!=0` fallback; live-URL fetch preserved in `==1` branch; gate string + default-off semantics correct; surrounding tempfile/local state untouched. No Critical/Major. Minor (−4): missing ledger row — added in same commit.
+**Report:** `quality_reports/reviews/2026-06-12_cde-directory-pin_coder_review.md`; commit `8660451`
+
+### 2026-06-11 — coder-critic
+**Phase:** Execution (Phase 1c — M4 triage tooling)
+**Target:** `do/debug/m4_spotcheck_triage.do` (new read-only spot-check script)
+**Score:** 97/100 PASS
+**Verdict:** All 9 predecessor/consolidated path literals verified verbatim against `m4_path_matrix.csv`; rc-clobber-clean; cf gated on equal N; logging/comment conventions OK. Minor (−3): unchecked cf re-load could self-compare → fixed pre-commit with a guard.
+**Report:** `quality_reports/reviews/2026-06-11_m4-spotcheck-triage_coder_review.md`; commit `8322680`
+
+### 2026-06-10 → 06-13 — triage (session, Claude)
+**Phase:** Execution (full golden-master triage)
+**Target:** `output/m4_diff_summary.txt` (8,324 pairs) + spot-check log
+**Score:** N/A (triage)
+**Verdict:** Whole non-PASS population classified — 46 FAILs sample-driven (+ADR-0026), 560 READ_ERROR value-diffs (mindist root-caused to live-URL fetch → ADR-0030 pin), 22 MISSING_CONS intended (ADR-0029), sec1617 reclassified PASS. No regressions.
+**Report:** `quality_reports/reviews/2026-06-10_m4-full-golden-master_triage.md`
+
 ### 2026-06-09 (PM) — coder-critic
 **Phase:** Execution (golden-master harness fix)
 **Target:** `do/check/m4_golden_master.do` rc-reporting fix (`` `_rc' `` local-macro → blank rc; 4 branches)

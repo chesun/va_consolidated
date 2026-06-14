@@ -2439,3 +2439,27 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 - When done: triage `output/m4_diff_summary.txt` — sort FAIL/READ_ERROR/MISSING into intended ADR deviations (ADR-0011 sums→means, ADR-0027 clamp) vs regressions; start with whether `va_all.dta` structural mismatch repeats across v1/v2 super-master files.
 - PENDING: clean Phase 5–7 re-run to propagate the ADR-0027 clamp + complete all 6 Phase-7 checks.
 - After the acceptance run: revert `do/check/m4_golden_master.do:394` `tier_filter` → `"smoke"`.
+
+## 2026-06-10 → 06-13 — full golden-master triage, spot-checks, mindist root cause + Option A pin
+
+**Operations:**
+- Pulled the full 8,324-pair golden-master run (`7fe9c1a`, 80.1 min): 3,969 PASS / 46 FAIL / 560 READ_ERROR / 3,727 MISSING_PRED (3,717 "neither side exists") / 22 MISSING_CONS. All paper-facing tex/pdf/csv PASS; 3,166 ster at 0 diffs incl. main specs.
+- Wrote + ran `do/debug/m4_spotcheck_triage.do` (coder-critic 97/100) on Scribe — e(N) on FAIL ster pairs + count/varlist/cf on rc=9/900 dta pairs.
+- Spot-check results: 46 FAILs are sample-driven (N deltas sib1 +41 / las −564 / la −1,084); all 6 READ_ERROR pairs have identical N + varlist (value diffs only); `sec1617` cf rc=0 (maxvar artifact → PASS); `score_b` differs only on 5 `mindist_*` vars (50,766 rows).
+- Root-caused `mindist_*`: `k12_postsec_distances.do:138` fetches the LIVE CDE directory URL at run time; e968d13 log confirms the fetch SUCCEEDED → input-vintage drift, not a regression.
+- Implemented Option A (pin): toggle `refresh_cde_directory` (default 0) in `settings.do`; gated the K12 load in `k12_postsec_distances.do` (pinned cached `pubschls.txt` default; predecessor live-fetch = `==1` branch). coder-critic 96/100.
+
+**Decisions:**
+- ADR-0029 — CDE cleaning year coverage spring 2015–2018; 22 MISSING_CONS = intended (macro-driven, no consumer).
+- ADR-0030 — pin distance input for reproducibility; canonical distance outputs must regenerate on next clean run.
+
+**Results:**
+- Whole M4 non-PASS population classified: sample-driven FAILs (+ ADR-0026 sibling), distance-drift now pinned, 22 MISSING_CONS covered, sec1617 reclassified PASS. No regressions found.
+
+**Commits:** `eeea9b2` (triage doc) · `8322680` (spotcheck script + review) · `a60837c` (ADR-0029) · `255c9f8` (spotcheck results) · `84266cb` (root cause) · `8660451` (ADR-0030 pin) · `ac749c5` (tier→smoke revert, **held local — push after both server runs**).
+
+**Status / NEXT:**
+- Server full run STARTED 2026-06-13 (`main.do`, m4_acceptance_run=1 — regenerates distance + clamp + Phase-7 checks), then `m4_golden_master.do` (tier=full).
+- Do NOT re-pull on Scribe between the two runs (would grab the held smoke revert). After BOTH: push `ac749c5`.
+- When results return: triage main.do Phase-7 checks + new golden master (distance family now reproducible but still won't byte-match predecessor — ADR-0030 records this).
+- FOLLOW-UP (not blocking): vendor `pubschls.txt` into the replication package (cf ADR-0023).
