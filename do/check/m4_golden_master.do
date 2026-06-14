@@ -391,7 +391,7 @@ TIER SELECTOR — CHANGE ME
     Smoke first (~5 min) to validate dispatch logic; then paper; then full.
 ==============================================================================*/
 
-local tier_filter = "full"     // CHANGE ME : "smoke" | "paper" | "full"
+local tier_filter = "smoke"     // CHANGE ME : "smoke" | "paper" | "full"
 
 
 /*==============================================================================
