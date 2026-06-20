@@ -22,6 +22,13 @@ The whole pipeline runs from a single Stata file: `do/main.do`. If you remember 
 
 Before this repository existed, the analysis was spread across several separate projects on the server, built up over years of active research. I (Christina) wrote most of it during my time as the graduate student researcher on the project: the value-added estimation and the CalSCHLS survey cleaning. The school-to-college distance code is originally yours, Paco. A set of outcome crosswalks, a post-secondary merge helper, and a geocoding script were written by Matt Naven; those are kept exactly as he wrote them (see decision record 0017). The pieces lived in different predecessor folders, and each had grown organically.
 
+For reference, the two predecessor projects each live in a GitHub repository and a matching folder on Scribe:
+
+- **`cde_va_project_fork`** (value-added estimation) — GitHub <https://github.com/chesun/cde_va_project_fork>; on Scribe at `/home/research/ca_ed_lab/projects/common_core_va`.
+- **`caschls`** (CalSCHLS survey cleaning and sibling links) — GitHub <https://github.com/chesun/caschls>; on Scribe at `/home/research/ca_ed_lab/users/chesun/gsr/caschls`.
+
+You do not need either of these to run the consolidated pipeline — everything was brought into this repository. They are listed only so the original sources stay on record.
+
 To run the full analysis end-to-end, you had to know which scripts to run, inside which project folder, in what order, and how each script's output fed the next. That knowledge lived mostly in my head, supported by a couple of "run everything" master scripts that pointed at absolute paths reaching into all of those scattered locations. It worked while I was here and remembered every step. It would not have survived a handoff, which is exactly why this repository exists.
 
 ### The dependency problem

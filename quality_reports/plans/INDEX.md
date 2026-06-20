@@ -9,6 +9,7 @@ When creating a new plan, consult this index first. If an `Active` entry covers 
 - [2026-04-25_consolidation-plan-draft.md](2026-04-25_consolidation-plan-draft.md)
 - [2026-04-25_phase-0a-v2-verification-plan.md](2026-04-25_phase-0a-v2-verification-plan.md)
 - [2026-04-27_phase-1-consolidation-plan-v3.md](2026-04-27_phase-1-consolidation-plan-v3.md)
+- [2026-06-20_predecessor-repo-refs-and-handoff-link.md](2026-06-20_predecessor-repo-refs-and-handoff-link.md) — README/HANDOFF/MEMORY: predecessor repos → GitHub+Scribe; README→HANDOFF link. Status: COMPLETED
 
 ---
 

@@ -2,6 +2,8 @@
 
 # Common Core Value-Added (CEL UC Davis) — Consolidated Pipeline
 
+> **New here / taking over the project?** Start with **[HANDOFF.md](HANDOFF.md)** — the plain-English guide to running and reproducing the pipeline. This README is the fuller technical reference.
+
 > **Status note (2026-04-29):** This README is a Phase 1c §5.2 PRE-DRAFT — a runnable skeleton for the offboarding-era operator. The final polish pass and cold-read test happen as part of Phase 1c §5.4 (per ADR-0018). Sections marked *[VERIFY at offboarding]* depend on Phase 1a §3.3 relocation outputs that aren't yet on Scribe.
 
 ---
@@ -14,10 +16,10 @@ This repo holds the **consolidated Stata pipeline** for the *Common Core Value-A
 - **Survey-VA mechanism analysis** linking VA estimates to CalSCHLS school-climate, school-quality, and student-support indices (~5,600 schools).
 - **Paper-shipping tables and figures** consumed by the working draft (paper LaTeX is canonical at a separate repo — see §10).
 
-The repo is the consolidated successor to **two predecessor codebases**:
+The repo is the consolidated successor to **two predecessor codebases**. Each is a GitHub repository with a Scribe project folder where its pipeline used to run (full provenance in §10):
 
-- `cde_va_project_fork` — VA estimation (originally Matt Naven's; subsequently extended and refactored by Christina Sun).
-- `caschls` — CalSCHLS survey processing + sibling-link construction.
+- `cde_va_project_fork` — VA estimation (originally Matt Naven's; subsequently extended and refactored by Christina Sun). GitHub: <https://github.com/chesun/cde_va_project_fork>; Scribe: `/home/research/ca_ed_lab/projects/common_core_va`.
+- `caschls` — CalSCHLS survey processing + sibling-link construction. GitHub: <https://github.com/chesun/caschls>; Scribe: `/home/research/ca_ed_lab/users/chesun/gsr/caschls`.
 
 End-state: this repo is the offboarding deliverable to **Kramer** (CEL data-management custodian). A future successor inheriting this codebase clones the GitHub `v1.0-final` tag and runs the pipeline on Scribe. See §10 for the project history and §9 if something breaks.
 
@@ -278,12 +280,16 @@ There are no provider PDF codebooks for this project. The Stata-generated codebo
 
 ### Predecessor codebases
 
-This repo merges two previously-separate codebases (both on `~/github_repos/` on Christina's local machine; archived at `v1.0-archive` tag of each):
+This repo merges two previously-separate codebases. Each is a **GitHub repository** (the canonical copy) that also has a **Scribe project folder** where the predecessor pipeline ran. Christina keeps a working clone of each on her own machine, but those clones are not the source of truth — the GitHub repos are.
 
-- `~/github_repos/cde_va_project_fork` — VA estimation. Originally Matt Naven's; subsequently extended and refactored by Christina Sun (2022 onward). Master file was `do_files/do_all.do`; replaced by `do/main.do` here.
-- `<Christina's Dropbox>/Davis/Research_Projects/Ed Lab GSR/caschls` — CalSCHLS survey processing + sibling-link construction. Master file was `do/master.do`; integrated into Phase 5 (survey_va) + Phase 2 (sibling_xwalk) here. *(Lives outside `~/github_repos/` — Christina's local working copy is on Dropbox; on Scribe the predecessor is at `/home/research/ca_ed_lab/users/chesun/gsr/caschls` per `do/settings.do` `$caschls_projdir`.)*
+- **`cde_va_project_fork`** — VA estimation. Originally Matt Naven's; subsequently extended and refactored by Christina Sun (2022 onward). Master file was `do_files/do_all.do`; replaced by `do/main.do` here.
+    - GitHub: <https://github.com/chesun/cde_va_project_fork>
+    - Scribe: `/home/research/ca_ed_lab/projects/common_core_va` (read by the consolidated pipeline via `do/settings.do` `$vaprojdir`)
+- **`caschls`** — CalSCHLS survey processing + sibling-link construction. Master file was `do/master.do`; integrated into Phase 5 (survey_va) + Phase 2 (sibling_xwalk) here.
+    - GitHub: <https://github.com/chesun/caschls>
+    - Scribe: `/home/research/ca_ed_lab/users/chesun/gsr/caschls` (read via `do/settings.do` `$caschls_projdir`)
 
-A third historical predecessor — `ca_ed_lab-common_core_va` (workflow merge attempt 2022) — is **out of scope** per ADR-0001; it was abandoned before completion.
+A third historical predecessor — `ca_ed_lab-common_core_va` (Matt Naven's original, which `cde_va_project_fork` forks: <https://github.com/mnaven/ca_ed_lab-common_core_va>) — is **out of scope** per ADR-0001; the 2022 workflow-merge attempt built on it was abandoned before completion.
 
 ### Key architectural decisions
 
@@ -303,7 +309,7 @@ The full ledger of 21 ADRs is at `decisions/README.md`.
 
 This repo is at **<https://github.com/chesun/va_consolidated>**. The `v1.0-final` tag (when reached) is the offboarding-canonical version. Subsequent edits (if any) are post-deposit and not part of the deposit.
 
-The infrastructure (rules, agent definitions, hooks under `.claude/`) is based on `claude-code-my-workflow` (applied-micro overlay), forked 2026-04-24 and customized for this project.
+The infrastructure (rules, agent definitions, hooks under `.claude/`) is based on [`claude-code-my-workflow`](https://github.com/pedrohcgs/claude-code-my-workflow) (applied-micro overlay), forked 2026-04-24 and customized for this project.
 
 ### Paper
 
