@@ -3,7 +3,8 @@ do/check/check_survey_indices.do — assert CalSCHLS source items + built indice
 ================================================================================
 
 PURPOSE
-    Verify CalSCHLS source items are within the -2 to +2 Likert range and
+    Verify CalSCHLS source items are within the -2 to +2 Likert range
+    (staffqoi98 on an extended -3 to +2 "severe-problem" scale) and
     built indices (`climateindex`, `qualityindex`, `supportindex`) are
     well-formed.  Pre/post-fix detection: raw indices in [-2, 2] is the
     post-ADR-0011-fix invariant (sums→means).  Encodes the design memo §5
@@ -50,7 +51,9 @@ INDEX STRUCTURE (resolved 2026-04-28; design memo §5)
 INVARIANTS (verbatim from design memo §5)
     Hard asserts on source:
       - _N == 5625 schools
-      - source items in [-2.01, 2.01] (5-point Likert, ±0.01 tolerance)
+      - source items in [-2.01, 2.01] (5-point Likert, ±0.01 tolerance);
+        EXCEPTION staffqoi98mean_pooled in [-3.01, 2.01] — coded on an extended
+        scale where -3 = "severe problem" (staffqoiclean<x>.do); see ADR-0032
       - every climateitems / qualityitems / supportitems variable present
       - item counts: 9 / 15 / 4
     Hard asserts on built indices:
@@ -164,10 +167,16 @@ foreach src_tag in calschls_1 calschls_2 {
                          staffqoi*mean_pooled                                {
         qui sum `v'
         if r(N) == 0 continue
-        capture assert inrange(r(min), -2.01, 0)
+        * staffqoi98 is coded on an extended scale where -3 = "severe problem"
+        * (staffqoiclean<x>.do: qoi98temp = -3 if qoi98 == 4), so its pooled mean
+        * legitimately reaches -3; all other items are standard [-2,2] Likert.
+        * See ADR-0032.
+        local lo_bound = -2.01
+        if "`v'" == "staffqoi98mean_pooled" local lo_bound = -3.01
+        capture assert inrange(r(min), `lo_bound', 0)
         local rc = _rc
         if _rc {
-            di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (expected ∈ [-2.01, 0])"
+            di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (expected ∈ [`lo_bound', 0])"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit `rc'
@@ -181,7 +190,7 @@ foreach src_tag in calschls_1 calschls_2 {
             exit `rc'
         }
     }
-    di as text "  PASS: `src_label' source items within Likert [-2.01, 2.01]"
+    di as text "  PASS: `src_label' source items within Likert [-2.01, 2.01] (staffqoi98: [-3.01, 2.01])"
 
     * Every index component present in the source file.
     foreach v in `climateitems' `qualityitems' `supportitems' {

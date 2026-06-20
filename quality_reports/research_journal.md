@@ -85,3 +85,10 @@ Append-only agent-level history. One entry per agent invocation. See `.claude/ru
 **Score:** N/A (read-only investigation)
 **Verdict:** Confirmed the gate (`if "$run_prior_score" != "0"`) is identical token-for-token across producer + all consumers in current code, and the `.ster` save/read paths match character-for-character; `run_prior_score` assigned once (`do/settings.do:225`, global). The desync was historical (pre-`e8d47aa`), not present in current code.
 **Report:** inline (session) — see session log `2026-05-31_va-fig-pdf-save-mkdir-and-r601-diagnosis.md`
+
+### 2026-06-20 21:00 — coder-critic
+**Phase:** Execution (Phase 1 — staffqoi98 extended-scale fix)
+**Target:** `do/survey_va/imputation.do` (clamp floor) + `do/check/check_survey_indices.do` (min bound) per ADR-0032
+**Score:** 92/100 PASS
+**Verdict:** Faithfully implements ADR-0032. Independently re-verified: staffqoi98 is the only -3-coded item; both index constructors (imputedcategoryindex.do / compcasecategoryindex.do) exclude it; repo-wide grep finds it only in the two changed files + one archived file → built indices, SUB-CHECK 2, and survey-VA regressions genuinely unaffected. -8 ledger hygiene (stale check rows + missing imputation.do rows), since addressed.
+**Report:** `quality_reports/reviews/2026-06-20_staffqoi98-clamp-and-check_coder_review.md`

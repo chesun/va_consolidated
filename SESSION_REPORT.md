@@ -2463,3 +2463,32 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 - Do NOT re-pull on Scribe between the two runs (would grab the held smoke revert). After BOTH: push `ac749c5`.
 - When results return: triage main.do Phase-7 checks + new golden master (distance family now reproducible but still won't byte-match predecessor — ADR-0030 records this).
 - FOLLOW-UP (not blocking): vendor `pubschls.txt` into the replication package (cf ADR-0023).
+
+## 2026-06-20 — Doc repo-links + June-13 full-run triage
+
+**Operations:**
+- Reframed predecessor repos (local-on-machine → GitHub + Scribe) in `README.md` (§1/§10), `HANDOFF.md` (§2), `MEMORY.md` (line 78); added prominent README→HANDOFF callout; dropped false "v1.0-archive tag" claim (no such tag on either clone).
+- Linked other-repo mentions: `claude-code-my-workflow` → pedrohcgs (README §10); `claude-config` → chesun (MEMORY 105). `va_paper_clone` is Overleaf-backed (no GitHub) → no link.
+- Pulled `dc220e5` "full run june 13, 2026" (5,161 files; fast-forward). Inspected master + 6 Phase-7 check logs.
+
+**Results:**
+- June-13 real run = master `log/main_13-Jun-2026_17-23-53.smcl` (204 [RUN]/202 [OK], **0 r() errors**; 13 Jun 17:23 → 15 Jun 04:30). `17-22-03` = aborted false start.
+- **Phase 7: 5/6 PASS** (samples, merges, va_estimates [soft signals now run: cross-spec 0.997, peer 0.939], paper_outputs [T1 N=1,784,445; T2 schools=5,009], logs).
+- **1 FAIL hard-halted** (rc-clobber fix working): `check_survey_indices` → `imputed staffqoi98mean_pooled min = -3.0000 (expected ∈ [-2.01, 0])`.
+- Diagnosis (code-traced, ledger row added): NOT a regression — `staffqoi98` is deliberately −3-coded ("severe problem", `staffqoiclean*.do`); only qoi98 uses −3. The check's [−2.01,0] min-assertion assumes standard Likert → check-assumption error (ADR-0028 class).
+
+**Decisions:** none yet — staffqoi98 resolution PENDING Christina (widen check bound for the one severe-coded item; reconsider ADR-0027 clamp floor for it).
+
+**Commits:** none — all edits uncommitted (docs not in-scope code per phase-1-review.md §3).
+
+**Status:**
+- Done: doc fixes + links; June-13 run triaged.
+- Pending: Christina decision on staffqoi98 → fix → Scribe Phase 5–7 re-run (all 6 checks) → then M4 golden master + `tier_filter→smoke` revert (ADR-0018). Held `ac749c5` still to push after server runs.
+
+## 2026-06-20 (addendum) — staffqoi98 fix (ADR-0032)
+
+**Operations:** edited `do/check/check_survey_indices.do` (per-var min bound: staffqoi98 → [-3.01,0]) + `do/survey_va/imputation.do` (climatevars clamp floor → -3 for staffqoi98); wrote ADR-0032 + index; ledger re-stamp.
+**Decision:** widen check bound + relax clamp for staffqoi98 (extended -3 "severe problem" scale; only -3-coded item; NOT an index component → no paper-output impact). Amends ADR-0027, extends ADR-0028.
+**Results:** coder-critic 92/100 PASS (re-verified blast radius — staffqoi98 excluded from all 3 built indices). Tier-1 self-check clean.
+**Commits:** none — uncommitted, awaiting Christina go-ahead + Scribe push.
+**Status:** Done — fix coded + reviewed. Pending: Scribe Phase 5–7 re-run to confirm all 6 checks; then M4 golden master + tier_filter→smoke revert.

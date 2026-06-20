@@ -135,11 +135,16 @@ foreach i of local climatevars {
   reg `i' `xvars' `xdummies'
   predict hat_`i'
   replace `i' = hat_`i' if imputed`i' == 1
-  // clamp OLS-imputed predictions to the Likert range [-2, 2]: regression
-  // imputation is unbounded, so censor out-of-range predictions to the
-  // nearest bound (fixes secqoi27mean_pooled max=2.61 -> 2; check_survey_indices)
-  replace `i' = -2 if imputed`i' == 1 & `i' < -2
-  replace `i' =  2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
+  // clamp OLS-imputed predictions to the Likert range: regression imputation is
+  // unbounded, so censor out-of-range predictions to the nearest bound (fixes
+  // secqoi27mean_pooled max=2.61 -> 2; check_survey_indices). Floor is -2 for
+  // standard [-2,2] items; staffqoi98 is coded on an extended scale where
+  // -3 = "severe problem" (staffqoiclean<x>.do), so its floor is -3 (relaxes the
+  // ADR-0027 clamp per ADR-0032). staffqoi98 is the only -3-coded item and
+  // appears (among the 4 category loops) only in this climate category.
+  local lo = cond("`i'" == "staffqoi98mean_pooled", -3, -2)
+  replace `i' = `lo' if imputed`i' == 1 & `i' < `lo'
+  replace `i' =   2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
   drop hat_`i'
 }
 
