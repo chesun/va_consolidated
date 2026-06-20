@@ -2,7 +2,7 @@
       name:  va_var_explain_tab
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/va_var_explain_tab.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:29:36
+ opened on:  15 Jun 2026, 03:52:23
 
 . 
 .  graph drop _all
@@ -2598,8 +2598,8 @@ variable row was str14 now str24
   - tempfile `outcome'_`version'
   = tempfile enr_2year_v1
   - save ``outcome'_`version''
-  = save /home/tmp/St29294.000001
-file /home/tmp/St29294.000001 saved as .dta format
+  = save /home/tmp/St64745.000001
+file /home/tmp/St64745.000001 saved as .dta format
   - }
   - use $estimates_dir/va_cfr_all_`version'/reg_out_va/reg_va_`outcome'_va_both_all.dta, clear
   = use /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v1/reg_out_va/reg_va_enr_4yea
@@ -3675,11 +3675,11 @@ variable row was str14 now str24
   - tempfile `outcome'_`version'
   = tempfile enr_4year_v1
   - save ``outcome'_`version''
-  = save /home/tmp/St29294.000002
-file /home/tmp/St29294.000002 saved as .dta format
+  = save /home/tmp/St64745.000002
+file /home/tmp/St64745.000002 saved as .dta format
   - }
   - use `enr_2year_`version'', clear
-  = use /home/tmp/St29294.000001, clear
+  = use /home/tmp/St64745.000001, clear
   - insobs 1, before(1)
     --------------------------------------------------------------------------------------------------- begin insobs ---
     - version 14.0
@@ -3813,7 +3813,7 @@ variable row was str24 now str26
   - drop if row=="Sample" | row=="Controls" | row=="Peer Controls"
 (3 observations deleted)
   - append using `enr_4year_`version''
-  = append using /home/tmp/St29294.000002
+  = append using /home/tmp/St64745.000002
     --------------------------------------------------------------------------------------------------- begin append ---
     - version 11
     - if (_caller() < 11) {
@@ -3829,13 +3829,13 @@ variable row was str24 now str26
       exit 100
       }
     - if (`"`filenames'"' == "") {
-    = if (`" /home/tmp/St29294.000002"' == "") {
+    = if (`" /home/tmp/St64745.000002"' == "") {
       di as err "invalid file specification"
       exit 198
       }
     - foreach filename of local filenames {
     - capture quietly describe using `"`filename'"'
-    = capture quietly describe using `"/home/tmp/St29294.000002"'
+    = capture quietly describe using `"/home/tmp/St64745.000002"'
     - if (_rc) {
       di as err `"file `filename' not found"'
       exit 601
@@ -3856,7 +3856,7 @@ variable row was str24 now str26
       }
     - foreach filename of local filenames {
     - capture noisily _append using `"`filename'"', `options'
-    = capture noisily _append using `"/home/tmp/St29294.000002"', 
+    = capture noisily _append using `"/home/tmp/St64745.000002"', 
     - if _rc {
       if ("`generate'" != "") {
       capture quietly drop if `generate' > 0
@@ -5294,8 +5294,8 @@ variable row was str24 now str26
     = if 1==1 {
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',1,``grp'') using "`data1'", replace delimiter(`delimiter')
 >  nonames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,1,1) using "/home/tmp/St2929
-> 4.000003", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,1,1) using "/home/tmp/St6474
+> 5.000003", replace delimiter(&) nonames noquote
     - }
     - else {
       qui file open `fh' using "`data1'", write append
@@ -5321,7 +5321,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -5339,10 +5339,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,2,4) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,2,4) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -5352,7 +5352,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -5370,10 +5370,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,5,5) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,5,5) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -5383,7 +5383,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -5401,10 +5401,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,5) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,5) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -5414,7 +5414,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -5432,10 +5432,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,6) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,6) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -5445,7 +5445,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -5463,10 +5463,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,7,9) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,7,9) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -5476,7 +5476,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -5494,10 +5494,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,10,10) using "/home/tmp/St29
-> 294.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,10,10) using "/home/tmp/St64
+> 745.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -5507,7 +5507,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -5525,10 +5525,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,10) using "/home/tmp/St29
-> 294.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,10) using "/home/tmp/St64
+> 745.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -5538,7 +5538,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -5555,20 +5555,20 @@ variable row was str24 now str26
       }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,.) using "/home/tmp/St292
-> 94.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,.) using "/home/tmp/St647
+> 45.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - }
     - else qui outsheet `varlist' `if' `in' using "`data1'", replace delimiter(`delimiter') nonames noquote
-    = else qui outsheet row entry1 entry2 entry3 entry4 entry5   using "/home/tmp/St29294.000003", replace delimiter(&) 
+    = else qui outsheet row entry1 entry2 entry3 entry4 entry5   using "/home/tmp/St64745.000003", replace delimiter(&) 
 > nonames noquote
     - filefilter "`data1'" "`data2'", from("`eol_char'") to(" \BStabularnewline`rowsep'`eol_char'") replace
-    = filefilter "/home/tmp/St29294.000003" "/home/tmp/St29294.000004", from("\U") to(" \BStabularnewline\U") replace
+    = filefilter "/home/tmp/St64745.000003" "/home/tmp/St64745.000004", from("\U") to(" \BStabularnewline\U") replace
     - qui file open `fh' using "`end_file'", write `replace'
-    = qui file open __000008 using "/home/tmp/St29294.000005", write replace
+    = qui file open __000008 using "/home/tmp/St64745.000005", write replace
     - file write `fh' `"\bottomrule `footnotespace'"' _n(2)
     = file write __000008 `"\bottomrule "' _n(2)
     - if `"`footnote'"'!="" & `"`footnotewidth'"'!="" file write `fh' `"\multicolumn{`num_vars'}{`footnotewidth'}{\begin
@@ -5609,10 +5609,10 @@ variable row was str24 now str26
     - file close `fh'
     = file close __000008
     - appendfile "`data2'" "`using'"
-    = appendfile "/home/tmp/St29294.000004" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
+    = appendfile "/home/tmp/St64745.000004" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
 > va/check/va_var_explain_v1.tex"
     - appendfile "`end_file'" "`using'"
-    = appendfile "/home/tmp/St29294.000005" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
+    = appendfile "/home/tmp/St64745.000005" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
 > va/check/va_var_explain_v1.tex"
     - if "`renamed'"=="yes" {
     = if "yes"=="yes" {
@@ -6934,8 +6934,8 @@ variable row was str24 now str26
     = if 1==1 {
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',1,``grp'') using "`data1'", replace delimiter(`delimiter')
 >  nonames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,1,1) using "/home/tmp/St2929
-> 4.000003", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,1,1) using "/home/tmp/St6474
+> 5.000003", replace delimiter(&) nonames noquote
     - }
     - else {
       qui file open `fh' using "`data1'", write append
@@ -6961,7 +6961,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -6979,10 +6979,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,2,4) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,2,4) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -6992,7 +6992,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -7010,10 +7010,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,5,5) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,5,5) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -7023,7 +7023,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -7041,10 +7041,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,5) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,5) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -7054,7 +7054,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -7072,10 +7072,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,6) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,6) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -7085,7 +7085,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -7103,10 +7103,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,7,9) using "/home/tmp/St2929
-> 4.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,7,9) using "/home/tmp/St6474
+> 5.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -7116,7 +7116,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -7134,10 +7134,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,10,10) using "/home/tmp/St29
-> 294.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,10,10) using "/home/tmp/St64
+> 745.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -7147,7 +7147,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -7165,10 +7165,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,10) using "/home/tmp/St29
-> 294.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,10) using "/home/tmp/St64
+> 745.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - if `grp'==1 {
@@ -7178,7 +7178,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000003", write append
+    = qui file open __000008 using "/home/tmp/St64745.000003", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -7195,20 +7195,20 @@ variable row was str24 now str26
       }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,.) using "/home/tmp/St292
-> 94.000006", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,.) using "/home/tmp/St647
+> 45.000006", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000006" "/home/tmp/St29294.000003"
+    = appendfile "/home/tmp/St64745.000006" "/home/tmp/St64745.000003"
     - }
     - }
     - }
     - else qui outsheet `varlist' `if' `in' using "`data1'", replace delimiter(`delimiter') nonames noquote
-    = else qui outsheet row entry1 entry2 entry3 entry4 entry5   using "/home/tmp/St29294.000003", replace delimiter(&) 
+    = else qui outsheet row entry1 entry2 entry3 entry4 entry5   using "/home/tmp/St64745.000003", replace delimiter(&) 
 > nonames noquote
     - filefilter "`data1'" "`data2'", from("`eol_char'") to(" \BStabularnewline`rowsep'`eol_char'") replace
-    = filefilter "/home/tmp/St29294.000003" "/home/tmp/St29294.000004", from("\U") to(" \BStabularnewline\U") replace
+    = filefilter "/home/tmp/St64745.000003" "/home/tmp/St64745.000004", from("\U") to(" \BStabularnewline\U") replace
     - qui file open `fh' using "`end_file'", write `replace'
-    = qui file open __000008 using "/home/tmp/St29294.000005", write replace
+    = qui file open __000008 using "/home/tmp/St64745.000005", write replace
     - file write `fh' `"\bottomrule `footnotespace'"' _n(2)
     = file write __000008 `"\bottomrule "' _n(2)
     - if `"`footnote'"'!="" & `"`footnotewidth'"'!="" file write `fh' `"\multicolumn{`num_vars'}{`footnotewidth'}{\begin
@@ -7249,10 +7249,10 @@ variable row was str24 now str26
     - file close `fh'
     = file close __000008
     - appendfile "`data2'" "`using'"
-    = appendfile "/home/tmp/St29294.000004" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
+    = appendfile "/home/tmp/St64745.000004" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
 > va/pub/va_var_explain_v1.tex"
     - appendfile "`end_file'" "`using'"
-    = appendfile "/home/tmp/St29294.000005" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
+    = appendfile "/home/tmp/St64745.000005" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
 > va/pub/va_var_explain_v1.tex"
     - if "`renamed'"=="yes" {
     = if "yes"=="yes" {
@@ -8365,8 +8365,8 @@ variable row was str14 now str24
   - tempfile `outcome'_`version'
   = tempfile enr_2year_v2
   - save ``outcome'_`version''
-  = save /home/tmp/St29294.000003
-file /home/tmp/St29294.000003 saved as .dta format
+  = save /home/tmp/St64745.000003
+file /home/tmp/St64745.000003 saved as .dta format
   - }
   - use $estimates_dir/va_cfr_all_`version'/reg_out_va/reg_va_`outcome'_va_both_all.dta, clear
   = use /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va_cfr_all_v2/reg_out_va/reg_va_enr_4yea
@@ -9442,11 +9442,11 @@ variable row was str14 now str24
   - tempfile `outcome'_`version'
   = tempfile enr_4year_v2
   - save ``outcome'_`version''
-  = save /home/tmp/St29294.000004
-file /home/tmp/St29294.000004 saved as .dta format
+  = save /home/tmp/St64745.000004
+file /home/tmp/St64745.000004 saved as .dta format
   - }
   - use `enr_2year_`version'', clear
-  = use /home/tmp/St29294.000003, clear
+  = use /home/tmp/St64745.000003, clear
   - insobs 1, before(1)
     --------------------------------------------------------------------------------------------------- begin insobs ---
     - version 14.0
@@ -9580,7 +9580,7 @@ variable row was str24 now str26
   - drop if row=="Sample" | row=="Controls" | row=="Peer Controls"
 (3 observations deleted)
   - append using `enr_4year_`version''
-  = append using /home/tmp/St29294.000004
+  = append using /home/tmp/St64745.000004
     --------------------------------------------------------------------------------------------------- begin append ---
     - version 11
     - if (_caller() < 11) {
@@ -9596,13 +9596,13 @@ variable row was str24 now str26
       exit 100
       }
     - if (`"`filenames'"' == "") {
-    = if (`" /home/tmp/St29294.000004"' == "") {
+    = if (`" /home/tmp/St64745.000004"' == "") {
       di as err "invalid file specification"
       exit 198
       }
     - foreach filename of local filenames {
     - capture quietly describe using `"`filename'"'
-    = capture quietly describe using `"/home/tmp/St29294.000004"'
+    = capture quietly describe using `"/home/tmp/St64745.000004"'
     - if (_rc) {
       di as err `"file `filename' not found"'
       exit 601
@@ -9623,7 +9623,7 @@ variable row was str24 now str26
       }
     - foreach filename of local filenames {
     - capture noisily _append using `"`filename'"', `options'
-    = capture noisily _append using `"/home/tmp/St29294.000004"', 
+    = capture noisily _append using `"/home/tmp/St64745.000004"', 
     - if _rc {
       if ("`generate'" != "") {
       capture quietly drop if `generate' > 0
@@ -11061,8 +11061,8 @@ variable row was str24 now str26
     = if 1==1 {
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',1,``grp'') using "`data1'", replace delimiter(`delimiter')
 >  nonames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,1,1) using "/home/tmp/St2929
-> 4.000005", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,1,1) using "/home/tmp/St6474
+> 5.000005", replace delimiter(&) nonames noquote
     - }
     - else {
       qui file open `fh' using "`data1'", write append
@@ -11088,7 +11088,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -11106,10 +11106,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,2,4) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,2,4) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -11119,7 +11119,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -11137,10 +11137,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,5,5) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,5,5) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -11150,7 +11150,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -11168,10 +11168,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,5) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,5) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -11181,7 +11181,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -11199,10 +11199,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,6) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,6) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -11212,7 +11212,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -11230,10 +11230,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,7,9) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,7,9) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -11243,7 +11243,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -11261,10 +11261,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,10,10) using "/home/tmp/St29
-> 294.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,10,10) using "/home/tmp/St64
+> 745.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -11274,7 +11274,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -11292,10 +11292,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,10) using "/home/tmp/St29
-> 294.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,10) using "/home/tmp/St64
+> 745.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -11305,7 +11305,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -11322,20 +11322,20 @@ variable row was str24 now str26
       }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,.) using "/home/tmp/St292
-> 94.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,.) using "/home/tmp/St647
+> 45.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - }
     - else qui outsheet `varlist' `if' `in' using "`data1'", replace delimiter(`delimiter') nonames noquote
-    = else qui outsheet row entry1 entry2 entry3 entry4 entry5   using "/home/tmp/St29294.000005", replace delimiter(&) 
+    = else qui outsheet row entry1 entry2 entry3 entry4 entry5   using "/home/tmp/St64745.000005", replace delimiter(&) 
 > nonames noquote
     - filefilter "`data1'" "`data2'", from("`eol_char'") to(" \BStabularnewline`rowsep'`eol_char'") replace
-    = filefilter "/home/tmp/St29294.000005" "/home/tmp/St29294.000006", from("\U") to(" \BStabularnewline\U") replace
+    = filefilter "/home/tmp/St64745.000005" "/home/tmp/St64745.000006", from("\U") to(" \BStabularnewline\U") replace
     - qui file open `fh' using "`end_file'", write `replace'
-    = qui file open __000008 using "/home/tmp/St29294.000007", write replace
+    = qui file open __000008 using "/home/tmp/St64745.000007", write replace
     - file write `fh' `"\bottomrule `footnotespace'"' _n(2)
     = file write __000008 `"\bottomrule "' _n(2)
     - if `"`footnote'"'!="" & `"`footnotewidth'"'!="" file write `fh' `"\multicolumn{`num_vars'}{`footnotewidth'}{\begin
@@ -11376,10 +11376,10 @@ variable row was str24 now str26
     - file close `fh'
     = file close __000008
     - appendfile "`data2'" "`using'"
-    = appendfile "/home/tmp/St29294.000006" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
+    = appendfile "/home/tmp/St64745.000006" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
 > va/check/va_var_explain_v2.tex"
     - appendfile "`end_file'" "`using'"
-    = appendfile "/home/tmp/St29294.000007" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
+    = appendfile "/home/tmp/St64745.000007" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
 > va/check/va_var_explain_v2.tex"
     - if "`renamed'"=="yes" {
     = if "yes"=="yes" {
@@ -12701,8 +12701,8 @@ variable row was str24 now str26
     = if 1==1 {
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',1,``grp'') using "`data1'", replace delimiter(`delimiter')
 >  nonames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,1,1) using "/home/tmp/St2929
-> 4.000005", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,1,1) using "/home/tmp/St6474
+> 5.000005", replace delimiter(&) nonames noquote
     - }
     - else {
       qui file open `fh' using "`data1'", write append
@@ -12728,7 +12728,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -12746,10 +12746,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,2,4) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,2,4) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -12759,7 +12759,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -12777,10 +12777,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,5,5) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,5,5) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -12790,7 +12790,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -12808,10 +12808,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,5) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,5) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -12821,7 +12821,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -12839,10 +12839,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,6) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,6,6) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -12852,7 +12852,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -12870,10 +12870,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,7,9) using "/home/tmp/St2929
-> 4.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,7,9) using "/home/tmp/St6474
+> 5.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -12883,7 +12883,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -12901,10 +12901,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,10,10) using "/home/tmp/St29
-> 294.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,10,10) using "/home/tmp/St64
+> 745.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -12914,7 +12914,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -12932,10 +12932,10 @@ variable row was str24 now str26
     - }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,10) using "/home/tmp/St29
-> 294.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,10) using "/home/tmp/St64
+> 745.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - if `grp'==1 {
@@ -12945,7 +12945,7 @@ variable row was str24 now str26
       }
     - else {
     - qui file open `fh' using "`data1'", write append
-    = qui file open __000008 using "/home/tmp/St29294.000005", write append
+    = qui file open __000008 using "/home/tmp/St64745.000005", write append
     - file write `fh' "`horiz_line' "
     = file write __000008 "\midrule "
     - qui file close `fh'
@@ -12962,20 +12962,20 @@ variable row was str24 now str26
       }
     - qui outsheet `varlist' if `touse'==1 & inrange(`rownum',`g1',`g2') using "`tmp'", replace delimiter(`delimiter') n
 > onames noquote
-    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,.) using "/home/tmp/St292
-> 94.000008", replace delimiter(&) nonames noquote
+    = qui outsheet row entry1 entry2 entry3 entry4 entry5 if __00000B==1 & inrange(__00000A,11,.) using "/home/tmp/St647
+> 45.000008", replace delimiter(&) nonames noquote
     - appendfile "`tmp'" "`data1'"
-    = appendfile "/home/tmp/St29294.000008" "/home/tmp/St29294.000005"
+    = appendfile "/home/tmp/St64745.000008" "/home/tmp/St64745.000005"
     - }
     - }
     - }
     - else qui outsheet `varlist' `if' `in' using "`data1'", replace delimiter(`delimiter') nonames noquote
-    = else qui outsheet row entry1 entry2 entry3 entry4 entry5   using "/home/tmp/St29294.000005", replace delimiter(&) 
+    = else qui outsheet row entry1 entry2 entry3 entry4 entry5   using "/home/tmp/St64745.000005", replace delimiter(&) 
 > nonames noquote
     - filefilter "`data1'" "`data2'", from("`eol_char'") to(" \BStabularnewline`rowsep'`eol_char'") replace
-    = filefilter "/home/tmp/St29294.000005" "/home/tmp/St29294.000006", from("\U") to(" \BStabularnewline\U") replace
+    = filefilter "/home/tmp/St64745.000005" "/home/tmp/St64745.000006", from("\U") to(" \BStabularnewline\U") replace
     - qui file open `fh' using "`end_file'", write `replace'
-    = qui file open __000008 using "/home/tmp/St29294.000007", write replace
+    = qui file open __000008 using "/home/tmp/St64745.000007", write replace
     - file write `fh' `"\bottomrule `footnotespace'"' _n(2)
     = file write __000008 `"\bottomrule "' _n(2)
     - if `"`footnote'"'!="" & `"`footnotewidth'"'!="" file write `fh' `"\multicolumn{`num_vars'}{`footnotewidth'}{\begin
@@ -13016,10 +13016,10 @@ variable row was str24 now str26
     - file close `fh'
     = file close __000008
     - appendfile "`data2'" "`using'"
-    = appendfile "/home/tmp/St29294.000006" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
+    = appendfile "/home/tmp/St64745.000006" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
 > va/pub/va_var_explain_v2.tex"
     - appendfile "`end_file'" "`using'"
-    = appendfile "/home/tmp/St29294.000007" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
+    = appendfile "/home/tmp/St64745.000007" "/home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/share/
 > va/pub/va_var_explain_v2.tex"
     - if "`renamed'"=="yes" {
     = if "yes"=="yes" {
@@ -13078,10 +13078,10 @@ variable row was str24 now str26
 
 . 
 .  di "Start date time: `date1' `time1'"
-Start date time:  3 Jun 2026 02:29:36
+Start date time: 15 Jun 2026 03:52:23
 
 .  di "End date time: `date2' `time2'"
-End date time:  3 Jun 2026 02:29:36
+End date time: 15 Jun 2026 03:52:23
 
 . 
 .  cap log close va_var_explain_tab

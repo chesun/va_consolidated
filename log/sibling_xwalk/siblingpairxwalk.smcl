@@ -2,7 +2,7 @@
       name:  siblingpairxwalk
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/sibling_xwalk/siblingpairxwalk.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:59:48
+ opened on:  15 Jun 2026, 04:28:51
 
 . 
 . use $datadir_clean/siblingxwalk/uniquelinkedfamilyclean, clear
@@ -37,7 +37,7 @@
 . tempfile formerge
 
 . save `formerge'
-file /home/tmp/St29294.000001 saved as .dta format
+file /home/tmp/St64745.000001 saved as .dta format
 
 . 
 . use $datadir_clean/siblingxwalk/uniquelinkedfamilyclean, clear
@@ -92,15 +92,15 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . 
 . //distance between birth dates for sibling pairs
 . gen birth_date_distance = abs(birth_date - sibling_birth_date)
-(177 missing values generated)
+(196 missing values generated)
 
 . 
 . bysort ufamilyid: egen avg_birth_date_distance_family = mean(birth_date_distance)
-(80 missing values generated)
+(79 missing values generated)
 
 . 
 . replace avg_birth_date_distance_family = avg_birth_date_distance_family/365
-(3,319,957 real changes made)
+(3,319,973 real changes made)
 
 . label var avg_birth_date_distance_family "Average distance of birth dates in family in years"
 

@@ -6,7 +6,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > share/demographics/elemcoverageanalysis.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:29:37
+ opened on:  15 Jun 2026, 03:52:23
 
 . 
 . local years `" "1415" "1516" "1617" "1718" "1819" "' //local macro for elemen
@@ -247,7 +247,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/graph
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > share/demographics/elemcoverageanalysis.smcl
   log type:  text
- closed on:   3 Jun 2026, 02:29:48
+ closed on:  15 Jun 2026, 03:52:35
 -------------------------------------------------------------------------------
 > -----------------------------------------------------------------------------
 > -----------------------------------------------------------------------------

@@ -2,7 +2,7 @@
       name:  clean_sch_char
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_sch_char.smcl
   log type:  text
- opened on:   1 Jun 2026, 22:59:35
+ opened on:  13 Jun 2026, 18:58:49
 
 . 
 . 
@@ -788,6 +788,8 @@ delimiter now ;
 . #delimit cr
 delimiter now cr
 . macro list
+refresh_cde_directory:
+                0
 run_prior_score:
                 1
 cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
@@ -1277,7 +1279,7 @@ _home:          /home/research/ca_ed_lab/projects/common_core_va
 . tempfile enr_total
 
 . save `enr_total'
-file /home/tmp/St29294.000001 saved as .dta format
+file /home/tmp/St64745.000001 saved as .dta format
 
 . 
 . 
@@ -1464,7 +1466,7 @@ xij variables:
 . tempfile enr_race
 
 . save `enr_race'
-file /home/tmp/St29294.000002 saved as .dta format
+file /home/tmp/St64745.000002 saved as .dta format
 
 . 
 . 
@@ -1551,7 +1553,7 @@ xij variables:
 . tempfile enr_sex
 
 . save `enr_sex'
-file /home/tmp/St29294.000003 saved as .dta format
+file /home/tmp/St64745.000003 saved as .dta format
 
 . 
 . 
@@ -1604,7 +1606,7 @@ Duplicates in terms of cdscode year
 . tempfile frpm
 
 . save `frpm'
-file /home/tmp/St29294.000004 saved as .dta format
+file /home/tmp/St64745.000004 saved as .dta format
 
 . 
 . 
@@ -1654,7 +1656,7 @@ file /home/tmp/St29294.000004 saved as .dta format
 . tempfile elsch
 
 . save `elsch'
-file /home/tmp/St29294.000005 saved as .dta format
+file /home/tmp/St64745.000005 saved as .dta format
 
 . 
 . 
@@ -1720,7 +1722,7 @@ file /home/tmp/St29294.000005 saved as .dta format
 . tempfile staffdemo
 
 . save `staffdemo'
-file /home/tmp/St29294.000006 saved as .dta format
+file /home/tmp/St64745.000006 saved as .dta format
 
 . 
 . 
@@ -1770,7 +1772,7 @@ file /home/tmp/St29294.000006 saved as .dta format
 . tempfile staffcred
 
 . save `staffcred'
-file /home/tmp/St29294.000007 saved as .dta format
+file /home/tmp/St64745.000007 saved as .dta format
 
 . 
 . 
@@ -1837,7 +1839,7 @@ file /home/tmp/St29294.000007 saved as .dta format
 . tempfile staffschoolfte
 
 . save `staffschoolfte'
-file /home/tmp/St29294.000008 saved as .dta format
+file /home/tmp/St64745.000008 saved as .dta format
 
 . 
 . 
@@ -1941,7 +1943,7 @@ file /home/tmp/St29294.000008 saved as .dta format
 . tempfile staffschoolfte
 
 . save `staffschoolfte'
-file /home/tmp/St29294.00000a saved as .dta format
+file /home/tmp/St64745.00000a saved as .dta format
 
 . 
 . 
@@ -1981,7 +1983,7 @@ file /home/tmp/St29294.00000a saved as .dta format
 . tempfile staffdemo
 
 . save `staffdemo'
-file /home/tmp/St29294.00000b saved as .dta format
+file /home/tmp/St64745.00000b saved as .dta format
 
 . 
 . 
@@ -2012,7 +2014,7 @@ file /home/tmp/St29294.00000b saved as .dta format
 . tempfile staffcred
 
 . save `staffcred'
-file /home/tmp/St29294.00000c saved as .dta format
+file /home/tmp/St64745.00000c saved as .dta format
 
 . 
 . 
@@ -2159,7 +2161,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 
 . /* create a dataset for school characteristics for each year */
 . snapshot save
-snapshot 1 created at 1 Jun 2026 22:59
+snapshot 1 created at 13 Jun 2026 18:59
 
 . 
 . forvalues spring_year = `test_score_min_year' (1) `test_score_max_year' {
@@ -2181,6 +2183,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:     18.20 /        1 =      18.2040
+   1:     18.10 /        1 =      18.1000
 
 . cap log close clean_sch_char

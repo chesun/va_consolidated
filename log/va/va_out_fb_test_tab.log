@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > va/va_out_fb_test_tab.smcl
   log type:  text
- opened on:   2 Jun 2026, 18:04:28
+ opened on:  14 Jun 2026, 18:22:57
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "va_out_fb_test_tab.do — RUN START: `c(current_date)' `c(current_t
 > ime)'"
-va_out_fb_test_tab.do — RUN START:  2 Jun 2026 18:04:28
+va_out_fb_test_tab.do — RUN START: 14 Jun 2026 18:22:57
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -2159,13 +2159,13 @@ sample: b
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1253241) =  460.67
+       F(  2,1254360) =  463.92
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1253208) =  112.75
+       F(  2,1254327) =  113.98
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2202,13 +2202,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212192) =  421.71
+       F(  2,1213271) =  424.35
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212159) =   96.03
+       F(  2,1213238) =   96.95
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2245,13 +2245,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652970) =  149.46
+       F(  2,653624) =  152.23
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652937) =   77.56
+       F(  2,653591) =   79.51
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2288,13 +2288,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699269) =  217.07
+       F(  2,699901) =  218.16
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699236) =   89.47
+       F(  2,699868) =   90.36
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2331,13 +2331,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638488) =  139.42
+       F(  2,639126) =  141.92
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638455) =   71.69
+       F(  2,639093) =   73.43
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2374,13 +2374,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683416) =  201.03
+       F(  2,684036) =  201.81
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683383) =   79.49
+       F(  2,684003) =   80.17
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2417,13 +2417,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432611) =   86.83
+       F(  2,432988) =   87.97
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432578) =   47.71
+       F(  2,432955) =   48.81
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2460,13 +2460,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424022) =   81.68
+       F(  2,424392) =   82.68
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423989) =   43.80
+       F(  2,424359) =   44.77
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2775,13 +2775,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212191) =  412.77
+       F(  2,1213270) =  415.34
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212157) =   86.09
+       F(  2,1213236) =   86.97
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2818,13 +2818,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638487) =  137.04
+       F(  2,639125) =  139.53
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638453) =   65.79
+       F(  2,639091) =   67.46
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2861,13 +2861,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683415) =  196.93
+       F(  2,684035) =  197.65
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683381) =   72.90
+       F(  2,684001) =   73.49
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -2904,13 +2904,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424021) =   79.69
+       F(  2,424391) =   80.66
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423987) =   40.24
+       F(  2,424357) =   41.11
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3148,13 +3148,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652963) =  121.98
+       F(  2,653617) =  124.65
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652867) =   55.24
+       F(  2,653521) =   57.07
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3191,13 +3191,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432604) =   67.75
+       F(  2,432981) =   68.99
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432534) =   29.91
+       F(  2,432911) =   30.88
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3234,13 +3234,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638481) =  112.56
+       F(  2,639119) =  114.98
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638365) =   50.99
+       F(  2,639003) =   52.62
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3277,13 +3277,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424015) =   62.85
+       F(  2,424385) =   63.94
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423933) =   26.75
+       F(  2,424303) =   27.59
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3580,13 +3580,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699267) =  216.62
+       F(  2,699899) =  217.67
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699211) =   82.88
+       F(  2,699843) =   83.90
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3623,13 +3623,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683414) =  200.66
+       F(  2,684034) =  201.41
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683339) =   75.27
+       F(  2,683959) =   76.13
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3666,13 +3666,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432609) =   88.37
+       F(  2,432986) =   89.52
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432474) =   57.65
+       F(  2,432851) =   58.88
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3709,13 +3709,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424020) =   83.14
+       F(  2,424390) =   84.14
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423852) =   52.74
+       F(  2,424222) =   53.85
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3790,13 +3790,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638480) =  111.00
+       F(  2,639118) =  113.39
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638363) =   49.51
+       F(  2,639001) =   51.13
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3833,13 +3833,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424014) =   61.72
+       F(  2,424384) =   62.78
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423931) =   25.82
+       F(  2,424301) =   26.62
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3934,13 +3934,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683413) =  196.61
+       F(  2,684033) =  197.30
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683337) =   67.64
+       F(  2,683957) =   68.42
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -3977,13 +3977,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424019) =   81.17
+       F(  2,424389) =   82.14
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423850) =   48.83
+       F(  2,424220) =   49.86
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -4054,13 +4054,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432602) =   69.55
+       F(  2,432979) =   70.79
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432460) =   35.26
+       F(  2,432837) =   36.40
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -4097,13 +4097,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424013) =   64.55
+       F(  2,424383) =   65.66
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423838) =   31.60
+       F(  2,424208) =   32.61
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -4138,13 +4138,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424012) =   63.42
+       F(  2,424382) =   64.49
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423836) =   30.66
+       F(  2,424206) =   31.64
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5174,13 +5174,13 @@ sample: b
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1253241) = 1021.12
+       F(  2,1254360) = 1020.04
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1253208) = 1127.16
+       F(  2,1254327) = 1122.81
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5221,13 +5221,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212192) =  995.06
+       F(  2,1213271) =  994.14
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212159) = 1099.09
+       F(  2,1213238) = 1094.91
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5268,13 +5268,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652970) =  437.50
+       F(  2,653624) =  437.16
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652937) =  503.62
+       F(  2,653591) =  500.84
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5315,13 +5315,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699269) =  520.72
+       F(  2,699901) =  518.58
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699236) =  588.04
+       F(  2,699868) =  584.20
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5362,13 +5362,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638488) =  438.24
+       F(  2,639126) =  438.10
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638455) =  501.99
+       F(  2,639093) =  499.38
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5409,13 +5409,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683416) =  512.38
+       F(  2,684036) =  510.40
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683383) =  577.45
+       F(  2,684003) =  573.73
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5456,13 +5456,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432611) =  249.82
+       F(  2,432988) =  249.16
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432578) =  289.39
+       F(  2,432955) =  287.62
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5503,13 +5503,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424022) =  249.02
+       F(  2,424392) =  248.54
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423989) =  286.66
+       F(  2,424359) =  285.04
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5842,13 +5842,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212191) =  987.09
+       F(  2,1213270) =  986.10
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212157) = 1092.67
+       F(  2,1213236) = 1087.94
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5889,13 +5889,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638487) =  435.53
+       F(  2,639125) =  435.39
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638453) =  500.00
+       F(  2,639091) =  497.25
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5936,13 +5936,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683415) =  507.60
+       F(  2,684035) =  505.62
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683381) =  570.24
+       F(  2,684001) =  566.22
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -5983,13 +5983,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424021) =  246.73
+       F(  2,424391) =  246.26
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423987) =  283.94
+       F(  2,424357) =  282.23
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6250,13 +6250,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652963) =  425.46
+       F(  2,653617) =  423.49
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652867) =  424.71
+       F(  2,653521) =  420.23
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6297,13 +6297,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432604) =  232.84
+       F(  2,432981) =  231.47
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432534) =  238.70
+       F(  2,432911) =  235.74
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6344,13 +6344,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638481) =  421.65
+       F(  2,639119) =  419.83
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638365) =  422.58
+       F(  2,639003) =  418.15
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6391,13 +6391,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424015) =  230.15
+       F(  2,424385) =  228.93
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423933) =  235.91
+       F(  2,424303) =  233.02
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6718,13 +6718,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699267) =  493.87
+       F(  2,699899) =  491.80
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699211) =  241.74
+       F(  2,699843) =  239.29
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6765,13 +6765,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683414) =  485.79
+       F(  2,684034) =  483.88
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683339) =  245.55
+       F(  2,683959) =  243.03
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6812,13 +6812,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432609) =  236.43
+       F(  2,432986) =  235.78
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432474) =  153.20
+       F(  2,432851) =  151.84
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6859,13 +6859,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424020) =  235.68
+       F(  2,424390) =  235.20
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423852) =  155.58
+       F(  2,424222) =  154.29
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6948,13 +6948,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638480) =  420.57
+       F(  2,639118) =  418.76
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638363) =  422.97
+       F(  2,639001) =  418.54
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -6995,13 +6995,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424014) =  229.14
+       F(  2,424384) =  227.93
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423931) =  236.01
+       F(  2,424301) =  233.12
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -7104,13 +7104,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683413) =  481.41
+       F(  2,684033) =  479.49
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683337) =  244.24
+       F(  2,683957) =  241.56
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -7151,13 +7151,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424019) =  233.56
+       F(  2,424389) =  233.09
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423850) =  154.03
+       F(  2,424220) =  152.69
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -7236,13 +7236,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432602) =  221.24
+       F(  2,432979) =  219.92
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432460) =  135.26
+       F(  2,432837) =  133.28
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -7283,13 +7283,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424013) =  218.63
+       F(  2,424383) =  217.46
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423838) =  136.82
+       F(  2,424208) =  134.90
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -7328,13 +7328,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424012) =  217.70
+       F(  2,424382) =  216.53
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423836) =  136.76
+       F(  2,424206) =  134.84
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -8369,13 +8369,13 @@ sample: b
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1253241) = 1784.53
+       F(  2,1254360) = 1791.07
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1253208) = 1153.11
+       F(  2,1254327) = 1146.98
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -8416,13 +8416,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212192) = 1751.30
+       F(  2,1213271) = 1757.58
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212159) = 1141.36
+       F(  2,1213238) = 1135.39
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -8463,13 +8463,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652970) =  684.72
+       F(  2,653624) =  684.62
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652937) =  452.95
+       F(  2,653591) =  448.92
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -8510,13 +8510,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699269) =  859.79
+       F(  2,699901) =  861.08
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699236) =  581.25
+       F(  2,699868) =  576.75
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -8557,13 +8557,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638488) =  679.22
+       F(  2,639126) =  679.48
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638455) =  453.28
+       F(  2,639093) =  449.57
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -8604,13 +8604,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683416) =  849.74
+       F(  2,684036) =  851.03
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683383) =  578.56
+       F(  2,684003) =  574.10
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -8651,13 +8651,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432611) =  419.35
+       F(  2,432988) =  419.10
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432578) =  267.98
+       F(  2,432955) =  265.53
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -8698,13 +8698,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424022) =  417.21
+       F(  2,424392) =  417.23
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423989) =  268.74
+       F(  2,424359) =  266.52
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9037,13 +9037,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212191) = 1708.10
+       F(  2,1213270) = 1714.12
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1212157) = 1087.00
+       F(  2,1213236) = 1079.58
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9084,13 +9084,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638487) =  666.71
+       F(  2,639125) =  666.96
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638453) =  436.34
+       F(  2,639091) =  432.06
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9131,13 +9131,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683415) =  827.19
+       F(  2,684035) =  828.36
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683381) =  544.59
+       F(  2,684001) =  539.22
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9178,13 +9178,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424021) =  407.21
+       F(  2,424391) =  407.22
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423987) =  255.35
+       F(  2,424357) =  252.73
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9445,13 +9445,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652963) =  409.72
+       F(  2,653617) =  407.56
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,652867) =  259.09
+       F(  2,653521) =  251.03
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9492,13 +9492,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432604) =  247.39
+       F(  2,432981) =  246.51
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432534) =  148.78
+       F(  2,432911) =  144.19
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9539,13 +9539,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638481) =  408.31
+       F(  2,639119) =  406.45
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638365) =  262.44
+       F(  2,639003) =  254.71
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9586,13 +9586,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424015) =  248.21
+       F(  2,424385) =  247.56
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423933) =  151.71
+       F(  2,424303) =  147.32
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9913,13 +9913,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699267) =  819.17
+       F(  2,699899) =  820.52
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,699211) =  239.12
+       F(  2,699843) =  236.99
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -9960,13 +9960,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683414) =  809.69
+       F(  2,684034) =  811.02
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683339) =  241.58
+       F(  2,683959) =  239.23
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -10007,13 +10007,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432609) =  401.30
+       F(  2,432986) =  401.06
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432474) =  134.16
+       F(  2,432851) =  132.93
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -10054,13 +10054,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424020) =  399.31
+       F(  2,424390) =  399.33
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423852) =  136.29
+       F(  2,424222) =  135.02
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -10143,13 +10143,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638480) =  402.57
+       F(  2,639118) =  400.64
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638363) =  261.86
+       F(  2,639001) =  253.99
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -10190,13 +10190,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424014) =  243.60
+       F(  2,424384) =  242.92
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423931) =  150.52
+       F(  2,424301) =  146.03
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -10299,13 +10299,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683413) =  787.89
+       F(  2,684033) =  789.11
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,683337) =  219.82
+       F(  2,683957) =  216.86
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -10346,13 +10346,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424019) =  389.62
+       F(  2,424389) =  389.63
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423850) =  124.97
+       F(  2,424220) =  123.39
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -10431,13 +10431,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432602) =  233.64
+       F(  2,432979) =  232.84
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,432460) =   57.51
+       F(  2,432837) =   54.90
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -10478,13 +10478,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424013) =  234.53
+       F(  2,424383) =  233.93
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423838) =   62.55
+       F(  2,424208) =   59.94
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -10523,13 +10523,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,424012) =  230.02
+       F(  2,424382) =  229.39
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423836) =   60.85
+       F(  2,424206) =   58.15
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -11490,13 +11490,13 @@ sample: b
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1250840) =  458.75
+       F(  2,1251954) =  462.21
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1250807) =  100.44
+       F(  2,1251921) =  101.58
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -11533,13 +11533,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211297) =  418.21
+       F(  2,1212374) =  421.03
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211264) =   83.71
+       F(  2,1212341) =   84.55
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -11576,13 +11576,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651668) =  149.54
+       F(  2,652318) =  152.45
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651635) =   70.85
+       F(  2,652285) =   72.66
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -11619,13 +11619,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697860) =  216.28
+       F(  2,698490) =  217.51
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697827) =   81.22
+       F(  2,698457) =   81.98
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -11662,13 +11662,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638021) =  138.76
+       F(  2,638657) =  141.38
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637988) =   64.55
+       F(  2,638624) =   66.15
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -11705,13 +11705,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682897) =  199.89
+       F(  2,683516) =  200.80
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682864) =   71.72
+       F(  2,683483) =   72.27
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -11748,13 +11748,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431727) =   86.99
+       F(  2,432102) =   88.19
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431694) =   42.97
+       F(  2,432069) =   43.94
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -11791,13 +11791,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423706) =   81.47
+       F(  2,424075) =   82.52
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423673) =   38.95
+       F(  2,424042) =   39.80
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12106,13 +12106,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211296) =  408.51
+       F(  2,1212373) =  411.19
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211262) =   77.68
+       F(  2,1212339) =   78.56
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12149,13 +12149,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638020) =  135.03
+       F(  2,638656) =  137.61
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637986) =   58.89
+       F(  2,638622) =   60.49
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12192,13 +12192,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682896) =  195.01
+       F(  2,683515) =  195.80
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682862) =   66.47
+       F(  2,683481) =   67.04
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12235,13 +12235,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423705) =   78.22
+       F(  2,424074) =   79.21
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423671) =   34.91
+       F(  2,424040) =   35.74
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12478,13 +12478,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651661) =  122.85
+       F(  2,652311) =  125.65
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651566) =   54.21
+       F(  2,652216) =   56.04
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12521,13 +12521,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431720) =   68.60
+       F(  2,432095) =   69.88
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431650) =   28.56
+       F(  2,432025) =   29.49
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12564,13 +12564,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638014) =  112.42
+       F(  2,638650) =  114.96
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637898) =   49.46
+       F(  2,638534) =   51.10
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12607,13 +12607,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423699) =   63.17
+       F(  2,424068) =   64.31
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423617) =   25.26
+       F(  2,423986) =   26.06
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12910,13 +12910,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697858) =  215.84
+       F(  2,698488) =  217.03
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697802) =   75.68
+       F(  2,698432) =   76.58
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12953,13 +12953,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682895) =  199.54
+       F(  2,683514) =  200.40
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682820) =   68.93
+       F(  2,683439) =   69.66
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -12996,13 +12996,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431725) =   88.57
+       F(  2,432100) =   89.78
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431591) =   53.31
+       F(  2,431966) =   54.43
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -13039,13 +13039,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423704) =   82.98
+       F(  2,424073) =   84.03
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423537) =   48.27
+       F(  2,423906) =   49.27
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -13120,13 +13120,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638013) =  110.22
+       F(  2,638649) =  112.70
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637896) =   49.07
+       F(  2,638532) =   50.75
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -13163,13 +13163,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423698) =   61.22
+       F(  2,424067) =   62.30
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423615) =   24.81
+       F(  2,423984) =   25.61
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -13264,13 +13264,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682894) =  194.75
+       F(  2,683513) =  195.51
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682818) =   62.10
+       F(  2,683437) =   62.86
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -13307,13 +13307,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423703) =   79.75
+       F(  2,424072) =   80.74
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423535) =   43.69
+       F(  2,423904) =   44.67
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -13384,13 +13384,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431718) =   70.45
+       F(  2,432093) =   71.74
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431577) =   34.99
+       F(  2,431952) =   36.10
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -13427,13 +13427,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423697) =   64.94
+       F(  2,424066) =   66.08
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423523) =   31.08
+       F(  2,423892) =   32.06
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -13468,13 +13468,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423696) =   62.98
+       F(  2,424065) =   64.06
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423521) =   30.51
+       F(  2,423890) =   31.48
             Prob > F =    0.0000
 (variable var was str14, now str19 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -14504,13 +14504,13 @@ sample: b
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1250840) = 1034.82
+       F(  2,1251954) = 1033.85
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1250807) = 1131.73
+       F(  2,1251921) = 1126.31
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -14551,13 +14551,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211297) = 1008.04
+       F(  2,1212374) = 1007.19
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211264) = 1101.76
+       F(  2,1212341) = 1096.43
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -14598,13 +14598,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651668) =  448.57
+       F(  2,652318) =  448.39
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651635) =  515.54
+       F(  2,652285) =  512.66
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -14645,13 +14645,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697860) =  528.97
+       F(  2,698490) =  526.96
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697827) =  589.52
+       F(  2,698457) =  585.12
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -14692,13 +14692,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638021) =  448.46
+       F(  2,638657) =  448.38
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637988) =  512.55
+       F(  2,638624) =  509.69
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -14739,13 +14739,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682897) =  521.26
+       F(  2,683516) =  519.38
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682864) =  578.97
+       F(  2,683483) =  574.62
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -14786,13 +14786,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431727) =  255.88
+       F(  2,432102) =  255.32
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431694) =  296.33
+       F(  2,432069) =  294.45
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -14833,13 +14833,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423706) =  255.26
+       F(  2,424075) =  254.83
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423673) =  293.61
+       F(  2,424042) =  291.81
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -15172,13 +15172,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211296) =  997.24
+       F(  2,1212373) =  996.28
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211262) = 1092.12
+       F(  2,1212339) = 1086.56
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -15219,13 +15219,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638020) =  443.98
+       F(  2,638656) =  443.88
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637986) =  507.21
+       F(  2,638622) =  504.15
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -15266,13 +15266,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682896) =  514.28
+       F(  2,683515) =  512.35
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682862) =  569.34
+       F(  2,683481) =  564.81
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -15313,13 +15313,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423705) =  252.02
+       F(  2,424074) =  251.58
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423671) =  288.74
+       F(  2,424040) =  286.80
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -15580,13 +15580,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651661) =  433.45
+       F(  2,652311) =  431.66
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651566) =  437.67
+       F(  2,652216) =  433.43
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -15627,13 +15627,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431720) =  236.60
+       F(  2,432095) =  235.33
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431650) =  245.10
+       F(  2,432025) =  242.21
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -15674,13 +15674,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638014) =  428.59
+       F(  2,638650) =  426.86
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637898) =  434.87
+       F(  2,638534) =  430.57
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -15721,13 +15721,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423699) =  233.91
+       F(  2,424068) =  232.74
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423617) =  242.43
+       F(  2,423986) =  239.57
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16048,13 +16048,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697858) =  501.59
+       F(  2,698488) =  499.65
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697802) =  252.83
+       F(  2,698432) =  250.00
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16095,13 +16095,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682895) =  494.19
+       F(  2,683514) =  492.36
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682820) =  256.63
+       F(  2,683439) =  253.70
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16142,13 +16142,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431725) =  242.15
+       F(  2,432100) =  241.59
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431591) =  163.15
+       F(  2,431966) =  161.66
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16189,13 +16189,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423704) =  241.65
+       F(  2,424073) =  241.20
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423537) =  165.50
+       F(  2,423906) =  164.06
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16278,13 +16278,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638013) =  426.75
+       F(  2,638649) =  424.99
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637896) =  434.25
+       F(  2,638532) =  429.86
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16325,13 +16325,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423698) =  232.59
+       F(  2,424067) =  231.42
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423615) =  241.78
+       F(  2,423984) =  238.88
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16434,13 +16434,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682894) =  487.71
+       F(  2,683513) =  485.85
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682818) =  254.05
+       F(  2,683437) =  251.06
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16481,13 +16481,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423703) =  238.61
+       F(  2,424072) =  238.16
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423535) =  162.86
+       F(  2,423904) =  161.36
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16566,13 +16566,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431718) =  224.75
+       F(  2,432093) =  223.53
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431577) =  141.39
+       F(  2,431952) =  139.41
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16613,13 +16613,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423697) =  222.20
+       F(  2,424066) =  221.07
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423523) =  142.93
+       F(  2,423892) =  140.98
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -16658,13 +16658,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423696) =  220.98
+       F(  2,424065) =  219.84
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423521) =  142.53
+       F(  2,423890) =  140.56
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -17699,13 +17699,13 @@ sample: b
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1250840) = 1784.33
+       F(  2,1251954) = 1791.28
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1250807) = 1070.22
+       F(  2,1251921) = 1061.83
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -17746,13 +17746,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211297) = 1751.90
+       F(  2,1212374) = 1758.49
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211264) = 1059.40
+       F(  2,1212341) = 1051.09
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -17793,13 +17793,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651668) =  690.91
+       F(  2,652318) =  691.11
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651635) =  432.41
+       F(  2,652285) =  427.41
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -17840,13 +17840,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697860) =  865.57
+       F(  2,698490) =  867.22
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697827) =  536.72
+       F(  2,698457) =  531.18
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -17887,13 +17887,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638021) =  685.78
+       F(  2,638657) =  686.21
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637988) =  433.36
+       F(  2,638624) =  428.51
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -17934,13 +17934,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682897) =  855.19
+       F(  2,683516) =  856.76
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682864) =  534.45
+       F(  2,683483) =  528.90
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -17981,13 +17981,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431727) =  423.28
+       F(  2,432102) =  423.32
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431694) =  257.22
+       F(  2,432069) =  254.25
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -18028,13 +18028,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423706) =  421.32
+       F(  2,424075) =  421.55
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423673) =  258.31
+       F(  2,424042) =  255.50
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -18367,13 +18367,13 @@ sample: l
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211296) = 1703.11
+       F(  2,1212373) = 1709.26
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,1211262) =  993.77
+       F(  2,1212339) =  984.71
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -18414,13 +18414,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638020) =  667.36
+       F(  2,638656) =  667.66
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637986) =  408.05
+       F(  2,638622) =  402.59
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -18461,13 +18461,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682896) =  827.13
+       F(  2,683515) =  828.45
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682862) =  493.50
+       F(  2,683481) =  487.47
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -18508,13 +18508,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423705) =  407.72
+       F(  2,424074) =  407.84
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423671) =  238.98
+       F(  2,424040) =  235.80
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -18775,13 +18775,13 @@ sample: a
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651661) =  412.00
+       F(  2,652311) =  410.17
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,651566) =  265.38
+       F(  2,652216) =  257.48
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -18822,13 +18822,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431720) =  248.91
+       F(  2,432095) =  248.31
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431650) =  152.63
+       F(  2,432025) =  148.11
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -18869,13 +18869,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638014) =  410.75
+       F(  2,638650) =  409.10
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637898) =  269.64
+       F(  2,638534) =  261.92
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -18916,13 +18916,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423699) =  249.61
+       F(  2,424068) =  249.17
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423617) =  156.07
+       F(  2,423986) =  151.66
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19243,13 +19243,13 @@ sample: s
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697858) =  824.29
+       F(  2,698488) =  825.99
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,697802) =  223.29
+       F(  2,698432) =  220.37
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19290,13 +19290,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682895) =  814.58
+       F(  2,683514) =  816.19
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682820) =  224.78
+       F(  2,683439) =  221.64
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19337,13 +19337,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431725) =  404.90
+       F(  2,432100) =  404.94
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431591) =  130.28
+       F(  2,431966) =  128.57
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19384,13 +19384,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423704) =  403.19
+       F(  2,424073) =  403.41
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423537) =  132.22
+       F(  2,423906) =  130.47
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19473,13 +19473,13 @@ sample: la
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,638013) =  402.12
+       F(  2,638649) =  400.29
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,637896) =  267.51
+       F(  2,638532) =  259.53
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19520,13 +19520,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423698) =  243.12
+       F(  2,424067) =  242.55
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423615) =  153.68
+       F(  2,423984) =  149.15
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19629,13 +19629,13 @@ sample: ls
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682894) =  787.60
+       F(  2,683513) =  788.96
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,682818) =  200.02
+       F(  2,683437) =  196.61
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19676,13 +19676,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423703) =  389.98
+       F(  2,424072) =  390.09
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423535) =  116.81
+       F(  2,423904) =  114.86
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19761,13 +19761,13 @@ sample: as
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431718) =  234.98
+       F(  2,432093) =  234.44
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,431577) =   59.79
+       F(  2,431952) =   57.15
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19808,13 +19808,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423697) =  235.83
+       F(  2,424066) =  235.43
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423523) =   65.05
+       F(  2,423892) =   62.38
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19853,13 +19853,13 @@ sample: las
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423696) =  229.46
+       F(  2,424065) =  228.95
             Prob > F =    0.0000
 
  ( 1)  mindist_any_nonprof_4yr = 0
  ( 2)  mindist_ccc = 0
 
-       F(  2,423521) =   62.80
+       F(  2,423890) =   60.05
             Prob > F =    0.0000
 (variable var was str20, now str25 to accommodate using data's values)
 (variable fb_var was str1, now str3 to accommodate using data's values)
@@ -19901,7 +19901,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/va_cf
 . timer off 1
 
 . timer list
-   1:     18.59 /        1 =      18.5890
+   1:     20.12 /        1 =      20.1220
 
 . timer clear 1
 

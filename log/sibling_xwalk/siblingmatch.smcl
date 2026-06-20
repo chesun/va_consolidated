@@ -2,7 +2,7 @@
       name:  siblingmatch
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/sibling_xwalk/siblingmatch.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:31:02
+ opened on:  15 Jun 2026, 03:53:52
 
 . 
 . //append all years of CST datasets, from 2004 to 2013
@@ -382,7 +382,7 @@
 . tempfile master
 
 . save `master'
-file /home/tmp/St29294.000001 saved as .dta format
+file /home/tmp/St64745.000001 saved as .dta format
 
 . 
 . 

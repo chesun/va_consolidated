@@ -2,7 +2,7 @@
       name:  siblingoutxwalk
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/sibling_xwalk/siblingoutxwalk.smcl
   log type:  text
- opened on:   1 Jun 2026, 23:04:58
+ opened on:  13 Jun 2026, 19:04:51
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "siblingoutxwalk.do — RUN START: `c(current_date)' `c(current_time)'"
-siblingoutxwalk.do — RUN START:  1 Jun 2026 23:04:58
+siblingoutxwalk.do — RUN START: 13 Jun 2026 19:04:51
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -2546,7 +2546,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:   1789.19 /        1 =    1789.1890
+   1:   2846.31 /        1 =    2846.3060
 
 . 
 . 
@@ -2557,7 +2557,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 --------------------------------------------------------------------------------
 
 . di as text "siblingoutxwalk.do — RUN END: `c(current_date)' `c(current_time)'"
-siblingoutxwalk.do — RUN END:  1 Jun 2026 23:34:47
+siblingoutxwalk.do — RUN END: 13 Jun 2026 19:52:18
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------

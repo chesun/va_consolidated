@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > va/va_out_sib_lag.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:20:21
+ opened on:  15 Jun 2026, 03:41:49
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "va_out_sib_lag.do — RUN START: `c(current_date)' `c(current_time)
 > '"
-va_out_sib_lag.do — RUN START:  3 Jun 2026 02:20:21
+va_out_sib_lag.do — RUN START: 15 Jun 2026 03:41:49
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -4206,10 +4206,10 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
 
 . 
 . di "Start date time: `date1' `time1'"
-Start date time:  3 Jun 2026 02:20:21
+Start date time: 15 Jun 2026 03:41:49
 
 . di "End date time: `date2' `time2'"
-End date time:  3 Jun 2026 02:21:01
+End date time: 15 Jun 2026 03:42:37
 
 . 
 . cap log close va_out_sib_lag

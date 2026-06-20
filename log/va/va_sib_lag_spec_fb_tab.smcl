@@ -2,7 +2,7 @@
       name:  va_sib_lag_spec_fb_tab
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/va/va_sib_lag_spec_fb_tab.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:21:01
+ opened on:  15 Jun 2026, 03:42:37
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "va_sib_lag_spec_fb_tab.do — RUN START: `c(current_date)' `c(current_time)'"
-va_sib_lag_spec_fb_tab.do — RUN START:  3 Jun 2026 02:21:01
+va_sib_lag_spec_fb_tab.do — RUN START: 15 Jun 2026 03:42:37
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -1172,10 +1172,10 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/va_cfr
 
 . 
 . di "Start date time: `date1' `time1'"
-Start date time:  3 Jun 2026 02:21:01
+Start date time: 15 Jun 2026 03:42:37
 
 . di "End date time: `date2' `time2'"
-End date time:  3 Jun 2026 02:21:01
+End date time: 15 Jun 2026 03:42:37
 
 . 
 . cap log close va_sib_lag_spec_fb_tab

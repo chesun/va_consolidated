@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/clean_frpm.smcl
   log type:  text
- opened on:   1 Jun 2026, 22:57:10
+ opened on:  13 Jun 2026, 18:56:09
 
 . 
 . 
@@ -807,6 +807,8 @@ delimiter now ;
 . #delimit cr
 delimiter now cr
 . macro list
+refresh_cde_directory:
+                0
 run_prior_score:
                 1
 cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
@@ -1686,6 +1688,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:      7.54 /        1 =       7.5410
+   1:      7.72 /        1 =       7.7190
 
 . cap log close clean_frpm

@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_staffschoolfte
 > .smcl
   log type:  text
- opened on:   1 Jun 2026, 22:58:30
+ opened on:  13 Jun 2026, 18:57:39
 
 . 
 . graph drop _all
@@ -790,6 +790,8 @@ delimiter now ;
 . #delimit cr
 delimiter now cr
 . macro list
+refresh_cde_directory:
+                0
 run_prior_score:
                 1
 cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
@@ -2062,6 +2064,6 @@ file
 . timer off 1
 
 . timer list
-   1:     47.28 /        1 =      47.2840
+   1:     45.98 /        1 =      45.9850
 
 . cap log close clean_staffschoolfte

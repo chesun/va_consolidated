@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/poolingdata/clean_va.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:21:31
+ opened on:  15 Jun 2026, 03:43:09
 
 . 
 . 
@@ -32,15 +32,15 @@
   5.   save `va_`va_outcome''
   6. }
 (ela estimates from all sample and control combinations)
-file /home/tmp/St29294.000001 saved as .dta format
+file /home/tmp/St64745.000001 saved as .dta format
 (math estimates from all sample and control combinations)
-file /home/tmp/St29294.000002 saved as .dta format
+file /home/tmp/St64745.000002 saved as .dta format
 (enr estimates from all sample and control combinations)
-file /home/tmp/St29294.000003 saved as .dta format
+file /home/tmp/St64745.000003 saved as .dta format
 (enr_2year estimates from all sample and control combinations)
-file /home/tmp/St29294.000004 saved as .dta format
+file /home/tmp/St64745.000004 saved as .dta format
 (enr_4year estimates from all sample and control combinations)
-file /home/tmp/St29294.000005 saved as .dta format
+file /home/tmp/St64745.000005 saved as .dta format
 
 . 
 . //---------------------------------------------------------------------------
@@ -178,10 +178,10 @@ file
 . 
 . di "Do file clean_va.do start date time: `date1_va_scatter_plot' `time1_va_sc
 > atter_plot'"
-Do file clean_va.do start date time:  3 Jun 2026 02:21:31
+Do file clean_va.do start date time: 15 Jun 2026 03:43:09
 
 . di "End date time: `date2_va_scatter_plot' `time2_va_scatter_plot'"
-End date time:  3 Jun 2026 02:21:32
+End date time: 15 Jun 2026 03:43:09
 
 . 
 . 

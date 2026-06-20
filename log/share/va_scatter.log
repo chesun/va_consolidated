@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > share/va_scatter.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:27:31
+ opened on:  15 Jun 2026, 03:50:11
 
 . 
 . graph drop _all
@@ -3743,10 +3743,10 @@ file
 
 . 
 . di "Start date time: `date1' `time1'"
-Start date time:  3 Jun 2026 02:27:31
+Start date time: 15 Jun 2026 03:50:11
 
 . di "End date time: `date2' `time2'"
-End date time:  3 Jun 2026 02:29:31
+End date time: 15 Jun 2026 03:52:18
 
 . 
 . cap log close va_scatter

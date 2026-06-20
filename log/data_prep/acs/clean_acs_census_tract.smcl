@@ -2,7 +2,7 @@
       name:  clean_acs_census_tract
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/acs/clean_acs_census_tract.smcl
   log type:  text
- opened on:   1 Jun 2026, 21:31:04
+ opened on:  13 Jun 2026, 17:24:02
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "clean_acs_census_tract.do — RUN START: `c(current_date)' `c(current_time)'"
-clean_acs_census_tract.do — RUN START:  1 Jun 2026 21:31:04
+clean_acs_census_tract.do — RUN START: 13 Jun 2026 17:24:02
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -748,6 +748,8 @@ delimiter now ;
 . #delimit cr
 delimiter now cr
 . macro list
+refresh_cde_directory:
+                0
 run_prior_score:
                 1
 cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
@@ -2040,7 +2042,7 @@ s1501_c03_038m: characters ( X ) removed; replaced as byte
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
     __000000 |     73,248    .0693066    .6026737   .0051066        100
-file /home/tmp/St29294.000001 saved as .dta format
+file /home/tmp/St64745.000001 saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (422 vars, 74,003 obs)
 note: label truncated to 80 characters
@@ -3060,7 +3062,7 @@ s1702_c06_010e: character - removed; replaced as double
 s1702_c06_011e: character - removed; replaced as double
 (38661 missing values generated)
 (1,225 missing values generated)
-file /home/tmp/St29294.000002 saved as .dta format
+file /home/tmp/St64745.000002 saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (130 vars, 74,003 obs)
 note: label truncated to 80 characters
@@ -3373,7 +3375,7 @@ s1901_c04_016m: characters ( X ) removed; replaced as byte
 (1,030 missing values generated)
 (1,213 missing values generated)
 (1,366 missing values generated)
-file /home/tmp/St29294.000003 saved as .dta format
+file /home/tmp/St64745.000003 saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (426 vars, 74,003 obs)
 geo_id
@@ -4942,7 +4944,7 @@ pop_lt18_n~p |     59,230     .959014    .0626549          0   1.313131
 (1,624 missing values generated)
 (1,624 missing values generated)
 (1,624 missing values generated)
-file /home/tmp/St29294.000004 saved as .dta format
+file /home/tmp/St64745.000004 saved as .dta format
 
     Result                      Number of obs
     -----------------------------------------
@@ -5497,7 +5499,7 @@ s1501_c03_038m: characters ( X ) n u l removed; replaced as byte
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
     __000001 |     73,299    .0816058    1.254896   .0053919        200
-file /home/tmp/St29294.000005 saved as .dta format
+file /home/tmp/St64745.000005 saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (422 vars, 74,135 obs)
 note: label truncated to 80 characters
@@ -6716,7 +6718,7 @@ s1702_c06_035m: characters ( X ) n u l removed; replaced as byte
 (74134 missing values generated)
 (133 missing values generated)
 (1,327 missing values generated)
-file /home/tmp/St29294.000006 saved as .dta format
+file /home/tmp/St64745.000006 saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (130 vars, 74,135 obs)
 note: label truncated to 80 characters
@@ -7037,7 +7039,7 @@ s1901_c04_016m: characters ( X ) n u l removed; replaced as byte
 (1,148 missing values generated)
 (1,316 missing values generated)
 (1,466 missing values generated)
-file /home/tmp/St29294.000007 saved as .dta format
+file /home/tmp/St64745.000007 saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (426 vars, 74,135 obs)
 geo_id
@@ -8606,7 +8608,7 @@ pop_lt18_n~p |     60,396    .9605012    .0610191          0   1.569597
 (1,712 missing values generated)
 (1,712 missing values generated)
 (1,712 missing values generated)
-file /home/tmp/St29294.000008 saved as .dta format
+file /home/tmp/St64745.000008 saved as .dta format
 
     Result                      Number of obs
     -----------------------------------------
@@ -9143,7 +9145,7 @@ s1501_c03_038m: characters ( X ) removed; replaced as byte
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
     __000002 |     73,301    .0811299    1.190851     .00443        200
-file /home/tmp/St29294.000009 saved as .dta format
+file /home/tmp/St64745.000009 saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (422 vars, 74,002 obs)
 note: label truncated to 80 characters
@@ -10163,7 +10165,7 @@ s1702_c06_035e: characters ( X ) removed; replaced as byte
 s1702_c06_035m: characters ( X ) removed; replaced as byte
 (74001 missing values generated)
 (1,171 missing values generated)
-file /home/tmp/St29294.00000a saved as .dta format
+file /home/tmp/St64745.00000a saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (130 vars, 74,002 obs)
 note: label truncated to 80 characters
@@ -10476,7 +10478,7 @@ s1901_c04_016m: characters ( X ) removed; replaced as byte
 (985 missing values generated)
 (1,114 missing values generated)
 (1,235 missing values generated)
-file /home/tmp/St29294.00000b saved as .dta format
+file /home/tmp/St64745.00000b saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (426 vars, 74,002 obs)
 geo_id
@@ -12045,7 +12047,7 @@ pop_lt18_n~p |     61,629     .961992    .0590419          0   1.647839
 (1,574 missing values generated)
 (1,574 missing values generated)
 (1,574 missing values generated)
-file /home/tmp/St29294.00000c saved as .dta format
+file /home/tmp/St64745.00000c saved as .dta format
 
     Result                      Number of obs
     -----------------------------------------
@@ -12605,7 +12607,7 @@ s1501_c03_038m: characters ( X ) removed; replaced as byte
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
     __000003 |     73,306    .0832186    1.207861   .0038276        200
-file /home/tmp/St29294.00000d saved as .dta format
+file /home/tmp/St64745.00000d saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (422 vars, 74,002 obs)
 note: label truncated to 80 characters
@@ -13625,7 +13627,7 @@ s1702_c06_035e: characters ( X ) removed; replaced as byte
 s1702_c06_035m: characters ( X ) removed; replaced as byte
 (74001 missing values generated)
 (1,161 missing values generated)
-file /home/tmp/St29294.00000e saved as .dta format
+file /home/tmp/St64745.00000e saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (130 vars, 74,002 obs)
 note: label truncated to 80 characters
@@ -13938,7 +13940,7 @@ s1901_c04_016m: characters ( X ) removed; replaced as byte
 (975 missing values generated)
 (1,182 missing values generated)
 (1,182 missing values generated)
-file /home/tmp/St29294.00000f saved as .dta format
+file /home/tmp/St64745.00000f saved as .dta format
 (encoding automatically selected: ISO-8859-1)
 (426 vars, 74,002 obs)
 geo_id
@@ -15530,7 +15532,7 @@ pop_lt18_n~p |     62,327    .9630753    .0569451          0    1.41519
 (1,569 missing values generated)
 (1,569 missing values generated)
 (1,569 missing values generated)
-file /home/tmp/St29294.00000g saved as .dta format
+file /home/tmp/St64745.00000g saved as .dta format
 
     Result                      Number of obs
     -----------------------------------------
@@ -15581,6 +15583,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:   5103.14 /        1 =    5103.1380
+   1:   5470.02 /        1 =    5470.0200
 
 . cap log close clean_acs_census_tract

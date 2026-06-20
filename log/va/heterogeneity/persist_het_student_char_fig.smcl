@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/va/heterogeneity/persist_het_student_char
 > _fig.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:21:25
+ opened on:  15 Jun 2026, 03:43:02
 
 . 
 . di as text _n "{hline 80}"
@@ -11,7 +11,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "persist_het_student_char_fig.do — RUN START: `c(current_date)' `c(current_time)'"
-persist_het_student_char_fig.do — RUN START:  3 Jun 2026 02:21:25
+persist_het_student_char_fig.do — RUN START: 15 Jun 2026 03:43:02
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------

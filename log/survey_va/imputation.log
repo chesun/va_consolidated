@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > survey_va/imputation.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:21:32
+ opened on:  15 Jun 2026, 03:43:10
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -14,7 +14,7 @@
 > -
 
 . di as text "imputation.do — RUN START: `c(current_date)' `c(current_time)'"
-imputation.do — RUN START:  3 Jun 2026 02:21:32
+imputation.do — RUN START: 15 Jun 2026 03:43:10
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -237,8 +237,14 @@ imputation.do — RUN START:  3 Jun 2026 02:21:32
   5.   reg `i' `xvars' `xdummies'
   6.   predict hat_`i'
   7.   replace `i' = hat_`i' if imputed`i' == 1
-  8.   drop hat_`i'
-  9. }
+  8.   // clamp OLS-imputed predictions to the Likert range [-2, 2]: regression
+.   // imputation is unbounded, so censor out-of-range predictions to the
+.   // nearest bound (fixes secqoi27mean_pooled max=2.61 -> 2; check_survey_ind
+> ices)
+.   replace `i' = -2 if imputed`i' == 1 & `i' < -2
+  9.   replace `i' =  2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
+ 10.   drop hat_`i'
+ 11. }
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -335,6 +341,8 @@ imputedparentqoi27mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,839 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -431,6 +439,8 @@ imputedparentqoi27mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,839 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
 note: imputedsecqoi26mean_pooled omitted because of collinearity.
@@ -527,6 +537,8 @@ imputedparentqoi27mean_pooled |   .0545751   .1410247     0.39   0.699     -.22
 > ----------------
 (option xb assumed; fitted values)
 (2,838 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
 note: imputedsecqoi26mean_pooled omitted because of collinearity.
@@ -623,6 +635,8 @@ imputedparentqoi17mean_pooled |  -.0177225   .1472863    -0.12   0.904    -.306
 > ----------------
 (option xb assumed; fitted values)
 (2,838 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
 note: imputedsecqoi26mean_pooled omitted because of collinearity.
@@ -719,6 +733,8 @@ imputedparentqoi27mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,240 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
 note: imputedsecqoi26mean_pooled omitted because of collinearity.
@@ -815,6 +831,8 @@ imputedparentqoi27mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,240 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -911,6 +929,8 @@ imputedparentqoi27mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,241 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi26mean_pooled omitted because of collinearity.
@@ -1007,6 +1027,8 @@ imputedparentqoi27mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,240 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1103,6 +1125,8 @@ imputedparentqoi27mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,240 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1199,6 +1223,8 @@ imputedparentqoi27mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,349 real changes made)
+(0 real changes made)
+(1 real change made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1208,8 +1234,8 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
 -------------+----------------------------------   F(32, 5592)     =    818.58
-       Model |  347.892662        32  10.8716457   Prob > F        =    0.0000
-    Residual |  74.2679518     5,592  .013281107   R-squared       =    0.8241
+       Model |  347.892936        32  10.8716542   Prob > F        =    0.0000
+    Residual |  74.2676785     5,592  .013281058   R-squared       =    0.8241
 -------------+----------------------------------   Adj R-squared   =    0.8231
        Total |  422.160614     5,624  .075064121   Root MSE        =    .11524
 
@@ -1219,82 +1245,84 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |  -.0159016   .0101379    -1.57   0.117    -.035
-> 7757    .0039726
-       parentqoi16mean_pooled |   .0040133   .0103616     0.39   0.699    -.016
-> 2995    .0243261
-       parentqoi17mean_pooled |  -.0125881   .0110729    -1.14   0.256    -.034
-> 2953    .0091192
-       parentqoi27mean_pooled |   .0253955   .0106079     2.39   0.017     .004
-> 5998    .0461912
-          secqoi22mean_pooled |   .0610942   .0111119     5.50   0.000     .039
-> 3106    .0828778
-          secqoi23mean_pooled |  -.0157643   .0125498    -1.26   0.209    -.040
-> 3667    .0088381
-          secqoi24mean_pooled |  -.0578101   .0182597    -3.17   0.002    -.093
-> 6063    -.022014
-          secqoi25mean_pooled |   .1470158    .011163    13.17   0.000      .12
-> 5132    .1688997
-          secqoi26mean_pooled |  -.1343472   .0134912    -9.96   0.000    -.160
-> 7952   -.1078992
-          secqoi27mean_pooled |  -.0013173   .0074193    -0.18   0.859     -.01
-> 5862    .0132273
-          secqoi29mean_pooled |   .6196133   .0127548    48.58   0.000     .594
-> 6089    .6446176
-          secqoi30mean_pooled |   .3944683   .0140136    28.15   0.000     .366
-> 9961    .4219405
-        staffqoi20mean_pooled |  -.0414968    .003948   -10.51   0.000    -.049
-> 2363   -.0337573
-        staffqoi24mean_pooled |   .0215984   .0081427     2.65   0.008     .005
-> 6356    .0375612
-        staffqoi41mean_pooled |  -.0096085   .0066285    -1.45   0.147    -.022
-> 6028    .0033859
-        staffqoi44mean_pooled |  -.0155457   .0081198    -1.91   0.056    -.031
-> 4637    .0003724
-        staffqoi64mean_pooled |  -.0177098    .005524    -3.21   0.001    -.028
-> 5391   -.0068805
-        staffqoi87mean_pooled |   .0610134   .0069444     8.79   0.000     .047
-> 3997     .074627
-        staffqoi98mean_pooled |   .0297285   .0029766     9.99   0.000     .023
-> 8933    .0355637
- imputedparentqoi9mean_pooled |  -.0059667   .0667682    -0.09   0.929    -.136
-> 8584    .1249249
-imputedparentqoi16mean_pooled |   .1157816   .1331784     0.87   0.385    -.145
-> 2997    .3768629
-imputedparentqoi17mean_pooled |  -.1128533   .1153332    -0.98   0.328    -.338
-> 9512    .1132446
+        parentqoi9mean_pooled |  -.0159008   .0101378    -1.57   0.117    -.035
+> 7749    .0039734
+       parentqoi16mean_pooled |   .0040656   .0103617     0.39   0.695    -.016
+> 2474    .0243785
+       parentqoi17mean_pooled |  -.0126309   .0110728    -1.14   0.254    -.034
+> 3379    .0090761
+       parentqoi27mean_pooled |   .0254191   .0106079     2.40   0.017     .004
+> 6235    .0462147
+          secqoi22mean_pooled |   .0609177   .0110884     5.49   0.000     .039
+> 1802    .0826552
+          secqoi23mean_pooled |  -.0158071   .0125496    -1.26   0.208    -.040
+> 4092    .0087949
+          secqoi24mean_pooled |  -.0577757   .0182595    -3.16   0.002    -.093
+> 5715   -.0219799
+          secqoi25mean_pooled |   .1470794   .0111647    13.17   0.000     .125
+> 1922    .1689665
+          secqoi26mean_pooled |  -.1340114   .0134525    -9.96   0.000    -.160
+> 3836   -.1076392
+          secqoi27mean_pooled |  -.0016913   .0074095    -0.23   0.819    -.016
+> 2168    .0128342
+          secqoi29mean_pooled |   .6196055   .0127548    48.58   0.000      .59
+> 4601    .6446099
+          secqoi30mean_pooled |   .3945712   .0140177    28.15   0.000      .36
+> 7091    .4220513
+        staffqoi20mean_pooled |  -.0414907    .003948   -10.51   0.000    -.049
+> 2304   -.0337511
+        staffqoi24mean_pooled |    .021604   .0081426     2.65   0.008     .005
+> 6413    .0375668
+        staffqoi41mean_pooled |  -.0095898   .0066287    -1.45   0.148    -.022
+> 5845    .0034049
+        staffqoi44mean_pooled |  -.0155237     .00812    -1.91   0.056    -.031
+> 4421    .0003946
+        staffqoi64mean_pooled |  -.0176972   .0055244    -3.20   0.001    -.028
+> 5272   -.0068672
+        staffqoi87mean_pooled |   .0609964   .0069446     8.78   0.000     .047
+> 3823    .0746104
+        staffqoi98mean_pooled |   .0297311   .0029765     9.99   0.000      .02
+> 3896    .0355662
+ imputedparentqoi9mean_pooled |  -.0059287    .066768    -0.09   0.929      -.1
+> 3682    .1249625
+imputedparentqoi16mean_pooled |   .1156711   .1331782     0.87   0.385    -.145
+> 4099     .376752
+imputedparentqoi17mean_pooled |  -.1127793   .1153331    -0.98   0.328     -.33
+> 8877    .1133184
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |   .1853753   .1166029     1.59   0.112    -.043
-> 2117    .4139623
+   imputedsecqoi22mean_pooled |   .1852622   .1165997     1.59   0.112    -.043
+> 3186    .4138429
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |  -.2372176   .1160764    -2.04   0.041    -.464
-> 7724   -.0096629
+   imputedsecqoi24mean_pooled |  -.2370992   .1160742    -2.04   0.041    -.464
+> 6496   -.0095487
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |   .0021078   .0115487     0.18   0.855    -.020
-> 5321    .0247477
+   imputedsecqoi27mean_pooled |   .0020902   .0115493     0.18   0.856     -.02
+> 0551    .0247313
    imputedsecqoi29mean_pooled |          0  (omitted)
    imputedsecqoi30mean_pooled |          0  (omitted)
- imputedstaffqoi20mean_pooled |   .2196281   .0466208     4.71   0.000     .128
-> 2331     .311023
- imputedstaffqoi24mean_pooled |   -.065195   .0745586    -0.87   0.382    -.211
-> 3587    .0809687
- imputedstaffqoi41mean_pooled |  -.1138386   .0956469    -1.19   0.234    -.301
-> 3437    .0736665
- imputedstaffqoi44mean_pooled |   .0380515   .0633782     0.60   0.548    -.086
-> 1944    .1622974
- imputedstaffqoi64mean_pooled |   .0618833   .0745644     0.83   0.407    -.084
-> 2919    .2080585
- imputedstaffqoi87mean_pooled |  -.0039913   .0075031    -0.53   0.595    -.018
-> 7004    .0107177
- imputedstaffqoi98mean_pooled |  -.1606712   .1007735    -1.59   0.111    -.358
-> 2265     .036884
-                        _cons |    .038462   .0138862     2.77   0.006     .011
-> 2397    .0656844
+ imputedstaffqoi20mean_pooled |   .2197156   .0466207     4.71   0.000     .128
+> 3209    .3111102
+ imputedstaffqoi24mean_pooled |  -.0651845   .0745584    -0.87   0.382    -.211
+> 3479     .080979
+ imputedstaffqoi41mean_pooled |  -.1137184   .0956465    -1.19   0.235    -.301
+> 2227    .0737858
+ imputedstaffqoi44mean_pooled |   .0378952   .0633768     0.60   0.550     -.08
+> 6348    .1621384
+ imputedstaffqoi64mean_pooled |   .0618746   .0745643     0.83   0.407    -.084
+> 3003    .2080495
+ imputedstaffqoi87mean_pooled |  -.0039741   .0075032    -0.53   0.596    -.018
+> 6834    .0107351
+ imputedstaffqoi98mean_pooled |  -.1607429   .1007736    -1.60   0.111    -.358
+> 2982    .0368124
+                        _cons |   .0382937   .0138888     2.76   0.006     .011
+> 0662    .0655211
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (2,349 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1303,9 +1331,9 @@ note: imputedsecqoi28mean_pooled omitted because of collinearity.
 note: imputedsecqoi30mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
--------------+----------------------------------   F(32, 5592)     =    957.12
-       Model |  313.981076        32  9.81190862   Prob > F        =    0.0000
-    Residual |  57.3261392     5,592  .010251456   R-squared       =    0.8456
+-------------+----------------------------------   F(32, 5592)     =    957.13
+       Model |  313.981586        32  9.81192457   Prob > F        =    0.0000
+    Residual |  57.3256288     5,592  .010251364   R-squared       =    0.8456
 -------------+----------------------------------   Adj R-squared   =    0.8447
        Total |  371.307215     5,624  .066021909   Root MSE        =    .10125
 
@@ -1315,82 +1343,84 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |  -.0003727   .0089095    -0.04   0.967    -.017
-> 8389    .0170934
-       parentqoi16mean_pooled |  -.0344849   .0090925    -3.79   0.000    -.052
-> 3098     -.01666
-       parentqoi17mean_pooled |   .0408002   .0097172     4.20   0.000     .021
-> 7507    .0598497
-       parentqoi27mean_pooled |   .0144401   .0093271     1.55   0.122    -.003
-> 8445    .0327248
-          secqoi22mean_pooled |   .0871471   .0097291     8.96   0.000     .068
-> 0742    .1062199
-          secqoi23mean_pooled |   .0840978   .0109716     7.67   0.000     .062
-> 5891    .1056065
-          secqoi24mean_pooled |   .1302353   .0159633     8.16   0.000      .09
-> 8941    .1615295
-          secqoi25mean_pooled |  -.1030334   .0099015   -10.41   0.000    -.122
-> 4442   -.0836226
-          secqoi26mean_pooled |   .0839621   .0119311     7.04   0.000     .060
-> 5725    .1073516
-          secqoi27mean_pooled |   -.000138   .0065184    -0.02   0.983    -.012
-> 9165    .0126405
-          secqoi28mean_pooled |   .4888445   .0100383    48.70   0.000     .469
-> 1655    .5085236
-          secqoi30mean_pooled |   .2247701   .0128415    17.50   0.000     .199
-> 5958    .2499444
-        staffqoi20mean_pooled |   .0204961   .0035157     5.83   0.000     .013
-> 6041    .0273882
-        staffqoi24mean_pooled |  -.0179073   .0071573    -2.50   0.012    -.031
-> 9383   -.0038763
-        staffqoi41mean_pooled |   .0041248   .0058273     0.71   0.479     -.00
-> 7299    .0155486
-        staffqoi44mean_pooled |  -.0128934   .0071359    -1.81   0.071    -.026
-> 8824    .0010957
-        staffqoi64mean_pooled |   .0108842   .0048591     2.24   0.025     .001
-> 3585      .02041
-        staffqoi87mean_pooled |  -.0005578   .0061797    -0.09   0.928    -.012
-> 6725    .0115568
-        staffqoi98mean_pooled |  -.0010776   .0026557    -0.41   0.685    -.006
-> 2837    .0041286
- imputedparentqoi9mean_pooled |    .003274   .0586607     0.06   0.955    -.111
-> 7238    .1182719
-imputedparentqoi16mean_pooled |  -.1077788   .1170076    -0.92   0.357    -.337
-> 1591    .1216016
-imputedparentqoi17mean_pooled |   .0985711   .1013292     0.97   0.331    -.100
-> 0735    .2972157
+        parentqoi9mean_pooled |   -.000371   .0089095    -0.04   0.967     -.01
+> 7837    .0170951
+       parentqoi16mean_pooled |  -.0343498   .0090927    -3.78   0.000    -.052
+> 1749   -.0165246
+       parentqoi17mean_pooled |   .0406887   .0097172     4.19   0.000     .021
+> 6394    .0597381
+       parentqoi27mean_pooled |   .0145008    .009327     1.55   0.120    -.003
+> 7837    .0327853
+          secqoi22mean_pooled |   .0866614   .0097091     8.93   0.000     .067
+> 6277    .1056951
+          secqoi23mean_pooled |   .0839834   .0109716     7.65   0.000     .062
+> 4748     .105492
+          secqoi24mean_pooled |   .1303245    .015963     8.16   0.000     .099
+> 0309    .1616181
+          secqoi25mean_pooled |  -.1028729   .0099032   -10.39   0.000    -.122
+> 2871   -.0834587
+          secqoi26mean_pooled |   .0848646   .0118961     7.13   0.000     .061
+> 5436    .1081857
+          secqoi27mean_pooled |  -.0011187   .0065097    -0.17   0.864    -.013
+> 8803    .0116429
+          secqoi28mean_pooled |   .4888406   .0100383    48.70   0.000     .469
+> 1616    .5085195
+          secqoi30mean_pooled |   .2250292    .012844    17.52   0.000     .199
+> 8499    .2502085
+        staffqoi20mean_pooled |   .0205106   .0035157     5.83   0.000     .013
+> 6185    .0274027
+        staffqoi24mean_pooled |  -.0178915   .0071572    -2.50   0.012    -.031
+> 9224   -.0038606
+        staffqoi41mean_pooled |   .0041702   .0058275     0.72   0.474    -.007
+> 2539    .0155943
+        staffqoi44mean_pooled |  -.0128393    .007136    -1.80   0.072    -.026
+> 8285      .00115
+        staffqoi64mean_pooled |   .0109131   .0048594     2.25   0.025     .001
+> 3868    .0204393
+        staffqoi87mean_pooled |   -.000599   .0061799    -0.10   0.923    -.012
+> 7139     .011516
+        staffqoi98mean_pooled |  -.0010697   .0026556    -0.40   0.687    -.006
+> 2757    .0041363
+ imputedparentqoi9mean_pooled |   .0033767   .0586604     0.06   0.954    -.111
+> 6205    .1183739
+imputedparentqoi16mean_pooled |  -.1080666   .1170071    -0.92   0.356    -.337
+> 4459    .1213128
+imputedparentqoi17mean_pooled |   .0987606   .1013288     0.97   0.330    -.099
+> 8833    .2974044
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |   -.145143   .1024512    -1.42   0.157    -.345
-> 9871    .0557011
+   imputedsecqoi22mean_pooled |  -.1454824    .102448    -1.42   0.156    -.346
+> 3203    .0553556
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |   .1468773   .1020108     1.44   0.150    -.053
-> 1034    .3468581
+   imputedsecqoi24mean_pooled |   .1472129   .1020085     1.44   0.149    -.052
+> 7634    .3471893
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |   .0054317   .0101462     0.54   0.592    -.014
-> 4589    .0253222
+   imputedsecqoi27mean_pooled |   .0054036   .0101467     0.53   0.594    -.014
+> 4879    .0252952
    imputedsecqoi28mean_pooled |          0  (omitted)
    imputedsecqoi30mean_pooled |          0  (omitted)
- imputedstaffqoi20mean_pooled |  -.1967568   .0410421    -4.79   0.000    -.277
-> 2152   -.1162983
- imputedstaffqoi24mean_pooled |   .0449327   .0655129     0.69   0.493    -.083
-> 4981    .1733635
- imputedstaffqoi41mean_pooled |   .0040023   .0840539     0.05   0.962    -.160
-> 7759    .1687805
- imputedstaffqoi44mean_pooled |   .0386471   .0556865     0.69   0.488      -.0
-> 7052    .1478142
- imputedstaffqoi64mean_pooled |  -.0480237    .065517    -0.73   0.464    -.176
-> 4624    .0804151
- imputedstaffqoi87mean_pooled |   .0162724   .0065896     2.47   0.014     .003
-> 3541    .0291906
- imputedstaffqoi98mean_pooled |   .1597018   .0885603     1.80   0.071    -.013
-> 9107    .3333143
-                        _cons |  -.0095995   .0122131    -0.79   0.432    -.033
-> 5419    .0143429
+ imputedstaffqoi20mean_pooled |  -.1965262   .0410421    -4.79   0.000    -.276
+> 9846   -.1160679
+ imputedstaffqoi24mean_pooled |   .0449568   .0655126     0.69   0.493    -.083
+> 4734    .1733869
+ imputedstaffqoi41mean_pooled |   .0043093   .0840533     0.05   0.959    -.160
+> 4677    .1690864
+ imputedstaffqoi44mean_pooled |   .0382457   .0556852     0.69   0.492    -.070
+> 9188    .1474103
+ imputedstaffqoi64mean_pooled |   -.048044   .0655167    -0.73   0.463    -.176
+> 4822    .0803941
+ imputedstaffqoi87mean_pooled |   .0163155   .0065897     2.48   0.013     .003
+> 3971    .0292338
+ imputedstaffqoi98mean_pooled |   .1595143   .0885601     1.80   0.072    -.014
+> 0979    .3331265
+                        _cons |  -.0100309   .0122153    -0.82   0.412    -.033
+> 9776    .0139158
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (2,349 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1399,11 +1429,11 @@ note: imputedsecqoi28mean_pooled omitted because of collinearity.
 note: imputedsecqoi29mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
--------------+----------------------------------   F(32, 5592)     =    740.82
-       Model |    251.3715        32  7.85535938   Prob > F        =    0.0000
-    Residual |   59.295104     5,592  .010603559   R-squared       =    0.8091
--------------+----------------------------------   Adj R-squared   =    0.8080
-       Total |  310.666604     5,624  .055239439   Root MSE        =    .10297
+-------------+----------------------------------   F(32, 5592)     =    741.18
+       Model |  251.394929        32  7.85609153   Prob > F        =    0.0000
+    Residual |  59.2716752     5,592   .01059937   R-squared       =    0.8092
+-------------+----------------------------------   Adj R-squared   =    0.8081
+       Total |  310.666604     5,624  .055239439   Root MSE        =    .10295
 
 -------------------------------------------------------------------------------
 > ----------------
@@ -1411,82 +1441,84 @@ note: imputedsecqoi29mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |   -.004529   .0090614    -0.50   0.617    -.022
-> 2929     .013235
-       parentqoi16mean_pooled |    .003683    .009269     0.40   0.691    -.014
-> 4878    .0218539
-       parentqoi17mean_pooled |   .0352853   .0099001     3.56   0.000     .015
-> 8774    .0546933
-       parentqoi27mean_pooled |  -.0332655   .0094837    -3.51   0.000    -.051
-> 8573   -.0146738
-          secqoi22mean_pooled |  -.1129539   .0098893   -11.42   0.000    -.132
-> 3407    -.093567
-          secqoi23mean_pooled |    .038746   .0112322     3.45   0.001     .016
-> 7265    .0607654
-          secqoi24mean_pooled |   .1175989   .0162698     7.23   0.000     .085
-> 7037    .1494941
-          secqoi25mean_pooled |   .1679709   .0098857    16.99   0.000     .148
-> 5912    .1873507
-          secqoi26mean_pooled |   .0310253   .0121805     2.55   0.011     .007
-> 1467    .0549039
-          secqoi27mean_pooled |   .0632135   .0065753     9.61   0.000     .050
-> 3235    .0761036
-          secqoi28mean_pooled |   .3369011   .0112292    30.00   0.000     .314
-> 8875    .3589146
-          secqoi29mean_pooled |   .2252464   .0136885    16.46   0.000     .198
-> 4116    .2520813
-        staffqoi20mean_pooled |   .0025704   .0035861     0.72   0.474    -.004
-> 4598    .0096006
-        staffqoi24mean_pooled |  -.0049177   .0072848    -0.68   0.500    -.019
-> 1987    .0093633
-        staffqoi41mean_pooled |   .0148123   .0059237     2.50   0.012     .003
-> 1996     .026425
-        staffqoi44mean_pooled |   .0061861   .0072621     0.85   0.394    -.008
-> 0503    .0204226
-        staffqoi64mean_pooled |   .0048282   .0049441     0.98   0.329    -.004
-> 8642    .0145206
-        staffqoi87mean_pooled |  -.0197916   .0062802    -3.15   0.002    -.032
-> 1033   -.0074799
-        staffqoi98mean_pooled |  -.0196909   .0026886    -7.32   0.000    -.024
-> 9616   -.0144202
- imputedparentqoi9mean_pooled |  -.0076098   .0596596    -0.13   0.899    -.124
-> 5657    .1093461
-imputedparentqoi16mean_pooled |   .0863865   .1190034     0.73   0.468    -.146
-> 9064    .3196793
-imputedparentqoi17mean_pooled |  -.0747543   .1030585    -0.73   0.468     -.27
-> 6789    .1272803
+        parentqoi9mean_pooled |  -.0045267   .0090596    -0.50   0.617    -.022
+> 2872    .0132337
+       parentqoi16mean_pooled |   .0035514   .0092673     0.38   0.702    -.014
+> 6162     .021719
+       parentqoi17mean_pooled |   .0353619    .009898     3.57   0.000      .01
+> 5958    .0547658
+       parentqoi27mean_pooled |   -.033297   .0094818    -3.51   0.000     -.05
+> 1885   -.0147091
+          secqoi22mean_pooled |  -.1130672   .0098666   -11.46   0.000    -.132
+> 4097   -.0937248
+          secqoi23mean_pooled |   .0388199   .0112299     3.46   0.001     .016
+> 8049    .0608349
+          secqoi24mean_pooled |   .1175387   .0162664     7.23   0.000     .085
+> 6502    .1494272
+          secqoi25mean_pooled |   .1676156   .0098865    16.95   0.000     .148
+> 2343     .186997
+          secqoi26mean_pooled |   .0309208    .012143     2.55   0.011     .007
+> 1158    .0547258
+          secqoi27mean_pooled |   .0639052   .0065639     9.74   0.000     .051
+> 0374    .0767731
+          secqoi28mean_pooled |   .3368823   .0112267    30.01   0.000     .314
+> 8736     .358891
+          secqoi29mean_pooled |   .2251782   .0136859    16.45   0.000     .198
+> 3485     .252008
+        staffqoi20mean_pooled |   .0025398   .0035855     0.71   0.479    -.004
+> 4891    .0095687
+        staffqoi24mean_pooled |    -.00492   .0072833    -0.68   0.499    -.019
+> 1981    .0093582
+        staffqoi41mean_pooled |   .0147334   .0059227     2.49   0.013     .003
+> 1226    .0263443
+        staffqoi44mean_pooled |   .0061054   .0072608     0.84   0.400    -.008
+> 1285    .0203394
+        staffqoi64mean_pooled |    .004722   .0049435     0.96   0.340    -.004
+> 9692    .0144132
+        staffqoi87mean_pooled |  -.0197043   .0062792    -3.14   0.002    -.032
+> 0141   -.0073946
+        staffqoi98mean_pooled |  -.0196626    .002688    -7.31   0.000    -.024
+> 9322   -.0143931
+ imputedparentqoi9mean_pooled |  -.0076335   .0596477    -0.13   0.898    -.124
+> 5661    .1092992
+imputedparentqoi16mean_pooled |   .0865948   .1189799     0.73   0.467     -.14
+> 6652    .3198416
+imputedparentqoi17mean_pooled |  -.0749353   .1030382    -0.73   0.467    -.276
+> 9301    .1270595
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |  -.2241375   .1041748    -2.15   0.031    -.428
-> 3605   -.0199144
+   imputedsecqoi22mean_pooled |  -.2248607   .1041512    -2.16   0.031    -.429
+> 0374    -.020684
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |   .2381918   .1037186     2.30   0.022      .03
-> 4863    .4415206
+   imputedsecqoi24mean_pooled |     .23856   .1036961     2.30   0.021     .035
+> 2754    .4418447
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |   .0091101   .0103189     0.88   0.377     -.01
-> 1119    .0293392
+   imputedsecqoi27mean_pooled |   .0094737   .0103174     0.92   0.359    -.010
+> 7525    .0296998
    imputedsecqoi28mean_pooled |          0  (omitted)
    imputedsecqoi29mean_pooled |          0  (omitted)
- imputedstaffqoi20mean_pooled |  -.0650305   .0418333    -1.55   0.120    -.147
-> 0401    .0169791
- imputedstaffqoi24mean_pooled |   .0486959   .0666286     0.73   0.465    -.081
-> 9221    .1793138
- imputedstaffqoi41mean_pooled |   .0656814   .0854811     0.77   0.442    -.101
-> 8947    .2332574
- imputedstaffqoi44mean_pooled |  -.1142614   .0566179    -2.02   0.044    -.225
-> 2546   -.0032683
- imputedstaffqoi64mean_pooled |   -.042317   .0666342    -0.64   0.525    -.172
-> 9459    .0883119
- imputedstaffqoi87mean_pooled |   .0050518   .0067063     0.75   0.451    -.008
-> 0952    .0181989
- imputedstaffqoi98mean_pooled |   .1159192   .0900919     1.29   0.198    -.060
-> 6958    .2925343
-                        _cons |   .0025482   .0124237     0.21   0.837    -.021
-> 8071    .0269035
+ imputedstaffqoi20mean_pooled |  -.0652287   .0418251    -1.56   0.119    -.147
+> 2222    .0167648
+ imputedstaffqoi24mean_pooled |   .0486718   .0666155     0.73   0.465    -.081
+> 9203     .179264
+ imputedstaffqoi41mean_pooled |   .0654588    .085464     0.77   0.444    -.102
+> 0837    .2330013
+ imputedstaffqoi44mean_pooled |  -.1140448   .0566057    -2.01   0.044     -.22
+> 5014   -.0030756
+ imputedstaffqoi64mean_pooled |  -.0423298    .066621    -0.64   0.525    -.172
+> 9328    .0882733
+ imputedstaffqoi87mean_pooled |   .0049962   .0067051     0.75   0.456    -.008
+> 1484    .0181408
+ imputedstaffqoi98mean_pooled |   .1161869   .0900743     1.29   0.197    -.060
+> 3937    .2927674
+                        _cons |   .0030018   .0124236     0.24   0.809    -.021
+> 3531    .0273568
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (2,349 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1496,11 +1528,11 @@ note: imputedsecqoi29mean_pooled omitted because of collinearity.
 note: imputedsecqoi30mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
--------------+----------------------------------   F(31, 5593)     =    109.09
-       Model |  500.586812        31  16.1479617   Prob > F        =    0.0000
-    Residual |  827.895044     5,593   .14802343   R-squared       =    0.3768
+-------------+----------------------------------   F(31, 5593)     =    109.10
+       Model |  500.614636        31  16.1488592   Prob > F        =    0.0000
+    Residual |   827.86722     5,593  .148018455   R-squared       =    0.3768
 -------------+----------------------------------   Adj R-squared   =    0.3734
-       Total |  1328.48186     5,624  .236216546   Root MSE        =    .38474
+       Total |  1328.48186     5,624  .236216546   Root MSE        =    .38473
 
 -------------------------------------------------------------------------------
 > ----------------
@@ -1508,81 +1540,83 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |   .0693985   .0338368     2.05   0.040     .003
-> 0653    .1357317
-       parentqoi16mean_pooled |   .0261074   .0345899     0.75   0.450    -.041
-> 7022     .093917
-       parentqoi17mean_pooled |    -.07555   .0370715    -2.04   0.042    -.148
-> 2245   -.0028755
-       parentqoi27mean_pooled |  -.1127472   .0353672    -3.19   0.001    -.182
-> 0806   -.0434137
-          secqoi22mean_pooled |   .3659651   .0370664     9.87   0.000     .293
-> 3005    .4386296
-          secqoi23mean_pooled |   .5262508   .0414119    12.71   0.000     .445
-> 0673    .6074343
-          secqoi24mean_pooled |  -.5396394   .0606718    -8.89   0.000    -.658
-> 5798   -.4206991
-          secqoi25mean_pooled |  -.1931335   .0381751    -5.06   0.000    -.267
-> 9716   -.1182954
-          secqoi26mean_pooled |   .1170673   .0455054     2.57   0.010      .02
-> 7859    .2062756
-          secqoi27mean_pooled |   .0587765    .024706     2.38   0.017     .010
-> 3433    .1072098
-          secqoi28mean_pooled |  -.5648053   .0441331   -12.80   0.000    -.651
-> 3233   -.4782874
-          secqoi29mean_pooled |   .3032786   .0519803     5.83   0.000     .201
-> 3771    .4051801
-          secqoi30mean_pooled |  -.0493812   .0516262    -0.96   0.339    -.150
-> 5887    .0518262
-        staffqoi24mean_pooled |   .0892324   .0270942     3.29   0.001     .036
-> 1173    .1423476
-        staffqoi41mean_pooled |   .0898153   .0220805     4.07   0.000     .046
-> 5289    .1331017
-        staffqoi44mean_pooled |   .3061662   .0267404    11.45   0.000     .253
-> 7446    .3585878
-        staffqoi64mean_pooled |    .242259   .0181863    13.32   0.000     .206
-> 6069    .2779111
-        staffqoi87mean_pooled |   .1779872   .0233666     7.62   0.000     .132
-> 1796    .2237948
-        staffqoi98mean_pooled |   -.066018   .0100667    -6.56   0.000    -.085
-> 7526   -.0462834
- imputedparentqoi9mean_pooled |   .3065926    .222867     1.38   0.169    -.130
-> 3132    .7434984
-imputedparentqoi16mean_pooled |  -.3589995   .4446236    -0.81   0.419    -1.23
-> 0634    .5126353
-imputedparentqoi17mean_pooled |  -.0004371   .3850738    -0.00   0.999    -.755
-> 3313    .7544572
+        parentqoi9mean_pooled |   .0693969   .0338362     2.05   0.040     .003
+> 0649     .135729
+       parentqoi16mean_pooled |   .0259494   .0345899     0.75   0.453    -.041
+> 8603    .0937591
+       parentqoi17mean_pooled |  -.0754488   .0370706    -2.04   0.042    -.148
+> 1215   -.0027761
+       parentqoi27mean_pooled |  -.1127858   .0353664    -3.19   0.001    -.182
+> 1177   -.0434539
+          secqoi22mean_pooled |   .3659836   .0369883     9.89   0.000     .293
+> 4721    .4384951
+          secqoi23mean_pooled |   .5263315   .0414108    12.71   0.000     .445
+> 1502    .6075128
+          secqoi24mean_pooled |  -.5397091   .0606699    -8.90   0.000    -.658
+> 6457   -.4207724
+          secqoi25mean_pooled |   -.193488   .0381836    -5.07   0.000    -.268
+> 3427   -.1186333
+          secqoi26mean_pooled |   .1167176   .0453736     2.57   0.010     .027
+> 7677    .2056675
+          secqoi27mean_pooled |   .0596712   .0246683     2.42   0.016     .011
+> 3117    .1080307
+          secqoi28mean_pooled |  -.5648193   .0441314   -12.80   0.000     -.65
+> 1334   -.4783047
+          secqoi29mean_pooled |   .3032407   .0519798     5.83   0.000       .2
+> 0134    .4051414
+          secqoi30mean_pooled |  -.0494599    .051625    -0.96   0.338    -.150
+> 6649    .0517452
+        staffqoi24mean_pooled |   .0892268   .0270937     3.29   0.001     .036
+> 1126     .142341
+        staffqoi41mean_pooled |   .0897273    .022081     4.06   0.000       .0
+> 4644    .1330145
+        staffqoi44mean_pooled |   .3060739   .0267407    11.45   0.000     .253
+> 6518     .358496
+        staffqoi64mean_pooled |    .242146   .0181875    13.31   0.000     .206
+> 4914    .2778005
+        staffqoi87mean_pooled |   .1780698   .0233669     7.62   0.000     .132
+> 2616     .223878
+        staffqoi98mean_pooled |  -.0659929   .0100664    -6.56   0.000    -.085
+> 7268   -.0462589
+ imputedparentqoi9mean_pooled |   .3065327    .222863     1.38   0.169    -.130
+> 3654    .7434307
+imputedparentqoi16mean_pooled |  -.3587158   .4446161    -0.81   0.420    -1.23
+> 0336    .5129044
+imputedparentqoi17mean_pooled |  -.0006561   .3850676    -0.00   0.999     -.75
+> 5538    .7542258
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |   .2590728   .3893885     0.67   0.506    -.504
-> 2798    1.022425
+   imputedsecqoi22mean_pooled |   .2584993   .3893711     0.66   0.507    -.504
+> 8192    1.021818
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |  -.5170108   .3876599    -1.33   0.182    -1.27
-> 6975     .242953
+   imputedsecqoi24mean_pooled |  -.5167583   .3876458    -1.33   0.183    -1.27
+> 6695     .243178
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |  -.0945443   .0385378    -2.45   0.014    -.170
-> 0933   -.0189953
+   imputedsecqoi27mean_pooled |  -.0941955   .0385395    -2.44   0.015    -.169
+> 7479   -.0186432
    imputedsecqoi28mean_pooled |          0  (omitted)
    imputedsecqoi29mean_pooled |          0  (omitted)
    imputedsecqoi30mean_pooled |          0  (omitted)
- imputedstaffqoi24mean_pooled |  -.2716602   .2474418    -1.10   0.272    -.756
-> 7421    .2134218
- imputedstaffqoi41mean_pooled |   -.134954   .3142398    -0.43   0.668     -.75
-> 0986     .481078
- imputedstaffqoi44mean_pooled |   .3141449   .2109421     1.49   0.136    -.099
-> 3835    .7276733
- imputedstaffqoi64mean_pooled |   .1365432   .2474908     0.55   0.581    -.348
-> 6349    .6217213
- imputedstaffqoi87mean_pooled |   .0596969   .0250453     2.38   0.017     .010
-> 5985    .1087953
- imputedstaffqoi98mean_pooled |  -.2315439   .3266412    -0.71   0.478    -.871
-> 8874    .4087996
-                        _cons |  -.0625403   .0462232    -1.35   0.176    -.153
-> 1557    .0280752
+ imputedstaffqoi24mean_pooled |  -.2717182   .2474375    -1.10   0.272    -.756
+> 7919    .2133554
+ imputedstaffqoi41mean_pooled |  -.1353125   .3142335    -0.43   0.667    -.751
+> 3322    .4807073
+ imputedstaffqoi44mean_pooled |   .3143966   .2109345     1.49   0.136     -.09
+> 9117    .7279102
+ imputedstaffqoi64mean_pooled |   .1365714   .2474865     0.55   0.581    -.348
+> 5983     .621741
+ imputedstaffqoi87mean_pooled |   .0596315   .0250452     2.38   0.017     .010
+> 5332    .1087297
+ imputedstaffqoi98mean_pooled |  -.2313634   .3266359    -0.71   0.479    -.871
+> 6965    .4089697
+                        _cons |  -.0620177   .0462308    -1.34   0.180    -.152
+> 6481    .0286127
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (1,430 real changes made)
+(0 real changes made)
+(1 real change made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1592,11 +1626,11 @@ note: imputedsecqoi29mean_pooled omitted because of collinearity.
 note: imputedsecqoi30mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
--------------+----------------------------------   F(31, 5593)     =    234.47
-       Model |  259.255286        31  8.36307373   Prob > F        =    0.0000
-    Residual |  199.488463     5,593  .035667524   R-squared       =    0.5651
+-------------+----------------------------------   F(31, 5593)     =    234.44
+       Model |  259.240859        31  8.36260837   Prob > F        =    0.0000
+    Residual |   199.50289     5,593  .035670104   R-squared       =    0.5651
 -------------+----------------------------------   Adj R-squared   =    0.5627
-       Total |  458.743749     5,624  .081568945   Root MSE        =    .18886
+       Total |  458.743749     5,624  .081568945   Root MSE        =    .18887
 
 -------------------------------------------------------------------------------
 > ----------------
@@ -1604,81 +1638,83 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |   .0409569    .016611     2.47   0.014     .008
-> 3929    .0735209
-       parentqoi16mean_pooled |   -.032962    .016989    -1.94   0.052    -.066
-> 2671    .0003431
-       parentqoi17mean_pooled |    .073496   .0181751     4.04   0.000     .037
-> 8656    .1091263
-       parentqoi27mean_pooled |  -.0407895    .017421    -2.34   0.019    -.074
-> 9415   -.0066376
-          secqoi22mean_pooled |  -.0418518   .0185099    -2.26   0.024    -.078
-> 1384   -.0055652
-          secqoi23mean_pooled |  -.1193044   .0209513    -5.69   0.000    -.160
-> 3771   -.0782318
-          secqoi24mean_pooled |   .1054561   .0303068     3.48   0.001     .046
-> 0429    .1648692
-          secqoi25mean_pooled |    .006021   .0188309     0.32   0.749    -.030
-> 8948    .0429368
-          secqoi26mean_pooled |   .0185645   .0223697     0.83   0.407    -.025
-> 2888    .0624177
-          secqoi27mean_pooled |   .0120227   .0121485     0.99   0.322    -.011
-> 7931    .0358385
-          secqoi28mean_pooled |   .0940728   .0223462     4.21   0.000     .050
-> 2656      .13788
-          secqoi29mean_pooled |  -.0817116   .0256961    -3.18   0.001     -.13
-> 2086   -.0313372
-          secqoi30mean_pooled |  -.0221607   .0253541    -0.87   0.382    -.071
-> 8646    .0275432
-        staffqoi20mean_pooled |    .032533   .0069359     4.69   0.000      .01
-> 8936      .04613
-        staffqoi41mean_pooled |    .134074   .0107363    12.49   0.000     .113
-> 0266    .1551214
-        staffqoi44mean_pooled |   .1566055   .0131707    11.89   0.000     .130
-> 7858    .1824252
-        staffqoi64mean_pooled |   .3117689   .0080401    38.78   0.000     .296
-> 0072    .3275306
-        staffqoi87mean_pooled |    .083616   .0114933     7.28   0.000     .061
-> 0847    .1061472
-        staffqoi98mean_pooled |  -.0243069   .0049438    -4.92   0.000    -.033
-> 9987   -.0146152
- imputedparentqoi9mean_pooled |   .2205878   .1094035     2.02   0.044     .006
-> 1145    .4350611
-imputedparentqoi16mean_pooled |  -.1930855   .2182633    -0.88   0.376    -.620
-> 9664    .2347953
-imputedparentqoi17mean_pooled |  -.0131902   .1890233    -0.07   0.944    -.383
-> 7492    .3573688
+        parentqoi9mean_pooled |   .0409456   .0166118     2.46   0.014     .008
+> 3801    .0735112
+       parentqoi16mean_pooled |  -.0329414   .0169899    -1.94   0.053    -.066
+> 2483    .0003655
+       parentqoi17mean_pooled |   .0734871   .0181757     4.04   0.000     .037
+> 8556    .1091186
+       parentqoi27mean_pooled |  -.0408014   .0174216    -2.34   0.019    -.074
+> 9545   -.0066483
+          secqoi22mean_pooled |  -.0418754   .0184733    -2.27   0.023    -.078
+> 0903   -.0056606
+          secqoi23mean_pooled |  -.1185354   .0209218    -5.67   0.000    -.159
+> 5502   -.0775206
+          secqoi24mean_pooled |   .1045282   .0302802     3.45   0.001     .045
+> 1673    .1638892
+          secqoi25mean_pooled |   .0056382   .0188304     0.30   0.765    -.031
+> 2767    .0425531
+          secqoi26mean_pooled |   .0189463    .022305     0.85   0.396    -.024
+> 7801    .0626727
+          secqoi27mean_pooled |   .0119154   .0121309     0.98   0.326     -.01
+> 1866    .0356968
+          secqoi28mean_pooled |   .0935946   .0223328     4.19   0.000     .049
+> 8137    .1373756
+          secqoi29mean_pooled |   -.081243   .0256891    -3.16   0.002    -.131
+> 6037   -.0308824
+          secqoi30mean_pooled |  -.0221399    .025355    -0.87   0.383    -.071
+> 8455    .0275657
+        staffqoi20mean_pooled |   .0322032   .0069269     4.65   0.000     .018
+> 6237    .0457827
+        staffqoi41mean_pooled |   .1341597   .0107362    12.50   0.000     .113
+> 1125    .1552068
+        staffqoi44mean_pooled |   .1567161   .0131709    11.90   0.000      .13
+> 0896    .1825363
+        staffqoi64mean_pooled |   .3118272   .0080414    38.78   0.000     .296
+> 0629    .3275915
+        staffqoi87mean_pooled |   .0836742   .0114942     7.28   0.000     .061
+> 1412    .1062072
+        staffqoi98mean_pooled |   -.024298   .0049442    -4.91   0.000    -.033
+> 9906   -.0146055
+ imputedparentqoi9mean_pooled |   .2207439   .1094073     2.02   0.044     .006
+> 2631    .4352248
+imputedparentqoi16mean_pooled |  -.1932628   .2182712    -0.89   0.376    -.621
+> 1591    .2346335
+imputedparentqoi17mean_pooled |   -.013165   .1890302    -0.07   0.944    -.383
+> 7375    .3574076
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |  -.1320463   .1911402    -0.69   0.490    -.506
-> 7553    .2426626
+   imputedsecqoi22mean_pooled |  -.1322789   .1911418    -0.69   0.489    -.506
+> 9909    .2424332
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |   .1358513   .1903194     0.71   0.475    -.237
-> 2486    .5089512
+   imputedsecqoi24mean_pooled |   .1359282   .1903227     0.71   0.475    -.237
+> 1782    .5090346
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |  -.0025293   .0189377    -0.13   0.894    -.039
-> 6546     .034596
+   imputedsecqoi27mean_pooled |  -.0025417    .018939    -0.13   0.893    -.039
+> 6695    .0345862
    imputedsecqoi28mean_pooled |          0  (omitted)
    imputedsecqoi29mean_pooled |          0  (omitted)
    imputedsecqoi30mean_pooled |          0  (omitted)
- imputedstaffqoi20mean_pooled |  -.4795476   .0758679    -6.32   0.000    -.628
-> 2782   -.3308171
- imputedstaffqoi41mean_pooled |  -.0288498   .1488474    -0.19   0.846    -.320
-> 6484    .2629489
- imputedstaffqoi44mean_pooled |   .1781209   .1025938     1.74   0.083    -.023
-> 0027    .3792445
- imputedstaffqoi64mean_pooled |   .0192698   .0077602     2.48   0.013     .004
-> 0567    .0344829
- imputedstaffqoi87mean_pooled |  -.0062003   .0122985    -0.50   0.614      -.0
-> 3031    .0179095
- imputedstaffqoi98mean_pooled |   .3175399   .1477506     2.15   0.032     .027
-> 8913    .6071884
-                        _cons |   .6792538   .0209104    32.48   0.000     .638
-> 2614    .7202463
+ imputedstaffqoi20mean_pooled |  -.4793412   .0758707    -6.32   0.000    -.628
+> 0773   -.3306052
+ imputedstaffqoi41mean_pooled |  -.0289477    .148852    -0.19   0.846    -.320
+> 7555    .2628601
+ imputedstaffqoi44mean_pooled |   .1781171   .1025956     1.74   0.083    -.023
+> 0101    .3792443
+ imputedstaffqoi64mean_pooled |   .0192187   .0077604     2.48   0.013     .004
+> 0053    .0344321
+ imputedstaffqoi87mean_pooled |  -.0061904   .0122991    -0.50   0.615    -.030
+> 3014    .0179206
+ imputedstaffqoi98mean_pooled |   .3174124   .1477562     2.15   0.032     .027
+> 7528     .607072
+                        _cons |   .6792633   .0209159    32.48   0.000       .6
+> 3826    .7202666
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (2,587 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1688,9 +1724,9 @@ note: imputedsecqoi29mean_pooled omitted because of collinearity.
 note: imputedsecqoi30mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
--------------+----------------------------------   F(31, 5593)     =    235.68
-       Model |  379.445244        31  12.2401691   Prob > F        =    0.0000
-    Residual |  290.479231     5,593  .051936212   R-squared       =    0.5664
+-------------+----------------------------------   F(31, 5593)     =    235.66
+       Model |    379.4317        31  12.2397323   Prob > F        =    0.0000
+    Residual |  290.492774     5,593  .051938633   R-squared       =    0.5664
 -------------+----------------------------------   Adj R-squared   =    0.5640
        Total |  669.924475     5,624  .119118861   Root MSE        =     .2279
 
@@ -1700,81 +1736,83 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |   .0054295   .0200693     0.27   0.787    -.033
-> 9142    .0447731
-       parentqoi16mean_pooled |   .0375082   .0203045     1.85   0.065    -.002
-> 2965    .0773129
-       parentqoi17mean_pooled |  -.0383164   .0219133    -1.75   0.080     -.08
-> 1275    .0046423
-       parentqoi27mean_pooled |   .0322995   .0210221     1.54   0.124    -.008
-> 9119    .0735109
-          secqoi22mean_pooled |   -.024175   .0223359    -1.08   0.279    -.067
-> 9621    .0196121
-          secqoi23mean_pooled |  -.1928616   .0253565    -7.61   0.000    -.242
-> 5702   -.1431531
-          secqoi24mean_pooled |   .1363528   .0365979     3.73   0.000     .064
-> 6067    .2080988
-          secqoi25mean_pooled |   .0870618   .0226871     3.84   0.000     .042
-> 5863    .1315374
-          secqoi26mean_pooled |   -.073179   .0269766    -2.71   0.007    -.126
-> 0636   -.0202945
-          secqoi27mean_pooled |   .0493919   .0146445     3.37   0.001     .020
-> 6829    .0781009
-          secqoi28mean_pooled |  -.1010584   .0270426    -3.74   0.000    -.154
-> 0723   -.0480444
-          secqoi29mean_pooled |   .0350635   .0310781     1.13   0.259    -.025
-> 8616    .0959887
-          secqoi30mean_pooled |   .1246553   .0305522     4.08   0.000      .06
-> 4761    .1845495
-        staffqoi20mean_pooled |   .0316273   .0084053     3.76   0.000     .015
-> 1496    .0481049
-        staffqoi24mean_pooled |   .3291712   .0173656    18.96   0.000     .295
-> 1279    .3632144
-        staffqoi44mean_pooled |   .5118577   .0150197    34.08   0.000     .482
-> 4133    .5413021
-        staffqoi64mean_pooled |  -.0888159   .0105932    -8.38   0.000    -.109
-> 5826   -.0680491
-        staffqoi87mean_pooled |   .0971836   .0139357     6.97   0.000     .069
-> 8642     .124503
-        staffqoi98mean_pooled |  -.0207462   .0059753    -3.47   0.001    -.032
-> 4601   -.0090323
- imputedparentqoi9mean_pooled |  -.0906407    .132177    -0.69   0.493    -.349
-> 7589    .1684775
-imputedparentqoi16mean_pooled |   .1250334   .2634396     0.47   0.635    -.391
-> 4104    .6414772
-imputedparentqoi17mean_pooled |  -.0205665   .2280935    -0.09   0.928    -.467
-> 7183    .4265853
+        parentqoi9mean_pooled |   .0054286     .02007     0.27   0.787    -.033
+> 9164    .0447735
+       parentqoi16mean_pooled |   .0374376   .0203054     1.84   0.065    -.002
+> 3688    .0772441
+       parentqoi17mean_pooled |  -.0382832   .0219138    -1.75   0.081    -.081
+> 2428    .0046765
+       parentqoi27mean_pooled |   .0322334   .0210226     1.53   0.125     -.00
+> 8979    .0734458
+          secqoi22mean_pooled |  -.0240957   .0222917    -1.08   0.280    -.067
+> 7961    .0196048
+          secqoi23mean_pooled |   -.191791   .0253201    -7.57   0.000    -.241
+> 4282   -.1421537
+          secqoi24mean_pooled |   .1351235   .0365648     3.70   0.000     .063
+> 4424    .2068047
+          secqoi25mean_pooled |   .0863664   .0226867     3.81   0.000     .041
+> 8916    .1308412
+          secqoi26mean_pooled |  -.0729621   .0268982    -2.71   0.007    -.125
+> 6931   -.0202311
+          secqoi27mean_pooled |   .0499401   .0146229     3.42   0.001     .021
+> 2736    .0786066
+          secqoi28mean_pooled |  -.1017498   .0270248    -3.77   0.000     -.15
+> 4729   -.0487707
+          secqoi29mean_pooled |     .03571   .0310685     1.15   0.250    -.025
+> 1963    .0966162
+          secqoi30mean_pooled |    .124461   .0305531     4.07   0.000     .064
+> 5652    .1843569
+        staffqoi20mean_pooled |   .0310142   .0083943     3.69   0.000     .014
+> 5581    .0474702
+        staffqoi24mean_pooled |   .3292999   .0173651    18.96   0.000     .295
+> 2575    .3633422
+        staffqoi44mean_pooled |   .5119897   .0150194    34.09   0.000     .482
+> 5458    .5414336
+        staffqoi64mean_pooled |  -.0888031   .0105947    -8.38   0.000    -.109
+> 5729   -.0680333
+        staffqoi87mean_pooled |   .0973402   .0139366     6.98   0.000      .07
+> 0019    .1246613
+        staffqoi98mean_pooled |   -.020733   .0059757    -3.47   0.001    -.032
+> 4477   -.0090184
+ imputedparentqoi9mean_pooled |  -.0904524   .1321801    -0.68   0.494    -.349
+> 5766    .1686719
+imputedparentqoi16mean_pooled |    .124987   .2634457     0.47   0.635    -.391
+> 4689    .6414429
+imputedparentqoi17mean_pooled |  -.0207105   .2280989    -0.09   0.928     -.46
+> 7873    .4264519
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |   .0831002   .2306728     0.36   0.719    -.369
-> 1081    .5353084
+   imputedsecqoi22mean_pooled |   .0825221   .2306719     0.36   0.721    -.369
+> 6844    .5347286
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |  -.0836209   .2296839    -0.36   0.716    -.533
-> 8904    .3666487
+   imputedsecqoi24mean_pooled |  -.0834607    .229685    -0.36   0.716    -.533
+> 7325     .366811
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |   .0023638   .0228519     0.10   0.918    -.042
-> 4348    .0471624
+   imputedsecqoi27mean_pooled |   .0025199   .0228532     0.11   0.912    -.042
+> 2812     .047321
    imputedsecqoi28mean_pooled |          0  (omitted)
    imputedsecqoi29mean_pooled |          0  (omitted)
    imputedsecqoi30mean_pooled |          0  (omitted)
- imputedstaffqoi20mean_pooled |   .5902855   .0908911     6.49   0.000     .412
-> 1037    .7684673
- imputedstaffqoi24mean_pooled |  -.3238509    .139935    -2.31   0.021    -.598
-> 1778   -.0495239
- imputedstaffqoi44mean_pooled |  -.2732647   .1213162    -2.25   0.024    -.511
-> 0916   -.0354379
- imputedstaffqoi64mean_pooled |   .3095277   .1399696     2.21   0.027      .03
-> 5133    .5839225
- imputedstaffqoi87mean_pooled |  -.0311996   .0148277    -2.10   0.035    -.060
-> 2676   -.0021315
- imputedstaffqoi98mean_pooled |  -.2855316   .1416208    -2.02   0.044    -.563
-> 1633   -.0078999
-                        _cons |  -.0129721   .0268976    -0.48   0.630    -.065
-> 7019    .0397577
+ imputedstaffqoi20mean_pooled |   .5904067   .0908927     6.50   0.000     .412
+> 2217    .7685918
+ imputedstaffqoi24mean_pooled |  -.3241402   .1399379    -2.32   0.021    -.598
+> 4727   -.0498076
+ imputedstaffqoi44mean_pooled |  -.2730769   .1213172    -2.25   0.024    -.510
+> 9057    -.035248
+ imputedstaffqoi64mean_pooled |   .3097024   .1399725     2.21   0.027      .03
+> 5302    .5841028
+ imputedstaffqoi87mean_pooled |   -.031219   .0148283    -2.11   0.035    -.060
+> 2881   -.0021498
+ imputedstaffqoi98mean_pooled |  -.2858317   .1416222    -2.02   0.044    -.563
+> 4663   -.0081971
+                        _cons |  -.0126626   .0269043    -0.47   0.638    -.065
+> 4056    .0400804
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (1,425 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1784,11 +1822,11 @@ note: imputedsecqoi29mean_pooled omitted because of collinearity.
 note: imputedsecqoi30mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
--------------+----------------------------------   F(31, 5593)     =    420.54
-       Model |  446.515219        31  14.4037167   Prob > F        =    0.0000
-    Residual |  191.565211     5,593  .034250887   R-squared       =    0.6998
+-------------+----------------------------------   F(31, 5593)     =    420.48
+       Model |  446.496788        31  14.4031222   Prob > F        =    0.0000
+    Residual |  191.583642     5,593  .034254182   R-squared       =    0.6998
 -------------+----------------------------------   Adj R-squared   =    0.6981
-       Total |   638.08043     5,624  .113456691   Root MSE        =    .18507
+       Total |   638.08043     5,624  .113456691   Root MSE        =    .18508
 
 -------------------------------------------------------------------------------
 > ----------------
@@ -1796,81 +1834,83 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |  -.0203615   .0162954    -1.25   0.212    -.052
-> 3068    .0115839
-       parentqoi16mean_pooled |  -.0234421   .0166604    -1.41   0.159     -.05
-> 6103    .0092189
-       parentqoi17mean_pooled |   .0025795   .0178451     0.14   0.885    -.032
-> 4038    .0375628
-       parentqoi27mean_pooled |   .0780835    .017055     4.58   0.000     .044
-> 6492    .1115179
-          secqoi22mean_pooled |  -.0528021   .0180403    -2.93   0.003    -.088
-> 1681    -.017436
-          secqoi23mean_pooled |   .1183411   .0207583     5.70   0.000     .077
-> 6468    .1590353
-          secqoi24mean_pooled |  -.0508014   .0297973    -1.70   0.088    -.109
-> 2157     .007613
-          secqoi25mean_pooled |   .0690215   .0184554     3.74   0.000     .032
-> 8417    .1052013
-          secqoi26mean_pooled |  -.0066114   .0219319    -0.30   0.763    -.049
-> 6065    .0363836
-          secqoi27mean_pooled |   .0308321   .0118982     2.59   0.010     .007
-> 5071    .0541571
-          secqoi28mean_pooled |  -.0432263   .0220081    -1.96   0.050    -.086
-> 3707   -.0000819
-          secqoi29mean_pooled |   -.059308    .025226    -2.35   0.019    -.108
-> 7607   -.0098553
-          secqoi30mean_pooled |   .0307945   .0248724     1.24   0.216     -.01
-> 7965     .079554
-        staffqoi20mean_pooled |   .0702344   .0067709    10.37   0.000     .056
-> 9609    .0835079
-        staffqoi24mean_pooled |   .2983833   .0139648    21.37   0.000     .271
-> 0068    .3257597
-        staffqoi41mean_pooled |   .3361462   .0100075    33.59   0.000     .316
-> 5276    .3557648
-        staffqoi64mean_pooled |   -.015585   .0086539    -1.80   0.072    -.032
-> 5501      .00138
-        staffqoi87mean_pooled |   .1741759   .0111344    15.64   0.000     .152
-> 3481    .1960037
-        staffqoi98mean_pooled |   .0812579   .0047293    17.18   0.000     .071
-> 9866    .0905292
- imputedparentqoi9mean_pooled |  -.2254857   .1072991    -2.10   0.036    -.435
-> 8336   -.0151378
-imputedparentqoi16mean_pooled |   .2170772   .2139191     1.01   0.310    -.202
-> 2874    .6364417
-imputedparentqoi17mean_pooled |   .0007872   .1852319     0.00   0.997    -.362
-> 3391    .3639136
+        parentqoi9mean_pooled |  -.0204283   .0162963    -1.25   0.210    -.052
+> 3754    .0115189
+       parentqoi16mean_pooled |  -.0234469   .0166615    -1.41   0.159      -.0
+> 5611    .0092162
+       parentqoi17mean_pooled |   .0026222   .0178459     0.15   0.883    -.032
+> 3628    .0376071
+       parentqoi27mean_pooled |   .0780928   .0170558     4.58   0.000     .044
+> 6568    .1115287
+          secqoi22mean_pooled |  -.0528665   .0180054    -2.94   0.003     -.08
+> 8164    -.017569
+          secqoi23mean_pooled |   .1198549   .0207267     5.78   0.000     .079
+> 2225    .1604874
+          secqoi24mean_pooled |  -.0527251   .0297702    -1.77   0.077    -.111
+> 0863     .005636
+          secqoi25mean_pooled |   .0681624   .0184556     3.69   0.000     .031
+> 9822    .1043426
+          secqoi26mean_pooled |   -.006213   .0218688    -0.28   0.776    -.049
+> 0844    .0366584
+          secqoi27mean_pooled |   .0309979   .0118816     2.61   0.009     .007
+> 7053    .0542905
+          secqoi28mean_pooled |  -.0440276   .0219942    -2.00   0.045    -.087
+> 1448   -.0009105
+          secqoi29mean_pooled |  -.0583308   .0252192    -2.31   0.021    -.107
+> 7703   -.0088914
+          secqoi30mean_pooled |   .0308332   .0248734     1.24   0.215    -.017
+> 9283    .0795947
+        staffqoi20mean_pooled |   .0699689   .0067623    10.35   0.000     .056
+> 7121    .0832256
+        staffqoi24mean_pooled |   .2985657   .0139643    21.38   0.000     .271
+> 1903    .3259411
+        staffqoi41mean_pooled |   .3361651   .0100086    33.59   0.000     .316
+> 5444    .3557858
+        staffqoi64mean_pooled |  -.0156453   .0086555    -1.81   0.071    -.032
+> 6134    .0013229
+        staffqoi87mean_pooled |   .1742405   .0111354    15.65   0.000     .152
+> 4108    .1960702
+        staffqoi98mean_pooled |   .0813103   .0047296    17.19   0.000     .072
+> 0385    .0905821
+ imputedparentqoi9mean_pooled |  -.2254997   .1073043    -2.10   0.036    -.435
+> 8577   -.0151417
+imputedparentqoi16mean_pooled |   .2171322   .2139294     1.01   0.310    -.202
+> 2525     .636517
+imputedparentqoi17mean_pooled |   .0007659   .1852409     0.00   0.997    -.362
+> 3781      .36391
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |   .0975437   .1873233     0.52   0.603    -.269
-> 6827    .4647702
+   imputedsecqoi22mean_pooled |   .0971714   .1873272     0.52   0.604    -.270
+> 0626    .4644055
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |    -.08694   .1865213    -0.47   0.641    -.452
-> 5942    .2787142
+   imputedsecqoi24mean_pooled |  -.0867076   .1865268    -0.46   0.642    -.452
+> 3726    .2789574
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |  -.0025145   .0185578    -0.14   0.892     -.03
-> 8895     .033866
+   imputedsecqoi27mean_pooled |  -.0025365   .0185593    -0.14   0.891    -.038
+> 9199     .033847
    imputedsecqoi28mean_pooled |          0  (omitted)
    imputedsecqoi29mean_pooled |          0  (omitted)
    imputedsecqoi30mean_pooled |          0  (omitted)
- imputedstaffqoi20mean_pooled |  -.2976208   .0749218    -3.97   0.000    -.444
-> 4966    -.150745
- imputedstaffqoi24mean_pooled |   .0776171    .118208     0.66   0.511    -.154
-> 1166    .3093507
- imputedstaffqoi41mean_pooled |  -.1951729    .148587    -1.31   0.189    -.486
-> 4611    .0961153
- imputedstaffqoi64mean_pooled |  -.0941337   .1182264    -0.80   0.426    -.325
-> 9032    .1376359
- imputedstaffqoi87mean_pooled |   .0214868   .0120492     1.78   0.075    -.002
-> 1343    .0451079
- imputedstaffqoi98mean_pooled |   .4892185   .1516485     3.23   0.001     .191
-> 9285    .7865084
-                        _cons |   .1707249    .021725     7.86   0.000     .128
-> 1354    .2133144
+ imputedstaffqoi20mean_pooled |  -.2971416   .0749251    -3.97   0.000     -.44
+> 4024   -.1502593
+ imputedstaffqoi24mean_pooled |   .0774655   .1182136     0.66   0.512    -.154
+> 2791    .3092101
+ imputedstaffqoi41mean_pooled |  -.1953723    .148594    -1.31   0.189    -.486
+> 6743    .0959297
+ imputedstaffqoi64mean_pooled |  -.0940423    .118232    -0.80   0.426     -.32
+> 5823    .1377384
+ imputedstaffqoi87mean_pooled |    .021469     .01205     1.78   0.075    -.002
+> 1536    .0450917
+ imputedstaffqoi98mean_pooled |    .488948   .1516561     3.22   0.001     .191
+> 6431    .7862529
+                        _cons |   .1709069   .0217309     7.86   0.000     .128
+> 3059    .2135078
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (1,427 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1880,11 +1920,11 @@ note: imputedsecqoi29mean_pooled omitted because of collinearity.
 note: imputedsecqoi30mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
--------------+----------------------------------   F(31, 5593)     =    238.18
-       Model |   603.31016        31  19.4616181   Prob > F        =    0.0000
-    Residual |  457.000411     5,593  .081709353   R-squared       =    0.5690
--------------+----------------------------------   Adj R-squared   =    0.5666
-       Total |  1060.31057     5,624  .188533174   Root MSE        =    .28585
+-------------+----------------------------------   F(31, 5593)     =    238.30
+       Model |  603.435943        31  19.4656756   Prob > F        =    0.0000
+    Residual |  456.874628     5,593  .081686864   R-squared       =    0.5691
+-------------+----------------------------------   Adj R-squared   =    0.5667
+       Total |  1060.31057     5,624  .188533174   Root MSE        =    .28581
 
 -------------------------------------------------------------------------------
 > ----------------
@@ -1892,81 +1932,83 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |  -.0291935   .0251711    -1.16   0.246    -.078
-> 5386    .0201516
-       parentqoi16mean_pooled |   .1491411    .025661     5.81   0.000     .098
-> 8355    .1994467
-       parentqoi17mean_pooled |  -.1534862   .0274971    -5.58   0.000    -.207
-> 3911   -.0995813
-       parentqoi27mean_pooled |   .0967713   .0263733     3.67   0.000     .045
-> 0693    .1484733
-          secqoi22mean_pooled |   .0455436   .0280685     1.62   0.105    -.009
-> 4815    .1005688
-          secqoi23mean_pooled |   .0579456   .0322081     1.80   0.072    -.005
-> 1947    .1210859
-          secqoi24mean_pooled |  -.0298676   .0460794    -0.65   0.517    -.120
-> 2011    .0604658
-          secqoi25mean_pooled |   .0058852   .0285862     0.21   0.837    -.050
-> 1549    .0619253
-          secqoi26mean_pooled |  -.0182239   .0338772    -0.54   0.591    -.084
-> 6364    .0481885
-          secqoi27mean_pooled |   .0489085   .0184197     2.66   0.008     .012
-> 7988    .0850183
-          secqoi28mean_pooled |  -.1517804    .033974    -4.47   0.000    -.218
-> 3827   -.0851781
-          secqoi29mean_pooled |   .1176512    .038967     3.02   0.003     .041
-> 2606    .1940417
-          secqoi30mean_pooled |   .0245467   .0384538     0.64   0.523    -.050
-> 8377    .0999311
-        staffqoi20mean_pooled |   .1267304   .0104244    12.16   0.000     .106
-> 2946    .1471662
-        staffqoi24mean_pooled |   .6963466   .0204114    34.12   0.000     .656
-> 3323    .7363608
-        staffqoi41mean_pooled |  -.1388318   .0168276    -8.25   0.000    -.171
-> 8205   -.1058432
-        staffqoi44mean_pooled |  -.0418521   .0209227    -2.00   0.046    -.082
-> 8687   -.0008355
-        staffqoi87mean_pooled |   .1419568   .0175009     8.11   0.000     .107
-> 6483    .1762653
-        staffqoi98mean_pooled |   .1440435    .007281    19.78   0.000     .129
-> 7699    .1583171
- imputedparentqoi9mean_pooled |  -.2325354   .1658207    -1.40   0.161    -.557
-> 6083    .0925376
-imputedparentqoi16mean_pooled |   .2205917   .3304536     0.67   0.504    -.427
-> 2258    .8684091
-imputedparentqoi17mean_pooled |    .002415   .2860986     0.01   0.993    -.558
-> 4495    .5632794
+        parentqoi9mean_pooled |  -.0293341   .0251678    -1.17   0.244    -.078
+> 6728    .0200046
+       parentqoi16mean_pooled |   .1487862   .0256583     5.80   0.000     .098
+> 4859    .1990865
+       parentqoi17mean_pooled |    -.15311   .0274936    -5.57   0.000     -.20
+> 7008   -.0992119
+       parentqoi27mean_pooled |   .0966962   .0263697     3.67   0.000     .045
+> 0013    .1483911
+          secqoi22mean_pooled |   .0461609   .0280086     1.65   0.099    -.008
+> 7467    .1010685
+          secqoi23mean_pooled |   .0602162   .0321543     1.87   0.061    -.002
+> 8188    .1232512
+          secqoi24mean_pooled |  -.0327499   .0460287    -0.71   0.477     -.12
+> 2984    .0574843
+          secqoi25mean_pooled |   .0042286   .0285804     0.15   0.882    -.051
+> 8002    .0602573
+          secqoi26mean_pooled |  -.0195591   .0337735    -0.58   0.563    -.085
+> 7682    .0466501
+          secqoi27mean_pooled |   .0512221     .01839     2.79   0.005     .015
+> 1706    .0872737
+          secqoi28mean_pooled |  -.1527487   .0339458    -4.50   0.000    -.219
+> 2956   -.0862019
+          secqoi29mean_pooled |   .1188652   .0389484     3.05   0.002     .042
+> 5113    .1952191
+          secqoi30mean_pooled |   .0244576   .0384481     0.64   0.525    -.050
+> 9156    .0998308
+        staffqoi20mean_pooled |   .1267883   .0104088    12.18   0.000      .10
+> 6383    .1471936
+        staffqoi24mean_pooled |   .6962811   .0204069    34.12   0.000     .656
+> 2756    .7362866
+        staffqoi41mean_pooled |  -.1389171   .0168253    -8.26   0.000    -.171
+> 9013   -.1059329
+        staffqoi44mean_pooled |  -.0421067   .0209208    -2.01   0.044    -.083
+> 1196   -.0010939
+        staffqoi87mean_pooled |   .1420227   .0174994     8.12   0.000     .107
+> 7172    .1763282
+        staffqoi98mean_pooled |   .1441146     .00728    19.80   0.000      .12
+> 9843    .1583862
+ imputedparentqoi9mean_pooled |  -.2329132   .1657978    -1.40   0.160    -.557
+> 9413    .0921149
+imputedparentqoi16mean_pooled |   .2214317   .3304082     0.67   0.503    -.426
+> 2966    .8691601
+imputedparentqoi17mean_pooled |   .0019961   .2860594     0.01   0.994    -.558
+> 7915    .5627836
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |  -.0790732   .2893333    -0.27   0.785    -.646
-> 2788    .4881324
+   imputedsecqoi22mean_pooled |  -.0791893   .2892855    -0.27   0.784    -.646
+> 3011    .4879225
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |    .092042   .2880927     0.32   0.749    -.472
-> 7316    .6568155
+   imputedsecqoi24mean_pooled |   .0919612   .2880477     0.32   0.750     -.47
+> 2724    .6566465
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |   .0589033   .0286526     2.06   0.040      .00
-> 2733    .1150735
+   imputedsecqoi27mean_pooled |   .0590974   .0286495     2.06   0.039     .002
+> 9333    .1152616
    imputedsecqoi28mean_pooled |          0  (omitted)
    imputedsecqoi29mean_pooled |          0  (omitted)
    imputedsecqoi30mean_pooled |          0  (omitted)
- imputedstaffqoi20mean_pooled |   .1223304   .1156132     1.06   0.290    -.104
-> 3162    .3489771
- imputedstaffqoi24mean_pooled |   .0334503   .0117544     2.85   0.004     .010
-> 4072    .0564934
- imputedstaffqoi41mean_pooled |   .4688039   .2252817     2.08   0.037     .027
-> 1643    .9104434
- imputedstaffqoi44mean_pooled |  -.1571455   .1553703    -1.01   0.312    -.461
-> 7316    .1474405
- imputedstaffqoi87mean_pooled |  -.0407741   .0185975    -2.19   0.028    -.077
-> 2325   -.0043158
- imputedstaffqoi98mean_pooled |  -.3989876   .2237456    -1.78   0.075    -.837
-> 6159    .0396407
-                        _cons |  -.5190643   .0330693   -15.70   0.000    -.583
-> 8929   -.4542356
+ imputedstaffqoi20mean_pooled |   .1224551   .1155968     1.06   0.289    -.104
+> 1595    .3490697
+ imputedstaffqoi24mean_pooled |   .0334102   .0117525     2.84   0.004     .010
+> 3708    .0564497
+ imputedstaffqoi41mean_pooled |   .4677674     .22525     2.08   0.038     .026
+> 1901    .9093448
+ imputedstaffqoi44mean_pooled |   -.156385   .1553463    -1.01   0.314    -.460
+> 9241    .1481541
+ imputedstaffqoi87mean_pooled |  -.0409259   .0185952    -2.20   0.028    -.077
+> 3797   -.0044721
+ imputedstaffqoi98mean_pooled |  -.3986676   .2237154    -1.78   0.075    -.837
+> 2367    .0399015
+                        _cons |  -.5175746   .0330773   -15.65   0.000    -.582
+> 4189   -.4527303
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (2,588 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -1976,11 +2018,11 @@ note: imputedsecqoi29mean_pooled omitted because of collinearity.
 note: imputedsecqoi30mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
--------------+----------------------------------   F(31, 5593)     =    237.61
-       Model |  341.595516        31  11.0192102   Prob > F        =    0.0000
-    Residual |  259.376658     5,593  .046375229   R-squared       =    0.5684
--------------+----------------------------------   Adj R-squared   =    0.5660
-       Total |  600.972174     5,624  .106858495   Root MSE        =    .21535
+-------------+----------------------------------   F(31, 5593)     =    237.67
+       Model |  341.632014        31  11.0203875   Prob > F        =    0.0000
+    Residual |   259.34016     5,593  .046368704   R-squared       =    0.5685
+-------------+----------------------------------   Adj R-squared   =    0.5661
+       Total |  600.972174     5,624  .106858495   Root MSE        =    .21533
 
 -------------------------------------------------------------------------------
 > ----------------
@@ -1988,81 +2030,83 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |   .0048482   .0189621     0.26   0.798    -.032
-> 3249    .0420212
-       parentqoi16mean_pooled |  -.0131546   .0194013    -0.68   0.498    -.051
-> 1886    .0248794
-       parentqoi17mean_pooled |   -.033601   .0208048    -1.62   0.106    -.074
-> 3864    .0071844
-       parentqoi27mean_pooled |   .0426994   .0198773     2.15   0.032     .003
-> 7321    .0816666
-          secqoi22mean_pooled |  -.0536918   .0211039    -2.54   0.011    -.095
-> 0636   -.0123199
-          secqoi23mean_pooled |   .0528542   .0242639     2.18   0.029     .005
-> 2876    .1004208
-          secqoi24mean_pooled |  -.0845219   .0346739    -2.44   0.015    -.152
-> 4962   -.0165476
-          secqoi25mean_pooled |  -.0911646   .0214991    -4.24   0.000    -.133
-> 3112    -.049018
-          secqoi26mean_pooled |   .0252051   .0255074     0.99   0.323    -.024
-> 7994    .0752095
-          secqoi27mean_pooled |  -.0635408   .0138634    -4.58   0.000    -.090
-> 7184   -.0363632
-          secqoi28mean_pooled |   .3181277   .0253504    12.55   0.000      .26
-> 8431    .3678244
-          secqoi29mean_pooled |   .0309003   .0293943     1.05   0.293    -.026
-> 7239    .0885245
-          secqoi30mean_pooled |   -.099705   .0289396    -3.45   0.001    -.156
-> 4378   -.0429721
-        staffqoi20mean_pooled |   .0463813   .0080763     5.74   0.000     .030
-> 5486    .0622139
-        staffqoi24mean_pooled |   .1505311   .0163114     9.23   0.000     .118
-> 5545    .1825077
-        staffqoi41mean_pooled |   .0991823   .0126814     7.82   0.000     .074
-> 3218    .1240429
-        staffqoi44mean_pooled |   .2329713   .0154739    15.06   0.000     .202
-> 6365    .2633061
-        staffqoi64mean_pooled |   .1429078   .0113262    12.62   0.000      .12
-> 0704    .1651116
-        staffqoi98mean_pooled |   .0380568   .0058564     6.50   0.000      .02
-> 6576    .0495375
- imputedparentqoi9mean_pooled |   .0204493   .1249476     0.16   0.870    -.224
-> 4966    .2653952
-imputedparentqoi16mean_pooled |  -.0596583   .2489644    -0.24   0.811    -.547
-> 7253    .4284087
-imputedparentqoi17mean_pooled |   .0563178   .2155363     0.26   0.794     -.36
-> 6217    .4788526
+        parentqoi9mean_pooled |   .0047825   .0189609     0.25   0.801    -.032
+> 3882    .0419533
+       parentqoi16mean_pooled |   -.012949   .0194001    -0.67   0.504    -.050
+> 9807    .0250827
+       parentqoi17mean_pooled |  -.0336733    .020803    -1.62   0.106    -.074
+> 4553    .0071087
+       parentqoi27mean_pooled |   .0427555   .0198759     2.15   0.032     .003
+> 7911    .0817199
+          secqoi22mean_pooled |  -.0536212   .0210606    -2.55   0.011    -.094
+> 9082   -.0123342
+          secqoi23mean_pooled |   .0538795   .0242254     2.22   0.026     .006
+> 3883    .1013708
+          secqoi24mean_pooled |  -.0859526   .0346373    -2.48   0.013    -.153
+> 8553     -.01805
+          secqoi25mean_pooled |  -.0913049    .021496    -4.25   0.000    -.133
+> 4454   -.0491644
+          secqoi26mean_pooled |   .0258236   .0254311     1.02   0.310    -.024
+> 0311    .0756784
+          secqoi27mean_pooled |   -.064678   .0138432    -4.67   0.000     -.09
+> 1816     -.03754
+          secqoi28mean_pooled |   .3175108   .0253329    12.53   0.000     .267
+> 8484    .3671732
+          secqoi29mean_pooled |    .031661   .0293828     1.08   0.281    -.025
+> 9408    .0892628
+          secqoi30mean_pooled |    -.09938   .0289375    -3.43   0.001    -.156
+> 1087   -.0426513
+        staffqoi20mean_pooled |   .0463181   .0080653     5.74   0.000      .03
+> 0507    .0621293
+        staffqoi24mean_pooled |   .1506323   .0163086     9.24   0.000     .118
+> 6611    .1826034
+        staffqoi41mean_pooled |   .0993285   .0126805     7.83   0.000     .074
+> 4697    .1241873
+        staffqoi44mean_pooled |   .2330486   .0154731    15.06   0.000     .202
+> 7154    .2633818
+        staffqoi64mean_pooled |   .1430234   .0113269    12.63   0.000     .120
+> 8183    .1652285
+        staffqoi98mean_pooled |   .0380416   .0058564     6.50   0.000     .026
+> 5607    .0495225
+ imputedparentqoi9mean_pooled |    .020491   .1249389     0.16   0.870    -.224
+> 4379    .2654198
+imputedparentqoi16mean_pooled |  -.0599946   .2489471    -0.24   0.810    -.548
+> 0275    .4280383
+imputedparentqoi17mean_pooled |   .0566285   .2155212     0.26   0.793    -.365
+> 8768    .4791338
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |   .0762128   .2179703     0.35   0.727    -.351
-> 0937    .5035193
+   imputedsecqoi22mean_pooled |   .0769957   .2179491     0.35   0.724    -.350
+> 2691    .5042606
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |  -.0211933   .2169822    -0.10   0.922    -.446
-> 5625     .404176
+   imputedsecqoi24mean_pooled |  -.0215496    .216963    -0.10   0.921    -.446
+> 8814    .4037821
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |   .0453427   .0212526     2.13   0.033     .003
-> 6793    .0870061
+   imputedsecqoi27mean_pooled |   .0448048   .0212516     2.11   0.035     .003
+> 1434    .0864663
    imputedsecqoi28mean_pooled |          0  (omitted)
    imputedsecqoi29mean_pooled |          0  (omitted)
    imputedsecqoi30mean_pooled |          0  (omitted)
- imputedstaffqoi20mean_pooled |   .1328712   .0876039     1.52   0.129    -.038
-> 8665    .3046089
- imputedstaffqoi24mean_pooled |   .0572945   .1393199     0.41   0.681    -.215
-> 8266    .3304156
- imputedstaffqoi41mean_pooled |   .3535702    .178643     1.98   0.048     .003
-> 3605    .7037799
- imputedstaffqoi44mean_pooled |  -.2595451   .1184945    -2.19   0.029    -.491
-> 8403   -.0272499
- imputedstaffqoi64mean_pooled |  -.0753897   .1392409    -0.54   0.588     -.34
-> 8356    .1975767
- imputedstaffqoi98mean_pooled |  -.1881589   .1883661    -1.00   0.318    -.557
-> 4297    .1811119
-                        _cons |   .3148317   .0253327    12.43   0.000     .265
-> 1698    .3644936
+ imputedstaffqoi20mean_pooled |   .1336639   .0875972     1.53   0.127    -.038
+> 0606    .3053884
+ imputedstaffqoi24mean_pooled |   .0571818     .13931     0.41   0.681    -.215
+> 9198    .3302835
+ imputedstaffqoi41mean_pooled |   .3537698   .1786296     1.98   0.048     .003
+> 5864    .7039532
+ imputedstaffqoi44mean_pooled |  -.2598905   .1184838    -2.19   0.028    -.492
+> 1647   -.0276162
+ imputedstaffqoi64mean_pooled |  -.0752289   .1392311    -0.54   0.589    -.348
+> 1759    .1977182
+ imputedstaffqoi98mean_pooled |   -.188857   .1883529    -1.00   0.316    -.558
+> 1018    .1803878
+                        _cons |   .3141624   .0253359    12.40   0.000     .264
+> 4942    .3638305
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (1,796 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi27mean_pooled omitted because of collinearity.
 note: imputedsecqoi23mean_pooled omitted because of collinearity.
 note: imputedsecqoi25mean_pooled omitted because of collinearity.
@@ -2072,11 +2116,11 @@ note: imputedsecqoi29mean_pooled omitted because of collinearity.
 note: imputedsecqoi30mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
--------------+----------------------------------   F(31, 5593)     =    341.18
-       Model |  2535.92246        31  81.8039504   Prob > F        =    0.0000
-    Residual |  1341.01156     5,593  .239766057   R-squared       =    0.6541
+-------------+----------------------------------   F(31, 5593)     =    341.25
+       Model |    2536.105        31  81.8098388   Prob > F        =    0.0000
+    Residual |  1340.82902     5,593   .23973342   R-squared       =    0.6542
 -------------+----------------------------------   Adj R-squared   =    0.6522
-       Total |  3876.93402     5,624  .689355267   Root MSE        =    .48966
+       Total |  3876.93402     5,624  .689355267   Root MSE        =    .48963
 
 -------------------------------------------------------------------------------
 > ----------------
@@ -2084,81 +2128,83 @@ note: imputedsecqoi30mean_pooled omitted because of collinearity.
 >  conf. interval]
 ------------------------------+------------------------------------------------
 > ----------------
-        parentqoi9mean_pooled |  -.0551795   .0431062    -1.28   0.201    -.139
-> 6843    .0293253
-       parentqoi16mean_pooled |   .2290376     .04382     5.23   0.000     .143
-> 1334    .3149418
-       parentqoi17mean_pooled |  -.2429431   .0471481    -5.15   0.000    -.335
-> 3718   -.1505145
-       parentqoi27mean_pooled |   .1570129   .0451891     3.47   0.001     .068
-> 4248    .2456011
-          secqoi22mean_pooled |   .5403139   .0475762    11.36   0.000     .447
-> 0462    .6335816
-          secqoi23mean_pooled |  -.4178675    .054953    -7.60   0.000    -.525
-> 5967   -.3101382
-          secqoi24mean_pooled |   .0967532    .079006     1.22   0.221    -.058
-> 1292    .2516357
-          secqoi25mean_pooled |  -.3751742   .0488529    -7.68   0.000    -.470
-> 9449   -.2794035
-          secqoi26mean_pooled |   .5010973   .0576656     8.69   0.000     .388
-> 0503    .6141442
-          secqoi27mean_pooled |   .0132564   .0316413     0.42   0.675     -.04
-> 8773    .0752857
-          secqoi28mean_pooled |   .7628883   .0585923    13.02   0.000     .648
-> 0247    .8777519
-          secqoi29mean_pooled |   .0413979   .0668702     0.62   0.536    -.089
-> 6937    .1724895
-          secqoi30mean_pooled |  -.5281678    .065601    -8.05   0.000    -.656
-> 7712   -.3995644
-        staffqoi20mean_pooled |  -.1623073   .0183521    -8.84   0.000    -.198
-> 2845     -.12633
-        staffqoi24mean_pooled |  -.2764681   .0370261    -7.47   0.000    -.349
-> 0536   -.2038826
-        staffqoi41mean_pooled |  -.0687681   .0291174    -2.36   0.018    -.125
-> 8494   -.0116867
-        staffqoi44mean_pooled |   .5249722    .035924    14.61   0.000     .454
-> 5472    .5953973
-        staffqoi64mean_pooled |    .707521   .0242409    29.19   0.000     .659
-> 9994    .7550426
-        staffqoi87mean_pooled |   .2219542   .0323707     6.86   0.000      .15
-> 8495    .2854134
- imputedparentqoi9mean_pooled |   .4861302   .2840374     1.71   0.087    -.070
-> 6934    1.042954
-imputedparentqoi16mean_pooled |  -.5188275   .5660607    -0.92   0.359    -1.62
-> 8526    .5908713
-imputedparentqoi17mean_pooled |   .1167503   .4900887     0.24   0.812    -.844
-> 0139    1.077515
+        parentqoi9mean_pooled |  -.0549693   .0431036    -1.28   0.202    -.139
+> 4692    .0295305
+       parentqoi16mean_pooled |   .2295414   .0438168     5.24   0.000     .143
+> 6436    .3154393
+       parentqoi17mean_pooled |  -.2434711   .0471438    -5.16   0.000    -.335
+> 8913   -.1510509
+       parentqoi27mean_pooled |   .1570591   .0451859     3.48   0.001     .068
+> 4771    .2456411
+          secqoi22mean_pooled |   .5389456   .0474787    11.35   0.000     .445
+> 8689    .6320223
+          secqoi23mean_pooled |  -.4193074   .0548645    -7.64   0.000    -.526
+> 8631   -.3117517
+          secqoi24mean_pooled |   .0985765   .0789252     1.25   0.212    -.056
+> 1476    .2533005
+          secqoi25mean_pooled |  -.3735917   .0488471    -7.65   0.000    -.469
+> 3511   -.2778324
+          secqoi26mean_pooled |   .5045865   .0574857     8.78   0.000     .391
+> 8922    .6172808
+          secqoi27mean_pooled |   .0090066   .0315995     0.29   0.776    -.052
+> 9406    .0709539
+          secqoi28mean_pooled |   .7629874   .0585499    13.03   0.000     .648
+> 2069    .8777679
+          secqoi29mean_pooled |   .0408875   .0668451     0.61   0.541    -.090
+> 1547    .1719298
+          secqoi30mean_pooled |   -.527683   .0655962    -8.04   0.000    -.656
+> 2771    -.399089
+        staffqoi20mean_pooled |  -.1631855   .0183259    -8.90   0.000    -.199
+> 1114   -.1272596
+        staffqoi24mean_pooled |  -.2762658   .0370204    -7.46   0.000    -.348
+> 8401   -.2036915
+        staffqoi41mean_pooled |  -.0684265   .0291162    -2.35   0.019    -.125
+> 5057   -.0113474
+        staffqoi44mean_pooled |   .5253717   .0359222    14.63   0.000     .454
+> 9502    .5957931
+        staffqoi64mean_pooled |   .7079563   .0242411    29.20   0.000     .660
+> 4343    .7554783
+        staffqoi87mean_pooled |   .2217684   .0323717     6.85   0.000     .158
+> 3073    .2852295
+ imputedparentqoi9mean_pooled |   .4871369    .284018     1.72   0.086    -.069
+> 6485    1.043922
+imputedparentqoi16mean_pooled |  -.5206137   .5660223    -0.92   0.358    -1.63
+> 0237    .5890097
+imputedparentqoi17mean_pooled |   .1174729   .4900557     0.24   0.811    -.843
+> 2265    1.078172
 imputedparentqoi27mean_pooled |          0  (omitted)
-   imputedsecqoi22mean_pooled |   .3076938   .4956288     0.62   0.535     -.66
-> 3931    1.279319
+   imputedsecqoi22mean_pooled |   .3069326   .4955816     0.62   0.536    -.664
+> 5999    1.278465
    imputedsecqoi23mean_pooled |          0  (omitted)
-   imputedsecqoi24mean_pooled |   .2647663   .4935173     0.54   0.592    -.702
-> 7193    1.232252
+   imputedsecqoi24mean_pooled |   .2652244   .4934745     0.54   0.591    -.702
+> 1771    1.232626
    imputedsecqoi25mean_pooled |          0  (omitted)
    imputedsecqoi26mean_pooled |          0  (omitted)
-   imputedsecqoi27mean_pooled |  -.0518878   .0491316    -1.06   0.291    -.148
-> 2049    .0444292
+   imputedsecqoi27mean_pooled |  -.0520669   .0491296    -1.06   0.289    -.148
+> 3801    .0442463
    imputedsecqoi28mean_pooled |          0  (omitted)
    imputedsecqoi29mean_pooled |          0  (omitted)
    imputedsecqoi30mean_pooled |          0  (omitted)
- imputedstaffqoi20mean_pooled |   .2337277   .1933318     1.21   0.227    -.145
-> 2777     .612733
- imputedstaffqoi24mean_pooled |  -.0776774   .2834426    -0.27   0.784     -.63
-> 3335    .4779802
- imputedstaffqoi41mean_pooled |  -.6656332   .2888819    -2.30   0.021    -1.23
-> 1954   -.0993126
- imputedstaffqoi44mean_pooled |   .5971963   .2528539     2.36   0.018     .101
-> 5045    1.092888
- imputedstaffqoi64mean_pooled |    .092106    .283583     0.32   0.745    -.463
-> 8268    .6480388
- imputedstaffqoi87mean_pooled |  -.0260578   .0319034    -0.82   0.414    -.088
-> 6008    .0364853
-                        _cons |   -1.81222   .0528045   -34.32   0.000    -1.91
-> 5737   -1.708703
+ imputedstaffqoi20mean_pooled |   .2343491   .1933175     1.21   0.225    -.144
+> 6282    .6133265
+ imputedstaffqoi24mean_pooled |  -.0775991   .2834236    -0.27   0.784    -.633
+> 2194    .4780213
+ imputedstaffqoi41mean_pooled |  -.6648397   .2888579    -2.30   0.021    -1.23
+> 1113    -.098566
+ imputedstaffqoi44mean_pooled |   .5954051   .2528333     2.35   0.019     .099
+> 7537    1.091056
+ imputedstaffqoi64mean_pooled |   .0919282   .2835638     0.32   0.746    -.463
+> 9669    .6478234
+ imputedstaffqoi87mean_pooled |  -.0257719   .0319019    -0.81   0.419     -.08
+> 8312    .0367682
+                        _cons |   -1.81415   .0527962   -34.36   0.000    -1.91
+> 7651   -1.710649
 -------------------------------------------------------------------------------
 > ----------------
 (option xb assumed; fitted values)
 (1,425 real changes made)
+(0 real changes made)
+(0 real changes made)
 
 . 
 . 
@@ -2172,8 +2218,14 @@ imputedparentqoi27mean_pooled |          0  (omitted)
   5.   reg `i' `xvars' `xdummies'
   6.   predict hat_`i'
   7.   replace `i' = hat_`i' if imputed`i' == 1
-  8.   drop hat_`i'
-  9. }
+  8.   // clamp OLS-imputed predictions to the Likert range [-2, 2]: regression
+.   // imputation is unbounded, so censor out-of-range predictions to the
+.   // nearest bound (fixes secqoi27mean_pooled max=2.61 -> 2; check_survey_ind
+> ices)
+.   replace `i' = -2 if imputed`i' == 1 & `i' < -2
+  9.   replace `i' =  2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
+ 10.   drop hat_`i'
+ 11. }
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
 note: imputedsecqoi39mean_pooled omitted because of collinearity.
@@ -2258,6 +2310,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (3,120 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -2342,6 +2396,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,847 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -2426,6 +2482,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (3,363 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -2510,6 +2568,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,844 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
 note: imputedsecqoi39mean_pooled omitted because of collinearity.
@@ -2594,6 +2654,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (3,120 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
 note: imputedsecqoi39mean_pooled omitted because of collinearity.
@@ -2678,6 +2740,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,240 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
 note: imputedsecqoi39mean_pooled omitted because of collinearity.
@@ -2762,6 +2826,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,240 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi39mean_pooled omitted because of collinearity.
@@ -2846,6 +2912,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,240 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -2930,6 +2998,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,242 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -3014,6 +3084,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,240 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -3098,6 +3170,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (2,240 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -3182,6 +3256,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (1,428 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -3266,6 +3342,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (1,428 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -3350,6 +3428,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (1,428 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -3434,6 +3514,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (1,428 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -3518,6 +3600,8 @@ imputedstaffqoi112mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (1,428 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedparentqoi34mean_pooled omitted because of collinearity.
 note: imputedsecqoi36mean_pooled omitted because of collinearity.
 note: imputedsecqoi37mean_pooled omitted because of collinearity.
@@ -3602,6 +3686,8 @@ imputedstaffqoi111mean_pooled |          0  (omitted)
 > ----------------
 (option xb assumed; fitted values)
 (1,428 real changes made)
+(0 real changes made)
+(0 real changes made)
 
 . 
 . 
@@ -3615,8 +3701,14 @@ imputedstaffqoi111mean_pooled |          0  (omitted)
   5.   reg `i' `xvars' `xdummies'
   6.   predict hat_`i'
   7.   replace `i' = hat_`i' if imputed`i' == 1
-  8.   drop hat_`i'
-  9. }
+  8.   // clamp OLS-imputed predictions to the Likert range [-2, 2]: regression
+.   // imputation is unbounded, so censor out-of-range predictions to the
+.   // nearest bound (fixes secqoi27mean_pooled max=2.61 -> 2; check_survey_ind
+> ices)
+.   replace `i' = -2 if imputed`i' == 1 & `i' < -2
+  9.   replace `i' =  2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
+ 10.   drop hat_`i'
+ 11. }
 
       Source |       SS           df       MS      Number of obs   =     5,625
 -------------+----------------------------------   F(6, 5618)      =    534.35
@@ -3649,6 +3741,8 @@ imputedstaffqoi128mean_pooled |   .0298864   .0223789     1.34   0.182    -.013
 > ----------------
 (option xb assumed; fitted values)
 (2,839 real changes made)
+(0 real changes made)
+(0 real changes made)
 
       Source |       SS           df       MS      Number of obs   =     5,625
 -------------+----------------------------------   F(6, 5618)      =    507.28
@@ -3681,6 +3775,8 @@ imputedstaffqoi128mean_pooled |  -.0358809   .0296604    -1.21   0.226    -.094
 > ----------------
 (option xb assumed; fitted values)
 (2,872 real changes made)
+(0 real changes made)
+(0 real changes made)
 
       Source |       SS           df       MS      Number of obs   =     5,625
 -------------+----------------------------------   F(6, 5618)      =    458.47
@@ -3713,6 +3809,8 @@ imputedstaffqoi128mean_pooled |  -.0688659   .0149764    -4.60   0.000    -.098
 > ----------------
 (option xb assumed; fitted values)
 (1,426 real changes made)
+(0 real changes made)
+(0 real changes made)
 
       Source |       SS           df       MS      Number of obs   =     5,625
 -------------+----------------------------------   F(6, 5618)      =    479.65
@@ -3745,6 +3843,8 @@ imputedparentqoi64mean_pooled |  -.0208153   .0591037    -0.35   0.725    -.136
 > ----------------
 (option xb assumed; fitted values)
 (1,567 real changes made)
+(0 real changes made)
+(0 real changes made)
 
 . 
 . 
@@ -3758,8 +3858,14 @@ imputedparentqoi64mean_pooled |  -.0208153   .0591037    -0.35   0.725    -.136
   5.   reg `i' `xvars' `xdummies'
   6.   predict hat_`i'
   7.   replace `i' = hat_`i' if imputed`i' == 1
-  8.   drop hat_`i'
-  9. }
+  8.   // clamp OLS-imputed predictions to the Likert range [-2, 2]: regression
+.   // imputation is unbounded, so censor out-of-range predictions to the
+.   // nearest bound (fixes secqoi27mean_pooled max=2.61 -> 2; check_survey_ind
+> ices)
+.   replace `i' = -2 if imputed`i' == 1 & `i' < -2
+  9.   replace `i' =  2 if imputed`i' == 1 & `i' >  2 & !missing(`i')
+ 10.   drop hat_`i'
+ 11. }
 
       Source |       SS           df       MS      Number of obs   =     5,625
 -------------+----------------------------------   F(6, 5618)      =   5201.95
@@ -3791,6 +3897,8 @@ imputedsecqoi34mean_pooled |   .5284717    .078677     6.72   0.000     .374234
 -------------------------------------------------------------------------------
 > -------------
 (option xb assumed; fitted values)
+(0 real changes made)
+(0 real changes made)
 (0 real changes made)
 note: imputedsecqoi33mean_pooled omitted because of collinearity.
 
@@ -3824,6 +3932,8 @@ imputedsecqoi34mean_pooled |   .5355072   .1108852     4.83   0.000     .318129
 > -------------
 (option xb assumed; fitted values)
 (2 real changes made)
+(0 real changes made)
+(0 real changes made)
 
       Source |       SS           df       MS      Number of obs   =     5,625
 -------------+----------------------------------   F(6, 5618)      =   7126.21
@@ -3856,6 +3966,8 @@ imputedsecqoi34mean_pooled |   .4193137   .0677311     6.19   0.000     .286534
 > -------------
 (option xb assumed; fitted values)
 (0 real changes made)
+(0 real changes made)
+(0 real changes made)
 note: imputedsecqoi33mean_pooled omitted because of collinearity.
 
       Source |       SS           df       MS      Number of obs   =     5,625
@@ -3887,6 +3999,8 @@ imputedsecqoi33mean_pooled |          0  (omitted)
 -------------------------------------------------------------------------------
 > -------------
 (option xb assumed; fitted values)
+(1 real change made)
+(0 real changes made)
 (1 real change made)
 
 . 

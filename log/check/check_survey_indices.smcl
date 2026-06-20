@@ -2,7 +2,7 @@
       name:  check_survey_indices
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/check/check_survey_indices.smcl
   log type:  text
- opened on:   3 Jun 2026, 03:01:24
+ opened on:  15 Jun 2026, 04:30:12
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "check_survey_indices.do — RUN START: `c(current_date)' `c(current_time)'"
-check_survey_indices.do — RUN START:  3 Jun 2026 03:01:24
+check_survey_indices.do — RUN START: 15 Jun 2026 04:30:12
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -69,70 +69,75 @@ check_survey_indices.do — RUN START:  3 Jun 2026 03:01:24
 . 
 . foreach src_tag in calschls_1 calschls_2 {
   2.     if "`src_tag'" == "calschls_1" {
-  3.         local src_dta "$caschls_projdir/dta/allsvyfactor/imputedallsvyqoimeans.dta"
+  3.         local src_dta "$datadir_clean/survey_va/imputedallsvyqoimeans.dta"
   4.         local src_label "imputed"
   5.     }
   6.     else {
-  7.         local src_dta "$caschls_projdir/dta/allsvyfactor/allsvyqoimeans.dta"
+  7.         local src_dta "$datadir_clean/survey_va/allsvyqoimeans.dta"
   8.         local src_label "compcase"
   9.     }
  10. 
 .     capture confirm file "`src_dta'"
  11.     if _rc {
- 12.         di as text "  [LEGACY-MISSING] `src_dta' — predecessor caschls source not present."
- 13.         di as text "                   Skipping `src_label' source-item checks."
- 14.         continue
- 15.     }
- 16. 
-.     use "`src_dta'", clear
+ 12.         di as text "  [SKELETON] `src_dta' — CANONICAL survey-VA output not present"
+ 13.         di as text "             (produced by Phase 5 allsvymerge.do / imputation.do)."
+ 14.         di as text "             Skipping `src_label' source-item checks."
+ 15.         continue
+ 16.     }
  17. 
+.     use "`src_dta'", clear
+ 18. 
 .     * School-level row count -- design memo §5 (codebook line 105 / 24269)
 .     capture assert _N == 5625
- 18.     if _rc {
- 19.         di as error "  FAIL: `src_label' source _N = " r(N) " (expected 5625)"
- 20.         cap log close check_survey_indices
- 21.         cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
- 22.         exit _rc
- 23.     }
- 24.     di as text "  PASS: `src_label' source _N == 5625"
- 25. 
+ 19.     local rc = _rc
+ 20.     if _rc {
+ 21.         di as error "  FAIL: `src_label' source _N = " r(N) " (expected 5625)"
+ 22.         cap log close check_survey_indices
+ 23.         cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
+ 24.         exit `rc'
+ 25.     }
+ 26.     di as text "  PASS: `src_label' source _N == 5625"
+ 27. 
 .     * Source-item Likert range: [-2, 2] with ±0.01 floating-point tolerance.
 .     foreach v of varlist parentqoi*mean_pooled secqoi*mean_pooled            ///
 >                          staffqoi*mean_pooled                                {
- 26.         qui sum `v'
- 27.         if r(N) == 0 continue
- 28.         capture assert inrange(r(min), -2.01, 0)
- 29.         if _rc {
- 30.             di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (expected ∈ [-2.01, 0])"
- 31.             cap log close check_survey_indices
- 32.             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", repla
+ 28.         qui sum `v'
+ 29.         if r(N) == 0 continue
+ 30.         capture assert inrange(r(min), -2.01, 0)
+ 31.         local rc = _rc
+ 32.         if _rc {
+ 33.             di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (expected ∈ [-2.01, 0])"
+ 34.             cap log close check_survey_indices
+ 35.             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", repla
 > ce
- 33.             exit _rc
- 34.         }
- 35.         capture assert inrange(r(max), 0, 2.01)
- 36.         if _rc {
- 37.             di as error "  FAIL: `src_label' `v' max = " %7.4f r(max) " (expected ∈ [0, 2.01])"
- 38.             cap log close check_survey_indices
- 39.             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", repla
+ 36.             exit `rc'
+ 37.         }
+ 38.         capture assert inrange(r(max), 0, 2.01)
+ 39.         local rc = _rc
+ 40.         if _rc {
+ 41.             di as error "  FAIL: `src_label' `v' max = " %7.4f r(max) " (expected ∈ [0, 2.01])"
+ 42.             cap log close check_survey_indices
+ 43.             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", repla
 > ce
- 40.             exit _rc
- 41.         }
- 42.     }
- 43.     di as text "  PASS: `src_label' source items within Likert [-2.01, 2.01]"
- 44. 
+ 44.             exit `rc'
+ 45.         }
+ 46.     }
+ 47.     di as text "  PASS: `src_label' source items within Likert [-2.01, 2.01]"
+ 48. 
 .     * Every index component present in the source file.
 .     foreach v in `climateitems' `qualityitems' `supportitems' {
- 45.         capture confirm variable `v'
- 46.         if _rc {
- 47.             di as error "  FAIL: `src_label' source missing required item `v'"
- 48.             cap log close check_survey_indices
- 49.             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", repla
+ 49.         capture confirm variable `v'
+ 50.         local rc = _rc
+ 51.         if _rc {
+ 52.             di as error "  FAIL: `src_label' source missing required item `v'"
+ 53.             cap log close check_survey_indices
+ 54.             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", repla
 > ce
- 50.             exit _rc
- 51.         }
- 52.     }
- 53.     di as text "  PASS: `src_label' source has all 28 (=9+15+4) required index components"
- 54. }
+ 55.             exit `rc'
+ 56.         }
+ 57.     }
+ 58.     di as text "  PASS: `src_label' source has all 28 (=9+15+4) required index components"
+ 59. }
 (parent pooled (over years) dataset ready for analysis with stats and response ra)
   PASS: imputed source _N == 5625
-  FAIL: imputed secqoi27mean_pooled max =  2.6133 (expected ∈ [0, 2.01])
+  FAIL: imputed staffqoi98mean_pooled min = -3.0000 (expected ∈ [-2.01, 0])

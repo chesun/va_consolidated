@@ -2,7 +2,7 @@
       name:  va_spec_fb_tab_all
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/va_spec_fb_tab_all.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:29:36
+ opened on:  15 Jun 2026, 03:52:23
 
 . 
 . graph drop _all
@@ -1070,7 +1070,7 @@ xij variables:
                                   entry   ->   entry1 entry2 ... entry5
 -----------------------------------------------------------------------------
 (8 real changes made)
-file /home/tmp/St29294.000001 saved as .dta format
+file /home/tmp/St64745.000001 saved as .dta format
 (108 observations deleted)
 (107 missing values generated)
 (1 real change made)
@@ -1125,7 +1125,7 @@ j variable (6 values)            column   ->   (dropped)
 xij variables:
                                   entry   ->   entry1 entry2 ... entry6
 -----------------------------------------------------------------------------
-file /home/tmp/St29294.000002 saved as .dta format
+file /home/tmp/St64745.000002 saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
@@ -1136,7 +1136,7 @@ file /home/tmp/St29294.000002 saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St29294.000003 saved as .dta format
+file /home/tmp/St64745.000003 saved as .dta format
 (128 observations deleted)
 (127 missing values generated)
 (8 real changes made)
@@ -1195,7 +1195,7 @@ xij variables:
                                   entry   ->   entry1 entry2 ... entry5
 -----------------------------------------------------------------------------
 (8 real changes made)
-file /home/tmp/St29294.000004 saved as .dta format
+file /home/tmp/St64745.000004 saved as .dta format
 (108 observations deleted)
 (107 missing values generated)
 (1 real change made)
@@ -1253,7 +1253,7 @@ j variable (6 values)            column   ->   (dropped)
 xij variables:
                                   entry   ->   entry1 entry2 ... entry6
 -----------------------------------------------------------------------------
-file /home/tmp/St29294.000005 saved as .dta format
+file /home/tmp/St64745.000005 saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
@@ -1264,7 +1264,7 @@ file /home/tmp/St29294.000005 saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St29294.000006 saved as .dta format
+file /home/tmp/St64745.000006 saved as .dta format
 (128 observations deleted)
 (127 missing values generated)
 (8 real changes made)
@@ -1324,7 +1324,7 @@ xij variables:
                                   entry   ->   entry1 entry2 ... entry5
 -----------------------------------------------------------------------------
 (8 real changes made)
-file /home/tmp/St29294.000007 saved as .dta format
+file /home/tmp/St64745.000007 saved as .dta format
 (108 observations deleted)
 (107 missing values generated)
 (1 real change made)
@@ -1381,7 +1381,7 @@ j variable (6 values)            column   ->   (dropped)
 xij variables:
                                   entry   ->   entry1 entry2 ... entry6
 -----------------------------------------------------------------------------
-file /home/tmp/St29294.000008 saved as .dta format
+file /home/tmp/St64745.000008 saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
@@ -1392,7 +1392,7 @@ file /home/tmp/St29294.000008 saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St29294.000009 saved as .dta format
+file /home/tmp/St64745.000009 saved as .dta format
 (128 observations deleted)
 (127 missing values generated)
 (8 real changes made)
@@ -1452,7 +1452,7 @@ xij variables:
                                   entry   ->   entry1 entry2 ... entry5
 -----------------------------------------------------------------------------
 (8 real changes made)
-file /home/tmp/St29294.00000a saved as .dta format
+file /home/tmp/St64745.00000a saved as .dta format
 (108 observations deleted)
 (107 missing values generated)
 (1 real change made)
@@ -1510,7 +1510,7 @@ j variable (6 values)            column   ->   (dropped)
 xij variables:
                                   entry   ->   entry1 entry2 ... entry6
 -----------------------------------------------------------------------------
-file /home/tmp/St29294.00000b saved as .dta format
+file /home/tmp/St64745.00000b saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
@@ -1521,7 +1521,7 @@ file /home/tmp/St29294.00000b saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St29294.00000c saved as .dta format
+file /home/tmp/St64745.00000c saved as .dta format
 (1 observation added)
 (1 real change made)
 (1 observation added)
@@ -1589,7 +1589,7 @@ xij variables:
                                   entry   ->   entry1 entry2 ... entry5
 -----------------------------------------------------------------------------
 (8 real changes made)
-file /home/tmp/St29294.00000d saved as .dta format
+file /home/tmp/St64745.00000d saved as .dta format
 (108 observations deleted)
 (107 missing values generated)
 (1 real change made)
@@ -1644,7 +1644,7 @@ j variable (6 values)            column   ->   (dropped)
 xij variables:
                                   entry   ->   entry1 entry2 ... entry6
 -----------------------------------------------------------------------------
-file /home/tmp/St29294.00000e saved as .dta format
+file /home/tmp/St64745.00000e saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
@@ -1655,7 +1655,7 @@ file /home/tmp/St29294.00000e saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St29294.00000f saved as .dta format
+file /home/tmp/St64745.00000f saved as .dta format
 (128 observations deleted)
 (127 missing values generated)
 (8 real changes made)
@@ -1714,7 +1714,7 @@ xij variables:
                                   entry   ->   entry1 entry2 ... entry5
 -----------------------------------------------------------------------------
 (8 real changes made)
-file /home/tmp/St29294.00000g saved as .dta format
+file /home/tmp/St64745.00000g saved as .dta format
 (108 observations deleted)
 (107 missing values generated)
 (1 real change made)
@@ -1772,7 +1772,7 @@ j variable (6 values)            column   ->   (dropped)
 xij variables:
                                   entry   ->   entry1 entry2 ... entry6
 -----------------------------------------------------------------------------
-file /home/tmp/St29294.00000h saved as .dta format
+file /home/tmp/St64745.00000h saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
@@ -1783,7 +1783,7 @@ file /home/tmp/St29294.00000h saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St29294.00000i saved as .dta format
+file /home/tmp/St64745.00000i saved as .dta format
 (128 observations deleted)
 (127 missing values generated)
 (8 real changes made)
@@ -1843,7 +1843,7 @@ xij variables:
                                   entry   ->   entry1 entry2 ... entry5
 -----------------------------------------------------------------------------
 (8 real changes made)
-file /home/tmp/St29294.00000j saved as .dta format
+file /home/tmp/St64745.00000j saved as .dta format
 (108 observations deleted)
 (107 missing values generated)
 (1 real change made)
@@ -1900,7 +1900,7 @@ j variable (6 values)            column   ->   (dropped)
 xij variables:
                                   entry   ->   entry1 entry2 ... entry6
 -----------------------------------------------------------------------------
-file /home/tmp/St29294.00000k saved as .dta format
+file /home/tmp/St64745.00000k saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
@@ -1911,7 +1911,7 @@ file /home/tmp/St29294.00000k saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St29294.00000l saved as .dta format
+file /home/tmp/St64745.00000l saved as .dta format
 (128 observations deleted)
 (127 missing values generated)
 (8 real changes made)
@@ -1971,7 +1971,7 @@ xij variables:
                                   entry   ->   entry1 entry2 ... entry5
 -----------------------------------------------------------------------------
 (8 real changes made)
-file /home/tmp/St29294.00000m saved as .dta format
+file /home/tmp/St64745.00000m saved as .dta format
 (108 observations deleted)
 (107 missing values generated)
 (1 real change made)
@@ -2029,7 +2029,7 @@ j variable (6 values)            column   ->   (dropped)
 xij variables:
                                   entry   ->   entry1 entry2 ... entry6
 -----------------------------------------------------------------------------
-file /home/tmp/St29294.00000n saved as .dta format
+file /home/tmp/St64745.00000n saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
@@ -2040,7 +2040,7 @@ file /home/tmp/St29294.00000n saved as .dta format
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St29294.00000o saved as .dta format
+file /home/tmp/St64745.00000o saved as .dta format
 (1 observation added)
 (1 real change made)
 (1 observation added)
@@ -2074,10 +2074,10 @@ variable row was str13 now str26
 
 . 
 . di "Start date time: `date1' `time1'"
-Start date time:  3 Jun 2026 02:29:36
+Start date time: 15 Jun 2026 03:52:23
 
 . di "End date time: `date2' `time2'"
-End date time:  3 Jun 2026 02:29:36
+End date time: 15 Jun 2026 03:52:23
 
 . 
 . cap log close va_spec_fb_tab_all

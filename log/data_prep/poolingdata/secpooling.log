@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/poolingdata/secpooling.smcl
   log type:  text
- opened on:   1 Jun 2026, 23:04:56
+ opened on:  13 Jun 2026, 19:04:50
 
 . 
 . /* ssc install _gwtmean, replace //package to allow use of weights in egen me

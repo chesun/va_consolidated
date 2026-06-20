@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > survey_va/indexhorseracewithdemo.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:23:35
+ opened on:  15 Jun 2026, 03:45:26
 
 . 
 . graph drop _all
@@ -639,10 +639,10 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/output/csv/f
 
 . 
 . di "Start date time: `date1' `time1'"
-Start date time:  3 Jun 2026 02:23:35
+Start date time: 15 Jun 2026 03:45:26
 
 . di "End date time: `date2' `time2'"
-End date time:  3 Jun 2026 02:23:37
+End date time: 15 Jun 2026 03:45:28
 
 . 
 . cap log close indexhorseracewithdemo

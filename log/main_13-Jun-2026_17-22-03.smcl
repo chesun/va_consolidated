@@ -1,0 +1,159 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_13-Jun-2026_17-22-03.smcl
+  log type:  text
+ opened on:  13 Jun 2026, 17:22:03
+
+. 
+. di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+
+. di as text "main.do — RUN START: `c(current_date)' `c(current_time)'"
+main.do — RUN START: 13 Jun 2026 17:22:03
+
+. di as text "Host: `c(hostname)' | Stata: `c(stata_version)' | User: `c(username)'"
+Host: scribe | Stata: 18 | User: chesun1
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. 
+. /*==============================================================================
+> PHASE TOGGLES  (set to 1 to run the phase, 0 to skip)
+> ==============================================================================*/
+. 
+. * Default: every phase ON.  Production / acceptance runs (ADR-0018) require
+. * every toggle ON, including run_data_checks.  Dev iteration can toggle off
+. * upstream phases if their cached outputs are still valid.
+. local run_data_prep         1
+
+. local run_samples           1
+
+. local run_va_estimation     1
+
+. local run_va_tables         1   // Phase 4 is an intentional no-op — VA tables/figures run in Phase 6 (see Phase 4 NOT
+> E); kept as a numbered phase but never has a body
+
+. local run_survey_va         1
+
+. local run_paper_outputs     1
+
+. local run_data_checks       1
+
+. 
+. 
+. /*==============================================================================
+> ACCEPTANCE-RUN MASTER OVERRIDE  (per ADR-0018)
+> 
+>     Set m4_acceptance_run = 1 when doing the canonical end-to-end run that
+>     produces ALL consolidated outputs (M4 golden-master, v1.0-final freeze,
+>     any other ADR-0018-acceptance scenario).  The flag overrides three
+>     sub-toggles inside Phases 2-3 (do_touse_va, do_create_samples, do_va)
+>     from their cached-default 0 to 1, so the run rebuilds samples + VA
+>     estimates from scratch instead of relying on cached predecessor outputs.
+> 
+>     Why all three: the cached samples + VA estimates from predecessor
+>     production live at LEGACY paths the consolidated pipeline doesn't read
+>     from.  M4 must regenerate them at CANONICAL $datadir_clean and
+>     $estimates_dir paths so the consolidated pipeline finds them.
+> 
+>     Leave at 0 for dev iteration where you want the cached-outputs pattern
+>     (mirrors predecessor `do_all.do' defaults).
+> 
+>     See ADR-0018 acceptance criteria + plan v3 §3.5 golden-master verification.
+> ==============================================================================*/
+. 
+. local m4_acceptance_run  1   // CHANGE ME to 1 for full acceptance / M4 run
+
+. 
+. * ORCHESTRATION-GAP FIX (2026-06-01): when m4_acceptance_run=1 force the upstream
+. * PHASE toggles ON here, at the phase-toggle level.  Previously the override only
+. * flipped the nested sub-toggles (do_touse_va, do_create_samples, do_va) INSIDE the
+. * `if run_samples'/`if run_va_estimation' blocks — but those phase gates were 0, so
+. * the blocks never executed and the sub-toggle overrides were dead.  An ADR-0018
+. * acceptance run requires every upstream phase ON so canonical samples + VA
+. * estimates are rebuilt at $datadir_clean/$estimates_dir (not read from LEGACY
+. * predecessor caches).  Set m4=1 -> full end-to-end; m4=0 -> dev-iteration (the
+. * per-phase toggles above stand as set).  The nested sub-toggle overrides (still
+. * present in each phase block) remain correct once their phase actually runs.
+. if `m4_acceptance_run' {
+.     local run_data_prep      1
+.     local run_samples        1
+.     local run_va_estimation  1
+.     local run_survey_va      1
+.     local run_paper_outputs  1
+.     local run_data_checks    1
+.     * run_va_tables stays 0 — Phase 4 is an intentional no-op (see its NOTE).
+. }
+
+. 
+. di as text _n "M4 acceptance-run override: " ///
+>     cond(`m4_acceptance_run', "ENABLED — all upstream PHASE toggles forced ON (full end-to-end rebuild) + nested do_to
+> use_va/do_create_samples/do_va forced ON", "DISABLED — per-phase toggles stand as set above (dev iteration)")
+
+M4 acceptance-run override: ENABLED — all upstream PHASE toggles forced ON (full end-to-end rebuild) + nested do_touse_v
+> a/do_create_samples/do_va forced ON
+
+. 
+. 
+. /*==============================================================================
+> PHASE 1 — DATA PREP
+> ==============================================================================*/
+. 
+. if `run_data_prep' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 1: DATA PREP"
+PHASE 1: DATA PREP
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_13-Jun-2026_17-22-03.smcl
+  log type:  text
+ paused on:  13 Jun 2026, 17:22:03
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_13-Jun-2026_17-22-03.smcl
+  log type:  text
+resumed on:  13 Jun 2026, 17:22:03
+.     di as text "  [RUN] do/data_prep/acs/acs_2017_gen_dict.do"
+  [RUN] do/data_prep/acs/acs_2017_gen_dict.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_13-Jun-2026_17-22-03.smcl
+  log type:  text
+ paused on:  13 Jun 2026, 17:22:03
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_13-Jun-2026_17-22-03.smcl
+  log type:  text
+resumed on:  13 Jun 2026, 17:22:12
+.     di as text "  [OK]  do/data_prep/acs/acs_2017_gen_dict.do"
+  [OK]  do/data_prep/acs/acs_2017_gen_dict.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_13-Jun-2026_17-22-03.smcl
+  log type:  text
+ paused on:  13 Jun 2026, 17:22:12
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_13-Jun-2026_17-22-03.smcl
+  log type:  text
+resumed on:  13 Jun 2026, 17:22:12
+.     di as text "  [RUN] do/data_prep/acs/clean_acs_census_tract.do"
+  [RUN] do/data_prep/acs/clean_acs_census_tract.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_13-Jun-2026_17-22-03.smcl
+  log type:  text
+ paused on:  13 Jun 2026, 17:22:12
+------------------------------------------------------------------------------------------------------------------------

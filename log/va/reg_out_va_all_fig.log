@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > va/reg_out_va_all_fig.smcl
   log type:  text
- opened on:   3 Jun 2026, 01:18:32
+ opened on:  15 Jun 2026, 02:18:05
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "reg_out_va_all_fig.do — RUN START: `c(current_date)' `c(current_t
 > ime)'"
-reg_out_va_all_fig.do — RUN START:  3 Jun 2026 01:18:32
+reg_out_va_all_fig.do — RUN START: 15 Jun 2026 02:18:05
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -31701,10 +31701,10 @@ file
 . 
 . 
 . di "Start date time /reg_out_va_all_fig.do: `date1' `time1'"
-Start date time /reg_out_va_all_fig.do:  3 Jun 2026 01:18:32
+Start date time /reg_out_va_all_fig.do: 15 Jun 2026 02:18:05
 
 . di "End date time: `date2' `time2'"
-End date time:  3 Jun 2026 01:38:37
+End date time: 15 Jun 2026 02:39:21
 
 . 
 . cap log close reg_out_va_all_fig

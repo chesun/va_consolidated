@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > samples/touse_va.smcl
   log type:  text
- opened on:   1 Jun 2026, 23:34:47
+ opened on:  13 Jun 2026, 19:52:18
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -14,7 +14,7 @@
 > -
 
 . di as text "touse_va.do — RUN START: `c(current_date)' `c(current_time)'"
-touse_va.do — RUN START:  1 Jun 2026 23:34:47
+touse_va.do — RUN START: 13 Jun 2026 19:52:18
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -784,6 +784,8 @@ delimiter now cr
 . macro list
 projdir:        /home/research/ca_ed_lab/users/chesun/gsr/caschls
 ReS_jv2:        0 1
+refresh_cde_directory:
+                0
 run_prior_score:
                 1
 cstdtadir:      /home/research/ca_ed_lab/data/restricted_access/clean/cde/cst
@@ -4315,7 +4317,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:   3275.57 /        1 =    3275.5720
+   1:   6927.35 /        1 =    6927.3470
 
 . 
 . cap log close touse_va

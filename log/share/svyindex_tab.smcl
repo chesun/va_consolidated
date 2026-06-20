@@ -2,7 +2,7 @@
       name:  svyindex_tab
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/svyindex_tab.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:29:36
+ opened on:  15 Jun 2026, 03:52:23
 
 . 
 . graph drop _all
@@ -205,8 +205,8 @@ xij variables:
 (1 real change made)
 (1 real change made)
 (1 observation deleted)
-(file /home/tmp/St29294.000001 not found)
-file /home/tmp/St29294.000001 saved as .dta format
+(file /home/tmp/St64745.000001 not found)
+file /home/tmp/St64745.000001 saved as .dta format
 (22 observations deleted)
 (4 observations deleted)
 (2 observations deleted)
@@ -267,8 +267,8 @@ xij variables:
 (1 real change made)
 (1 real change made)
 (1 observation deleted)
-(file /home/tmp/St29294.000002 not found)
-file /home/tmp/St29294.000002 saved as .dta format
+(file /home/tmp/St64745.000002 not found)
+file /home/tmp/St64745.000002 saved as .dta format
 (1 observation deleted)
 (1 observation deleted)
 (1 observation deleted)
@@ -337,8 +337,8 @@ xij variables:
 (1 real change made)
 (1 real change made)
 (1 observation deleted)
-(file /home/tmp/St29294.000003 not found)
-file /home/tmp/St29294.000003 saved as .dta format
+(file /home/tmp/St64745.000003 not found)
+file /home/tmp/St64745.000003 saved as .dta format
 (22 observations deleted)
 (4 observations deleted)
 (2 observations deleted)
@@ -399,8 +399,8 @@ xij variables:
 (1 real change made)
 (1 real change made)
 (1 observation deleted)
-(file /home/tmp/St29294.000004 not found)
-file /home/tmp/St29294.000004 saved as .dta format
+(file /home/tmp/St64745.000004 not found)
+file /home/tmp/St64745.000004 saved as .dta format
 (1 observation deleted)
 (1 observation deleted)
 (1 observation deleted)
@@ -444,10 +444,10 @@ variable var was str30 now str44
 
 . 
 . di "Start date time: `date1' `time1'"
-Start date time:  3 Jun 2026 02:29:36
+Start date time: 15 Jun 2026 03:52:23
 
 . di "End date time: `date2' `time2'"
-End date time:  3 Jun 2026 02:29:37
+End date time: 15 Jun 2026 03:52:23
 
 . 
 . cap log close svyindex_tab

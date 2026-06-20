@@ -6,7 +6,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > sibling_xwalk/uniquefamily.smcl
   log type:  text
- opened on:   3 Jun 2026, 02:42:58
+ opened on:  15 Jun 2026, 04:09:43
 
 . 
 . use $datadir_clean/siblingxwalk/k12_xwalk_name_address_year, clear
@@ -46,43 +46,43 @@ Duplicates in terms of all variables
 (12,220,119 real changes made)
 (24,440,238 real changes made)
 (14,776,071 real changes made)
-(10,319,475 real changes made)
+(10,319,180 real changes made)
 0
-(9,153,060 real changes made)
-(1,793,265 real changes made)
+(9,151,886 real changes made)
+(1,792,921 real changes made)
 1
-(688,853 real changes made)
-(385,134 real changes made)
+(688,453 real changes made)
+(384,297 real changes made)
 2
-(118,492 real changes made)
-(104,512 real changes made)
+(118,173 real changes made)
+(104,276 real changes made)
 3
-(34,891 real changes made)
-(34,303 real changes made)
+(34,729 real changes made)
+(34,159 real changes made)
 4
-(11,271 real changes made)
-(11,219 real changes made)
+(11,223 real changes made)
+(11,168 real changes made)
 5
-(4,229 real changes made)
-(4,227 real changes made)
+(4,107 real changes made)
+(4,106 real changes made)
 6
-(1,852 real changes made)
-(1,852 real changes made)
+(1,828 real changes made)
+(1,828 real changes made)
 7
-(885 real changes made)
-(885 real changes made)
+(872 real changes made)
+(872 real changes made)
 8
-(527 real changes made)
-(527 real changes made)
+(516 real changes made)
+(516 real changes made)
 9
-(394 real changes made)
-(394 real changes made)
+(390 real changes made)
+(390 real changes made)
 10
-(319 real changes made)
-(319 real changes made)
+(310 real changes made)
+(310 real changes made)
 11
-(207 real changes made)
-(207 real changes made)
+(203 real changes made)
+(203 real changes made)
 12
 (87 real changes made)
 (87 real changes made)
@@ -103,7 +103,7 @@ Duplicates in terms of all variables
 Duplicates in terms of __000002
 
 (14,776,071 observations deleted)
-file /home/tmp/St29294.000001 saved as .dta format
+file /home/tmp/St64745.000001 saved as .dta format
 
     Result                      Number of obs
     -----------------------------------------

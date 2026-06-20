@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/k12_postsec_distance/check_merg
 > e.smcl
   log type:  text
- opened on:   1 Jun 2026, 23:00:46
+ opened on:  13 Jun 2026, 19:00:06
 
 . 
 . include $consolidated_dir/do/va/helpers/macros_va.doh
@@ -732,11 +732,11 @@ delimiter now cr
 
     Result                      Number of obs
     -----------------------------------------
-    Not matched                        20,127
-        from master                     3,114  (_merge==1)
-        from using                     17,013  (_merge==2)
+    Not matched                        18,482
+        from master                     1,558  (_merge==1)
+        from using                     16,924  (_merge==2)
 
-    Matched                         1,781,331  (_merge==3)
+    Matched                         1,782,887  (_merge==3)
     -----------------------------------------
 
 . 
@@ -746,7 +746,6 @@ County/Distric |           Year of Spring Semester
  t/School Code |      2015       2016       2017       2018 |     Total
 ---------------+--------------------------------------------+----------
 01611190130625 |        56         50         35         52 |       193 
-01612590126748 |        87         63         64        110 |       324 
 04614400121509 |        15         12         26          0 |        53 
 07617960132233 |         0          0         29         81 |       110 
 18641620135756 |         0          0          0         48 |        48 
@@ -754,14 +753,11 @@ County/Distric |           Year of Spring Semester
 19101990109942 |        60         62         53         49 |       224 
 19756971996693 |       114         99        106          0 |       319 
 19768850132928 |         0         28         31         18 |        77 
-37764710114678 |       151        158        161        149 |       619 
-37764710114694 |       134        115        232         99 |       580 
 37770320134577 |         0          0         53        137 |       190 
-37770990136077 |         0          0          0         33 |        33 
 44697650100305 |        44         39         46         37 |       166 
 45701690129957 |        11          0         18          0 |        29 
 ---------------+--------------------------------------------+----------
-         Total |       723        681        897        813 |     3,114 
+         Total |       351        345        440        422 |     1,558 
 
 . 
 . cap log close check_merge
