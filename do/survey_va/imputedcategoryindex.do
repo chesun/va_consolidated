@@ -3,12 +3,12 @@ do/survey_va/imputedcategoryindex.do — Phase 1a §3.3 step 7 relocation
 ================================================================================
 
 PURPOSE
-    Build climate/quality/support indices from imputed CalSCHLS QOI items (linear sums of QOI means). Per ADR-0010: 9/15/4 items per index. Per ADR-0011: sums→means fix scheduled for Phase 1b §4.2 (currently sums; verbatim preserved).
+    Build climate/quality/support indices from imputed CalSCHLS QOI items (category means of QOI means). Per ADR-0010: 9/15/4 items per index. Per ADR-0011: sums→means fix APPLIED 2026-06-21 — each index is summed then divided by its item count, so the on-disk raw index is a category mean (matches the paper text). z-scores + regressions unchanged (z invariant to 1/N rescaling).
 
 INVOKED FROM
     `do/main.do' Phase 5 (run_survey_va block).  Per plan v3 §3.3 step 7
-    + ADR-0011 (sums→means fix scheduled for Phase 1b §4.2; bodies verbatim
-    in this relocation).
+    + ADR-0011 (sums→means fix applied 2026-06-21; index loops now divide by
+    item count).
 
 INPUTS (verified via grep on file body)
     $datadir_clean/survey_va/imputedallsvyqoimeans.dta (CANONICAL; from imputation.do this batch)
@@ -29,7 +29,7 @@ RELOCATION (per plan v3 §3.3 step 7, applied 2026-05-08)
       $projdir/dta/<other>/<x> -> $caschls_projdir/dta/<other>/<x> (LEGACY-static reads from caschls predecessor)
       $projdir/do/share/factoranalysis/<x>.do[h] -> $consolidated_dir/do/survey_va/<x>.do[h] (within-batch relocations)
 
-ADRs: 0010 (paper alpha 9/15/4), 0011 (sums→means Phase 1b deferred),
+ADRs: 0010 (paper alpha 9/15/4), 0011 (sums→means applied 2026-06-21),
       0013 (mattschlchar gate kept; consumed by indexreg/indexhorse with demo),
       0021 (sandbox; description convention)
 ORIGINAL CHANGE LOG preserved verbatim below.
@@ -89,24 +89,31 @@ local qualityvars parentqoi30mean_pooled parentqoi31mean_pooled parentqoi32mean_
 local supportvars parentqoi15mean_pooled parentqoi64mean_pooled staffqoi10mean_pooled staffqoi128mean_pooled
 /* local motivationvars secqoi31mean_pooled secqoi32mean_pooled secqoi33mean_pooled secqoi34mean_pooled */
 
-/* generate linear index by summing the variables in each category */
+/* generate linear index by AVERAGING the variables in each category.
+   ADR-0011: indices are means, not sums — matches the paper text ("averages
+   across questions"). Each index is summed then divided by its item count.
+   Statistically inert for the paper: indices are z-scored below, and z is
+   invariant to the 1/N rescaling. */
 gen climateindex = 0
 
 foreach climatevar of local climatevars {
   replace climateindex = climateindex + `climatevar'
 }
+replace climateindex = climateindex / `: word count `climatevars''
 
 gen qualityindex = 0
 
 foreach qualityvar of local qualityvars {
   replace qualityindex =  qualityindex + `qualityvar'
 }
+replace qualityindex = qualityindex / `: word count `qualityvars''
 
 gen supportindex = 0
 
 foreach supportvar of local supportvars {
   replace supportindex = supportindex + `supportvar'
 }
+replace supportindex = supportindex / `: word count `supportvars''
 
 
 

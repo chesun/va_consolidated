@@ -1,7 +1,7 @@
 # 0011: Survey indices computed as means, not sums; code fix in `imputedcategoryindex.do` and `compcasecategoryindex.do`
 
 - **Date:** 2026-04-27
-- **Status:** Decided
+- **Status:** Decided — **implemented 2026-06-21** (deferred through Phase 1b; the `/ item-count` step was added to both `imputedcategoryindex.do` and `compcasecategoryindex.do`. Surfaced when the raw-index check finally ran to completion: `raw climateindex min = -5.33 < -2.01` confirmed the indices were still sums. The raw-index `[-2.01,2.01]` test now passes; z-scores + regressions unchanged.)
 - **Scope:** Specification
 - **Data quality:** Full context
 

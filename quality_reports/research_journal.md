@@ -99,3 +99,10 @@ Append-only agent-level history. One entry per agent invocation. See `.claude/ru
 **Score:** 94/100 PASS
 **Verdict:** All ADR-0033 removals/loosening/structural-add land as specified. Verified no hard-basis check lost (ADR-0011 raw-index test + z mean/SD survived), no heuristic survived (all grep hits are removal comments), M4 golden master strictly stronger than removed VA envelopes. 2 Minor (-3 each): pre-existing rc-clobber in check_samples (M1, since fixed), ADR-0032 cross-ref (M2, since added). Ledger re-stamped.
 **Report:** quality_reports/reviews/2026-06-21_heuristic-check-removal_coder_review.md
+
+### 2026-06-21 20:55 — coder-critic
+**Phase:** Execution (Phase 1 — implement deferred ADR-0011 sums→means)
+**Target:** imputedcategoryindex.do + compcasecategoryindex.do
+**Score:** 96/100 PASS
+**Verdict:** ADR-0011 (Decided 2026-04-27, deferred + never applied) implemented exactly: each index summed then divided by item count (9/15/4). Raw-index check `min=-5.33<-2.01` was the ADR-0011 regression test firing correctly on legitimate sums (not a heuristic). z-invariance verified for every paper consumer (all regs use z_*; lone raw-name use consumed as z_) → no paper number changes. Flagged: next golden master shows categoryindex.dta RAW columns differing (intended); z_ + regressions identical. -4 Minor (ledger rows since added; M4 triage annotation).
+**Report:** quality_reports/reviews/2026-06-21_adr0011-sums-to-means_coder_review.md

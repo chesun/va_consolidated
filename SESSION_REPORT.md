@@ -2500,3 +2500,11 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 **Results:** coder-critic 94/100 PASS — no hard-basis check lost, no heuristic survived. Also fixed pre-existing check_samples rc-clobber (M1).
 **Commits:** pending (committing now).
 **Status:** Done — coded + reviewed. Pending: Scribe Phase 5+7 rerun (should now complete all 6 checks); then full m4_acceptance_run + golden master + tier→smoke (ADR-0018).
+
+## 2026-06-21 (addendum) — applied deferred ADR-0011 sums→means
+
+**Operations:** added `/ item-count` after each index sum loop in imputedcategoryindex.do + compcasecategoryindex.do; updated headers + ADR-0011 status + ledger.
+**Decision:** the rerun's `raw climateindex min=-5.33<-2.01` halt was the ADR-0011 regression test firing correctly (indices were still sums; ADR-0011's means fix deferred since 2026-04-27 + never applied). Applied it (not a heuristic).
+**Results:** coder-critic 96/100 PASS; z-invariance verified → no paper number changes. Next golden master will show categoryindex.dta RAW columns differing (intended ADR-0011 deviation; z_ + regressions identical).
+**Commits:** pending (committing now).
+**Status:** Done — coded + reviewed. Pending: Scribe Phase 5+7 rerun should now complete all 6 checks; then full m4_acceptance_run + golden master (whitelist categoryindex raw cols) + tier→smoke.

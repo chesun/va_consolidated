@@ -115,3 +115,29 @@ mean, remove CFR count soft, loosen centering). Implemented per **ADR-0033**:
 coder-critic **94/100 PASS**. ADR-0028 marked superseded-in-part; ADR-0032 cross-referenced;
 ledger re-stamped (samples 5eca4736b2d2, survey f535769583d3, va_estimates a94610b44de7).
 Air-gapped — not re-run. NEXT: same Phase 5+7 rerun should now run all 6 checks to completion.
+
+---
+
+## Addendum 3 — applied the long-deferred ADR-0011 sums→means fix (2026-06-21)
+
+After the ADR-0033 heuristic removal, the rerun ran the raw-index check to completion for
+the first time and hard-halted: `imputed raw climateindex min = -5.3293 (below -2.01)`.
+This is NOT a heuristic — it's the ADR-0011 regression test firing correctly. The
+constructors built each index as a SUM (no `/N`); ADR-0011 (Decided 2026-04-27) had
+mandated MEANS (paper says "averages") but the fix was deferred through Phase 1b and never
+applied.
+
+FIXED: added `replace <idx> = <idx> / `: word count `<idx>vars''` after each sum loop in
+both `imputedcategoryindex.do` + `compcasecategoryindex.do` (climate/quality/support;
+counts 9/15/4). Headers updated; ADR-0011 marked implemented. coder-critic **96/100 PASS**
+— verified z-invariance for every paper consumer (all regressions use `z_*`; the one
+raw-name occurrence is consumed as `z_`), so no paper number changes.
+
+CONSEQUENCE (flag for the next M4 golden master): the consolidated `categoryindex.dta` RAW
+index columns now differ from the predecessor (which summed) — an INTENDED ADR-0011
+deviation; the `z_*` columns and all regression exports stay identical. The M4 cf/triage
+should whitelist climateindex/qualityindex/supportindex raw columns in both categoryindex
+files.
+
+Air-gapped — not re-run. NEXT: same Phase 5+7 rerun should now clear the raw-index check
+and complete all 6 Phase-7 checks.
