@@ -170,3 +170,55 @@ REMAINING for ADR-0018 `v1.0-final`: (1) one full `m4_acceptance_run=1` end-to-e
 (this was the targeted Phase 5+7 rerun on cached Phase 1–4); (2) M4 golden master
 (`tier_filter="full"`) — whitelist the intended categoryindex.dta RAW-column ADR-0011 delta;
 (3) revert `tier_filter→"smoke"`; (4) push held `ac749c5`.
+
+---
+
+## Next session pickup — FULL acceptance run in progress (2026-06-21)
+
+**State at handoff:** Phase-7 data-checks are GREEN (confirmed clean Phase 5+7 rerun, master
+`log/main_21-Jun-2026_14-01-50.smcl`). Christina then committed `2a93d15` ("edit toggles in
+main.do for full run after debug") and **launched the FULL ADR-0018 acceptance run on
+Scribe.** `do/main.do`: `m4_acceptance_run=1` (line 167) + all 7 phase toggles ON → full
+from-scratch rebuild (samples + VA re-estimated, not cached). Runtime is multi-hour, possibly
+~1–1.5 days (Phase 3 VA estimation via CFR shrinkage is the bottleneck).
+
+origin/main HEAD at handoff: `2a93d15`. Working tree clean. All three fixes (ADR-0032
+staffqoi98, ADR-0033 heuristic removal, ADR-0011 sums→means) are committed + pushed +
+check-confirmed.
+
+**When the run completes (do this in the fresh session):**
+
+1. `git pull` on Scribe-side then locally; pull the new `log/` + `output/` + `tables/` +
+   `figures/`. Find the newest `log/main_<date>_<time>.smcl`.
+2. **Verify the full run:** master log has `RUN END`; `[RUN]` count == `[OK]` count; 0 `r(NNN);`
+   error codes; all 7 phases present (data_prep → samples → va_estimation → va_tables[no-op]
+   → survey_va → paper_outputs → data_checks). Then verify all 6 `log/check/*.log` show
+   `RUN END` + 0 errors + PASS lines (same method as the 2026-06-21 confirmation: the `FAIL:`
+   strings in check logs are source-echoed templates, not executed — a real FAIL `exit`s
+   before RUN END).
+3. **If clean → M4 golden master:** flip `do/check/m4_golden_master.do:394`
+   `tier_filter "smoke"→"full"`; commit+push; Christina runs `nohup stata-mp -b do
+   do/check/m4_golden_master.do &` on Scribe (8,324 pairs, ~80 min); pull `output/m4_diff_summary.txt`.
+4. **Triage the golden master** against the 2026-06-10 full-triage baseline
+   (`quality_reports/reviews/2026-06-10_m4-full-golden-master_triage.md`). **Expected/INTENDED
+   deviations to whitelist (NOT regressions):**
+   - **NEW this cycle — ADR-0011:** `imputed/compcasecategoryindex.dta` RAW `climateindex`,
+     `qualityindex`, `supportindex` columns now differ from predecessor (means vs sums). The
+     `z_*` columns + all index-on-VA regression exports stay identical. coder-critic
+     2026-06-21_adr0011-sums-to-means verified z-invariance.
+   - **NEW this cycle — staffqoi98 (ADR-0032):** imputed `staffqoi98mean_pooled` may differ
+     (clamp floor −2→−3 for imputed obs). Not an index component → indices/regs unaffected.
+   - **Carried (already-classified):** ADR-0030 distance-vintage drift (mindist_*, distance-
+     restricted sample N shifts, restricted-variant va_* value diffs); ADR-0026 sibling;
+     ADR-0029 22 MISSING_CONS (cde clean years 2013/14/19/20 descoped). See the 2026-06-10
+     triage for the full population (3,969 PASS / 46 FAIL / 560 READ_ERROR / etc.).
+5. **Revert** `tier_filter→"smoke"` (commit+push).
+6. **Tag `v1.0-final`** once the golden master is accepted (all diffs explained).
+
+**Stale-note corrections (verified 2026-06-21):** `ac749c5` (tier→smoke) is ALREADY in
+main history — there is NO held commit to push. `tier_filter` is already committed as
+`"smoke"`. Prior session logs' "held ac749c5 / 2026-06-12 stack" references are obsolete.
+
+**Fresh-Scribe reminder:** a from-scratch run needs the SSC packages installed
+(`installssc=1` in main.do for one run, currently 0) and the vendored
+`data/raw/upstream/mattschlchar.dta` present (ADR-0023; gitignored, Scribe-only).

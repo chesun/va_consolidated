@@ -2513,3 +2513,9 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 
 **Results:** Christina ran Phase 5+7 on Scribe (all three fixes) + pushed logs (1f6ec89). Master log/main_21-Jun-2026_14-01-50.smcl: RUN END, 122 [RUN]=122 [OK], 0 errors. **All 6 Phase-7 checks PASS** — incl. `raw indices ∈ [-2.01,2.01] (ADR-0011 sums→means fix verified)` both sources + the new check_va_estimates structural check. The 3 progressively-surfaced findings (staffqoi98 / heuristic checks / ADR-0011 sums) all cleared; Phase-7 is GREEN.
 **Status:** Phase-7 data-checks confirmed clean. Remaining for ADR-0018 v1.0-final: full m4_acceptance_run=1 end-to-end + M4 golden master (whitelist categoryindex RAW-col ADR-0011 delta) + tier→smoke revert + push held ac749c5.
+
+## 2026-06-21 (addendum) — FULL acceptance run launched; handoff to fresh session
+
+**Operations:** Christina committed `2a93d15` (main.do toggles: m4_acceptance_run=1 + all phases ON) and launched the FULL ADR-0018 acceptance run on Scribe (from-scratch rebuild; multi-hour/possibly multi-day).
+**Status:** All work committed/pushed; tree clean; Phase-7 checks GREEN. Run IN PROGRESS. Resume steps written to session log "Next session pickup" (verify full run → golden master tier=full → triage [whitelist ADR-0011 categoryindex raw cols + staffqoi98 + carried ADR-0030/0026/0029 deviations] → revert tier→smoke → tag v1.0-final).
+**Corrections:** "held ac749c5" is stale — already in history; tier_filter already committed "smoke". Fresh-Scribe needs installssc=1 (one run) + vendored mattschlchar.dta.
