@@ -2508,3 +2508,8 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 **Results:** coder-critic 96/100 PASS; z-invariance verified → no paper number changes. Next golden master will show categoryindex.dta RAW columns differing (intended ADR-0011 deviation; z_ + regressions identical).
 **Commits:** pending (committing now).
 **Status:** Done — coded + reviewed. Pending: Scribe Phase 5+7 rerun should now complete all 6 checks; then full m4_acceptance_run + golden master (whitelist categoryindex raw cols) + tier→smoke.
+
+## 2026-06-21 (addendum) — clean Phase 5+7 rerun: all 6 Phase-7 checks PASS
+
+**Results:** Christina ran Phase 5+7 on Scribe (all three fixes) + pushed logs (1f6ec89). Master log/main_21-Jun-2026_14-01-50.smcl: RUN END, 122 [RUN]=122 [OK], 0 errors. **All 6 Phase-7 checks PASS** — incl. `raw indices ∈ [-2.01,2.01] (ADR-0011 sums→means fix verified)` both sources + the new check_va_estimates structural check. The 3 progressively-surfaced findings (staffqoi98 / heuristic checks / ADR-0011 sums) all cleared; Phase-7 is GREEN.
+**Status:** Phase-7 data-checks confirmed clean. Remaining for ADR-0018 v1.0-final: full m4_acceptance_run=1 end-to-end + M4 golden master (whitelist categoryindex RAW-col ADR-0011 delta) + tier→smoke revert + push held ac749c5.

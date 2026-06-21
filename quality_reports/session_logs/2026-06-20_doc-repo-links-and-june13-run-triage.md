@@ -141,3 +141,32 @@ files.
 
 Air-gapped — not re-run. NEXT: same Phase 5+7 rerun should now clear the raw-index check
 and complete all 6 Phase-7 checks.
+
+---
+
+## Addendum 4 — clean Phase 5+7 rerun: all 6 checks PASS (2026-06-21)
+
+Christina ran Phase 5+7 on Scribe with the staffqoi98 (ADR-0032), heuristic-removal
+(ADR-0033), and ADR-0011 sums→means fixes, and pushed the logs (`1f6ec89`).
+
+- Master `log/main_21-Jun-2026_14-01-50.smcl`: **RUN END present, 122 [RUN] = 122 [OK],
+  0 r() errors** (the `13-39-22` log was an aborted false start, 120/118). First fully clean
+  Phase-7 completion.
+- **All 6 Phase-7 checks PASS** (each `log/check/*.log` has RUN END + 0 errors + PASS lines;
+  the `FAIL:` strings are source-echoed `di as error` templates, none executed):
+    - check_samples — N==1784445, 4 cohort Ns, cdscode==1389, grade/year, orthogonality, binary.
+    - check_merges — _merge codes ≤5, k12_main==5009.
+    - check_va_estimates — reference VA cols exist + non-empty (the new ADR-0033 structural check).
+    - check_survey_indices — counts 9/15/4, _N==5625 both sources, staffqoi98 source ranges,
+      z mean/SD, and **`raw indices ∈ [-2.01,2.01] (ADR-0011 sums→means fix verified)` both
+      sources** — the ADR-0011 fix confirmed.
+    - check_paper_outputs — Table 1 N==1,784,445, Table 2 schools==5,009.
+    - check_logs — every do that ran has a log.
+
+The three progressively-surfaced findings (staffqoi98 → heuristic checks → ADR-0011 sums)
+are all cleared. Phase-7 data-checks are GREEN.
+
+REMAINING for ADR-0018 `v1.0-final`: (1) one full `m4_acceptance_run=1` end-to-end run
+(this was the targeted Phase 5+7 rerun on cached Phase 1–4); (2) M4 golden master
+(`tier_filter="full"`) — whitelist the intended categoryindex.dta RAW-column ADR-0011 delta;
+(3) revert `tier_filter→"smoke"`; (4) push held `ac749c5`.
