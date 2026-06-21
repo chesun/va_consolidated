@@ -134,12 +134,12 @@ PHASE TOGGLES  (set to 1 to run the phase, 0 to skip)
 * Default: every phase ON.  Production / acceptance runs (ADR-0018) require
 * every toggle ON, including run_data_checks.  Dev iteration can toggle off
 * upstream phases if their cached outputs are still valid.
-local run_data_prep         0
-local run_samples           0
-local run_va_estimation     0
-local run_va_tables         0   // Phase 4 is an intentional no-op — VA tables/figures run in Phase 6 (see Phase 4 NOTE); kept as a numbered phase but never has a body
+local run_data_prep         1
+local run_samples           1
+local run_va_estimation     1
+local run_va_tables         1   // Phase 4 is an intentional no-op — VA tables/figures run in Phase 6 (see Phase 4 NOTE); kept as a numbered phase but never has a body
 local run_survey_va         1
-local run_paper_outputs     0
+local run_paper_outputs     1
 local run_data_checks       1
 
 
@@ -164,7 +164,7 @@ ACCEPTANCE-RUN MASTER OVERRIDE  (per ADR-0018)
     See ADR-0018 acceptance criteria + plan v3 §3.5 golden-master verification.
 ==============================================================================*/
 
-local m4_acceptance_run  0   // CHANGE ME to 1 for full acceptance / M4 run
+local m4_acceptance_run  1   // CHANGE ME to 1 for full acceptance / M4 run
 
 * ORCHESTRATION-GAP FIX (2026-06-01): when m4_acceptance_run=1 force the upstream
 * PHASE toggles ON here, at the phase-toggle level.  Previously the override only
