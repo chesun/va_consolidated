@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > check/check_survey_indices.smcl
   log type:  text
- opened on:  15 Jun 2026, 04:30:12
+ opened on:  20 Jun 2026, 14:20:52
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "check_survey_indices.do — RUN START: `c(current_date)' `c(current
 > _time)'"
-check_survey_indices.do — RUN START: 15 Jun 2026 04:30:12
+check_survey_indices.do — RUN START: 20 Jun 2026 14:20:52
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -134,22 +134,138 @@ check_survey_indices.do — RUN START: 15 Jun 2026 04:30:12
 > {
  28.         qui sum `v'
  29.         if r(N) == 0 continue
- 30.         capture assert inrange(r(min), -2.01, 0)
+ 30.         * staffqoi98 is coded on an extended scale where -3 = "severe prob
+> lem"
+.         * (staffqoiclean<x>.do: qoi98temp = -3 if qoi98 == 4), so its pooled 
+> mean
+.         * legitimately reaches -3; all other items are standard [-2,2] Likert
+> .
+.         * See ADR-0032.
+.         local lo_bound = -2.01
+ 31.         if "`v'" == "staffqoi98mean_pooled" local lo_bound = -3.01
+ 32.         capture assert inrange(r(min), `lo_bound', 0)
+ 33.         local rc = _rc
+ 34.         if _rc {
+ 35.             di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (e
+> xpected ∈ [`lo_bound', 0])"
+ 36.             cap log close check_survey_indices
+ 37.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
+> ir/check/check_survey_indices.log", repla
+> ce
+ 38.             exit `rc'
+ 39.         }
+ 40.         capture assert inrange(r(max), 0, 2.01)
+ 41.         local rc = _rc
+ 42.         if _rc {
+ 43.             di as error "  FAIL: `src_label' `v' max = " %7.4f r(max) " (e
+> xpected ∈ [0, 2.01])"
+ 44.             cap log close check_survey_indices
+ 45.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
+> ir/check/check_survey_indices.log", repla
+> ce
+ 46.             exit `rc'
+ 47.         }
+ 48.     }
+ 49.     di as text "  PASS: `src_label' source items within Likert [-2.01, 2.0
+> 1] (staffqoi98: [-3.01, 2.01])"
+ 50. 
+.     * Every index component present in the source file.
+.     foreach v in `climateitems' `qualityitems' `supportitems' {
+ 51.         capture confirm variable `v'
+ 52.         local rc = _rc
+ 53.         if _rc {
+ 54.             di as error "  FAIL: `src_label' source missing required item 
+> `v'"
+ 55.             cap log close check_survey_indices
+ 56.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
+> ir/check/check_survey_indices.log", repla
+> ce
+ 57.             exit `rc'
+ 58.         }
+ 59.     }
+ 60.     di as text "  PASS: `src_label' source has all 28 (=9+15+4) required i
+> ndex components"
+ 61. }
+(parent pooled (over years) dataset ready for analysis with stats and response 
+> ra)
+  PASS: imputed source _N == 5625
+  PASS: imputed source items within Likert [-2.01, 2.01] (staffqoi98: [-3.01, 2
+> .01])
+  PASS: imputed source has all 28 (=9+15+4) required index components
+(parent pooled (over years) dataset ready for analysis with stats and response 
+> ra)
+  PASS: compcase source _N == 5625
+  PASS: compcase source items within Likert [-2.01, 2.01] (staffqoi98: [-3.01, 
+> 2.01])
+  PASS: compcase source has all 28 (=9+15+4) required index components
+
+. 
+. 
+. /*===========================================================================
+> ===
+> SUB-CHECK 2 — built indices (post-Phase-1a §3.3 CANONICAL)
+> =============================================================================
+> =*/
+. 
+. foreach idx_tag in imputed compcase {
+  2.     local idx_dta "$datadir_clean/survey_va/categoryindex/`idx_tag'categor
+> yindex.dta"
+  3. 
+.     capture confirm file "`idx_dta'"
+  4.     if _rc {
+  5.         di as text "  [SKELETON] `idx_dta' not found — produced by Phase 1
+> a §3.3"
+  6.         di as text "             survey-VA relocation (do/survey_va/`idx_t
+> ag'categoryindex.do)."
+  7.         di as text "             Skipping `idx_tag' built-index check."
+  8.         continue
+  9.     }
+ 10. 
+.     use "`idx_dta'", clear
+ 11. 
+.     * Z-scored indices: mean 0, SD 1 by construction.  Invariant under
+.     * ADR-0011 sums→means fix (z-score absorbs scaling).
+.     foreach z in z_climateindex z_qualityindex z_supportindex {
+ 12.         qui sum `z'
+ 13.         if r(N) == 0 continue
+ 14.         capture assert abs(r(mean)) < 0.01
+ 15.         local rc = _rc
+ 16.         if _rc {
+ 17.             di as error "  FAIL: `idx_tag' `z' mean = " %7.4f r(mean) " (e
+> xpected |.| < 0.01)"
+ 18.             cap log close check_survey_indices
+ 19.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
+> ir/check/check_survey_indices.log", repla
+> ce
+ 20.             exit `rc'
+ 21.         }
+ 22.         capture assert inrange(r(sd), 0.95, 1.05)
+ 23.         local rc = _rc
+ 24.         if _rc {
+ 25.             di as error "  FAIL: `idx_tag' `z' SD = " %7.4f r(sd) " (expec
+> ted ∈ [0.95, 1.05])"
+ 26.             cap log close check_survey_indices
+ 27.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
+> ir/check/check_survey_indices.log", repla
+> ce
+ 28.             exit `rc'
+ 29.         }
+ 30.         capture assert inrange(r(min), -5, -1)
  31.         local rc = _rc
  32.         if _rc {
- 33.             di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (e
-> xpected ∈ [-2.01, 0])"
+ 33.             di as error "  FAIL: `idx_tag' `z' min = " %7.4f r(min) " (exp
+> ected ∈ [-5, -1])"
  34.             cap log close check_survey_indices
  35.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
 > ir/check/check_survey_indices.log", repla
 > ce
  36.             exit `rc'
  37.         }
- 38.         capture assert inrange(r(max), 0, 2.01)
+ 38.         capture assert inrange(r(max), 1, 5)
  39.         local rc = _rc
  40.         if _rc {
- 41.             di as error "  FAIL: `src_label' `v' max = " %7.4f r(max) " (e
-> xpected ∈ [0, 2.01])"
+ 41.             di as error "  FAIL: `idx_tag' `z' max = " %7.4f r(max) " (exp
+> ected ∈ [1, 5])"
  42.             cap log close check_survey_indices
  43.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
 > ir/check/check_survey_indices.log", repla
@@ -157,27 +273,66 @@ check_survey_indices.do — RUN START: 15 Jun 2026 04:30:12
  44.             exit `rc'
  45.         }
  46.     }
- 47.     di as text "  PASS: `src_label' source items within Likert [-2.01, 2.0
-> 1]"
+ 47.     di as text "  PASS: `idx_tag' z-scored indices have mean≈0, SD≈1, typi
+> cal tail ranges"
  48. 
-.     * Every index component present in the source file.
-.     foreach v in `climateitems' `qualityitems' `supportitems' {
- 49.         capture confirm variable `v'
- 50.         local rc = _rc
- 51.         if _rc {
- 52.             di as error "  FAIL: `src_label' source missing required item 
-> `v'"
- 53.             cap log close check_survey_indices
- 54.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
+.     * RAW indices: post-ADR-0011-fix invariant is range [-2.01, 2.01].
+.     * Pre-fix (sums) would scale with N items (~[-18, 18] for climate, etc.).
+.     * This is THE test for whether the ADR-0011 fix has landed.
+.     foreach idx in climateindex qualityindex supportindex {
+ 49.         qui sum `idx'
+ 50.         if r(N) == 0 continue
+ 51.         capture assert inrange(r(min), -2.01, 0)
+ 52.         local rc = _rc
+ 53.         if _rc {
+ 54.             di as error "  FAIL: `idx_tag' raw `idx' min = " %7.4f r(min) 
+> " (expected ∈ [-2.01, 0])"
+ 55.             di as error "        Indicates ADR-0011 sums→means fix has NOT
+>  been applied to `idx_tag'."
+ 56.             cap log close check_survey_indices
+ 57.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
 > ir/check/check_survey_indices.log", repla
 > ce
- 55.             exit `rc'
- 56.         }
- 57.     }
- 58.     di as text "  PASS: `src_label' source has all 28 (=9+15+4) required i
-> ndex components"
- 59. }
+ 58.             exit `rc'
+ 59.         }
+ 60.         capture assert inrange(r(max), 0, 2.01)
+ 61.         local rc = _rc
+ 62.         if _rc {
+ 63.             di as error "  FAIL: `idx_tag' raw `idx' max = " %7.4f r(max) 
+> " (expected ∈ [0, 2.01])"
+ 64.             di as error "        Indicates ADR-0011 sums→means fix has NOT
+>  been applied to `idx_tag'."
+ 65.             cap log close check_survey_indices
+ 66.             cap translate "$logdir/check/check_survey_indices.smcl" "$logd
+> ir/check/check_survey_indices.log", repla
+> ce
+ 67.             exit `rc'
+ 68.         }
+ 69.     }
+ 70.     di as text "  PASS: `idx_tag' raw indices ∈ [-2.01, 2.01] (ADR-0011 su
+> ms→means fix verified)"
+ 71. 
+.     * Soft: z_climateindex / z_qualityindex correlation ~0.7+; flag if near z
+> ero.
+.     capture qui corr z_climateindex z_qualityindex
+ 72.     if _rc {
+ 73.         di as error "  SOFT: could not compute z_climateindex × z_qualityi
+> ndex correlation."
+ 74.     }
+ 75.     else {
+ 76.         local r_cq = r(rho)
+ 77.         if `r_cq' < 0.5 {
+ 78.             di as error "  SOFT: `idx_tag' z_climateindex × z_qualityindex
+>  correlation = " %5.3f `r_cq'
+ 79.             di as error "        below 0.50 floor; expected ~0.7+ per desi
+> gn memo §5."
+ 80.         }
+ 81.         else {
+ 82.             di as text "  PASS (soft): `idx_tag' z_climate × z_quality cor
+> relation = " %5.3f `r_cq'
+ 83.         }
+ 84.     }
+ 85. }
 (parent pooled (over years) dataset ready for analysis with stats and response 
 > ra)
-  PASS: imputed source _N == 5625
-  FAIL: imputed staffqoi98mean_pooled min = -3.0000 (expected ∈ [-2.01, 0])
+  FAIL: imputed z_climateindex min = -7.0888 (expected ∈ [-5, -1])

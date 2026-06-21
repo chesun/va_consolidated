@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > survey_va/indexregwithdemo.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:45:20
+ opened on:  20 Jun 2026, 14:20:29
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "indexregwithdemo.do — RUN START: `c(current_date)' `c(current_tim
 > e)'"
-indexregwithdemo.do — RUN START: 15 Jun 2026 03:45:20
+indexregwithdemo.do — RUN START: 20 Jun 2026 14:20:29
 
 . di as text "-----------------------------------------------------------------
 ---------------"

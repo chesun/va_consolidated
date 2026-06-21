@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > check/check_samples.smcl
   log type:  text
- opened on:  15 Jun 2026, 04:30:08
+ opened on:  20 Jun 2026, 14:20:43
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "check_samples.do — RUN START: `c(current_date)' `c(current_time)'
 > "
-check_samples.do — RUN START: 15 Jun 2026 04:30:08
+check_samples.do — RUN START: 20 Jun 2026 14:20:43
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -224,7 +224,7 @@ check_samples.do — RUN START: 15 Jun 2026 04:30:08
 > -
 
 . di as text "check_samples.do — RUN END: `c(current_date)' `c(current_time)'"
-check_samples.do — RUN END: 15 Jun 2026 04:30:11
+check_samples.do — RUN END: 20 Jun 2026 14:20:50
 
 . di as text "-----------------------------------------------------------------
 ---------------"
