@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > survey_va/imputedcategoryindex.smcl
   log type:  text
- opened on:  20 Jun 2026, 14:18:14
+ opened on:  21 Jun 2026, 14:01:52
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "imputedcategoryindex.do — RUN START: `c(current_date)' `c(current
 > _time)'"
-imputedcategoryindex.do — RUN START: 20 Jun 2026 14:18:14
+imputedcategoryindex.do — RUN START: 21 Jun 2026 14:01:52
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -47,7 +47,11 @@ imputedcategoryindex.do — RUN START: 20 Jun 2026 14:18:14
 . /* local motivationvars secqoi31mean_pooled secqoi32mean_pooled secqoi33mean_
 > pooled secqoi34mean_pooled */
 . 
-. /* generate linear index by summing the variables in each category */
+. /* generate linear index by AVERAGING the variables in each category.
+>    ADR-0011: indices are means, not sums — matches the paper text ("averages
+>    across questions"). Each index is summed then divided by its item count.
+>    Statistically inert for the paper: indices are z-scored below, and z is
+>    invariant to the 1/N rescaling. */
 . gen climateindex = 0
 
 . 
@@ -63,6 +67,9 @@ imputedcategoryindex.do — RUN START: 20 Jun 2026 14:18:14
 (5,615 real changes made)
 (5,603 real changes made)
 (5,614 real changes made)
+
+. replace climateindex = climateindex / `: word count `climatevars''
+(5,625 real changes made)
 
 . 
 . gen qualityindex = 0
@@ -87,6 +94,9 @@ imputedcategoryindex.do — RUN START: 20 Jun 2026 14:18:14
 (5,621 real changes made)
 (5,604 real changes made)
 
+. replace qualityindex = qualityindex / `: word count `qualityvars''
+(5,625 real changes made)
+
 . 
 . gen supportindex = 0
 
@@ -98,6 +108,9 @@ imputedcategoryindex.do — RUN START: 20 Jun 2026 14:18:14
 (5,536 real changes made)
 (5,574 real changes made)
 (5,562 real changes made)
+
+. replace supportindex = supportindex / `: word count `supportvars''
+(5,623 real changes made)
 
 . 
 . 
@@ -4450,15 +4463,15 @@ va_dk_enr_.. |        882    -.001529     .038194   -.136506   .1474569
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
-climateindex |      5,625    6.748436     1.70377  -5.329283   15.64397
+climateindex |      5,625    .7498262    .1893078  -.5921425   1.738219
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
-qualityindex |      5,625     13.3434    2.532939  -2.833333   24.36438
+qualityindex |      5,625      .88956    .1688626  -.1888889   1.624292
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
-supportindex |      5,625    3.000019    1.204099   -3.30303          8
+supportindex |      5,625    .7500048    .3010249  -.8257576          2
 
 . 
 . 

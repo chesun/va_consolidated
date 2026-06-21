@@ -2,7 +2,7 @@
       name:  compcasecategoryindex
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/survey_va/compcasecategoryindex.smcl
   log type:  text
- opened on:  20 Jun 2026, 14:18:16
+ opened on:  21 Jun 2026, 14:01:54
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "compcasecategoryindex.do — RUN START: `c(current_date)' `c(current_time)'"
-compcasecategoryindex.do — RUN START: 20 Jun 2026 14:18:16
+compcasecategoryindex.do — RUN START: 21 Jun 2026 14:01:54
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -32,7 +32,11 @@ compcasecategoryindex.do — RUN START: 20 Jun 2026 14:18:16
 
 . /* local motivationvars secqoi31mean_pooled secqoi32mean_pooled secqoi33mean_pooled secqoi34mean_pooled */
 . 
-. /* generate linear index by summing the variables in each category */
+. /* generate linear index by AVERAGING the variables in each category.
+>    ADR-0011: indices are means, not sums — matches the paper text ("averages
+>    across questions"). Each index is summed then divided by its item count.
+>    Statistically inert for the paper: indices are z-scored below, and z is
+>    invariant to the 1/N rescaling. */
 . gen climateindex = 0
 
 . 
@@ -48,6 +52,9 @@ compcasecategoryindex.do — RUN START: 20 Jun 2026 14:18:16
 (1,345 real changes made)
 (1,344 real changes made, 8 to missing)
 (1,335 real changes made)
+
+. replace climateindex = climateindex / `: word count `climatevars''
+(1,338 real changes made)
 
 . 
 . gen qualityindex = 0
@@ -72,6 +79,9 @@ compcasecategoryindex.do — RUN START: 20 Jun 2026 14:18:16
 (1,025 real changes made, 68 to missing)
 (957 real changes made)
 
+. replace qualityindex = qualityindex / `: word count `qualityvars''
+(958 real changes made)
+
 . 
 . gen supportindex = 0
 
@@ -83,6 +93,9 @@ compcasecategoryindex.do — RUN START: 20 Jun 2026 14:18:16
 (2,697 real changes made, 34 to missing)
 (2,729 real changes made, 194 to missing)
 (2,526 real changes made, 30 to missing)
+
+. replace supportindex = supportindex / `: word count `supportvars''
+(2,526 real changes made)
 
 . 
 . 
@@ -4435,17 +4448,17 @@ va_dk_enr_.. |        882    -.001529     .038194   -.136506   .1474569
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
-climateindex |      1,338    6.361371    2.345937  -5.329283   13.88095
+climateindex |      1,338     .706819    .2606596  -.5921425   1.542328
 (4,287 missing values generated)
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
-qualityindex |        958     12.5581    3.627515  -2.833333   23.11216
+qualityindex |        958    .8372066    .2418343  -.1888889   1.540811
 (4,667 missing values generated)
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
-supportindex |      2,528    2.966401    1.471129   -3.30303          8
+supportindex |      2,528    .7416002    .3677823  -.8257576          2
 (3,097 missing values generated)
 
 . 

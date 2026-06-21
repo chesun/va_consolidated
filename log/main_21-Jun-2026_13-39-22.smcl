@@ -1,0 +1,1471 @@
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ opened on:  21 Jun 2026, 13:39:22
+
+. 
+. di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+
+. di as text "main.do — RUN START: `c(current_date)' `c(current_time)'"
+main.do — RUN START: 21 Jun 2026 13:39:22
+
+. di as text "Host: `c(hostname)' | Stata: `c(stata_version)' | User: `c(username)'"
+Host: scribe | Stata: 18 | User: chesun1
+
+. di as text "{hline 80}"
+--------------------------------------------------------------------------------
+
+. 
+. 
+. /*==============================================================================
+> PHASE TOGGLES  (set to 1 to run the phase, 0 to skip)
+> ==============================================================================*/
+. 
+. * Default: every phase ON.  Production / acceptance runs (ADR-0018) require
+. * every toggle ON, including run_data_checks.  Dev iteration can toggle off
+. * upstream phases if their cached outputs are still valid.
+. local run_data_prep         0
+
+. local run_samples           0
+
+. local run_va_estimation     0
+
+. local run_va_tables         0   // Phase 4 is an intentional no-op — VA tables/figures run in Phase 6 (see Phase 4 NOT
+> E); kept as a numbered phase but never has a body
+
+. local run_survey_va         1
+
+. local run_paper_outputs     0
+
+. local run_data_checks       1
+
+. 
+. 
+. /*==============================================================================
+> ACCEPTANCE-RUN MASTER OVERRIDE  (per ADR-0018)
+> 
+>     Set m4_acceptance_run = 1 when doing the canonical end-to-end run that
+>     produces ALL consolidated outputs (M4 golden-master, v1.0-final freeze,
+>     any other ADR-0018-acceptance scenario).  The flag overrides three
+>     sub-toggles inside Phases 2-3 (do_touse_va, do_create_samples, do_va)
+>     from their cached-default 0 to 1, so the run rebuilds samples + VA
+>     estimates from scratch instead of relying on cached predecessor outputs.
+> 
+>     Why all three: the cached samples + VA estimates from predecessor
+>     production live at LEGACY paths the consolidated pipeline doesn't read
+>     from.  M4 must regenerate them at CANONICAL $datadir_clean and
+>     $estimates_dir paths so the consolidated pipeline finds them.
+> 
+>     Leave at 0 for dev iteration where you want the cached-outputs pattern
+>     (mirrors predecessor `do_all.do' defaults).
+> 
+>     See ADR-0018 acceptance criteria + plan v3 §3.5 golden-master verification.
+> ==============================================================================*/
+. 
+. local m4_acceptance_run  0   // CHANGE ME to 1 for full acceptance / M4 run
+
+. 
+. * ORCHESTRATION-GAP FIX (2026-06-01): when m4_acceptance_run=1 force the upstream
+. * PHASE toggles ON here, at the phase-toggle level.  Previously the override only
+. * flipped the nested sub-toggles (do_touse_va, do_create_samples, do_va) INSIDE the
+. * `if run_samples'/`if run_va_estimation' blocks — but those phase gates were 0, so
+. * the blocks never executed and the sub-toggle overrides were dead.  An ADR-0018
+. * acceptance run requires every upstream phase ON so canonical samples + VA
+. * estimates are rebuilt at $datadir_clean/$estimates_dir (not read from LEGACY
+. * predecessor caches).  Set m4=1 -> full end-to-end; m4=0 -> dev-iteration (the
+. * per-phase toggles above stand as set).  The nested sub-toggle overrides (still
+. * present in each phase block) remain correct once their phase actually runs.
+. if `m4_acceptance_run' {
+.     local run_data_prep      1
+.     local run_samples        1
+.     local run_va_estimation  1
+.     local run_survey_va      1
+.     local run_paper_outputs  1
+.     local run_data_checks    1
+.     * run_va_tables stays 0 — Phase 4 is an intentional no-op (see its NOTE).
+. }
+
+. 
+. di as text _n "M4 acceptance-run override: " ///
+>     cond(`m4_acceptance_run', "ENABLED — all upstream PHASE toggles forced ON (full end-to-end rebuild) + nested do_to
+> use_va/do_create_samples/do_va forced ON", "DISABLED — per-phase toggles stand as set above (dev iteration)")
+
+M4 acceptance-run override: DISABLED — per-phase toggles stand as set above (dev iteration)
+
+. 
+. 
+. /*==============================================================================
+> PHASE 1 — DATA PREP
+> ==============================================================================*/
+. 
+. if `run_data_prep' {
+.     di as text _n(2) "{hline 80}"
+.     di as text "PHASE 1: DATA PREP"
+.     di as text "{hline 80}"
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+. 
+.     * Phase 1a §3.3 step 9 COMPLETE 2026-05-08 — Christina-owned data-prep
+.     * scripts relocated under do/data_prep/.  5 batches (9a-9e) landed;
+.     * 32 files total.  Each invocation carries a one-liner per ADR-0021.
+.     *
+.     * Step 9 batch 9a — ACS census-tract (2 files): LANDED 2026-05-08
+.     log on master
+.     di as text "  [RUN] do/data_prep/acs/acs_2017_gen_dict.do"
+.     log off master
+.     do do/data_prep/acs/acs_2017_gen_dict.do            // build 2017 ACS subject-table data dictionaries (descsave .d
+> ta+.csv)
+.     log on master
+.     di as text "  [OK]  do/data_prep/acs/acs_2017_gen_dict.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/acs/clean_acs_census_tract.do"
+.     log off master
+.     do do/data_prep/acs/clean_acs_census_tract.do            // clean 2010-2013 ACS census-tract subject tables S0601/
+> S1501/S1702/S1901; produces $datadir_clean/acs/acs_ca_census_tract_clean.dta
+.     log on master
+.     di as text "  [OK]  do/data_prep/acs/clean_acs_census_tract.do"
+.     log off master
+. 
+.     * Step 9 batch 9b — school-characteristics (11 files): LANDED 2026-05-08
+.     * Chain order from predecessor do_all.do:75-97; tempfile-based assembly in clean_sch_char (master)
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/cds_nces_xwalk.do"
+.     log off master
+.     do do/data_prep/schl_chars/cds_nces_xwalk.do            // build CDS<->NCES school-id crosswalk; writes $datadir_c
+> lean/cde/cds_nces_id_xwalk.dta
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/cds_nces_xwalk.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_locale.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_locale.do            // clean NCES urban-rural locale codes; writes $datadir_clea
+> n/nces/pubschls_locale.dta (reads cds_nces xwalk)
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_locale.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_elsch.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_elsch.do            // clean CDE EL-school yearly data; per-year $datadir_clean/c
+> de/elsch/ dtas (consumed by clean_sch_char via append)
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_elsch.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_enr.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_enr.do            // clean CDE enrollment by race/sex/total yearly; per-year $dat
+> adir_clean/cde/enr/ dtas (consumed by clean_sch_char via append)
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_enr.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_frpm.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_frpm.do            // clean CDE Free/Reduced Price Meals yearly; per-year $datadi
+> r_clean/cde/frpm/ dtas (consumed by clean_sch_char via append)
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_frpm.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_staffcred.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_staffcred.do            // clean CDE staff credentials yearly; per-year $datadir_
+> clean/cde/staffcred/ dtas (consumed by clean_sch_char via append)
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_staffcred.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_staffdemo.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_staffdemo.do            // clean CDE staff demographics yearly; per-year $datadir
+> _clean/cde/staffdemo/ dtas (consumed by clean_sch_char via append)
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_staffdemo.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_staffschoolfte.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_staffschoolfte.do            // clean CDE staff-school FTE yearly; per-year $data
+> dir_clean/cde/staffschoolfte/ dtas (consumed by clean_sch_char via append)
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_staffschoolfte.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_charter.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_charter.do            // clean CDE charter status; writes $datadir_clean/cde/char
+> ter_status.dta
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_charter.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_ecn_disadv.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_ecn_disadv.do            // clean CDE economic-disadvantage; writes $datadir_clea
+> n/cde/ecn_disadv.dta
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_ecn_disadv.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/schl_chars/clean_sch_char.do"
+.     log off master
+.     do do/data_prep/schl_chars/clean_sch_char.do            // MASTER: appends 6 sister cleaners' per-year dtas into 8
+>  in-file tempfiles + merges with 3 chain dtas; writes $datadir_clean/sch_char.dta + per-year snapshots
+.     log on master
+.     di as text "  [OK]  do/data_prep/schl_chars/clean_sch_char.do"
+.     log off master
+. 
+.     * Step 9 batch 9c — k12_postsec_distance (5 files): LANDED 2026-05-08
+.     * MAIN entry-point sub-calls hd2021 (run); reconcile_cdscodes.do + merge_k12_postsec_dist.doh + check_merge.do are
+>  not directly invoked from main.do.
+.     * - reconcile_cdscodes.do is ORPHAN in both predecessor and consolidated (not called by anyone); preserved per ADR
+> -0021.  Phase 1c §5.1 dead-code review will decide its fate.
+.     * - merge_k12_postsec_dist.doh is a helper `include'd by relocated batch-2b sample-construction files (do/samples/
+> create_score_samples.do + create_out_samples.do; consolidated callsites updated 2026-05-08).
+.     log on master
+.     di as text "  [RUN] do/data_prep/k12_postsec_distance/k12_postsec_distances.do"
+.     log off master
+.     do do/data_prep/k12_postsec_distance/k12_postsec_distances.do            // MAIN: build K12-postsec distance file 
+> (IPEDS HD2021 + CDE pubschls + geodist); writes $datadir_clean/k12_postsec_distance/clean/k12_postsec_{distance,mindis
+> tance}.dta; calls `run hd2021.do' as sub-script
+.     log on master
+.     di as text "  [OK]  do/data_prep/k12_postsec_distance/k12_postsec_distances.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/k12_postsec_distance/check_merge.do"
+.     log off master
+.     do do/data_prep/k12_postsec_distance/check_merge.do            // diagnostic: verify mindistance merges cleanly wi
+> th score_b VA sample (sanity check; LEGACY read of $vaprojdir/data/va_samples_v1/score_b.dta + include of merge_k12_po
+> stsec_dist.doh)
+.     log on master
+.     di as text "  [OK]  do/data_prep/k12_postsec_distance/check_merge.do"
+.     log off master
+. 
+.     * Step 9 batch 9d — caschls/prepare/ (4 files): LANDED 2026-05-08
+.     log on master
+.     di as text "  [RUN] do/data_prep/prepare/enrollmentclean.do"
+.     log off master
+.     do do/data_prep/prepare/enrollmentclean.do            // clean CDE annual enrollment 2014-15..2018-19; produces $d
+> atadir_clean/enrollment/schoollevel/enr<year>.dta (5 files; chain producer)
+.     log on master
+.     di as text "  [OK]  do/data_prep/prepare/enrollmentclean.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/prepare/poolgr11enr.do"
+.     log off master
+.     do do/data_prep/prepare/poolgr11enr.do            // pool gr11 enrollment across 5 years; reads CHAIN enr<year>; w
+> rites $datadir_clean/enrollment/schoollevel/poolgr11enr.dta
+.     log on master
+.     di as text "  [OK]  do/data_prep/prepare/poolgr11enr.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/prepare/renamedata.do"
+.     log off master
+.     do do/data_prep/prepare/renamedata.do            // rename + standardize raw CalSCHLS surveys (elementary/parent/s
+> econdary/staff across years); writes $datadir_clean/calschls/{elementary,parent,secondary,staff}/<x><year>.dta — incl.
+>  pooled staff0414 consumed by splitstaff0414
+.     log on master
+.     di as text "  [OK]  do/data_prep/prepare/renamedata.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/prepare/splitstaff0414.do"
+.     log off master
+.     do do/data_prep/prepare/splitstaff0414.do            // split pre-existing $clndtadir/staff/staff0414 by year; wri
+> tes $datadir_clean/calschls/staff/staff<year>.dta
+.     log on master
+.     di as text "  [OK]  do/data_prep/prepare/splitstaff0414.do"
+.     log off master
+. 
+.     * Step 9 batch 9e — caschls/qoiclean/ (10 files): LANDED 2026-05-08 (final batch of Step 9)
+.     * Year-by-year QOI cleaning per CalSCHLS subgroup (parent/secondary/staff).
+.     * Reads CHAIN $datadir_clean/calschls/<sub>/<x><year>.dta (from renamedata batch 9d).
+.     * Writes CHAIN $datadir_clean/calschls/qoiclean/<sub>/<x>qoiclean<year>.dta.
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1415.do"
+.     log off master
+.     do do/data_prep/qoiclean/parent/parentqoiclean1415.do            // QOI clean parent CalSCHLS 1415
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1415.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1516.do"
+.     log off master
+.     do do/data_prep/qoiclean/parent/parentqoiclean1516.do            // QOI clean parent CalSCHLS 1516
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1516.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1617.do"
+.     log off master
+.     do do/data_prep/qoiclean/parent/parentqoiclean1617.do            // QOI clean parent CalSCHLS 1617
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1617.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/parent/parentqoiclean1819_1718.do"
+.     log off master
+.     do do/data_prep/qoiclean/parent/parentqoiclean1819_1718.do            // QOI clean parent CalSCHLS 1718+1819 (loop
+> )
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/parent/parentqoiclean1819_1718.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/secondary/secqoiclean1415.do"
+.     log off master
+.     do do/data_prep/qoiclean/secondary/secqoiclean1415.do            // QOI clean secondary CalSCHLS 1415
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/secondary/secqoiclean1415.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/secondary/secqoiclean1617.do"
+.     log off master
+.     do do/data_prep/qoiclean/secondary/secqoiclean1617.do            // QOI clean secondary CalSCHLS 1617
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/secondary/secqoiclean1617.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.do"
+.     log off master
+.     do do/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.do            // QOI clean secondary CalSCHLS 1516+17
+> 18+1819 (loop)
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/secondary/secqoiclean1819_1718_1516.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/staff/staffqoiclean1415.do"
+.     log off master
+.     do do/data_prep/qoiclean/staff/staffqoiclean1415.do            // QOI clean staff CalSCHLS 1415
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/staff/staffqoiclean1415.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/staff/staffqoiclean1617_1516.do"
+.     log off master
+.     do do/data_prep/qoiclean/staff/staffqoiclean1617_1516.do            // QOI clean staff CalSCHLS 1516+1617 (loop)
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/staff/staffqoiclean1617_1516.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/qoiclean/staff/staffqoiclean1819_1718.do"
+.     log off master
+.     do do/data_prep/qoiclean/staff/staffqoiclean1819_1718.do            // QOI clean staff CalSCHLS 1718+1819 (loop)
+.     log on master
+.     di as text "  [OK]  do/data_prep/qoiclean/staff/staffqoiclean1819_1718.do"
+.     log off master
+. 
+.     * Step 9 batch 9g — caschls/responserate (4 files): LANDED 2026-05-08 (extension batch — Christina decision)
+.     * Order from predecessor master.do:220-229: trim<sub>demo -> <sub>responserate per subgroup.
+.     * Reads LEGACY $caschls_projdir/dta/demographics/<sub>/<x> (raw); writes CHAIN $datadir_clean/calschls/{demotrim,r
+> esponserate}/<x>.
+.     log on master
+.     di as text "  [RUN] do/data_prep/responserate/trimsecdemo.do"
+.     log off master
+.     do do/data_prep/responserate/trimsecdemo.do            // trim secondary CalSCHLS demographics per year (1415-1819
+> ); writes 5 yearly trimsecdemo dtas
+.     log on master
+.     di as text "  [OK]  do/data_prep/responserate/trimsecdemo.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/responserate/secresponserate.do"
+.     log off master
+.     do do/data_prep/responserate/secresponserate.do            // compute secondary survey response rates by school; w
+> rites $datadir_clean/calschls/responserate/secresponserate.dta (consumed by 9f secpooling)
+.     log on master
+.     di as text "  [OK]  do/data_prep/responserate/secresponserate.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/responserate/trimparentdemo.do"
+.     log off master
+.     do do/data_prep/responserate/trimparentdemo.do            // trim parent CalSCHLS demographics per year (1415-1819
+> ); writes 5 yearly trimparentdemo dtas
+.     log on master
+.     di as text "  [OK]  do/data_prep/responserate/trimparentdemo.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/responserate/parentresponserate.do"
+.     log off master
+.     do do/data_prep/responserate/parentresponserate.do            // compute parent survey response rates by school; w
+> rites $datadir_clean/calschls/responserate/parentresponserate.dta (consumed by 9f parentpooling)
+.     log on master
+.     di as text "  [OK]  do/data_prep/responserate/parentresponserate.do"
+.     log off master
+. 
+.     * Step 9 batch 9f — caschls/poolingdata (4 of 5 files): LANDED 2026-05-08 (extension batch — Christina decision)
+.     * Order from predecessor master.do:302-341: <sub>pooling -> mergegr11enr -> clean_va.
+.     * Reads CHAIN qoiclean (9e) + responserate (9g) + poolgr11enr (9d); writes CHAIN analysisready/poolingdata outputs
+>  (consumed by Step 7 survey-VA in do/survey_va/).
+.     * NOTE: clean_va.do (5th file of batch 9f) moved to Phase 5 trailer 2026-05-25
+.     * because it CHAIN-reads $estimates_dir/va_cfr_all_v1/va_est_dta/va_<outcome>_all.dta
+.     * produced by do/va/merge_va_est.do (Phase 3 batch 3c1) and so must run AFTER
+.     * Phase 3.  Predecessor caschls master.do treated VA outputs as pre-existing
+.     * artifacts from a separate cde_va_project_fork pipeline; consolidation
+.     * collapses both into one master so the dependency now binds.  See its
+.     * invocation under PHASE 5 below.
+.     log on master
+.     di as text "  [RUN] do/data_prep/poolingdata/secpooling.do"
+.     log off master
+.     do do/data_prep/poolingdata/secpooling.do            // pool secondary qoiclean across years; writes secpooledstat
+> s + secanalysisready
+.     log on master
+.     di as text "  [OK]  do/data_prep/poolingdata/secpooling.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/poolingdata/parentpooling.do"
+.     log off master
+.     do do/data_prep/poolingdata/parentpooling.do            // pool parent qoiclean across years; writes parentpooleds
+> tats + parentanalysisready
+.     log on master
+.     di as text "  [OK]  do/data_prep/poolingdata/parentpooling.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/poolingdata/staffpooling.do"
+.     log off master
+.     do do/data_prep/poolingdata/staffpooling.do            // pool staff qoiclean across years; writes staffpooledstat
+> s only (staffanalysisready is created downstream by mergegr11enr from staffpooledstats + poolgr11enr)
+.     log on master
+.     di as text "  [OK]  do/data_prep/poolingdata/staffpooling.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/data_prep/poolingdata/mergegr11enr.do"
+.     log off master
+.     do do/data_prep/poolingdata/mergegr11enr.do            // merge gr11enr_mean weight onto parent/sec analysisready 
+> (in-place update); CREATES staffanalysisready from staffpooledstats + poolgr11enr
+.     log on master
+.     di as text "  [OK]  do/data_prep/poolingdata/mergegr11enr.do"
+.     log off master
+.     *
+.     * NOTE per ADR-0019 (Christina-authored NSC crosswalk; pipeline-inactive)
+.     * + plan v3 §8 Q1 (verified by grep — ZERO production invocations of
+.     * crosswalk_*_outcomes.do): these crosswalk-build files are NOT invoked
+.     * from main.do.  They are static, run-once-cached artifacts.  Their
+.     * .dta outputs are pre-existing inputs that merge_k12_postsecondary.doh
+.     * consumes when called by Christina's sample-construction code (in the
+.     * run_samples block below).
+.     log on master    // resume master for the orchestration layer
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 2 — SAMPLE CONSTRUCTION
+> ==============================================================================*/
+. 
+. if `run_samples' {
+.     di as text _n(2) "{hline 80}"
+.     di as text "PHASE 2: SAMPLE CONSTRUCTION"
+.     di as text "{hline 80}"
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+. 
+.     * Sample-construction sub-toggles (mirror predecessor `do_all.do' gates
+.     * for behavior parity).  Both touse_va and create_*_samples are
+.     * run-once-cached: their outputs persist in $datadir_clean and are
+.     * re-read by every VA-estimation step.  Default 0 mirrors `do_all.do:110'
+.     * (`local do_touse_va = 0') and `do_all.do:148' (`local do_create_samples = 0').
+.     * Flip to 1 only when re-seeding the sample crosswalks (e.g., after a CDE
+.     * data refresh).
+.     local do_touse_va        0
+.     local do_create_samples  0
+. 
+.     * M4 override (per ADR-0018): acceptance-run flips both sub-toggles ON
+.     * so the run rebuilds samples from scratch instead of relying on cached
+.     * predecessor outputs.  Required for a fully-self-contained M4 verification
+.     * — the cached samples on Scribe live at LEGACY predecessor paths
+.     * ($vaprojdir/data/sbac/va_samples.dta etc.), NOT at the CANONICAL
+.     * $datadir_clean paths the consolidated VA-estimation chain reads from.
+.     *
+.     * History: this override was REMOVED 2026-05-26 (earlier today) after
+.     * M4 attempt #5 hit r(601) on a dead include in touse_va.do:262.  The
+.     * dead include was RESOLVED later same day per ADR-0009 v1-canonical
+.     * (touse_va.do CONVENTION DEVIATIONS block), so the override is now
+.     * safe to restore.  See attempt #6 master log for the cache-missing
+.     * symptom that prompted this restoration.
+.     if `m4_acceptance_run' {
+.         local do_touse_va        1
+.         local do_create_samples  1
+.     }
+. 
+.     * RELOCATED 2026-04-30 per ADR-0005 — sibling enrollment-outcomes crosswalk
+.     * (the only file from caschls/do/share/siblingvaregs/ that survives
+.     * consolidation per ADR-0004).  First real Phase 1a §3.3 relocation; sets
+.     * the precedent for subsequent moves.
+.     log on master
+.     di as text "  [RUN] do/sibling_xwalk/siblingoutxwalk.do"
+.     log off master
+.     do do/sibling_xwalk/siblingoutxwalk.do            // build sibling enrollment-outcomes crosswalk (transitive-closu
+> re family grouping; reads K12+postsec via Matt's merge_k12_postsecondary.doh; writes $datadir_clean/siblingxwalk/sibli
+> ng_out_xwalk.dta)
+.     log on master
+.     di as text "  [OK]  do/sibling_xwalk/siblingoutxwalk.do"
+.     log off master
+. 
+.     * RELOCATED 2026-05-07 per plan v3 §3.3 step 2 batch 2b — sample-tag
+.     * crosswalk + score/outcome VA estimation samples.  Both gated 0 by
+.     * default (run-once-cached pattern).  Relocation preserves predecessor
+.     * verbatim except for path repointing to CANONICAL `$datadir_clean'.
+.     if `do_touse_va' {
+.         log on master
+.         di as text "  [RUN] do/samples/touse_va.do"
+.         log off master
+.         do do/samples/touse_va.do            // tag the VA-eligible analysis sample (touse_g11_<subject>/<outcome> mar
+> kers; writes $datadir_clean/sbac/va_samples.dta)
+.         log on master
+.         di as text "  [OK]  do/samples/touse_va.do"
+.         log off master
+.     }
+.     if `do_create_samples' {
+.         log on master
+.         di as text "  [RUN] do/samples/create_score_samples.do"
+.         log off master
+.         do do/samples/create_score_samples.do            // build 7 test-score VA samples × 2 prior-score versions (v1
+> /v2 per ADR-0009); writes $datadir_clean/va_samples_v[12]/score_*.dta
+.         log on master
+.         di as text "  [OK]  do/samples/create_score_samples.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/samples/create_out_samples.do"
+.         log off master
+.         do do/samples/create_out_samples.do            // build 7 outcome VA samples × 2 prior-score versions; writes 
+> $datadir_clean/va_samples_v[12]/out_*.dta
+.         log on master
+.         di as text "  [OK]  do/samples/create_out_samples.do"
+.         log off master
+.     }
+. 
+.     * NOTE: plan v3 main.do template (lines 175-176) listed
+.     * create_va_sib_acs_restr_smp.do + create_va_sib_acs_out_restr_smp.do at
+.     * this site, but per ADR-0004 those files are deprecated (caschls
+.     * siblingvaregs subtree) and belong in the Step 6 archive batch, not
+.     * Step 2 active relocation.  The plan v3 template will be corrected when
+.     * Step 6 lands.
+. 
+.     * TODO Phase 1a §3.3 step 2 batch 2c: relocate sample-construction merge
+.     * helpers (merge_loscore.doh, merge_sib.doh, merge_va_smp_acs.doh,
+.     * merge_lag2_ela.doh from cde sbac).  Until then, create_score_samples.do
+.     * and create_out_samples.do call them via LEGACY $vaprojdir paths.
+.     log on master    // resume master for the orchestration layer
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 3 — VA ESTIMATION
+> ==============================================================================*/
+. 
+. if `run_va_estimation' {
+.     di as text _n(2) "{hline 80}"
+.     di as text "PHASE 3: VA ESTIMATION"
+.     di as text "{hline 80}"
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+. 
+.     * VA estimation sub-toggle (mirrors predecessor `do_all.do:160' for
+.     * behavior parity).  All four entry points are run-once-cached: outputs
+.     * persist in $estimates_dir/va_cfr_all_v[12]/ and are re-read by
+.     * downstream paper tables, figures, and pass-through regressions.
+.     * Default 0 mirrors `do_all.do:160' (`local do_va = 0').  Flip to 1 only
+.     * when re-running estimation (e.g., after ADR-0006 vam.ado update).
+.     local do_va  0
+. 
+.     * M4 override (per ADR-0018): acceptance-run flips do_va ON.
+.     if `m4_acceptance_run' {
+.         local do_va  1
+.     }
+. 
+.     * RELOCATED 2026-05-07 per plan v3 §3.3 step 3 batch 3a — score-VA + outcome-VA
+.     * estimation entry points (canonical pipeline per ADR-0004; v1/v2 prior-score
+.     * controls per ADR-0009; CFR drift-limit shrinkage via vam.ado v2.0.1+noseed
+.     * per ADR-0006).  All 4 gated together (run-once-cached pattern).
+.     if `do_va' {
+.         log on master
+.         di as text "  [RUN] do/va/va_score_all.do"
+.         log off master
+.         do do/va/va_score_all.do            // estimate score-VA (16 specs × subject × v1/v2; CFR drift; spec-test); w
+> rites $estimates_dir/va_cfr_all_v[12]/{vam,spec_test,va_est_dta}/
+.         log on master
+.         di as text "  [OK]  do/va/va_score_all.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_score_fb_all.do"
+.         log off master
+.         do do/va/va_score_fb_all.do            // forecast-bias test for score-VA (excludes lasd by design — see macro
+> s_va_all_samples_controls.doh:66); writes .../{vam,fb_test}/
+.         log on master
+.         di as text "  [OK]  do/va/va_score_fb_all.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_out_all.do"
+.         log off master
+.         do do/va/va_out_all.do            // estimate outcome-VA + Deep Knowledge VA (controlling for ELA/Math VA from
+>  va_score_all); writes .../{vam,spec_test,va_est_dta}/
+.         log on master
+.         di as text "  [OK]  do/va/va_out_all.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_out_fb_all.do"
+.         log off master
+.         do do/va/va_out_fb_all.do            // forecast-bias test for outcome-VA + DK VA; writes .../{vam,fb_test}/
+.         log on master
+.         di as text "  [OK]  do/va/va_out_fb_all.do"
+.         log off master
+. 
+.         * RELOCATED 2026-05-07 per plan v3 §3.3 step 3 batch 3b — paper-shipping
+.         * spec/FB test summary tables.  Read .ster outputs from the 4 entry-point
+.         * scripts above; produce summary .dta + (for va_spec_fb_tab) per-outcome
+.         * CSV at $tables_dir/va_cfr_all_v[12]/{spec_test,fb_test,combined}/.
+.         log on master
+.         di as text "  [RUN] do/va/va_score_spec_test_tab.do"
+.         log off master
+.         do do/va/va_score_spec_test_tab.do            // score-VA spec-test summary table; appends rows to $tables_dir
+> /.../spec_test/spec_<subject>_all.dta
+.         log on master
+.         di as text "  [OK]  do/va/va_score_spec_test_tab.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_out_spec_test_tab.do"
+.         log off master
+.         do do/va/va_out_spec_test_tab.do            // outcome-VA spec-test summary table; appends rows to $tables_dir
+> /.../spec_test/spec_<outcome>_all.dta
+.         log on master
+.         di as text "  [OK]  do/va/va_out_spec_test_tab.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_score_fb_test_tab.do"
+.         log off master
+.         do do/va/va_score_fb_test_tab.do            // score-VA FB-test summary table (excludes lasd per ADR-0004); ap
+> pends rows to $tables_dir/.../fb_test/fb_<subject>_all.dta
+.         log on master
+.         di as text "  [OK]  do/va/va_score_fb_test_tab.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_out_fb_test_tab.do"
+.         log off master
+.         do do/va/va_out_fb_test_tab.do            // outcome-VA FB-test summary table; appends rows to $tables_dir/...
+> /fb_test/fb_<outcome>_all.dta
+.         log on master
+.         di as text "  [OK]  do/va/va_out_fb_test_tab.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_spec_fb_tab.do"
+.         log off master
+.         do do/va/va_spec_fb_tab.do            // combined spec+FB CSV per (outcome × version); writes $tables_dir/.../
+> combined/fb_spec_<outcome>.csv
+.         log on master
+.         di as text "  [OK]  do/va/va_spec_fb_tab.do"
+.         log off master
+. 
+.         * RELOCATED 2026-05-08 per plan v3 §3.3 step 3 batch 3c1 — utilities
+.         * (merge per-cell estimates into master VA dataset; correlation
+.         * diagnostic; prior-decile + census-income-decile dtas for outcome
+.         * regressions).  These produce inputs consumed by reg_out_va_*.do
+.         * (batch 3c2).
+.         log on master
+.         di as text "  [RUN] do/va/merge_va_est.do"
+.         log off master
+.         do do/va/merge_va_est.do            // merge per-cell VA estimate dtas into va_<outcome>_all.dta + super-maste
+> r va_all.dta; writes $estimates_dir/va_cfr_all_v[12]/va_est_dta/
+.         log on master
+.         di as text "  [OK]  do/va/merge_va_est.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_corr.do"
+.         log off master
+.         do do/va/va_corr.do            // diagnostic: print correlation matrix of VA estimates across 8 spec combinati
+> ons; output to log only (no .dta/.csv)
+.         log on master
+.         di as text "  [OK]  do/va/va_corr.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/prior_decile_original_sample.do"
+.         log off master
+.         do do/va/prior_decile_original_sample.do            // build student-level prior-score deciles + race/sex/econ
+>  from out_b sample; census income deciles from out_a; writes $datadir_clean/sbac/{prior_decile_original_sample,census_
+> income_decile_a_sample}.dta
+.         log on master
+.         di as text "  [OK]  do/va/prior_decile_original_sample.do"
+.         log off master
+. 
+.         * RELOCATED 2026-05-08 per plan v3 §3.3 step 3 batch 3c2 — outcome
+.         * regressions + paper-shipping tables/figures.  Read merged VA estimates
+.         * (from merge_va_est.do) + outcome samples (from batch 2b) + prior-decile
+.         * dtas (from prior_decile_original_sample.do); produce regression .ster
+.         * + paper Tables 4-7 CSVs + paper figures.
+.         log on master
+.         di as text "  [RUN] do/va/reg_out_va_all.do"
+.         log off master
+.         do do/va/reg_out_va_all.do            // regress postsec outcomes on score VA + heterogeneity (prior decile vi
+> a $run_prior_score, default on; race/sex/econ/charter/income); writes $estimates_dir/.../reg_out_va/
+.         log on master
+.         di as text "  [OK]  do/va/reg_out_va_all.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/reg_out_va_all_tab.do"
+.         log off master
+.         do do/va/reg_out_va_all_tab.do            // paper-shipping CSV tables of outcome-VA regressions; writes $tabl
+> es_dir/.../reg_out_va/
+.         log on master
+.         di as text "  [OK]  do/va/reg_out_va_all_tab.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/reg_out_va_all_fig.do"
+.         log off master
+.         do do/va/reg_out_va_all_fig.do            // paper-shipping figures of outcome-VA heterogeneity; writes $figur
+> es_dir/.../ + $output_dir/gph_files/.../ (intermediate .gph)
+.         log on master
+.         di as text "  [OK]  do/va/reg_out_va_all_fig.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/reg_out_va_dk_all.do"
+.         log off master
+.         do do/va/reg_out_va_dk_all.do            // regress postsec outcomes on Deep Knowledge VA; heterogeneity by pr
+> ior-score decile; writes $estimates_dir/.../reg_out_va/
+.         log on master
+.         di as text "  [OK]  do/va/reg_out_va_dk_all.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/reg_out_va_dk_all_tab.do"
+.         log off master
+.         do do/va/reg_out_va_dk_all_tab.do            // paper-shipping CSV tables of DK VA regressions; writes $tables
+> _dir/.../reg_out_va_dk/
+.         log on master
+.         di as text "  [OK]  do/va/reg_out_va_dk_all_tab.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/reg_out_va_dk_all_fig.do"
+.         log off master
+.         do do/va/reg_out_va_dk_all_fig.do            // paper-shipping figures of DK VA heterogeneity; writes $figures
+> _dir/.../ + $output_dir/gph_files/.../
+.         log on master
+.         di as text "  [OK]  do/va/reg_out_va_dk_all_fig.do"
+.         log off master
+. 
+.         * RELOCATED 2026-05-08 per plan v3 §3.3 step 3 batch 3d — sibling-lag
+.         * forecast-bias diagnostic (not paper-reported per do_all.do comment).
+.         * Reads score_s sample dta from batch 2b; produces .ster + summary CSV.
+.         log on master
+.         di as text "  [RUN] do/va/va_score_sib_lag.do"
+.         log off master
+.         do do/va/va_score_sib_lag.do            // sibling-lag FB diagnostic for score VA; lag-1 older-sibling control
+> s + lag-2 FB leave-out; writes $estimates_dir/.../{vam,spec_test,fb_test,va_est_dta}/
+.         log on master
+.         di as text "  [OK]  do/va/va_score_sib_lag.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_out_sib_lag.do"
+.         log off master
+.         do do/va/va_out_sib_lag.do            // sibling-lag FB diagnostic for outcome VA (mirror of score variant)
+.         log on master
+.         di as text "  [OK]  do/va/va_out_sib_lag.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/va_sib_lag_spec_fb_tab.do"
+.         log off master
+.         do do/va/va_sib_lag_spec_fb_tab.do            // combined spec+FB summary CSV for sibling-lag diagnostic specs
+> ; writes $tables_dir/.../combined/sib_lag_fb_spec_<outcome>.csv
+.         log on master
+.         di as text "  [OK]  do/va/va_sib_lag_spec_fb_tab.do"
+.         log off master
+. 
+.         * RELOCATED 2026-05-08 per plan v3 §3.3 step 4 — heterogeneity.
+.         * Reads merged VA estimates (from merge_va_est.do, batch 3c1) +
+.         * sch_char.dta (LEGACY, Step 9 deferred); produces VA-by-school-char
+.         * regressions + paper Table 8 panel + figures.
+.         * NOTE: plan v3 mentioned `pass_through/` as a Step 4 destination, but
+.         * the predecessor has no pass_through/ directory.  Step 4 = 4 va_het files only.
+.         log on master
+.         di as text "  [RUN] do/va/heterogeneity/va_het.do"
+.         log off master
+.         do do/va/heterogeneity/va_het.do            // VA heterogeneity by district + school chars; produces va_all_sc
+> hl_char.dta + paper Table 8 panel LaTeX (var_across_district + corr_char)
+.         log on master
+.         di as text "  [OK]  do/va/heterogeneity/va_het.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/heterogeneity/va_corr_schl_char.do"
+.         log off master
+.         do do/va/heterogeneity/va_corr_schl_char.do            // VA-by-school-char regressions per (sample × control 
+> × peer × het_char) cell; writes $estimates_dir/.../va_het/<...>.ster
+.         log on master
+.         di as text "  [OK]  do/va/heterogeneity/va_corr_schl_char.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/heterogeneity/va_corr_schl_char_fig.do"
+.         log off master
+.         do do/va/heterogeneity/va_corr_schl_char_fig.do            // paper figures: VA distribution by school chars (
+> scatter + density); writes $figures_dir/.../va_het/<...>.pdf
+.         log on master
+.         di as text "  [OK]  do/va/heterogeneity/va_corr_schl_char_fig.do"
+.         log off master
+.         log on master
+.         di as text "  [RUN] do/va/heterogeneity/persist_het_student_char_fig.do"
+.         log off master
+.         do do/va/heterogeneity/persist_het_student_char_fig.do            // combined-panel figures for outcome-VA per
+> sistence by student chars; reads .gph from batch 3c2 reg_out_va_all_fig.do
+.         log on master
+.         di as text "  [OK]  do/va/heterogeneity/persist_het_student_char_fig.do"
+.         log off master
+.     } 
+. 
+.     * NOTE: predecessor `out_drift_limit.doh' is DEAD CODE (never included by any
+.     * active script — all 4 entry points include `drift_limit.doh' which already
+.     * defines both score_drift_limit and out_drift_limit).  Defer to Phase 1c §5.1
+.     * archival.
+.     log on master    // resume master for the orchestration layer
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 4 — VA TABLES + FIGURES
+> ==============================================================================*/
+. 
+. if `run_va_tables' {
+.     di as text _n(2) "{hline 80}"
+.     di as text "PHASE 4: VA TABLES + FIGURES"
+.     di as text "{hline 80}"
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+. 
+.     * NOTE (2026-05-31): Phase 4 is intentionally EMPTY — a no-op.  The original
+.     * main.do template anticipated splitting share/ producers into a VA-specific
+.     * bucket here (Phase 4) and a non-VA bucket in Phase 6.  That split was never
+.     * adopted: in the actual construction (§3.3 step 10 batch 10a) ALL share/
+.     * producers — VA and non-VA alike — landed together in Phase 6 below.  The
+.     * VA-specific paper tables/figures (do/share/{va_scatter, va_var_explain,
+.     * va_var_explain_tab, va_spec_fb_tab_all, reg_out_va_tab, kdensity,
+.     * svyindex_tab}.do) therefore run in Phase 6, not here.  The VA spec/FB-test
+.     * summary tables (do/va/va_{score,out}_{spec,fb}_test_tab.do, va_spec_fb_tab.do)
+.     * run inside Phase 3.  No producer is stranded by this empty phase (verified
+.     * 2026-05-31 by an orphan sweep: every active do/ file is wired into main.do).
+.     * The block + toggle are kept (rather than deleted) so the phase numbering that
+.     * plan v3 and the ADRs reference stays stable.  run_va_tables is set to 0 above.
+.     log on master    // resume master for the orchestration layer
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 5 — SURVEY VA (CalSCHLS indices)
+> ==============================================================================*/
+. 
+. if `run_survey_va' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 5: SURVEY VA"
+PHASE 5: SURVEY VA
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:22
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:22
+.     di as text "  [RUN] do/data_prep/poolingdata/clean_va.do"
+  [RUN] do/data_prep/poolingdata/clean_va.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:22
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:23
+.     di as text "  [OK]  do/data_prep/poolingdata/clean_va.do"
+  [OK]  do/data_prep/poolingdata/clean_va.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:23
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:23
+.     di as text "  [RUN] do/survey_va/allsvymerge.do"
+  [RUN] do/survey_va/allsvymerge.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:23
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:23
+.     di as text "  [OK]  do/survey_va/allsvymerge.do"
+  [OK]  do/survey_va/allsvymerge.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:23
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:23
+.     di as text "  [RUN] do/survey_va/imputation.do"
+  [RUN] do/survey_va/imputation.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:23
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:24
+.     di as text "  [OK]  do/survey_va/imputation.do"
+  [OK]  do/survey_va/imputation.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:24
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:24
+.     di as text "  [RUN] do/survey_va/imputedcategoryindex.do"
+  [RUN] do/survey_va/imputedcategoryindex.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:24
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:26
+.     di as text "  [OK]  do/survey_va/imputedcategoryindex.do"
+  [OK]  do/survey_va/imputedcategoryindex.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:26
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:26
+.     di as text "  [RUN] do/survey_va/compcasecategoryindex.do"
+  [RUN] do/survey_va/compcasecategoryindex.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:26
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:28
+.     di as text "  [OK]  do/survey_va/compcasecategoryindex.do"
+  [OK]  do/survey_va/compcasecategoryindex.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:28
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:28
+.     di as text "  [RUN] do/survey_va/indexalpha.do"
+  [RUN] do/survey_va/indexalpha.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:28
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:28
+.     di as text "  [OK]  do/survey_va/indexalpha.do"
+  [OK]  do/survey_va/indexalpha.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:28
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:28
+.     di as text "  [RUN] do/survey_va/mattschlchar.do"
+  [RUN] do/survey_va/mattschlchar.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:28
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:45
+.     di as text "  [OK]  do/survey_va/mattschlchar.do"
+  [OK]  do/survey_va/mattschlchar.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:45
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:39:45
+.     di as text "  [RUN] do/survey_va/testscore.do"
+  [RUN] do/survey_va/testscore.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:39:45
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:29
+.     di as text "  [OK]  do/survey_va/testscore.do"
+  [OK]  do/survey_va/testscore.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:29
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:29
+.     di as text "  [RUN] do/survey_va/indexregwithdemo.do"
+  [RUN] do/survey_va/indexregwithdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:29
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:34
+.     di as text "  [OK]  do/survey_va/indexregwithdemo.do"
+  [OK]  do/survey_va/indexregwithdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:34
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:34
+.     di as text "  [RUN] do/survey_va/indexhorseracewithdemo.do"
+  [RUN] do/survey_va/indexhorseracewithdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:34
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:36
+.     di as text "  [OK]  do/survey_va/indexhorseracewithdemo.do"
+  [OK]  do/survey_va/indexhorseracewithdemo.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:36
+.     di as text "  [RUN] do/survey_va/indexhorserace.do"
+  [RUN] do/survey_va/indexhorserace.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:36
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:38
+.     di as text "  [OK]  do/survey_va/indexhorserace.do"
+  [OK]  do/survey_va/indexhorserace.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:38
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:38
+.     di as text "  [RUN] do/survey_va/factor.do"
+  [RUN] do/survey_va/factor.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:38
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:39
+.     di as text "  [OK]  do/survey_va/factor.do"
+  [OK]  do/survey_va/factor.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:39
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:39
+.     di as text "  [RUN] do/survey_va/pcascore.do"
+  [RUN] do/survey_va/pcascore.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:39
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:41
+.     di as text "  [OK]  do/survey_va/pcascore.do"
+  [OK]  do/survey_va/pcascore.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:41
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:41
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 6 — PAPER OUTPUTS
+> ==============================================================================*/
+. 
+. if `run_paper_outputs' {
+.     di as text _n(2) "{hline 80}"
+.     di as text "PHASE 6: PAPER OUTPUTS"
+.     di as text "{hline 80}"
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+. 
+.     * Phase 1a §3.3 step 10 IN PROGRESS — share/ paper producers relocated
+.     * under do/share/.  3-batch split (10a-10c); landing batches incrementally.
+.     * Each invocation carries a one-liner per the ADR-0021 description convention.
+.     *
+.     * Step 10 batch 10a — cde/share (10 files): LANDED 2026-05-08
+.     log on master
+.     di as text "  [RUN] do/share/sample_counts_tab.do"
+.     log off master
+.     do do/share/sample_counts_tab.do            // sample-size counts table across spec/sample/outcome combinations
+.     log on master
+.     di as text "  [OK]  do/share/sample_counts_tab.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/base_sum_stats_tab.do"
+.     log off master
+.     do do/share/base_sum_stats_tab.do            // base sample summary statistics table for paper
+.     log on master
+.     di as text "  [OK]  do/share/base_sum_stats_tab.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/kdensity.do"
+.     log off master
+.     do do/share/kdensity.do            // kdensity plots of VA estimates by version
+.     log on master
+.     di as text "  [OK]  do/share/kdensity.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/va_scatter.do"
+.     log off master
+.     do do/share/va_scatter.do            // VA scatter plots — score vs outcome VA, multiple specifications
+.     log on master
+.     di as text "  [OK]  do/share/va_scatter.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/va_var_explain.do"
+.     log off master
+.     do do/share/va_var_explain.do            // variance-explained regression by VA component
+.     log on master
+.     di as text "  [OK]  do/share/va_var_explain.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/va_var_explain_tab.do"
+.     log off master
+.     do do/share/va_var_explain_tab.do            // variance-explained table from var-explain regression results
+.     log on master
+.     di as text "  [OK]  do/share/va_var_explain_tab.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/va_spec_fb_tab_all.do"
+.     log off master
+.     do do/share/va_spec_fb_tab_all.do            // VA specification + forecast-bias test summary table (all-outcomes 
+> combined)
+.     log on master
+.     di as text "  [OK]  do/share/va_spec_fb_tab_all.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/reg_out_va_tab.do"
+.     log off master
+.     do do/share/reg_out_va_tab.do            // outcome-on-VA regression coefficient table
+.     log on master
+.     di as text "  [OK]  do/share/reg_out_va_tab.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/svyindex_tab.do"
+.     log off master
+.     do do/share/svyindex_tab.do            // survey-VA index regression table (Table 8 panels); reads CHAIN $estimate
+> s_dir/survey_va/factor/<x> (Step 7)
+.     log on master
+.     di as text "  [OK]  do/share/svyindex_tab.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/check/corr_dk_score_va.do"
+.     log off master
+.     do do/share/check/corr_dk_score_va.do            // diagnostic: correlation between drift-knot (DK) score and VA e
+> stimates
+.     log on master
+.     di as text "  [OK]  do/share/check/corr_dk_score_va.do"
+.     log off master
+. 
+.     * Step 10 batch 10b — caschls/share/demographics (4 files): LANDED 2026-05-08
+.     * Diagnostic coverage analyses; produce .png graphs under $output_dir/graph/pooleddiagnostics/.
+.     log on master
+.     di as text "  [RUN] do/share/demographics/elemcoverageanalysis.do"
+.     log off master
+.     do do/share/demographics/elemcoverageanalysis.do            // diagnostic: elementary CalSCHLS coverage analysis
+.     log on master
+.     di as text "  [OK]  do/share/demographics/elemcoverageanalysis.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/demographics/parentcoverageanalysis.do"
+.     log off master
+.     do do/share/demographics/parentcoverageanalysis.do            // diagnostic: parent CalSCHLS coverage analysis
+.     log on master
+.     di as text "  [OK]  do/share/demographics/parentcoverageanalysis.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/demographics/seccoverageanalysis.do"
+.     log off master
+.     do do/share/demographics/seccoverageanalysis.do            // diagnostic: secondary CalSCHLS coverage analysis
+.     log on master
+.     di as text "  [OK]  do/share/demographics/seccoverageanalysis.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/share/demographics/pooledsecanalysis.do"
+.     log off master
+.     do do/share/demographics/pooledsecanalysis.do            // diagnostic: pooled secondary CalSCHLS analysis
+.     log on master
+.     di as text "  [OK]  do/share/demographics/pooledsecanalysis.do"
+.     log off master
+. 
+.     * Step 10 batch 10c — caschls/share/{outcomesumstats,siblingxwalk,svyvaregs,factoranalysis/mattschlchar} (7 files)
+> : LANDED 2026-05-08 — STEP 10 COMPLETE
+.     log on master
+.     di as text "  [RUN] do/sibling_xwalk/siblingmatch.do"
+.     log off master
+.     do do/sibling_xwalk/siblingmatch.do            // build sibling-match (cdscode-pair) crosswalk   [relocated 2026-0
+> 6-01 from do/share/siblingxwalk/ per ADR-0026]
+.     log on master
+.     di as text "  [OK]  do/sibling_xwalk/siblingmatch.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/sibling_xwalk/uniquefamily.do"
+.     log off master
+.     do do/sibling_xwalk/uniquefamily.do            // produce unique-family identifier crosswalk (reads CHAIN siblingx
+> walk/k12_xwalk)   [relocated 2026-06-01 per ADR-0026]
+.     log on master
+.     di as text "  [OK]  do/sibling_xwalk/uniquefamily.do"
+.     log off master
+.     log on master
+.     di as text "  [RUN] do/sibling_xwalk/siblingpairxwalk.do"
+.     log off master
+.     do do/sibling_xwalk/siblingpairxwalk.do            // produce sibling-pair crosswalk dataset for downstream regs  
+>  [relocated 2026-06-01 per ADR-0026]
+.     log on master
+.     di as text "  [OK]  do/sibling_xwalk/siblingpairxwalk.do"
+.     log off master
+.     * RETIRED 2026-06-01 per ADR-0025: nsc_codebook.do descoped (input nsc_2010_2017_clean removed from Scribe; out of
+>  scope) -> do/_archive/out_of_scope/
+.     log on master
+.     di as text "  [RUN] do/share/svyvaregs/allvaregs.do"
+.     log off master
+.     do do/share/svyvaregs/allvaregs.do            // run all VA-on-survey regressions (svyvaregs umbrella)
+.     log on master
+.     di as text "  [OK]  do/share/svyvaregs/allvaregs.do"
+.     log off master
+.     * NOTE: do/share/outcomesumstats/nsc2019new/k12_nsc2019_merge.doh is a helper `include'd by callers — not directly
+>  invoked from main.do.
+.     * NOTE: do/survey_va/mattschlchar.do (relocated this batch per ADR-0013) is invoked from Phase 5 via the existing 
+> wiring or separately by Table 8 producers.
+.     log on master    // resume master for the orchestration layer
+. }
+
+. 
+. 
+. /*==============================================================================
+> PHASE 7 — AUTOMATED DATA CHECKS  (per plan v3 §5.3)
+> ==============================================================================*/
+. 
+. if `run_data_checks' {
+.     di as text _n(2) "{hline 80}"
+
+
+--------------------------------------------------------------------------------
+.     di as text "PHASE 7: AUTOMATED DATA CHECKS"
+PHASE 7: AUTOMATED DATA CHECKS
+.     di as text "{hline 80}"
+--------------------------------------------------------------------------------
+.     log off master   // orchestration-only: suspend master during phase body (see file header)
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:41
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:41
+.     di as text "  [RUN] do/check/check_logs.do"
+  [RUN] do/check/check_logs.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:41
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:41
+.     di as text "  [OK]  do/check/check_logs.do"
+  [OK]  do/check/check_logs.do
+.     di as text "  [RUN] do/check/check_samples.do"
+  [RUN] do/check/check_samples.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:41
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:45
+.     di as text "  [OK]  do/check/check_samples.do"
+  [OK]  do/check/check_samples.do
+.     di as text "  [RUN] do/check/check_merges.do"
+  [RUN] do/check/check_merges.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:45
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:46
+.     di as text "  [OK]  do/check/check_merges.do"
+  [OK]  do/check/check_merges.do
+.     di as text "  [RUN] do/check/check_va_estimates.do"
+  [RUN] do/check/check_va_estimates.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:46
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+resumed on:  21 Jun 2026, 13:41:46
+.     di as text "  [OK]  do/check/check_va_estimates.do"
+  [OK]  do/check/check_va_estimates.do
+.     di as text "  [RUN] do/check/check_survey_indices.do"
+  [RUN] do/check/check_survey_indices.do
+.     log off master
+      name:  master
+       log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/main_21-Jun-2026_13-39-22.smcl
+  log type:  text
+ paused on:  21 Jun 2026, 13:41:46
+------------------------------------------------------------------------------------------------------------------------

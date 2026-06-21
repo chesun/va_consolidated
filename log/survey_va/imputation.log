@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > survey_va/imputation.smcl
   log type:  text
- opened on:  20 Jun 2026, 14:18:13
+ opened on:  21 Jun 2026, 14:01:51
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -14,7 +14,7 @@
 > -
 
 . di as text "imputation.do — RUN START: `c(current_date)' `c(current_time)'"
-imputation.do — RUN START: 20 Jun 2026 14:18:13
+imputation.do — RUN START: 21 Jun 2026 14:01:51
 
 . di as text "-----------------------------------------------------------------
 ---------------"

@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > survey_va/indexhorserace.smcl
   log type:  text
- opened on:  20 Jun 2026, 14:20:38
+ opened on:  21 Jun 2026, 14:04:06
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "indexhorserace.do — RUN START: `c(current_date)' `c(current_time)
 > '"
-indexhorserace.do — RUN START: 20 Jun 2026 14:20:38
+indexhorserace.do — RUN START: 21 Jun 2026 14:04:06
 
 . di as text "-----------------------------------------------------------------
 ---------------"

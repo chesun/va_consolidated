@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > check/check_va_estimates.smcl
   log type:  text
- opened on:  20 Jun 2026, 14:20:52
+ opened on:  21 Jun 2026, 14:04:18
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "check_va_estimates.do — RUN START: `c(current_date)' `c(current_t
 > ime)'"
-check_va_estimates.do — RUN START: 20 Jun 2026 14:20:52
+check_va_estimates.do — RUN START: 21 Jun 2026 14:04:18
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -55,177 +55,43 @@ check_va_estimates.do — RUN START: 20 Jun 2026 14:20:52
 . 
 . /*===========================================================================
 > ===
-> HARD ASSERTS (from design memo §4)
+> HARD ASSERT (structural — VA estimation produced its reference outputs)
 > =============================================================================
 > =*/
 . 
-. * Main-spec VA centered.  School-level VA ≈ 0 by construction after BLUP
-. * shrinkage; tight tolerance because paper reports school VA centered.
-. foreach v of varlist va_ela_*_ct va_math_*_ct va_*_ct_p {
-  2.     qui sum `v'
-  3.     if r(N) == 0 continue
-  4.     capture assert abs(r(mean)) < 0.05
-  5.     local rc = _rc
-  6.     if _rc {
-  7.         di as error "  FAIL: `v' mean = " %7.4f r(mean) " — outside |.| < 
-> 0.05 tolerance"
-  8.         cap log close check_va_estimates
-  9.         cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/che
+. * The only non-heuristic VA check: the reference VA columns exist and are
+. * non-empty.  Distributional checks (centered-mean tolerance, SD envelope,
+. * per-spec CFR cell floor, cross-spec / peer-control correlations) were REMOV
+> ED
+. * 2026-06-21 per ADR-0033 — a-priori magnitude/correlation heuristics with no
+. * hard basis in the data.  VA numerical correctness is covered by the M4
+. * golden-master comparison (do/check/m4_golden_master.do).
+. foreach v in va_ela_b_sp_b_ct va_math_b_sp_b_ct {
+  2.     capture confirm variable `v'
+  3.     local rc = _rc
+  4.     if _rc {
+  5.         di as error "  FAIL: reference VA column `v' missing — VA estimati
+> on did not produce it"
+  6.         cap log close check_va_estimates
+  7.         cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/che
 > ck/check_va_estimates.log", replace
- 10.         exit `rc'
- 11.     }
- 12. }
+  8.         exit `rc'
+  9.     }
+ 10.     qui count if !missing(`v')
+ 11.     if r(N) == 0 {
+ 12.         di as error "  FAIL: reference VA column `v' is all missing (N = 0
+> )"
+ 13.         cap log close check_va_estimates
+ 14.         cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/che
+> ck/check_va_estimates.log", replace
+ 15.         exit 9
+ 16.     }
+ 17. }
 
-. di as text "  PASS: all va_<subj>_*_ct and va_*_ct_p columns have |mean| < 0.
-> 05"
-  PASS: all va_<subj>_*_ct and va_*_ct_p columns have |mean| < 0.05
-
-. 
-. * Paper-reported SD bound on the b-sample b-control reference spec.
-. qui sum va_ela_b_sp_b_ct
-
-. capture assert inrange(r(sd), 0.05, 0.30)
-
-. local rc = _rc
-
-. if _rc {
-.     di as error "  FAIL: va_ela_b_sp_b_ct SD = " %7.4f r(sd) " — outside [0.0
-> 5, 0.30]"
-.     di as error "        paper Tables 2-3 report ~0.10-0.15 σ"
-.     cap log close check_va_estimates
-.     cap translate "$logdir/check/check_va_estimates.smcl" "$logdir/check/chec
-> k_va_estimates.log", replace
-.     exit `rc'
-. }
-
-. di as text "  PASS: va_ela_b_sp_b_ct SD ∈ [0.05, 0.30] (paper-reported envelo
-> pe)"
-  PASS: va_ela_b_sp_b_ct SD ∈ [0.05, 0.30] (paper-reported envelope)
-
-. 
-. * Per-spec student-year counts — CFR estimator minimum cell size.
-. * SOFT (non-halting) per ADR-0028 (Christina 2026-06-09): the restricted
-. * variant samples (l/a/s/...) are subsamples of the base and legitimately fal
-> l
-. * below the base >=7 floor — the leave-out/sibling/ACS merges drop students
-. * (e.g. merge_loscore.doh:76,82 drop students with no leave-out prior score),
-. * and the per-spec count is computed AFTER those drops (collapse (sum) of the
-. * base touse flag in va_score_all.do:247). CFR shrinkage handles thin cells, 
-> and
-. * the count is only a scatter-plot weight (va_scatter.do), not the estimation
-. * sample. Report cells below the floor but do not halt.
-. foreach v of varlist n_g11_ela_*_sp n_g11_math_*_sp {
-  2.     qui sum `v'
-  3.     if r(N) == 0 continue
-  4.     capture assert r(min) >= 5
-  5.     if _rc {
-  6.         di as error "  SOFT: `v' min student-year count = " %5.0f r(min) "
->  — below CFR floor 5 (expected for restri
-> cted variants; non-halting)"
-  7.     }
-  8. }
-  SOFT: n_g11_ela_l_sp min student-year count =     4 — below CFR floor 5 (expe
-> cted for restricted variants; non-halting
-> )
-  SOFT: n_g11_ela_a_sp min student-year count =     1 — below CFR floor 5 (expe
-> cted for restricted variants; non-halting
-> )
-  SOFT: n_g11_ela_s_sp min student-year count =     1 — below CFR floor 5 (expe
-> cted for restricted variants; non-halting
-> )
-  SOFT: n_g11_ela_la_sp min student-year count =     1 — below CFR floor 5 (exp
-> ected for restricted variants; non-haltin
-> g)
-  SOFT: n_g11_ela_ls_sp min student-year count =     1 — below CFR floor 5 (exp
-> ected for restricted variants; non-haltin
-> g)
-  SOFT: n_g11_ela_as_sp min student-year count =     1 — below CFR floor 5 (exp
-> ected for restricted variants; non-haltin
-> g)
-  SOFT: n_g11_ela_las_sp min student-year count =     1 — below CFR floor 5 (ex
-> pected for restricted variants; non-halti
-> ng)
-  SOFT: n_g11_math_l_sp min student-year count =     4 — below CFR floor 5 (exp
-> ected for restricted variants; non-haltin
-> g)
-  SOFT: n_g11_math_a_sp min student-year count =     1 — below CFR floor 5 (exp
-> ected for restricted variants; non-haltin
-> g)
-  SOFT: n_g11_math_s_sp min student-year count =     1 — below CFR floor 5 (exp
-> ected for restricted variants; non-haltin
-> g)
-  SOFT: n_g11_math_la_sp min student-year count =     1 — below CFR floor 5 (ex
-> pected for restricted variants; non-halti
-> ng)
-  SOFT: n_g11_math_ls_sp min student-year count =     1 — below CFR floor 5 (ex
-> pected for restricted variants; non-halti
-> ng)
-  SOFT: n_g11_math_as_sp min student-year count =     1 — below CFR floor 5 (ex
-> pected for restricted variants; non-halti
-> ng)
-  SOFT: n_g11_math_las_sp min student-year count =     1 — below CFR floor 5 (e
-> xpected for restricted variants; non-halt
-> ing)
-
-. di as text "  PASS (soft): per-spec student-year count check complete"
-  PASS (soft): per-spec student-year count check complete
-
-. 
-. 
-. /*===========================================================================
-> ===
-> SOFT SIGNALS (display as error; non-halting)
-> =============================================================================
-> =*/
-. 
-. * Cross-spec correlation reference (b-sample b-control vs l-sample l-control)
-> .
-. * Per chunk-3 audit, expected ~0.85+; soft-flag if <0.7.
-. capture qui corr va_ela_b_sp_b_ct va_ela_l_sp_l_ct
-
-. if _rc {
-.     di as error "  SOFT: could not compute cross-spec correlation — variables
->  may not exist."
-. }
-
-. else {
-.     local r_cross = r(rho)
-.     if `r_cross' < 0.7 {
-.         di as error "  SOFT: va_ela_b_sp_b_ct vs va_ela_l_sp_l_ct correlation
->  = " %5.3f `r_cross'
-.         di as error "        below 0.70 floor; expected ~0.85+ per chunk-3 au
-> dit."
-.     }
-.     else {
-.         di as text "  PASS (soft): cross-spec ela correlation = " %5.3f `r_cr
-> oss'
-  PASS (soft): cross-spec ela correlation = 0.997
-.     }
-. }
-
-. 
-. * _p (peer controls) vs no-_p correlation: expected ~0.97; soft-flag if <0.9.
-. capture qui corr va_ela_b_sp_b_ct va_ela_b_sp_b_ct_p
-
-. if _rc {
-.     di as error "  SOFT: could not compute peer-control correlation — variabl
-> es may not exist."
-. }
-
-. else {
-.     local r_peer = r(rho)
-.     if `r_peer' < 0.9 {
-.         di as error "  SOFT: va_ela_b_sp_b_ct vs va_ela_b_sp_b_ct_p correlati
-> on = " %5.3f `r_peer'
-.         di as error "        below 0.90 floor; expected ~0.97 per design memo
->  §4."
-.     }
-.     else {
-.         di as text "  PASS (soft): peer-control correlation = " %5.3f `r_peer
-> '
-  PASS (soft): peer-control correlation = 0.939
-.     }
-. }
+. di as text "  PASS: reference VA columns (va_ela_b_sp_b_ct, va_math_b_sp_b_ct
+> ) exist and are non-empty"
+  PASS: reference VA columns (va_ela_b_sp_b_ct, va_math_b_sp_b_ct) exist and ar
+> e non-empty
 
 . 
 . 
@@ -243,7 +109,7 @@ check_va_estimates.do — RUN START: 20 Jun 2026 14:20:52
 
 . di as text "check_va_estimates.do — RUN END: `c(current_date)' `c(current_tim
 > e)'"
-check_va_estimates.do — RUN END: 20 Jun 2026 14:20:52
+check_va_estimates.do — RUN END: 21 Jun 2026 14:04:18
 
 . di as text "-----------------------------------------------------------------
 ---------------"
