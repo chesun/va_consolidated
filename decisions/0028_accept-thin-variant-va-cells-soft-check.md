@@ -1,7 +1,7 @@
 # 0028: accept thin per-spec VA cells in restricted-variant samples; soften the count check
 
 - **Date:** 2026-06-09
-- **Status:** Decided
+- **Status:** Superseded in part by #0033 — the soft per-spec count check is removed (heuristic, no hard basis). The thin-cell *acceptance* rationale below still stands.
 - **Scope:** Specification
 - **Data quality:** Full context
 

@@ -2492,3 +2492,11 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 **Results:** coder-critic 92/100 PASS (re-verified blast radius — staffqoi98 excluded from all 3 built indices). Tier-1 self-check clean.
 **Commits:** none — uncommitted, awaiting Christina go-ahead + Scribe push.
 **Status:** Done — fix coded + reviewed. Pending: Scribe Phase 5–7 re-run to confirm all 6 checks; then M4 golden master + tier_filter→smoke revert.
+
+## 2026-06-21 — removed heuristic data-checks (ADR-0033)
+
+**Operations:** edited check_va_estimates.do (full rewrite → 1 structural check), check_survey_indices.do (drop z-tail + corr soft; loosen centering), check_samples.do (drop age/cohort_size soft; fix rc-clobber). ADR-0033 + audit doc + ADR-0028/0032 cross-refs + ledger re-stamp.
+**Decision:** remove every Phase-7 check without a hard basis (coding scheme / exact count / valid-code set / mathematical-or-estimator construction); keep the rest; VA numeric correctness → M4 golden master. Triggered by z_climateindex min=-7.09 false-halt.
+**Results:** coder-critic 94/100 PASS — no hard-basis check lost, no heuristic survived. Also fixed pre-existing check_samples rc-clobber (M1).
+**Commits:** pending (committing now).
+**Status:** Done — coded + reviewed. Pending: Scribe Phase 5+7 rerun (should now complete all 6 checks); then full m4_acceptance_run + golden master + tier→smoke (ADR-0018).

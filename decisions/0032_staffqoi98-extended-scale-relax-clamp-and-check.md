@@ -1,7 +1,7 @@
 # 0032: staffqoi98 extended -3 scale — relax imputation clamp floor + widen check bound
 
 - **Date:** 2026-06-20
-- **Status:** Decided
+- **Status:** Decided (amended by #0033 — the check bound form changed from `min∈[-3.01,0]` to `min≥-3.01`; the staffqoi98 `-3.01` floor is retained)
 - **Scope:** Methodology
 - **Data quality:** Full context
 - **Amends:** ADR-0027 (clamp floor for staffqoi98 only)

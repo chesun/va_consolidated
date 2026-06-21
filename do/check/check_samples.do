@@ -5,8 +5,8 @@ do/check/check_samples.do — assert sample-construction outputs match historica
 PURPOSE
     Verify the analytic VA sample (`score_b.dta`) is structurally what we
     expect before any VA estimation runs.  Hard `assert` invariants halt the
-    pipeline on regression; soft signals (`display as error`) flag oddities
-    without halting.  Encodes the design memo §2 specification.
+    pipeline on regression.  Encodes the design memo §2 specification.
+    (Soft heuristic range signals removed per ADR-0033 — see below.)
 
 INPUTS
     `score_b.dta` — student-year, g11, cohorts 2015-18 (1,784,445 rows × 77 vars
@@ -34,9 +34,8 @@ INVARIANTS (verbatim from design memo §2)
       - 1389 unique schools (audit + codebook line 73040)
       - race dummies orthogonal: rowtotal(eth_*) ∈ {0, 1}
       - binary demographics in {0, 1, .}
-    Soft signals (display as error, non-halting):
-      - age in [5478, 6940] days (~15-19 yrs; codebook range was [-14, 43099])
-      - cohort_size in [11, 1325] (codebook line 73086)
+    Removed per ADR-0033 (heuristics, no hard basis): the soft age-range
+    ([5478,6940] days) and cohort_size-range ([11,1325]) signals.
 
 REFERENCES
     Design memo:    quality_reports/reviews/2026-04-28_data-checks-design.md §2
@@ -123,12 +122,13 @@ di as text "  PASS: distinct cdscode count == 1389"
 tempvar eth_sum
 egen `eth_sum' = rowtotal(eth_asian eth_hispanic eth_black eth_white eth_other)
 capture assert inlist(`eth_sum', 0, 1)
+local rc = _rc
 if _rc {
     di as error "  FAIL: race dummies (eth_asian/hispanic/black/white/other) not orthogonal."
     qui tab `eth_sum', missing
     cap log close check_samples
     cap translate "$logdir/check/check_samples.smcl" "$logdir/check/check_samples.log", replace
-    exit _rc
+    exit `rc'
 }
 di as text "  PASS: race dummies orthogonal (rowtotal ∈ {0, 1})"
 drop `eth_sum'
@@ -137,42 +137,27 @@ drop `eth_sum'
 foreach v in econ_disadvantage male limited_eng_prof disabled                 ///
              eth_asian eth_hispanic eth_black eth_white eth_other             {
     capture assert inlist(`v', 0, 1, .)
+    local rc = _rc
     if _rc {
         di as error "  FAIL: binary-coded var `v' has values outside {0, 1, .}"
         qui tab `v', missing
         cap log close check_samples
         cap translate "$logdir/check/check_samples.smcl" "$logdir/check/check_samples.log", replace
-        exit _rc
+        exit `rc'
     }
 }
 di as text "  PASS: binary demographics in {0, 1, .}"
 
 
 /*==============================================================================
-SOFT SIGNALS (display as error; non-halting)
+SOFT SIGNALS — REMOVED per ADR-0033
 ==============================================================================*/
 
-* Plausible age-on-Jan-1 in days for g11 students = ~16 yrs = ~5,840 days.
-* Codebook range was [-14, 43099] with 5,483 missings — the upper tail looks
-* like a date-encoding artifact.  Soft-flag rather than halt.
-qui count if !missing(age) & !inrange(age, 5478, 6940)
-local n_age_oddity = r(N)
-if `n_age_oddity' > 0 {
-    di as error "  SOFT: `n_age_oddity' rows have age outside [5478, 6940] days (~15-19 yrs)"
-    di as error "        upstream age-encoding may be corrupted; investigate but not halting."
-}
-else {
-    di as text "  PASS: age within [5478, 6940] days for all non-missing rows"
-}
-
-* cohort_size range -- codebook line 73086
-qui sum cohort_size
-if r(min) < 11 | r(max) > 1325 {
-    di as error "  SOFT: cohort_size range [`r(min)', `r(max)'] outside expected [11, 1325]"
-}
-else {
-    di as text "  PASS: cohort_size within [11, 1325]"
-}
+* The age-range ([5478,6940] days, "~15-19 yrs") and cohort_size-range
+* ([11,1325]) soft signals were a-priori plausible-range HEURISTICS with no hard
+* basis in the data and were removed per ADR-0033. The hard-basis sample checks
+* above remain: exact _N == 1784445, exact per-cohort counts, grade == 11,
+* year ∈ [2015,2018], race-dummy orthogonality, and binary-coding {0,1,.}.
 
 
 /*==============================================================================

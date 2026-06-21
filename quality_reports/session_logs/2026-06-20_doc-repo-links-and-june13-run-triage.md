@@ -86,3 +86,32 @@ Christina's decision: **widen the check bound + relax the clamp** for staffqoi98
 - Tier-1 self-check clean: `/* */` 5=5 both files, 0 hardcoded paths, no LEGACY writes, log-paths intact, `*`-glob comments converted to `<x>`.
 
 **Air-gapped:** code-only + critic-verified, NOT re-run. NEXT: Christina pushes to Scribe → clean Phase 5–7 re-run → confirm `check_survey_indices` passes SUB-CHECK 1 and proceeds through SUB-CHECK 2 (staffqoi98 doesn't feed it) → all 6 checks complete → then M4 golden master + `tier_filter→smoke` revert (ADR-0018).
+
+---
+
+## Addendum 2 — removed all heuristic data-checks (2026-06-21, ADR-0033)
+
+The 2026-06-20 Phase 5+7 rerun cleared staffqoi98 (SUB-CHECK 1 PASS both sources) then
+hard-halted on a NEW pre-existing FAIL: `imputed z_climateindex min = -7.0888 (expected ∈
+[-5,-1])` — an a-priori "typical z-score tail" heuristic (design memo l.224), independent of
+the staffqoi98 fix (z_climateindex excludes staffqoi98; z-mean/SD passed → genuine heavy tail).
+
+Christina's directive: **remove all heuristic checks without a hard basis.** Audited all 6
+check files (`2026-06-21_heuristic-check-audit.md`); confirmed 3 borderline calls (remove VA
+mean, remove CFR count soft, loosen centering). Implemented per **ADR-0033**:
+
+- **Removed:** z-tail min/max + soft z-corr (survey); VA centered-mean + SD envelope + CFR
+  count soft + 2 corr softs (va_estimates — all its checks were heuristic); age + cohort_size
+  soft ranges (samples).
+- **Loosened** (drop ≤0/≥0 centering, keep hard coding/math bound): source-item + raw-index
+  ranges (survey).
+- **Added** one hard-basis structural check to check_va_estimates (reference VA cols exist +
+  non-empty); VA numeric correctness moves to the M4 golden master.
+- **Kept:** all exact counts, coding ranges, z mean/SD (math), ADR-0011 raw-index test,
+  merge codes, presence, check_logs.
+- **Also fixed** (coder-critic M1) the pre-existing rc-clobber in check_samples.do's two
+  wrapped fail-branches.
+
+coder-critic **94/100 PASS**. ADR-0028 marked superseded-in-part; ADR-0032 cross-referenced;
+ledger re-stamped (samples 5eca4736b2d2, survey f535769583d3, va_estimates a94610b44de7).
+Air-gapped — not re-run. NEXT: same Phase 5+7 rerun should now run all 6 checks to completion.

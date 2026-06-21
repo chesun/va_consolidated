@@ -92,3 +92,10 @@ Append-only agent-level history. One entry per agent invocation. See `.claude/ru
 **Score:** 92/100 PASS
 **Verdict:** Faithfully implements ADR-0032. Independently re-verified: staffqoi98 is the only -3-coded item; both index constructors (imputedcategoryindex.do / compcasecategoryindex.do) exclude it; repo-wide grep finds it only in the two changed files + one archived file → built indices, SUB-CHECK 2, and survey-VA regressions genuinely unaffected. -8 ledger hygiene (stale check rows + missing imputation.do rows), since addressed.
 **Report:** `quality_reports/reviews/2026-06-20_staffqoi98-clamp-and-check_coder_review.md`
+
+### 2026-06-21 17:10 — coder-critic
+**Phase:** Execution (Phase 1 — remove heuristic data-checks)
+**Target:** check_va_estimates.do + check_survey_indices.do + check_samples.do per ADR-0033
+**Score:** 94/100 PASS
+**Verdict:** All ADR-0033 removals/loosening/structural-add land as specified. Verified no hard-basis check lost (ADR-0011 raw-index test + z mean/SD survived), no heuristic survived (all grep hits are removal comments), M4 golden master strictly stronger than removed VA envelopes. 2 Minor (-3 each): pre-existing rc-clobber in check_samples (M1, since fixed), ADR-0032 cross-ref (M2, since added). Ledger re-stamped.
+**Report:** quality_reports/reviews/2026-06-21_heuristic-check-removal_coder_review.md

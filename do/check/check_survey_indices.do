@@ -57,12 +57,12 @@ INVARIANTS (verbatim from design memo §5)
       - every climateitems / qualityitems / supportitems variable present
       - item counts: 9 / 15 / 4
     Hard asserts on built indices:
-      - z_<index>: |mean| < 0.01, SD ∈ [0.95, 1.05], min ∈ [-5, -1], max ∈ [1, 5]
+      - z_<index>: |mean| < 0.01, SD ∈ [0.95, 1.05] (forced by z-scoring)
       - raw <index>: range [-2.01, 2.01]  (catches ADR-0011 sums→means fix —
                                            PASSES post-fix; FAILS pre-fix)
-    Soft signals:
-      - z_climateindex / z_qualityindex correlation: ~0.7+; flag if <=0.
-      - imputed vs compcase per-school correlation: ~0.95+; flag if <0.85.
+    Removed per ADR-0033 (heuristics, no hard basis in the data): z-tail
+    min/max bounds ([-5,-1]/[1,5]), the source-item & raw-index min<=0/max>=0
+    centering halves, and the soft z_climate × z_quality correlation signal.
 
 REFERENCES
     Design memo:    quality_reports/reviews/2026-04-28_data-checks-design.md §5
@@ -167,24 +167,26 @@ foreach src_tag in calschls_1 calschls_2 {
                          staffqoi*mean_pooled                                {
         qui sum `v'
         if r(N) == 0 continue
-        * staffqoi98 is coded on an extended scale where -3 = "severe problem"
-        * (staffqoiclean<x>.do: qoi98temp = -3 if qoi98 == 4), so its pooled mean
-        * legitimately reaches -3; all other items are standard [-2,2] Likert.
-        * See ADR-0032.
+        * Hard Likert coding bound only: items are coded in [-2, 2] (±0.01 float
+        * tol); staffqoi98 on an extended scale where -3 = "severe problem"
+        * (staffqoiclean<x>.do: qoi98temp = -3 if qoi98 == 4), so its floor is -3
+        * (ADR-0032). The earlier min<=0 / max>=0 "straddles 0" centering halves
+        * were a heuristic distributional assumption and were DROPPED per
+        * ADR-0033; only the hard coding floor/ceiling remain.
         local lo_bound = -2.01
         if "`v'" == "staffqoi98mean_pooled" local lo_bound = -3.01
-        capture assert inrange(r(min), `lo_bound', 0)
+        capture assert r(min) >= `lo_bound'
         local rc = _rc
         if _rc {
-            di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (expected ∈ [`lo_bound', 0])"
+            di as error "  FAIL: `src_label' `v' min = " %7.4f r(min) " (below coding floor `lo_bound')"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit `rc'
         }
-        capture assert inrange(r(max), 0, 2.01)
+        capture assert r(max) <= 2.01
         local rc = _rc
         if _rc {
-            di as error "  FAIL: `src_label' `v' max = " %7.4f r(max) " (expected ∈ [0, 2.01])"
+            di as error "  FAIL: `src_label' `v' max = " %7.4f r(max) " (above coding ceiling 2.01)"
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit `rc'
@@ -245,24 +247,13 @@ foreach idx_tag in imputed compcase {
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit `rc'
         }
-        capture assert inrange(r(min), -5, -1)
-        local rc = _rc
-        if _rc {
-            di as error "  FAIL: `idx_tag' `z' min = " %7.4f r(min) " (expected ∈ [-5, -1])"
-            cap log close check_survey_indices
-            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit `rc'
-        }
-        capture assert inrange(r(max), 1, 5)
-        local rc = _rc
-        if _rc {
-            di as error "  FAIL: `idx_tag' `z' max = " %7.4f r(max) " (expected ∈ [1, 5])"
-            cap log close check_survey_indices
-            cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
-            exit `rc'
-        }
+        * Z-tail min/max bounds ([-5,-1]/[1,5]) REMOVED per ADR-0033 — they were
+        * a-priori "typical z-score tail" heuristics with no hard basis (the tail
+        * depends on the data distribution; z_climateindex legitimately reached
+        * -7.09 on the 2026-06-20 run). The mean≈0 / SD≈1 asserts above are kept:
+        * those are forced by z-scoring (mathematical), not distributional guesses.
     }
-    di as text "  PASS: `idx_tag' z-scored indices have mean≈0, SD≈1, typical tail ranges"
+    di as text "  PASS: `idx_tag' z-scored indices have mean≈0, SD≈1 (by construction)"
 
     * RAW indices: post-ADR-0011-fix invariant is range [-2.01, 2.01].
     * Pre-fix (sums) would scale with N items (~[-18, 18] for climate, etc.).
@@ -270,19 +261,23 @@ foreach idx_tag in imputed compcase {
     foreach idx in climateindex qualityindex supportindex {
         qui sum `idx'
         if r(N) == 0 continue
-        capture assert inrange(r(min), -2.01, 0)
+        * Hard bound only: a mean of items each in [-2,2] is itself in [-2,2]
+        * (±0.01). This IS the ADR-0011 sums→means test (pre-fix sums would scale
+        * ~[-18,18]). The earlier min<=0 / max>=0 centering halves were dropped
+        * per ADR-0033 (heuristic distributional assumption).
+        capture assert r(min) >= -2.01
         local rc = _rc
         if _rc {
-            di as error "  FAIL: `idx_tag' raw `idx' min = " %7.4f r(min) " (expected ∈ [-2.01, 0])"
+            di as error "  FAIL: `idx_tag' raw `idx' min = " %7.4f r(min) " (below -2.01)"
             di as error "        Indicates ADR-0011 sums→means fix has NOT been applied to `idx_tag'."
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
             exit `rc'
         }
-        capture assert inrange(r(max), 0, 2.01)
+        capture assert r(max) <= 2.01
         local rc = _rc
         if _rc {
-            di as error "  FAIL: `idx_tag' raw `idx' max = " %7.4f r(max) " (expected ∈ [0, 2.01])"
+            di as error "  FAIL: `idx_tag' raw `idx' max = " %7.4f r(max) " (above 2.01)"
             di as error "        Indicates ADR-0011 sums→means fix has NOT been applied to `idx_tag'."
             cap log close check_survey_indices
             cap translate "$logdir/check/check_survey_indices.smcl" "$logdir/check/check_survey_indices.log", replace
@@ -291,21 +286,8 @@ foreach idx_tag in imputed compcase {
     }
     di as text "  PASS: `idx_tag' raw indices ∈ [-2.01, 2.01] (ADR-0011 sums→means fix verified)"
 
-    * Soft: z_climateindex / z_qualityindex correlation ~0.7+; flag if near zero.
-    capture qui corr z_climateindex z_qualityindex
-    if _rc {
-        di as error "  SOFT: could not compute z_climateindex × z_qualityindex correlation."
-    }
-    else {
-        local r_cq = r(rho)
-        if `r_cq' < 0.5 {
-            di as error "  SOFT: `idx_tag' z_climateindex × z_qualityindex correlation = " %5.3f `r_cq'
-            di as error "        below 0.50 floor; expected ~0.7+ per design memo §5."
-        }
-        else {
-            di as text "  PASS (soft): `idx_tag' z_climate × z_quality correlation = " %5.3f `r_cq'
-        }
-    }
+    * SOFT z_climate × z_quality correlation REMOVED per ADR-0033 (a-priori
+    * correlation heuristic with no hard basis in the data).
 }
 
 
