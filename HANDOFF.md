@@ -20,7 +20,46 @@ The whole pipeline runs from a single Stata file: `do/main.do`. If you remember 
 
 ### The mess we started with
 
-Before this repository existed, the analysis was spread across several separate projects on the server, built up over years of active research. I (Christina) wrote most of it during my time as the graduate student researcher on the project: the value-added estimation and the CalSCHLS survey cleaning. The school-to-college distance code is originally yours, Paco. A set of outcome crosswalks, a post-secondary merge helper, and a geocoding script were written by Matt Naven; those are kept exactly as he wrote them (see decision record 0017). The pieces lived in different predecessor folders, and each had grown organically.
+Before this repository existed, the analysis was spread across several separate projects on the server, built up over years of active research. I (Christina) did most of the work on it during my time as the graduate student researcher on the project. The CalSCHLS survey cleaning is my own. The value-added estimation began as Matt Naven's code; I used it for a while, then rewrote it in full and retired his original, so what runs now is entirely mine. The school-to-college distance code is originally yours, Paco. A set of outcome crosswalks, a post-secondary merge helper, and a geocoding script were also written by Matt; those I kept exactly as he wrote them (see decision record 0017). The pieces lived in different predecessor folders, and each had grown organically.
+
+In plain terms: the sibling-linkage crosswalk (in `caschls`), the data prep, and the post-secondary crosswalks (both in the fork) all feed the fork's value-added estimation; those VA estimates then fan out to the heterogeneity analysis, the main tables and figures, and (back in `caschls`) the survey-value-added work, all of which converge on the paper. Nothing lived in one place: the two projects were cross-wired by absolute paths reaching from one into the other. The arrows that cross between the two boxes below are exactly that tangle.
+
+```mermaid
+flowchart LR
+    subgraph CAS["caschls  (my GSR work)"]
+        A["Sibling linkage (crosswalk)"]
+        SVA["Sibling VA (old, retired)"]:::dead
+        SUR["CalSCHLS survey VA"]
+    end
+
+    subgraph FORK["cde_va_project_fork  (value-added estimation)"]
+        PREP["Data prep: ACS, school chars, distance"]
+        POST["Post-secondary outcome crosswalks (Matt Naven's)"]
+        VA["VA estimation (current); sibling VA is one spec"]
+        HET["Pass-through and heterogeneity"]
+        OUT["Main VA tables and figures"]
+    end
+
+    MATT["Matt Naven's crosswalk files (cross-user tree)"]:::ext
+    PAPER["Paper (tables and figures)"]:::paper
+
+    PREP --> VA
+    POST --> VA
+    POST --> A
+    A --> VA
+    A --> SVA
+    VA --> HET
+    VA --> OUT
+    VA --> SUR
+    MATT --> SUR
+    OUT --> PAPER
+    HET --> PAPER
+    SUR --> PAPER
+
+    classDef dead fill:#efefef,stroke:#bbb,color:#999
+    classDef ext fill:#f6f6f6,stroke:#bbb,color:#666
+    classDef paper fill:#eaf3ff,stroke:#5b8fc9,color:#1f3b5c
+```
 
 For reference, the two predecessor projects each live in a GitHub repository and a matching folder on Scribe:
 
