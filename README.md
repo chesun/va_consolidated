@@ -102,7 +102,11 @@ Production / acceptance runs (per ADR-0018) require **all toggles ON**, includin
 
 ### Expected runtime
 
-*[VERIFY at offboarding]* — full-pipeline runtime documented after the §5.4 acceptance run. Predecessor pipeline ran in several hours end-to-end on Scribe.
+A full from-scratch run (`m4_acceptance_run = 1`, every phase on) takes **~36–38 hours** of wall-clock on Scribe — plan for two calendar days. The `v1.0-final` ADR-0018 acceptance run measured **37h 41m** (`main.do` RUN START 21 Jun 2026 20:27:50 → RUN END 23 Jun 2026 10:08:48); a second from-scratch run the same week measured 35h 47m. **VA estimation (Phase 3) is the bottleneck and dominates the total.**
+
+The full M4 golden-master comparison (`do/check/m4_golden_master.do`, tier = full, 8,324 file pairs) adds **~40 minutes** on top.
+
+A targeted re-run is much cheaper: with upstream intermediates already built and only the phases you need turned on, expect hours rather than days (the predecessor pipeline ran end-to-end in several hours when its intermediates were already in place).
 
 ---
 
