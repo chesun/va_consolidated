@@ -2,6 +2,8 @@
 
 # Common Core Value-Added (CEL UC Davis) — Consolidated Pipeline
 
+> **Part of the [CEL Resource Hub](https://christinasun.net/cel_resource_hub/)** — Christina Sun's index of CEL code handoffs plus setup and workflow guides for inheriting them. Hub page for this repo: <https://christinasun.net/cel_resource_hub/repositories/va-consolidated/>.
+
 > **New here / taking over the project?** Start with **[HANDOFF.md](HANDOFF.md)** — the plain-English guide to running and reproducing the pipeline. This README is the fuller technical reference.
 
 > **Status note (2026-04-29):** This README is a Phase 1c §5.2 PRE-DRAFT — a runnable skeleton for the offboarding-era operator. The final polish pass and cold-read test happen as part of Phase 1c §5.4 (per ADR-0018). Sections marked *[VERIFY at offboarding]* depend on Phase 1a §3.3 relocation outputs that aren't yet on Scribe.
