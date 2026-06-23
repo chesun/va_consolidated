@@ -2519,3 +2519,10 @@ After 7 days idle. M4 attempt #4 had been launched 2026-05-18 on Scribe (master 
 **Operations:** Christina committed `2a93d15` (main.do toggles: m4_acceptance_run=1 + all phases ON) and launched the FULL ADR-0018 acceptance run on Scribe (from-scratch rebuild; multi-hour/possibly multi-day).
 **Status:** All work committed/pushed; tree clean; Phase-7 checks GREEN. Run IN PROGRESS. Resume steps written to session log "Next session pickup" (verify full run → golden master tier=full → triage [whitelist ADR-0011 categoryindex raw cols + staffqoi98 + carried ADR-0030/0026/0029 deviations] → revert tier→smoke → tag v1.0-final).
 **Corrections:** "held ac749c5" is stale — already in history; tier_filter already committed "smoke". Fresh-Scribe needs installssc=1 (one run) + vendored mattschlchar.dta.
+
+## 2026-06-22 — Handoff DAG + VA-estimation authorship correction (HANDOFF.md §2)
+
+**Operations:** Added a Mermaid dependency DAG to `HANDOFF.md` §2 (two predecessor repos as subgraphs, nine cross-wiring edges, `Paper` sink); edges derived from `quality_reports/audits/round-1/2026-04-25_dependency-graph.md`. Corrected §2 narrative: VA estimation began as Matt Naven's code, rewritten in full by Christina and retired; crosswalks/merge/geocode kept as-is (ADR-0017). CalSCHLS cleaning = Christina; distance code = Paco.
+**Decisions:** Mermaid over ASCII (ASCII not visible in IDE preview + too dense for 9 edges; Mermaid renders on GitHub/IDE; plain-text summary kept as MacDown fallback). "Updated sibling VA" folded into the fork's VA-estimation node as one spec (ADR-0004). Diagram is a consolidation-time snapshot: Matt's retired original VA excluded (history), old sibling VA included (still in caschls).
+**Commits:** `e54f82d` (pushed); this report entry + session log `quality_reports/session_logs/2026-06-22_handoff-dag-and-authorship.md` committed as docs(state) follow-up.
+**Status:** Done; tree clean. Broader project pending unchanged (clean Phase 5-7 acceptance re-run per prior entries).
