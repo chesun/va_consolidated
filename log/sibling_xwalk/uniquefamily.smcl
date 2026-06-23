@@ -2,7 +2,7 @@
       name:  uniquefamily
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/sibling_xwalk/uniquefamily.smcl
   log type:  text
- opened on:  15 Jun 2026, 04:09:43
+ opened on:  23 Jun 2026, 09:46:48
 
 . 
 . use $datadir_clean/siblingxwalk/k12_xwalk_name_address_year, clear
@@ -93,7 +93,7 @@ Duplicates in terms of all variables
 Duplicates in terms of __000002
 
 (14,776,071 observations deleted)
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 
     Result                      Number of obs
     -----------------------------------------

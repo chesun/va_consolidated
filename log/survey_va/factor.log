@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > survey_va/factor.smcl
   log type:  text
- opened on:  21 Jun 2026, 14:04:07
+ opened on:  23 Jun 2026, 09:20:22
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -14,7 +14,7 @@
 > -
 
 . di as text "factor.do — RUN START: `c(current_date)' `c(current_time)'"
-factor.do — RUN START: 21 Jun 2026 14:04:07
+factor.do — RUN START: 23 Jun 2026 09:20:22
 
 . di as text "-----------------------------------------------------------------
 ---------------"

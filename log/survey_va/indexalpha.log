@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > survey_va/indexalpha.smcl
   log type:  text
- opened on:  21 Jun 2026, 14:01:56
+ opened on:  23 Jun 2026, 09:18:08
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -14,7 +14,7 @@
 > -
 
 . di as text "indexalpha.do — RUN START: `c(current_date)' `c(current_time)'"
-indexalpha.do — RUN START: 21 Jun 2026 14:01:56
+indexalpha.do — RUN START: 23 Jun 2026 09:18:08
 
 . di as text "-----------------------------------------------------------------
 ---------------"

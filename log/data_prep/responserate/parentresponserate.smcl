@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/responserate/parentresponserate
 > .smcl
   log type:  text
- opened on:  13 Jun 2026, 19:04:50
+ opened on:  21 Jun 2026, 22:10:08
 
 . 
 . use $datadir_clean/calschls/demotrim/parent/trimparentdemo1415, replace

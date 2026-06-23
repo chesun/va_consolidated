@@ -2,7 +2,7 @@
       name:  clean_staffcred
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_staffcred.smcl
   log type:  text
- opened on:  13 Jun 2026, 18:56:17
+ opened on:  21 Jun 2026, 22:01:42
 
 . 
 . 
@@ -1699,6 +1699,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:     31.80 /        1 =      31.7990
+   1:     28.59 /        1 =      28.5930
 
 . cap log close clean_staffcred

@@ -2,7 +2,7 @@
       name:  prior_decile_original_sample
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/va/prior_decile_original_sample.smcl
   log type:  text
- opened on:  14 Jun 2026, 18:23:22
+ opened on:  22 Jun 2026, 22:59:28
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "prior_decile_original_sample.do — RUN START: `c(current_date)' `c(current_time)'"
-prior_decile_original_sample.do — RUN START: 14 Jun 2026 18:23:22
+prior_decile_original_sample.do — RUN START: 22 Jun 2026 22:59:28
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -1357,7 +1357,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:     25.54 /        1 =      25.5420
+   1:     26.92 /        1 =      26.9230
 
 . 
 . set trace off

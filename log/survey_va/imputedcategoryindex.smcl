@@ -2,7 +2,7 @@
       name:  imputedcategoryindex
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/survey_va/imputedcategoryindex.smcl
   log type:  text
- opened on:  21 Jun 2026, 14:01:52
+ opened on:  23 Jun 2026, 09:18:06
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "imputedcategoryindex.do — RUN START: `c(current_date)' `c(current_time)'"
-imputedcategoryindex.do — RUN START: 21 Jun 2026 14:01:52
+imputedcategoryindex.do — RUN START: 23 Jun 2026 09:18:06
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------

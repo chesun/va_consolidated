@@ -2,7 +2,7 @@
       name:  siblingpairxwalk
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/sibling_xwalk/siblingpairxwalk.smcl
   log type:  text
- opened on:  15 Jun 2026, 04:28:51
+ opened on:  23 Jun 2026, 10:07:32
 
 . 
 . use $datadir_clean/siblingxwalk/uniquelinkedfamilyclean, clear
@@ -37,7 +37,7 @@
 . tempfile formerge
 
 . save `formerge'
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 
 . 
 . use $datadir_clean/siblingxwalk/uniquelinkedfamilyclean, clear

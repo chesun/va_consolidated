@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/acs/acs_2017_gen_dict.smcl
   log type:  text
- opened on:  13 Jun 2026, 17:23:53
+ opened on:  21 Jun 2026, 20:27:50
 
 . 
 .  di as text _n "-------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 .  di as text "acs_2017_gen_dict.do — RUN START: `c(current_date)' `c(current_t
 > ime)'"
-acs_2017_gen_dict.do — RUN START: 13 Jun 2026 17:23:53
+acs_2017_gen_dict.do — RUN START: 21 Jun 2026 20:27:50
 
 .  di as text "----------------------------------------------------------------
 ----------------"

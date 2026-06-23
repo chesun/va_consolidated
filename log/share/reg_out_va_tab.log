@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > share/reg_out_va_tab.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:52:23
+ opened on:  23 Jun 2026, 09:27:27
 
 . 
 . graph drop _all
@@ -1227,7 +1227,7 @@ variable row was str11 now str19
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 (5 missing values generated)
 (5 real changes made)
 (8 missing values generated)
@@ -1293,7 +1293,7 @@ variable row was str11 now str19
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St64745.000002 saved as .dta format
+file /home/tmp/St207521.000002 saved as .dta format
 (variable subject was str3, now str4 to accommodate using data's values)
 (4 observations deleted)
 (10 missing values generated)
@@ -1480,7 +1480,7 @@ variable row was str11 now str19
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St64745.000003 saved as .dta format
+file /home/tmp/St207521.000003 saved as .dta format
 (5 missing values generated)
 (5 real changes made)
 (8 missing values generated)
@@ -1546,7 +1546,7 @@ variable row was str11 now str19
 (1 real change made)
 (1 real change made)
 (1 real change made)
-file /home/tmp/St64745.000004 saved as .dta format
+file /home/tmp/St207521.000004 saved as .dta format
 (variable subject was str3, now str4 to accommodate using data's values)
 (4 observations deleted)
 (10 missing values generated)
@@ -1638,10 +1638,10 @@ variable row was str11 now str19
 
 . 
 . di "Start date time: `date1' `time1'"
-Start date time: 15 Jun 2026 03:52:23
+Start date time: 23 Jun 2026 09:27:27
 
 . di "End date time: `date2' `time2'"
-End date time: 15 Jun 2026 03:52:23
+End date time: 23 Jun 2026 09:27:27
 
 . 
 . cap log close reg_out_va_tab

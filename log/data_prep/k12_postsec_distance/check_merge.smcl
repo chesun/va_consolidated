@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/k12_postsec_distance/check_merg
 > e.smcl
   log type:  text
- opened on:  13 Jun 2026, 19:00:06
+ opened on:  21 Jun 2026, 22:05:27
 
 . 
 . include $consolidated_dir/do/va/helpers/macros_va.doh

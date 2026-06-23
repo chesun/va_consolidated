@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/clean_elsch.smcl
   log type:  text
- opened on:  13 Jun 2026, 18:55:50
+ opened on:  21 Jun 2026, 22:01:17
 
 . 
 . 
@@ -1580,6 +1580,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:      2.25 /        1 =       2.2490
+   1:      1.97 /        1 =       1.9660
 
 . cap log close clean_elsch

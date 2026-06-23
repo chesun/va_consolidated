@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/clean_frpm.smcl
   log type:  text
- opened on:  13 Jun 2026, 18:56:09
+ opened on:  21 Jun 2026, 22:01:34
 
 . 
 . 
@@ -1688,6 +1688,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:      7.72 /        1 =       7.7190
+   1:      7.56 /        1 =       7.5590
 
 . cap log close clean_frpm

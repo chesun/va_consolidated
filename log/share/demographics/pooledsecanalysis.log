@@ -6,7 +6,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > share/demographics/pooledsecanalysis.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:53:50
+ opened on:  23 Jun 2026, 09:28:54
 
 . 
 . use $caschls_projdir/dta/demographics/pooled/pooledsecdiagnostics, replace

@@ -2,7 +2,7 @@
       name:  va_score_fb_test_tab
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/va/va_score_fb_test_tab.smcl
   log type:  text
- opened on:  14 Jun 2026, 18:22:43
+ opened on:  22 Jun 2026, 22:58:51
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "va_score_fb_test_tab.do — RUN START: `c(current_date)' `c(current_time)'"
-va_score_fb_test_tab.do — RUN START: 14 Jun 2026 18:22:43
+va_score_fb_test_tab.do — RUN START: 22 Jun 2026 22:58:51
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -11962,7 +11962,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/tables/va_cfr
 . timer off 1
 
 . timer list
-   1:     13.33 /        1 =      13.3310
+   1:     12.78 /        1 =      12.7760
 
 . timer clear 1
 

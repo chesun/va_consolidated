@@ -2,7 +2,7 @@
       name:  va_spec_fb_tab
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/va/va_spec_fb_tab.smcl
   log type:  text
- opened on:  14 Jun 2026, 18:23:17
+ opened on:  22 Jun 2026, 22:59:23
 
 . 
 .  di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 .  di as text "va_spec_fb_tab.do — RUN START: `c(current_date)' `c(current_time)'"
-va_spec_fb_tab.do — RUN START: 14 Jun 2026 18:23:17
+va_spec_fb_tab.do — RUN START: 22 Jun 2026 22:59:23
 
 .  di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -2325,10 +2325,10 @@ added macro:
 
 . 
 . di "Do file va_spec_fb_tab.do start date time: `date1' `time1'"
-Do file va_spec_fb_tab.do start date time: 14 Jun 2026 18:23:17
+Do file va_spec_fb_tab.do start date time: 22 Jun 2026 22:59:23
 
 . di "End date time: `date2' `time2'"
-End date time: 14 Jun 2026 18:23:18
+End date time: 22 Jun 2026 22:59:24
 
 . 
 . cap log close va_spec_fb_tab

@@ -2,7 +2,7 @@
       name:  clean_enr
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_enr.smcl
   log type:  text
- opened on:  13 Jun 2026, 18:55:52
+ opened on:  21 Jun 2026, 22:01:19
 
 . 
 . graph drop _all
@@ -2942,6 +2942,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:     17.17 /        1 =      17.1670
+   1:     15.26 /        1 =      15.2630
 
 . cap log close clean_enr

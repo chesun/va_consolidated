@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > va/heterogeneity/va_corr_schl_char.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:42:43
+ opened on:  23 Jun 2026, 09:17:39
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "va_corr_schl_char.do — RUN START: `c(current_date)' `c(current_ti
 > me)'"
-va_corr_schl_char.do — RUN START: 15 Jun 2026 03:42:43
+va_corr_schl_char.do — RUN START: 23 Jun 2026 09:17:39
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -3354,10 +3354,10 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/estimates/va
 
 . 
 . di "do file start time: `date1' `time1' "
-do file start time: 15 Jun 2026 03:42:43 
+do file start time: 23 Jun 2026 09:17:39 
 
 . di "do file end time: `date2' `time2' "
-do file end time: 15 Jun 2026 03:42:44 
+do file end time: 23 Jun 2026 09:17:40 
 
 . 
 . cap log close va_corr_schl_char

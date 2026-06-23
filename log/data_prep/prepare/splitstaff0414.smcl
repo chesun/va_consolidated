@@ -2,7 +2,7 @@
       name:  splitstaff0414
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/prepare/splitstaff0414.smcl
   log type:  text
- opened on:  13 Jun 2026, 19:04:00
+ opened on:  21 Jun 2026, 22:09:14
 
 . 
 . use $datadir_clean/calschls/staff/staff0414, clear  // CHAIN read from renamedata.do (same-batch producer; see plan v3
@@ -86,5 +86,5 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
       name:  splitstaff0414
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/prepare/splitstaff0414.smcl
   log type:  text
- closed on:  13 Jun 2026, 19:04:04
+ closed on:  21 Jun 2026, 22:09:18
 ------------------------------------------------------------------------------------------------------------------------

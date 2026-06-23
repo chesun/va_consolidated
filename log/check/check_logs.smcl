@@ -2,7 +2,7 @@
       name:  check_logs
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/check/check_logs.smcl
   log type:  text
- opened on:  21 Jun 2026, 14:04:10
+ opened on:  23 Jun 2026, 10:08:44
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "check_logs.do — RUN START: `c(current_date)' `c(current_time)'"
-check_logs.do — RUN START: 21 Jun 2026 14:04:10
+check_logs.do — RUN START: 23 Jun 2026 10:08:44
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ check_logs.do — RUN START: 21 Jun 2026 14:04:10
 --------------------------------------------------------------------------------
 
 . di as text "check_logs.do — RUN END: `c(current_date)' `c(current_time)'"
-check_logs.do — RUN END: 21 Jun 2026 14:04:10
+check_logs.do — RUN END: 23 Jun 2026 10:08:44
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------

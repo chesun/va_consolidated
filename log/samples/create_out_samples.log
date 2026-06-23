@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > samples/create_out_samples.smcl
   log type:  text
- opened on:  13 Jun 2026, 22:44:05
+ opened on:  22 Jun 2026, 01:36:50
 
 . 
 .  di as text _n "-------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 .  di as text "create_out_samples.do — RUN START: `c(current_date)' `c(current_
 > time)'"
-create_out_samples.do — RUN START: 13 Jun 2026 22:44:05
+create_out_samples.do — RUN START: 22 Jun 2026 01:36:50
 
 .  di as text "----------------------------------------------------------------
 ----------------"
@@ -3300,7 +3300,7 @@ end of do-file
   variable enr_outstate was float now byte
   variable enr_ontime_outstate was float now byte
   (2,437,206,717 bytes saved)
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 
 . /*---------------------------------------------------------------------------
 > ---
@@ -3553,7 +3553,7 @@ file /home/tmp/St64745.000001 saved as .dta format
 . tempfile va_g11_dataset
 
 . save `va_g11_dataset'
-file /home/tmp/St64745.000002 saved as .dta format
+file /home/tmp/St207521.000002 saved as .dta format
 
 . 
 . /*---------------------------------------------------------------------------
@@ -5591,7 +5591,7 @@ delimiter now cr
 . tempfile census_geocode
 
 . save `census_geocode'
-file /home/tmp/St64745.000003 saved as .dta format
+file /home/tmp/St207521.000003 saved as .dta format
 
 . 
 . use merge_id_k12_test_scores state_student_id student_id cdscode year grade /
@@ -5639,7 +5639,7 @@ Duplicates in terms of state_student_id
 . tempfile lagged_address
 
 . save `lagged_address'
-file /home/tmp/St64745.000004 saved as .dta format
+file /home/tmp/St207521.000004 saved as .dta format
 
 . 
 . use $vaprojdir/data/restricted_access/clean/crosswalks/address_list.dta, clea
@@ -5659,7 +5659,7 @@ Duplicates in terms of all variables
 . tempfile address_id
 
 . save `address_id'
-file /home/tmp/St64745.000005 saved as .dta format
+file /home/tmp/St207521.000005 saved as .dta format
 
 . 
 . use $vaprojdir/data/public_access/clean/acs/acs_ca_census_tract_clean.dta, cl
@@ -5673,7 +5673,7 @@ file /home/tmp/St64745.000005 saved as .dta format
 . tempfile lagged_acs
 
 . save `lagged_acs'
-file /home/tmp/St64745.000006 saved as .dta format
+file /home/tmp/St207521.000006 saved as .dta format
 
 . 
 . 
@@ -6815,7 +6815,7 @@ delimiter now cr
 . tempfile census_geocode
 
 . save `census_geocode'
-file /home/tmp/St64745.000003 saved as .dta format
+file /home/tmp/St207521.000003 saved as .dta format
 
 . 
 . use merge_id_k12_test_scores state_student_id student_id cdscode year grade /
@@ -6863,7 +6863,7 @@ Duplicates in terms of state_student_id
 . tempfile lagged_address
 
 . save `lagged_address'
-file /home/tmp/St64745.000004 saved as .dta format
+file /home/tmp/St207521.000004 saved as .dta format
 
 . 
 . use $vaprojdir/data/restricted_access/clean/crosswalks/address_list.dta, clea
@@ -6883,7 +6883,7 @@ Duplicates in terms of all variables
 . tempfile address_id
 
 . save `address_id'
-file /home/tmp/St64745.000005 saved as .dta format
+file /home/tmp/St207521.000005 saved as .dta format
 
 . 
 . use $vaprojdir/data/public_access/clean/acs/acs_ca_census_tract_clean.dta, cl
@@ -6897,7 +6897,7 @@ file /home/tmp/St64745.000005 saved as .dta format
 . tempfile lagged_acs
 
 . save `lagged_acs'
-file /home/tmp/St64745.000006 saved as .dta format
+file /home/tmp/St207521.000006 saved as .dta format
 
 . 
 . 
@@ -9724,7 +9724,7 @@ end of do-file
   variable enr_outstate was float now byte
   variable enr_ontime_outstate was float now byte
   (2,437,206,717 bytes saved)
-file /home/tmp/St64745.000003 saved as .dta format
+file /home/tmp/St207521.000003 saved as .dta format
 
 . /*---------------------------------------------------------------------------
 > ---
@@ -9966,7 +9966,7 @@ file /home/tmp/St64745.000003 saved as .dta format
 . tempfile va_g11_dataset
 
 . save `va_g11_dataset'
-file /home/tmp/St64745.000004 saved as .dta format
+file /home/tmp/St207521.000004 saved as .dta format
 
 . 
 . /*---------------------------------------------------------------------------
@@ -12004,7 +12004,7 @@ delimiter now cr
 . tempfile census_geocode
 
 . save `census_geocode'
-file /home/tmp/St64745.000005 saved as .dta format
+file /home/tmp/St207521.000005 saved as .dta format
 
 . 
 . use merge_id_k12_test_scores state_student_id student_id cdscode year grade /
@@ -12052,7 +12052,7 @@ Duplicates in terms of state_student_id
 . tempfile lagged_address
 
 . save `lagged_address'
-file /home/tmp/St64745.000006 saved as .dta format
+file /home/tmp/St207521.000006 saved as .dta format
 
 . 
 . use $vaprojdir/data/restricted_access/clean/crosswalks/address_list.dta, clea
@@ -12072,7 +12072,7 @@ Duplicates in terms of all variables
 . tempfile address_id
 
 . save `address_id'
-file /home/tmp/St64745.000007 saved as .dta format
+file /home/tmp/St207521.000007 saved as .dta format
 
 . 
 . use $vaprojdir/data/public_access/clean/acs/acs_ca_census_tract_clean.dta, cl
@@ -12086,7 +12086,7 @@ file /home/tmp/St64745.000007 saved as .dta format
 . tempfile lagged_acs
 
 . save `lagged_acs'
-file /home/tmp/St64745.000008 saved as .dta format
+file /home/tmp/St207521.000008 saved as .dta format
 
 . 
 . 
@@ -13228,7 +13228,7 @@ delimiter now cr
 . tempfile census_geocode
 
 . save `census_geocode'
-file /home/tmp/St64745.000005 saved as .dta format
+file /home/tmp/St207521.000005 saved as .dta format
 
 . 
 . use merge_id_k12_test_scores state_student_id student_id cdscode year grade /
@@ -13276,7 +13276,7 @@ Duplicates in terms of state_student_id
 . tempfile lagged_address
 
 . save `lagged_address'
-file /home/tmp/St64745.000006 saved as .dta format
+file /home/tmp/St207521.000006 saved as .dta format
 
 . 
 . use $vaprojdir/data/restricted_access/clean/crosswalks/address_list.dta, clea
@@ -13296,7 +13296,7 @@ Duplicates in terms of all variables
 . tempfile address_id
 
 . save `address_id'
-file /home/tmp/St64745.000007 saved as .dta format
+file /home/tmp/St207521.000007 saved as .dta format
 
 . 
 . use $vaprojdir/data/public_access/clean/acs/acs_ca_census_tract_clean.dta, cl
@@ -13310,7 +13310,7 @@ file /home/tmp/St64745.000007 saved as .dta format
 . tempfile lagged_acs
 
 . save `lagged_acs'
-file /home/tmp/St64745.000008 saved as .dta format
+file /home/tmp/St207521.000008 saved as .dta format
 
 . 
 . 
@@ -13805,7 +13805,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned
 . timer off 1
 
 . timer list
-   1:  21117.25 /        3 =    7039.0847
+   1:  18718.11 /        3 =    6239.3697
 
 . 
 . cap log close create_out_samples

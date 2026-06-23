@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/va/heterogeneity/va_corr_schl_char_fig.sm
 > cl
   log type:  text
- opened on:  15 Jun 2026, 03:42:44
+ opened on:  23 Jun 2026, 09:17:40
 
 . 
 . di as text _n "{hline 80}"
@@ -11,7 +11,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "va_corr_schl_char_fig.do — RUN START: `c(current_date)' `c(current_time)'"
-va_corr_schl_char_fig.do — RUN START: 15 Jun 2026 03:42:44
+va_corr_schl_char_fig.do — RUN START: 23 Jun 2026 09:17:40
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -1710,10 +1710,10 @@ file
 
 . 
 . di "do file start time: `date1' `time1' "
-do file start time: 15 Jun 2026 03:42:44 
+do file start time: 23 Jun 2026 09:17:40 
 
 . di "do file end time: `date2' `time2' "
-do file end time: 15 Jun 2026 03:43:02 
+do file end time: 23 Jun 2026 09:17:57 
 
 . 
 . cap log close va_corr_schl_char_fig

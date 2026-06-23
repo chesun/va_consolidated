@@ -2,7 +2,7 @@
       name:  seccoverageanalysis
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/share/demographics/seccoverageanalysis.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:52:46
+ opened on:  23 Jun 2026, 09:27:50
 
 . 
 . local years `" "1415" "1516" "1617" "1718" "1819" "' //local macro for elementary dataset years

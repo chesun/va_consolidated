@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > data_prep/schl_chars/cds_nces_xwalk.smcl
   log type:  text
- opened on:  13 Jun 2026, 18:55:12
+ opened on:  21 Jun 2026, 22:00:39
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "cds_nces_xwalk.do — RUN START: `c(current_date)' `c(current_time)
 > '"
-cds_nces_xwalk.do — RUN START: 13 Jun 2026 18:55:12
+cds_nces_xwalk.do — RUN START: 21 Jun 2026 22:00:39
 
 . di as text "-----------------------------------------------------------------
 ---------------"

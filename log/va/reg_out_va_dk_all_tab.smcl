@@ -2,7 +2,7 @@
       name:  reg_out_va_dk_all_tab
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/va/reg_out_va_dk_all_tab.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:39:44
+ opened on:  23 Jun 2026, 09:14:34
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "reg_out_va_dk_all_tab.do — RUN START: `c(current_date)' `c(current_time)'"
-reg_out_va_dk_all_tab.do — RUN START: 15 Jun 2026 03:39:44
+reg_out_va_dk_all_tab.do — RUN START: 23 Jun 2026 09:14:34
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -2899,10 +2899,10 @@ added macro:
 . 
 . 
 . di "Start date time /reg_out_va_dk_all_fig.do: `date1' `time1'"
-Start date time /reg_out_va_dk_all_fig.do: 15 Jun 2026 03:39:44
+Start date time /reg_out_va_dk_all_fig.do: 23 Jun 2026 09:14:34
 
 . di "End date time: `date2' `time2'"
-End date time: 15 Jun 2026 03:39:50
+End date time: 23 Jun 2026 09:14:41
 
 . 
 . cap log close reg_out_va_dk_all_tab

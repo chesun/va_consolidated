@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > share/check/corr_dk_score_va.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:52:23
+ opened on:  23 Jun 2026, 09:27:27
 
 . 
 . graph drop _all
@@ -553,10 +553,10 @@ va_math_la.. |  .000632  .011297
 . 
 . 
 . di "Start date time /reg_out_va_all.do: `date1' `time1'"
-Start date time /reg_out_va_all.do: 15 Jun 2026 03:52:23
+Start date time /reg_out_va_all.do: 23 Jun 2026 09:27:27
 
 . di "End date time: `date2' `time2'"
-End date time: 15 Jun 2026 03:52:23
+End date time: 23 Jun 2026 09:27:27
 
 . 
 . cap log close corr_dk_score_va

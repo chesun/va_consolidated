@@ -2,7 +2,7 @@
       name:  clean_staffdemo
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/schl_chars/clean_staffdemo.smcl
   log type:  text
- opened on:  13 Jun 2026, 18:56:49
+ opened on:  21 Jun 2026, 22:02:10
 
 . 
 . graph drop _all
@@ -2793,6 +2793,6 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:     49.86 /        1 =      49.8630
+   1:     51.68 /        1 =      51.6840
 
 . cap log close clean_staffdemo

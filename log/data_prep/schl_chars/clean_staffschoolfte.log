@@ -5,7 +5,7 @@
 > data_prep/schl_chars/clean_staffschoolfte
 > .smcl
   log type:  text
- opened on:  13 Jun 2026, 18:57:39
+ opened on:  21 Jun 2026, 22:03:02
 
 . 
 . graph drop _all
@@ -2499,6 +2499,6 @@ file
 . timer off 1
 
 . timer list
-   1:     45.98 /        1 =      45.9850
+   1:     48.24 /        1 =      48.2400
 
 . cap log close clean_staffschoolfte

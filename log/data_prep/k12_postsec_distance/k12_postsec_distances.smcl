@@ -3,7 +3,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/data_prep/k12_postsec_distance/k12_postse
 > c_distances.smcl
   log type:  text
- opened on:  13 Jun 2026, 18:59:08
+ opened on:  21 Jun 2026, 22:04:28
 
 . 
 . 
@@ -255,7 +255,7 @@ San Mateo County Community College Di.. |          3        2.61       98.26
 . tempfile highered
 
 . save `highered'
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 
 . local hn=_N
 
@@ -294,7 +294,7 @@ file /home/tmp/St64745.000001 saved as .dta format
 . tempfile allk12
 
 . save `allk12'
-file /home/tmp/St64745.000002 saved as .dta format
+file /home/tmp/St207521.000002 saved as .dta format
 
 . 
 . // keep only traditional high schools

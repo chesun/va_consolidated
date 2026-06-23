@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > share/sample_counts_tab.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:45:32
+ opened on:  23 Jun 2026, 09:20:25
 
 . 
 . graph drop _all
@@ -867,7 +867,7 @@ delimiter now cr
 . tempfile va_sample
 
 . save `va_sample'
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 
 . 
 . // merge ACS sample to use the census control sample indicator
@@ -884,7 +884,7 @@ Duplicates in terms of state_student_id
 . tempfile va_acs
 
 . save `va_acs'
-file /home/tmp/St64745.000002 saved as .dta format
+file /home/tmp/St207521.000002 saved as .dta format
 
 . 
 . use `va_sample', clear
@@ -2478,10 +2478,10 @@ added matrix:
 
 . 
 . di "Start date time: `date1' `time1'"
-Start date time: 15 Jun 2026 03:45:32
+Start date time: 23 Jun 2026 09:20:25
 
 . di "End date time: `date2' `time2'"
-End date time: 15 Jun 2026 03:48:17
+End date time: 23 Jun 2026 09:23:03
 
 . 
 . cap log close sample_counts_tab

@@ -2,7 +2,7 @@
       name:  check_va_estimates
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/check/check_va_estimates.smcl
   log type:  text
- opened on:  21 Jun 2026, 14:04:18
+ opened on:  23 Jun 2026, 10:08:47
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "check_va_estimates.do — RUN START: `c(current_date)' `c(current_time)'"
-check_va_estimates.do — RUN START: 21 Jun 2026 14:04:18
+check_va_estimates.do — RUN START: 23 Jun 2026 10:08:47
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ check_va_estimates.do — RUN START: 21 Jun 2026 14:04:18
 --------------------------------------------------------------------------------
 
 . di as text "check_va_estimates.do — RUN END: `c(current_date)' `c(current_time)'"
-check_va_estimates.do — RUN END: 21 Jun 2026 14:04:18
+check_va_estimates.do — RUN END: 23 Jun 2026 10:08:47
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------

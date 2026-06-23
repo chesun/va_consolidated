@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > share/kdensity.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:50:09
+ opened on:  23 Jun 2026, 09:25:14
 
 . 
 . graph drop _all
@@ -914,7 +914,7 @@ va_ela_b_s~t |      4,874    .0003475    .1456154  -.6054196   .5737105
 -------------+---------------------------------------------------------
 va_ela_las~t |      4,690   -.0002828    .1216148  -.5377902   .4549747
 (4,690 real changes made)
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 (math estimates from all sample and control combinations)
 
 Panel variable: school_id (unbalanced)
@@ -930,7 +930,7 @@ va_math_b_~t |      4,871   -.0092352    .1507674   -.615078   .7302707
 -------------+---------------------------------------------------------
 va_math_la~t |      4,681   -.0067892    .1194373   -.427806   .6052392
 (4,681 real changes made)
-file /home/tmp/St64745.000002 saved as .dta format
+file /home/tmp/St207521.000002 saved as .dta format
 (enr_2year estimates from all sample and control combinations)
 
 Panel variable: school_id (unbalanced)
@@ -946,7 +946,7 @@ va_enr_~b_ct |      4,895   -.0178651     .097507  -.3062065   .3408422
 -------------+---------------------------------------------------------
 va_enr_~s_ct |      4,715   -.0078852     .073584  -.2432605   .2875081
 (4,715 real changes made)
-file /home/tmp/St64745.000003 saved as .dta format
+file /home/tmp/St207521.000003 saved as .dta format
 (enr_4year estimates from all sample and control combinations)
 
 Panel variable: school_id (unbalanced)
@@ -962,7 +962,7 @@ va_enr_~b_ct |      4,895    .0029254    .0985159  -.2145426   .3788817
 -------------+---------------------------------------------------------
 va_enr_~s_ct |      4,715    .0016125    .0757064  -.2005857   .3542592
 (4,715 real changes made)
-file /home/tmp/St64745.000004 saved as .dta format
+file /home/tmp/St207521.000004 saved as .dta format
 (ela estimates from all sample and control combinations)
 
     Result                      Number of obs
@@ -1014,7 +1014,7 @@ va_ela_b_s~t |      4,874   -.0011988    .1548809  -.6547841   .5989218
 -------------+---------------------------------------------------------
 va_ela_las~t |      4,690   -.0017269    .1251421  -.5499784   .4777901
 (4,690 real changes made)
-file /home/tmp/St64745.000005 saved as .dta format
+file /home/tmp/St207521.000005 saved as .dta format
 (math estimates from all sample and control combinations)
 
 Panel variable: school_id (unbalanced)
@@ -1030,7 +1030,7 @@ va_math_b_~t |      4,871   -.0110126    .1593443  -.6103566   .7648522
 -------------+---------------------------------------------------------
 va_math_la~t |      4,681   -.0079518    .1229589  -.4283642   .6135742
 (4,681 real changes made)
-file /home/tmp/St64745.000006 saved as .dta format
+file /home/tmp/St207521.000006 saved as .dta format
 (enr_2year estimates from all sample and control combinations)
 
 Panel variable: school_id (unbalanced)
@@ -1046,7 +1046,7 @@ va_enr_~b_ct |      4,895   -.0179361    .0978157  -.3051897   .3387482
 -------------+---------------------------------------------------------
 va_enr_~s_ct |      4,715    -.007934    .0740407  -.2440903   .2892222
 (4,715 real changes made)
-file /home/tmp/St64745.000007 saved as .dta format
+file /home/tmp/St207521.000007 saved as .dta format
 (enr_4year estimates from all sample and control combinations)
 
 Panel variable: school_id (unbalanced)
@@ -1062,7 +1062,7 @@ va_enr_~b_ct |      4,895     .002533    .0996656  -.2218059   .3864699
 -------------+---------------------------------------------------------
 va_enr_~s_ct |      4,715     .001326    .0763962  -.2068199   .3540752
 (4,715 real changes made)
-file /home/tmp/St64745.000008 saved as .dta format
+file /home/tmp/St207521.000008 saved as .dta format
 (ela estimates from all sample and control combinations)
 
     Result                      Number of obs
@@ -1114,10 +1114,10 @@ file
 
 . 
 . di "Start date time: `date1' `time1'"
-Start date time: 15 Jun 2026 03:50:09
+Start date time: 23 Jun 2026 09:25:14
 
 . di "End date time: `date2' `time2'"
-End date time: 15 Jun 2026 03:50:11
+End date time: 23 Jun 2026 09:25:15
 
 . 
 . cap log close kdensity

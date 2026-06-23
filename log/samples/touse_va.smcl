@@ -2,7 +2,7 @@
       name:  touse_va
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/samples/touse_va.smcl
   log type:  text
- opened on:  13 Jun 2026, 19:52:18
+ opened on:  21 Jun 2026, 22:55:37
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "touse_va.do — RUN START: `c(current_date)' `c(current_time)'"
-touse_va.do — RUN START: 13 Jun 2026 19:52:18
+touse_va.do — RUN START: 21 Jun 2026 22:55:37
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -3266,7 +3266,7 @@ file /home/research/ca_ed_lab/projects/common_core_va/consolidated/data/cleaned/
 . timer off 1
 
 . timer list
-   1:   6927.35 /        1 =    6927.3470
+   1:   6520.04 /        1 =    6520.0440
 
 . 
 . cap log close touse_va

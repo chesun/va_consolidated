@@ -2,7 +2,7 @@
       name:  va_het
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/va/heterogeneity/va_het.smcl
   log type:  text
- opened on:  15 Jun 2026, 03:42:37
+ opened on:  23 Jun 2026, 09:17:33
 
 . 
 . di as text _n "{hline 80}"
@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------
 
 . di as text "va_het.do — RUN START: `c(current_date)' `c(current_time)'"
-va_het.do — RUN START: 15 Jun 2026 03:42:37
+va_het.do — RUN START: 23 Jun 2026 09:17:33
 
 . di as text "{hline 80}"
 --------------------------------------------------------------------------------
@@ -1443,8 +1443,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.000002 not found)
-file /home/tmp/St64745.000002 saved as .dta format
+(file /home/tmp/St207521.000002 not found)
+file /home/tmp/St207521.000002 saved as .dta format
 
      +-------------------------------------------------------------------------------------------+
      |                       var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -1452,8 +1452,8 @@ file /home/tmp/St64745.000002 saved as .dta format
   1. | Percent Black or Hispanic    0.028*    -0.021   -0.091**    0.071**       1      1      1 |
   2. |                             (0.012)   (0.013)    (0.009)    (0.010)       1      2      1 |
      +-------------------------------------------------------------------------------------------+
-(file /home/tmp/St64745.000001 not found)
-file /home/tmp/St64745.000001 saved as .dta format
+(file /home/tmp/St207521.000001 not found)
+file /home/tmp/St207521.000001 saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,690
@@ -1537,8 +1537,8 @@ variable var was str22 now str34
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.000003 not found)
-file /home/tmp/St64745.000003 saved as .dta format
+(file /home/tmp/St207521.000003 not found)
+file /home/tmp/St207521.000003 saved as .dta format
 
      +-----------------------------------------------------------------------------------------------------+
      |                                var       ela       math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -1546,7 +1546,7 @@ file /home/tmp/St64745.000003 saved as .dta format
   1. | Percent Economically Disadvantaged     0.002   -0.053**   -0.088**    0.034**       2      1      1 |
   2. |                                      (0.013)    (0.014)    (0.010)    (0.011)       2      2      1 |
      +-----------------------------------------------------------------------------------------------------+
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,690
@@ -1637,8 +1637,8 @@ file
 (1 real change made)
 (1 real change made)
 (0 real changes made)
-(file /home/tmp/St64745.000004 not found)
-file /home/tmp/St64745.000004 saved as .dta format
+(file /home/tmp/St207521.000004 not found)
+file /home/tmp/St207521.000004 saved as .dta format
 
      +------------------------------------------------------------------------+
      |    var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -1654,7 +1654,7 @@ file /home/tmp/St64745.000004 saved as .dta format
 (variable var was str13, now str34 to accommodate using data's values)
 (variable math was str7, now str8 to accommodate using data's values)
 (variable enr_2year was str7, now str8 to accommodate using data's values)
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,690
@@ -1737,8 +1737,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (1 real change made)
-(file /home/tmp/St64745.000005 not found)
-file /home/tmp/St64745.000005 saved as .dta format
+(file /home/tmp/St207521.000005 not found)
+file /home/tmp/St207521.000005 saved as .dta format
 
      +--------------------------------------------------------------------------------+
      |            var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -1749,7 +1749,7 @@ file /home/tmp/St64745.000005 saved as .dta format
 (variable var was str16, now str34 to accommodate using data's values)
 (variable math was str7, now str8 to accommodate using data's values)
 (variable enr_2year was str7, now str8 to accommodate using data's values)
-file /home/tmp/St64745.000001 saved as .dta format
+file /home/tmp/St207521.000001 saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,649
@@ -1832,8 +1832,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.000007 not found)
-file /home/tmp/St64745.000007 saved as .dta format
+(file /home/tmp/St207521.000007 not found)
+file /home/tmp/St207521.000007 saved as .dta format
 
      +-------------------------------------------------------------------------------------------+
      |                       var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -1841,8 +1841,8 @@ file /home/tmp/St64745.000007 saved as .dta format
   1. | Percent Black or Hispanic   0.027**   0.031**      0.008      0.009       1      1      2 |
   2. |                             (0.010)   (0.010)    (0.005)    (0.005)       1      2      2 |
      +-------------------------------------------------------------------------------------------+
-(file /home/tmp/St64745.000006 not found)
-file /home/tmp/St64745.000006 saved as .dta format
+(file /home/tmp/St207521.000006 not found)
+file /home/tmp/St207521.000006 saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,649
@@ -1926,8 +1926,8 @@ variable var was str22 now str34
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.000008 not found)
-file /home/tmp/St64745.000008 saved as .dta format
+(file /home/tmp/St207521.000008 not found)
+file /home/tmp/St207521.000008 saved as .dta format
 
      +----------------------------------------------------------------------------------------------------+
      |                                var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -1935,7 +1935,7 @@ file /home/tmp/St64745.000008 saved as .dta format
   1. | Percent Economically Disadvantaged     0.015    0.022*      0.003      0.004       2      1      2 |
   2. |                                      (0.011)   (0.010)    (0.005)    (0.005)       2      2      2 |
      +----------------------------------------------------------------------------------------------------+
-file /home/tmp/St64745.000006 saved as .dta format
+file /home/tmp/St207521.000006 saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,649
@@ -2026,8 +2026,8 @@ file
 (1 real change made)
 (1 real change made)
 (0 real changes made)
-(file /home/tmp/St64745.000009 not found)
-file /home/tmp/St64745.000009 saved as .dta format
+(file /home/tmp/St207521.000009 not found)
+file /home/tmp/St207521.000009 saved as .dta format
 
      +------------------------------------------------------------------------+
      |    var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -2041,7 +2041,7 @@ file /home/tmp/St64745.000009 saved as .dta format
   6. |          (0.010)   (0.010)    (0.004)    (0.004)       3      6      2 |
      +------------------------------------------------------------------------+
 (variable var was str13, now str34 to accommodate using data's values)
-file /home/tmp/St64745.000006 saved as .dta format
+file /home/tmp/St207521.000006 saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,649
@@ -2124,8 +2124,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (1 real change made)
-(file /home/tmp/St64745.00000a not found)
-file /home/tmp/St64745.00000a saved as .dta format
+(file /home/tmp/St207521.00000a not found)
+file /home/tmp/St207521.00000a saved as .dta format
 
      +---------------------------------------------------------------------------------+
      |            var        ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -2134,7 +2134,7 @@ file /home/tmp/St64745.00000a saved as .dta format
   2. |                   (0.003)   (0.003)    (0.001)    (0.001)       4      2      2 |
      +---------------------------------------------------------------------------------+
 (variable var was str16, now str34 to accommodate using data's values)
-file /home/tmp/St64745.000006 saved as .dta format
+file /home/tmp/St207521.000006 saved as .dta format
 (variable ela was str7, now str8 to accommodate using data's values)
 
      +--------------------------------------------------------------------------------+
@@ -2618,8 +2618,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000c not found)
-file /home/tmp/St64745.00000c saved as .dta format
+(file /home/tmp/St207521.00000c not found)
+file /home/tmp/St207521.00000c saved as .dta format
 
      +--------------------------------------------------------------------------------------------+
      |                       var       ela       math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -2627,8 +2627,8 @@ file /home/tmp/St64745.00000c saved as .dta format
   1. | Percent Black or Hispanic    -0.000   -0.075**   -0.064**      0.020       1      1      1 |
   2. |                             (0.012)    (0.013)    (0.011)    (0.010)       1      2      1 |
      +--------------------------------------------------------------------------------------------+
-(file /home/tmp/St64745.00000b not found)
-file /home/tmp/St64745.00000b saved as .dta format
+(file /home/tmp/St207521.00000b not found)
+file /home/tmp/St207521.00000b saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,818,828)
@@ -2720,8 +2720,8 @@ variable var was str22 now str34
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000d not found)
-file /home/tmp/St64745.00000d saved as .dta format
+(file /home/tmp/St207521.00000d not found)
+file /home/tmp/St207521.00000d saved as .dta format
 
      +-----------------------------------------------------------------------------------------------------+
      |                                var       ela       math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -2729,7 +2729,7 @@ file /home/tmp/St64745.00000d saved as .dta format
   1. | Percent Economically Disadvantaged    -0.020   -0.094**   -0.060**     -0.006       2      1      1 |
   2. |                                      (0.013)    (0.013)    (0.011)    (0.011)       2      2      1 |
      +-----------------------------------------------------------------------------------------------------+
-file /home/tmp/St64745.00000b saved as .dta format
+file /home/tmp/St207521.00000b saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,818,828)
@@ -2828,8 +2828,8 @@ file
 (1 real change made)
 (1 real change made)
 (0 real changes made)
-(file /home/tmp/St64745.00000e not found)
-file /home/tmp/St64745.00000e saved as .dta format
+(file /home/tmp/St207521.00000e not found)
+file /home/tmp/St207521.00000e saved as .dta format
 
      +------------------------------------------------------------------------+
      |    var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -2845,7 +2845,7 @@ file /home/tmp/St64745.00000e saved as .dta format
 (variable var was str13, now str34 to accommodate using data's values)
 (variable math was str7, now str8 to accommodate using data's values)
 (variable enr_2year was str7, now str8 to accommodate using data's values)
-file /home/tmp/St64745.00000b saved as .dta format
+file /home/tmp/St207521.00000b saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,818,828)
@@ -2936,8 +2936,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (1 real change made)
-(file /home/tmp/St64745.00000f not found)
-file /home/tmp/St64745.00000f saved as .dta format
+(file /home/tmp/St207521.00000f not found)
+file /home/tmp/St207521.00000f saved as .dta format
 
      +---------------------------------------------------------------------------------+
      |            var        ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -2948,7 +2948,7 @@ file /home/tmp/St64745.00000f saved as .dta format
 (variable var was str16, now str34 to accommodate using data's values)
 (variable math was str7, now str8 to accommodate using data's values)
 (variable enr_2year was str7, now str8 to accommodate using data's values)
-file /home/tmp/St64745.00000b saved as .dta format
+file /home/tmp/St207521.00000b saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,808,580)
@@ -3039,8 +3039,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000h not found)
-file /home/tmp/St64745.00000h saved as .dta format
+(file /home/tmp/St207521.00000h not found)
+file /home/tmp/St207521.00000h saved as .dta format
 
      +-------------------------------------------------------------------------------------------+
      |                       var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -3048,8 +3048,8 @@ file /home/tmp/St64745.00000h saved as .dta format
   1. | Percent Black or Hispanic     0.002     0.005     0.013*     -0.004       1      1      2 |
   2. |                             (0.011)   (0.010)    (0.006)    (0.005)       1      2      2 |
      +-------------------------------------------------------------------------------------------+
-(file /home/tmp/St64745.00000g not found)
-file /home/tmp/St64745.00000g saved as .dta format
+(file /home/tmp/St207521.00000g not found)
+file /home/tmp/St207521.00000g saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,808,580)
@@ -3141,8 +3141,8 @@ variable var was str22 now str34
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000i not found)
-file /home/tmp/St64745.00000i saved as .dta format
+(file /home/tmp/St207521.00000i not found)
+file /home/tmp/St207521.00000i saved as .dta format
 
      +----------------------------------------------------------------------------------------------------+
      |                                var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -3150,7 +3150,7 @@ file /home/tmp/St64745.00000i saved as .dta format
   1. | Percent Economically Disadvantaged    -0.005     0.002      0.007     -0.005       2      1      2 |
   2. |                                      (0.011)   (0.010)    (0.006)    (0.005)       2      2      2 |
      +----------------------------------------------------------------------------------------------------+
-file /home/tmp/St64745.00000g saved as .dta format
+file /home/tmp/St207521.00000g saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,808,580)
@@ -3249,8 +3249,8 @@ file
 (1 real change made)
 (1 real change made)
 (0 real changes made)
-(file /home/tmp/St64745.00000j not found)
-file /home/tmp/St64745.00000j saved as .dta format
+(file /home/tmp/St207521.00000j not found)
+file /home/tmp/St207521.00000j saved as .dta format
 
      +------------------------------------------------------------------------+
      |    var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -3264,7 +3264,7 @@ file /home/tmp/St64745.00000j saved as .dta format
   6. |          (0.013)   (0.013)    (0.006)    (0.005)       3      6      2 |
      +------------------------------------------------------------------------+
 (variable var was str13, now str34 to accommodate using data's values)
-file /home/tmp/St64745.00000g saved as .dta format
+file /home/tmp/St207521.00000g saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,808,580)
@@ -3355,8 +3355,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (1 real change made)
-(file /home/tmp/St64745.00000k not found)
-file /home/tmp/St64745.00000k saved as .dta format
+(file /home/tmp/St207521.00000k not found)
+file /home/tmp/St207521.00000k saved as .dta format
 
      +----------------------------------------------------------------------------------+
      |            var        ela       math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -3365,7 +3365,7 @@ file /home/tmp/St64745.00000k saved as .dta format
   2. |                   (0.004)    (0.004)    (0.002)    (0.002)       4      2      2 |
      +----------------------------------------------------------------------------------+
 (variable var was str16, now str34 to accommodate using data's values)
-file /home/tmp/St64745.00000g saved as .dta format
+file /home/tmp/St207521.00000g saved as .dta format
 
      +--------------------------------------------------------------------------------+
      |                                var        ela       math   enr_2y~r   enr_4y~r |
@@ -3893,8 +3893,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000m not found)
-file /home/tmp/St64745.00000m saved as .dta format
+(file /home/tmp/St207521.00000m not found)
+file /home/tmp/St207521.00000m saved as .dta format
 
      +-------------------------------------------------------------------------------------------+
      |                       var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -3902,8 +3902,8 @@ file /home/tmp/St64745.00000m saved as .dta format
   1. | Percent Black or Hispanic     0.023   -0.032*   -0.090**    0.068**       1      1      1 |
   2. |                             (0.013)   (0.013)    (0.009)    (0.010)       1      2      1 |
      +-------------------------------------------------------------------------------------------+
-(file /home/tmp/St64745.00000l not found)
-file /home/tmp/St64745.00000l saved as .dta format
+(file /home/tmp/St207521.00000l not found)
+file /home/tmp/St207521.00000l saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,690
@@ -3987,8 +3987,8 @@ variable var was str22 now str34
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000n not found)
-file /home/tmp/St64745.00000n saved as .dta format
+(file /home/tmp/St207521.00000n not found)
+file /home/tmp/St207521.00000n saved as .dta format
 
      +-----------------------------------------------------------------------------------------------------+
      |                                var       ela       math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -3996,7 +3996,7 @@ file /home/tmp/St64745.00000n saved as .dta format
   1. | Percent Economically Disadvantaged    -0.005   -0.069**   -0.087**    0.031**       2      1      1 |
   2. |                                      (0.014)    (0.014)    (0.010)    (0.011)       2      2      1 |
      +-----------------------------------------------------------------------------------------------------+
-file /home/tmp/St64745.00000l saved as .dta format
+file /home/tmp/St207521.00000l saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,690
@@ -4087,8 +4087,8 @@ file
 (1 real change made)
 (1 real change made)
 (0 real changes made)
-(file /home/tmp/St64745.00000o not found)
-file /home/tmp/St64745.00000o saved as .dta format
+(file /home/tmp/St207521.00000o not found)
+file /home/tmp/St207521.00000o saved as .dta format
 
      +------------------------------------------------------------------------+
      |    var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -4104,7 +4104,7 @@ file /home/tmp/St64745.00000o saved as .dta format
 (variable var was str13, now str34 to accommodate using data's values)
 (variable math was str7, now str8 to accommodate using data's values)
 (variable enr_2year was str7, now str8 to accommodate using data's values)
-file /home/tmp/St64745.00000l saved as .dta format
+file /home/tmp/St207521.00000l saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,690
@@ -4187,8 +4187,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (1 real change made)
-(file /home/tmp/St64745.00000p not found)
-file /home/tmp/St64745.00000p saved as .dta format
+(file /home/tmp/St207521.00000p not found)
+file /home/tmp/St207521.00000p saved as .dta format
 
      +--------------------------------------------------------------------------------+
      |            var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -4199,7 +4199,7 @@ file /home/tmp/St64745.00000p saved as .dta format
 (variable var was str16, now str34 to accommodate using data's values)
 (variable math was str7, now str8 to accommodate using data's values)
 (variable enr_2year was str7, now str8 to accommodate using data's values)
-file /home/tmp/St64745.00000l saved as .dta format
+file /home/tmp/St207521.00000l saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,649
@@ -4282,8 +4282,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000r not found)
-file /home/tmp/St64745.00000r saved as .dta format
+(file /home/tmp/St207521.00000r not found)
+file /home/tmp/St207521.00000r saved as .dta format
 
      +-------------------------------------------------------------------------------------------+
      |                       var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -4291,8 +4291,8 @@ file /home/tmp/St64745.00000r saved as .dta format
   1. | Percent Black or Hispanic    0.024*    0.026*      0.008      0.008       1      1      2 |
   2. |                             (0.011)   (0.010)    (0.005)    (0.005)       1      2      2 |
      +-------------------------------------------------------------------------------------------+
-(file /home/tmp/St64745.00000q not found)
-file /home/tmp/St64745.00000q saved as .dta format
+(file /home/tmp/St207521.00000q not found)
+file /home/tmp/St207521.00000q saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,649
@@ -4376,8 +4376,8 @@ variable var was str22 now str34
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000s not found)
-file /home/tmp/St64745.00000s saved as .dta format
+(file /home/tmp/St207521.00000s not found)
+file /home/tmp/St207521.00000s saved as .dta format
 
      +----------------------------------------------------------------------------------------------------+
      |                                var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -4385,7 +4385,7 @@ file /home/tmp/St64745.00000s saved as .dta format
   1. | Percent Economically Disadvantaged     0.011     0.017      0.003      0.003       2      1      2 |
   2. |                                      (0.011)   (0.010)    (0.005)    (0.005)       2      2      2 |
      +----------------------------------------------------------------------------------------------------+
-file /home/tmp/St64745.00000q saved as .dta format
+file /home/tmp/St207521.00000q saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,649
@@ -4476,8 +4476,8 @@ file
 (1 real change made)
 (1 real change made)
 (0 real changes made)
-(file /home/tmp/St64745.00000t not found)
-file /home/tmp/St64745.00000t saved as .dta format
+(file /home/tmp/St207521.00000t not found)
+file /home/tmp/St207521.00000t saved as .dta format
 
      +------------------------------------------------------------------------+
      |    var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -4491,7 +4491,7 @@ file /home/tmp/St64745.00000t saved as .dta format
   6. |          (0.010)   (0.010)    (0.004)    (0.004)       3      6      2 |
      +------------------------------------------------------------------------+
 (variable var was str13, now str34 to accommodate using data's values)
-file /home/tmp/St64745.00000q saved as .dta format
+file /home/tmp/St207521.00000q saved as .dta format
 (ela estimates from all sample and control combinations)
 
 Linear regression                               Number of obs     =      4,649
@@ -4574,8 +4574,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (1 real change made)
-(file /home/tmp/St64745.00000u not found)
-file /home/tmp/St64745.00000u saved as .dta format
+(file /home/tmp/St207521.00000u not found)
+file /home/tmp/St207521.00000u saved as .dta format
 
      +--------------------------------------------------------------------------------+
      |            var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -4584,7 +4584,7 @@ file /home/tmp/St64745.00000u saved as .dta format
   2. |                  (0.003)   (0.003)    (0.001)    (0.001)       4      2      2 |
      +--------------------------------------------------------------------------------+
 (variable var was str16, now str34 to accommodate using data's values)
-file /home/tmp/St64745.00000q saved as .dta format
+file /home/tmp/St207521.00000q saved as .dta format
 
      +-------------------------------------------------------------------------------+
      |                                var       ela       math   enr_2y~r   enr_4y~r |
@@ -5067,8 +5067,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000w not found)
-file /home/tmp/St64745.00000w saved as .dta format
+(file /home/tmp/St207521.00000w not found)
+file /home/tmp/St207521.00000w saved as .dta format
 
      +--------------------------------------------------------------------------------------------+
      |                       var       ela       math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -5076,8 +5076,8 @@ file /home/tmp/St64745.00000w saved as .dta format
   1. | Percent Black or Hispanic    -0.005   -0.087**   -0.063**      0.017       1      1      1 |
   2. |                             (0.013)    (0.014)    (0.011)    (0.010)       1      2      1 |
      +--------------------------------------------------------------------------------------------+
-(file /home/tmp/St64745.00000v not found)
-file /home/tmp/St64745.00000v saved as .dta format
+(file /home/tmp/St207521.00000v not found)
+file /home/tmp/St207521.00000v saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,818,828)
@@ -5169,8 +5169,8 @@ variable var was str22 now str34
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.00000x not found)
-file /home/tmp/St64745.00000x saved as .dta format
+(file /home/tmp/St207521.00000x not found)
+file /home/tmp/St207521.00000x saved as .dta format
 
      +-----------------------------------------------------------------------------------------------------+
      |                                var       ela       math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -5178,7 +5178,7 @@ file /home/tmp/St64745.00000x saved as .dta format
   1. | Percent Economically Disadvantaged    -0.025   -0.109**   -0.059**     -0.009       2      1      1 |
   2. |                                      (0.013)    (0.014)    (0.011)    (0.011)       2      2      1 |
      +-----------------------------------------------------------------------------------------------------+
-file /home/tmp/St64745.00000v saved as .dta format
+file /home/tmp/St207521.00000v saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,818,828)
@@ -5277,8 +5277,8 @@ file
 (1 real change made)
 (1 real change made)
 (0 real changes made)
-(file /home/tmp/St64745.000010 not found)
-file /home/tmp/St64745.000010 saved as .dta format
+(file /home/tmp/St207521.000010 not found)
+file /home/tmp/St207521.000010 saved as .dta format
 
      +------------------------------------------------------------------------+
      |    var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -5294,7 +5294,7 @@ file /home/tmp/St64745.000010 saved as .dta format
 (variable var was str13, now str34 to accommodate using data's values)
 (variable math was str7, now str8 to accommodate using data's values)
 (variable enr_2year was str7, now str8 to accommodate using data's values)
-file /home/tmp/St64745.00000v saved as .dta format
+file /home/tmp/St207521.00000v saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,818,828)
@@ -5385,8 +5385,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (1 real change made)
-(file /home/tmp/St64745.000011 not found)
-file /home/tmp/St64745.000011 saved as .dta format
+(file /home/tmp/St207521.000011 not found)
+file /home/tmp/St207521.000011 saved as .dta format
 
      +--------------------------------------------------------------------------------+
      |            var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -5397,7 +5397,7 @@ file /home/tmp/St64745.000011 saved as .dta format
 (variable var was str16, now str34 to accommodate using data's values)
 (variable math was str7, now str8 to accommodate using data's values)
 (variable enr_2year was str7, now str8 to accommodate using data's values)
-file /home/tmp/St64745.00000v saved as .dta format
+file /home/tmp/St207521.00000v saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,808,580)
@@ -5488,8 +5488,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.000013 not found)
-file /home/tmp/St64745.000013 saved as .dta format
+(file /home/tmp/St207521.000013 not found)
+file /home/tmp/St207521.000013 saved as .dta format
 
      +-------------------------------------------------------------------------------------------+
      |                       var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -5497,8 +5497,8 @@ file /home/tmp/St64745.000013 saved as .dta format
   1. | Percent Black or Hispanic    -0.001     0.002     0.013*     -0.005       1      1      2 |
   2. |                             (0.012)   (0.011)    (0.006)    (0.005)       1      2      2 |
      +-------------------------------------------------------------------------------------------+
-(file /home/tmp/St64745.000012 not found)
-file /home/tmp/St64745.000012 saved as .dta format
+(file /home/tmp/St207521.000012 not found)
+file /home/tmp/St207521.000012 saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,808,580)
@@ -5590,8 +5590,8 @@ variable var was str22 now str34
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-(file /home/tmp/St64745.000014 not found)
-file /home/tmp/St64745.000014 saved as .dta format
+(file /home/tmp/St207521.000014 not found)
+file /home/tmp/St207521.000014 saved as .dta format
 
      +----------------------------------------------------------------------------------------------------+
      |                                var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -5599,7 +5599,7 @@ file /home/tmp/St64745.000014 saved as .dta format
   1. | Percent Economically Disadvantaged    -0.008    -0.001      0.007     -0.005       2      1      2 |
   2. |                                      (0.012)   (0.011)    (0.006)    (0.005)       2      2      2 |
      +----------------------------------------------------------------------------------------------------+
-file /home/tmp/St64745.000012 saved as .dta format
+file /home/tmp/St207521.000012 saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,808,580)
@@ -5698,8 +5698,8 @@ file
 (1 real change made)
 (1 real change made)
 (0 real changes made)
-(file /home/tmp/St64745.000015 not found)
-file /home/tmp/St64745.000015 saved as .dta format
+(file /home/tmp/St207521.000015 not found)
+file /home/tmp/St207521.000015 saved as .dta format
 
      +------------------------------------------------------------------------+
      |    var       ela      math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -5713,7 +5713,7 @@ file /home/tmp/St64745.000015 saved as .dta format
   6. |          (0.013)   (0.013)    (0.006)    (0.005)       3      6      2 |
      +------------------------------------------------------------------------+
 (variable var was str13, now str34 to accommodate using data's values)
-file /home/tmp/St64745.000012 saved as .dta format
+file /home/tmp/St207521.000012 saved as .dta format
 (ela estimates from all sample and control combinations)
 (analytic weights assumed)
 (sum of wgt is 6,808,580)
@@ -5804,8 +5804,8 @@ file
 (0 real changes made)
 (0 real changes made)
 (1 real change made)
-(file /home/tmp/St64745.000016 not found)
-file /home/tmp/St64745.000016 saved as .dta format
+(file /home/tmp/St207521.000016 not found)
+file /home/tmp/St207521.000016 saved as .dta format
 
      +----------------------------------------------------------------------------------+
      |            var        ela       math   enr_2y~r   enr_4y~r   order   coef   spec |
@@ -5814,7 +5814,7 @@ file /home/tmp/St64745.000016 saved as .dta format
   2. |                   (0.005)    (0.005)    (0.002)    (0.002)       4      2      2 |
      +----------------------------------------------------------------------------------+
 (variable var was str16, now str34 to accommodate using data's values)
-file /home/tmp/St64745.000012 saved as .dta format
+file /home/tmp/St207521.000012 saved as .dta format
 (variable ela was str7, now str8 to accommodate using data's values)
 
      +--------------------------------------------------------------------------------+

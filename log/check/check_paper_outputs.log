@@ -4,7 +4,7 @@
        log:  /home/research/ca_ed_lab/projects/common_core_va/consolidated/log/
 > check/check_paper_outputs.smcl
   log type:  text
- opened on:  21 Jun 2026, 14:04:18
+ opened on:  23 Jun 2026, 10:08:47
 
 . 
 . di as text _n "--------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 . di as text "check_paper_outputs.do — RUN START: `c(current_date)' `c(current_
 > time)'"
-check_paper_outputs.do — RUN START: 21 Jun 2026 14:04:18
+check_paper_outputs.do — RUN START: 23 Jun 2026 10:08:47
 
 . di as text "-----------------------------------------------------------------
 ---------------"
@@ -142,7 +142,7 @@ check_paper_outputs.do — RUN START: 21 Jun 2026 14:04:18
 
 . di as text "check_paper_outputs.do — RUN END: `c(current_date)' `c(current_ti
 > me)'"
-check_paper_outputs.do — RUN END: 21 Jun 2026 14:04:19
+check_paper_outputs.do — RUN END: 23 Jun 2026 10:08:48
 
 . di as text "-----------------------------------------------------------------
 ---------------"
